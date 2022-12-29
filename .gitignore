@@ -2,3 +2,5 @@ __pycache__
 bot/temp/*.png
 bot/logs/*.txt
 config.py
+venv
+.vscode
