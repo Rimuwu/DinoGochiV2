@@ -1,4 +1,4 @@
 __pycache__
-temp/*.png
-logs/*.txt
+bot/temp/*.png
+bot/logs/*.txt
 config.py
