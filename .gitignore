@@ -1,0 +1,4 @@
+__pycache__
+temp/*.png
+logs/*.txt
+config.py
