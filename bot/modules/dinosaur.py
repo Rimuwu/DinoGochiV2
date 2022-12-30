@@ -1,7 +1,7 @@
 from pprint import pprint
 
 import config
-dinosaurs = config.CLUSTER_CLIENT.bot.dinosaurs
+dinosaurs = config.mongo_client.bot.dinosaurs
 
 class Dino:
 

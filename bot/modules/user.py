@@ -3,7 +3,7 @@ from modules.getbot import BotObj
 from modules.dinosaur import Dino
 from modules.item import CreateItem
 
-users = config.CLUSTER_CLIENT.bot.users
+users = config.mongo_client.bot.users
 
 class User:
 
