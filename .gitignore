@@ -4,3 +4,4 @@ bot/logs/*.txt
 config.py
 venv
 .vscode
+config.json

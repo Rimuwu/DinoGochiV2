@@ -1,17 +1,59 @@
+# Основной модуль настроек
+
+# Прямой запуск используется для создания файла настроек
+
+# Как модуль предоставляет лишь чтение настроек и доступ к ним
+
 import pymongo
+import json
+import os
+import sys
 
-CLUSTER_CLIENT = pymongo.MongoClient('localhost', 27017)
+CONFIG_PATH = "config.json"
 
-BOT_TOKEN = ''
+class Config:
+    def __init__(self):
+        """Класс настроек бота. Все основные переменные хранятся здесь
+        """
+        self.bot_token = "NOTOKEN"
+        self.bot_name = "NONAME"
+        self.bot_devs = []
+        self.temp_dir = "temp"
+        self.logs_dir = "logs"
+        self.is_ignore_name = True
+        self.bot_group_id = 0
+        self.mongo_host = "localhost"
+        self.mongo_port = 27017
 
-BOT_NAME = ''
+    def fromJSON(self, js: str):
+        """Десереализует строку в данные
 
-BOT_DEVS = []
+        Args:
+            js (str): Строка формата json с парвильной разметкой
+        """
+        self.__dict__ = json.loads(js)
 
-TEMP_DIRECTION = 'temp'
+    def toJSON(self) -> str:
+        """Сереализует объект настроек в json строку
 
-LOGS_DERECTION = 'logs'
+        Returns:
+            str: сереализованная json строка
+        """
+        return json.dumps(self, default=lambda o: o.__dict__,
+            sort_keys=True, indent=4)
+ 
+conf = Config()
 
-IGNORE_NAME = True
+if __name__ == '__main__':
+    with open(CONFIG_PATH, 'w') as f:
+        f.write(conf.toJSON())
+        sys.exit(f"{CONFIG_PATH} created! Please don't forget to set it up!")    
+else:
+    if os.path.exists(CONFIG_PATH):
+        with open(CONFIG_PATH, 'r') as f:
+            conf.fromJSON(f.read())
+    else:
+        sys.exit(f"{CONFIG_PATH} missed! Please, run {__name__}")
 
-BOT_GROUP_ID = 
+mongo_client = pymongo.MongoClient(conf.mongo_host, conf.mongo_port)
+print(mongo_client.server_info())
