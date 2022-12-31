@@ -56,4 +56,3 @@ else:
         sys.exit(f"{CONFIG_PATH} missed! Please, run {__name__}")
 
 mongo_client = pymongo.MongoClient(conf.mongo_host, conf.mongo_port)
-print(mongo_client.server_info())
