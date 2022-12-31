@@ -1,1 +1,2 @@
-import bot.handlers.test
+import bot.handlers.mongoinfo
+import bot.handlers.start
