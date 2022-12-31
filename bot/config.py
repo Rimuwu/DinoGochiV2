@@ -12,7 +12,7 @@ import sys
 CONFIG_PATH = "config.json"
 
 class Config:
-    def __init__(self):
+    def __init__(self) -> None:
         """Класс настроек бота. Все основные переменные хранятся здесь
         """
         self.bot_token = "NOTOKEN"
@@ -25,7 +25,7 @@ class Config:
         self.mongo_host = "localhost"
         self.mongo_port = 27017
 
-    def fromJSON(self, js: str):
+    def fromJSON(self, js: str) -> None:
         """Десереализует строку в данные
 
         Args:
