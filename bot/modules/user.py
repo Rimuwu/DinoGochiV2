@@ -1,7 +1,8 @@
 import config
-from modules.getbot import BotObj
 from modules.dinosaur import Dino
 from modules.item import CreateItem
+
+from bot.exec import bot
 
 users = config.mongo_client.bot.users
 
@@ -18,7 +19,7 @@ class User:
         self.inventory = self.generate_inventory()
 
         if telegram:
-            self.telegram_data = BotObj.get_bot().get_chat(self.id)
+            self.telegram_data = bot.get_bot().get_chat(self.id)
         else:
             self.telegram_data = None
     
