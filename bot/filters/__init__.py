@@ -1,0 +1,1 @@
+import bot.filters.authorized
