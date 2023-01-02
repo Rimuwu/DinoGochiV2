@@ -1,4 +1,4 @@
-import bot.config
-import bot.exec
-import bot.filters
-import bot.handlers
+from . import config
+from . import exec
+from . import filters
+from . import handlers

@@ -1,4 +1,5 @@
 from telebot.asyncio_filters import AdvancedCustomFilter
+from telebot.types import Message
 from bot.exec import bot
 from bot.config import conf, mongo_client
 
@@ -8,7 +9,7 @@ users = mongo_client.bot.users
 class IsAdminUser(AdvancedCustomFilter):
     key = 'is_admin'
 
-    async def check(self, message, status):
+    async def check(self, message: Message, status: bool):
         is_authorized = message.from_user.id in conf.bot_devs
         
         if status:
@@ -19,7 +20,7 @@ class IsAdminUser(AdvancedCustomFilter):
 class IsAuthorizedUser(AdvancedCustomFilter):
     key = 'is_authorized'
 
-    async def check(self, message, status):
+    async def check(self, message: Message, status: bool):
         is_authorized = users.find_one(
                 { "userid": message.from_user.id
                 }) is not None

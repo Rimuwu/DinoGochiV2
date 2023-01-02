@@ -1,1 +1,1 @@
-import bot.filters.authorized
+from . import authorized
