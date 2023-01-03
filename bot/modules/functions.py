@@ -5,14 +5,14 @@ import time
 
 from colorama import Fore, Style
 
-with open('json/items.json', encoding='utf-8') as f: items_data = json.load(f)['items']
+with open('bot/json/items.json', encoding='utf-8') as f: items_data = json.load(f)['items']
 
 class LogFuncs:
 
     def __init__(self) -> None:
         '''Функции логирования'''
 
-    def console_message(message, lvl=1) -> None:
+    def console_message(self, message, lvl=1) -> None:
         """
         LVL: \n
         1 - info\n
