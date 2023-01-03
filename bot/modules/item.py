@@ -6,7 +6,7 @@ localization = Localization()
 
 from modules.functions import DataFormat
 
-with open('json/items.json', encoding='utf-8') as f: items_data = json.load(f)['items']
+with open('bot/json/items.json', encoding='utf-8') as f: items_data = json.load(f)['items']
 
 def get_data(itemid:str) -> dict:
     """Получение данных из json"""
