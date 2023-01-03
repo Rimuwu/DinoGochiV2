@@ -8,8 +8,11 @@ from telebot.async_telebot import AsyncTeleBot
 from telebot.asyncio_handler_backends import State, StatesGroup
 from telebot.asyncio_storage import StateMemoryStorage
 
+from bot.modules.functions import LogFuncs
+
 bot = AsyncTeleBot(config.conf.bot_token, state_storage=StateMemoryStorage())
+log = LogFuncs()
 
 def run():
-    print('start')
+    log.console_message('start')
     asyncio.run(bot.infinity_polling())
