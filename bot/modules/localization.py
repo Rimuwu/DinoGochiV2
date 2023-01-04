@@ -1,5 +1,5 @@
 import json
-from modules.functions import LogFuncs
+from bot.modules.logs import LogFuncs
 import os
 
 class Localization:
@@ -17,8 +17,8 @@ class Localization:
         '''
         languages = {}
 
-        for filename in os.listdir("localization"): # берём всем фалы из папки
-            with open(f'localization/{filename}', encoding='utf-8') as f:
+        for filename in os.listdir("bot/localization"): # берём всем фалы из папки
+            with open(f'bot/localization/{filename}', encoding='utf-8') as f:
                 languages_f = json.load(f)
 
             for l_key in languages_f.keys(): #добавляем в словарь
