@@ -10,12 +10,12 @@ class IsAdminUser(AdvancedCustomFilter):
     key = 'is_admin'
 
     async def check(self, message: Message, status: bool):
-        is_authorized = message.from_user.id in conf.bot_devs
+        is_admin = message.from_user.id in conf.bot_devs
         
         if status:
-            return is_authorized
+            return is_admin
         else:
-            return not is_authorized
+            return not is_admin
 
 class IsAuthorizedUser(AdvancedCustomFilter):
     key = 'is_authorized'

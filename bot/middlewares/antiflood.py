@@ -21,4 +21,7 @@ class AntifloodMiddleware(BaseMiddleware):
             return SkipHandler()
         self.last_time[message.from_user.id] = message.date
 
+    async def post_process(self, message, data, exception):
+        pass
+
 bot.setup_middleware(AntifloodMiddleware())
