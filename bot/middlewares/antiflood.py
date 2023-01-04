@@ -1,3 +1,5 @@
+# Система антифлуда
+
 from telebot.asyncio_handler_backends import BaseMiddleware, SkipHandler
 from telebot.types import Message
 from bot.exec import bot
