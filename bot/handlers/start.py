@@ -2,6 +2,7 @@ from random import choice
 from telebot import types
 
 from bot.exec import bot
+from bot.modules.user import insert_user
 
 
 @bot.message_handler(commands=["start"], is_authorized=True)
