@@ -1,5 +1,6 @@
-import bot.config
-import bot.exec
-import bot.filters
-import bot.handlers
-import bot.modules
+from . import config
+from . import exec
+from . import middlewares
+from . import filters
+from . import modules
+from . import handlers

@@ -1,2 +1,3 @@
-import bot.filters.authorized
-import bot.filters.admin
+from . import authorized
+from . import admin
+from . import translated_text

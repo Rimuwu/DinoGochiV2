@@ -1,4 +1,5 @@
-import telebot
+from telebot.asyncio_filters import AdvancedCustomFilter
+from telebot.types import Message
 from bot.exec import bot
 from bot.config import conf, mongo_client
 
