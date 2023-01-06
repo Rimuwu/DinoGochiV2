@@ -32,10 +32,7 @@
 
         },
 
-
         "no_text_key": "❌ The text corresponding to key {key} is not found, contact the developer!",
-
-        "no_dp_text_key": "❌ There is no additional key!",
 
 
         "no_use_interface": "❌ While in the dungeon, use the dungeon interface!\n\nIf an error has occurred and you have exited the dungeon, write /check_dinos",
