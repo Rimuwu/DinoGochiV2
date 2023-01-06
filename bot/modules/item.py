@@ -1,11 +1,10 @@
 import json
 from pprint import pprint
 
-from bot.modules.localization import Localization
+from bot.modules.localization import get_all_locales
 from bot.modules.data_format import DataFormat
 
 with open('bot/json/items.json', encoding='utf-8') as f: items_data = json.load(f)['items']
-localization = Localization()
 
 def get_data(itemid:str) -> dict:
     """Получение данных из json"""
@@ -55,7 +54,7 @@ class ItemBase:
         """Внесение всех имён в данные предмета"""
 
         # Получаем словарь со всеми альтернативные имена предметов из локализации
-        items_names = localization.get_all_text_from_key('items_names')
+        items_names = get_all_locales('items_names')
         data_names = self.data['name']
         name = {}
 
