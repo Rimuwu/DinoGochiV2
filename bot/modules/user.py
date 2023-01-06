@@ -3,7 +3,7 @@ import time
 from bot import config
 from bot.modules.dinosaur import Dino
 from bot.modules.item import CreateItem
-from bot.modules.localization import Localization
+from bot.modules.localization import get_all_locales
 
 users = config.mongo_client.bot.users
 
@@ -50,7 +50,7 @@ class User:
 
 
 def insert_user(userid:int, lang_code:str) -> None:
-    loc_codes = Localization().get_all_text_from_key('language_code')
+    loc_codes = get_all_locales('language_code')
 
     if lang_code not in loc_codes.keys():
         lang_code = 'en'
