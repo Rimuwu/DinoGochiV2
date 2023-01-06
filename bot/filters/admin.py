@@ -1,11 +1,9 @@
-import telebot
+from telebot.asyncio_filters import AdvancedCustomFilter
 from bot.exec import bot
-from bot.config import conf, mongo_client
-
-users = mongo_client.bot.users
+from bot.config import conf
 
 
-class IsAdminUser(telebot.asyncio_filters.AdvancedCustomFilter):
+class IsAdminUser(AdvancedCustomFilter):
     key = 'is_admin'
 
     async def check(self, message, status:bool):
