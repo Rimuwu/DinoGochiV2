@@ -1,6 +1,6 @@
 from pprint import pprint
 
-import config
+from bot import config
 dinosaurs = config.mongo_client.bot.dinosaurs
 
 class Dino:

@@ -1,6 +1,6 @@
 __pycache__
-bot/temp/*.png
-bot/logs/*.txt
+bot/temp/
+bot/logs/
 config.py
 venv
 .vscode

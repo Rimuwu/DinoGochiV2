@@ -1,18 +1,17 @@
-import json
 import logging
 import random
 import time
 
 from colorama import Fore, Style
 
-with open('json/items.json', encoding='utf-8') as f: items_data = json.load(f)['items']
+from bot import config
 
 class LogFuncs:
 
     def __init__(self) -> None:
         '''Функции логирования'''
 
-    def console_message(message, lvl=1) -> None:
+    def console_message(self, message, lvl=1) -> None:
         """
         LVL: \n
         1 - info\n
@@ -33,6 +32,15 @@ class LogFuncs:
         else:
             logging.critical(message)
             print(Fore.RED + f"{time.strftime('%Y %m-%d %H.%M.%S')} Бот: {message}" + Style.RESET_ALL)
+    
+    def create_log(self):
+
+        logging.basicConfig(
+            level=logging.INFO,
+            filename=f"{config.conf.logs_dir}/{time.strftime('%Y %m-%d %H.%M.%S')}.log",
+            filemode="w", encoding='utf-8',
+            format="%(asctime)s %(levelname)s %(message)s"
+        )
 
 class DataFormat:
 
@@ -65,6 +73,7 @@ class DataFormat:
                 return data
         else:
             return data
+
 
 if __name__ == '__main__':
     raise Exception("This file cannot be launched on its own!")
