@@ -2,26 +2,23 @@
 
 import json
 import os
+from bot.modules.logs import console_message
 
-from i18n import config, resource_loader, translator
-
+languages = {}
+available_locales = []
 
 def load() -> None:
-    """Настройки локализации
-    """
-    config.set("file_format", "json")
-    config.set("load_path", ["./bot/localization"])
-    config.set("filename_format", "{locale}.{format}")
-    resource_loader.init_json_loader()
+    """Загрузка локализации"""
 
-    lang_list = []
     for filename in os.listdir("./bot/localization"):
         with open(f'./bot/localization/{filename}', encoding='utf-8') as f:
-            langs_dict = json.load(f)
-            for lang_code in langs_dict.keys():
-                lang_list.append(lang_code)
+            languages_f = json.load(f)
 
-    config.set('available_locales', lang_list)
+        for l_key in languages_f.keys():
+            available_locales.append(l_key)
+            languages[l_key] = languages_f[l_key]
+
+    console_message(f"Загружено {len(languages.keys())} файла(ов) локализации.", 1)
 
 def t(key: str, locale: str = "en", **kwargs) -> str:
     """Возвращает текст на нужном языке
@@ -29,15 +26,24 @@ def t(key: str, locale: str = "en", **kwargs) -> str:
     Args:
         key (str): ключ для текста
         locale (str, optional): код языка. Defaults to "en".
-        count (int, optional): числовая часть в переводе. Defaults to 0.
 
     Returns:
         str: текст на нужном языке
     """
-    try:
-        return translator.t(key, locale=locale, **kwargs)
-    except KeyError:
-        return translator.t("no_text_key", locale=locale, **kwargs)
+    if locale not in available_locales:
+        locale = 'en' # Если язык не найден, установить тот что точно есть
+
+    text = languages[locale]
+    for way_key in key.split('.'):
+        if way_key in text.keys():
+            text = text[way_key]
+        else:
+            return languages[locale]["no_text_key"].format(key=key)
+
+    if type(text) == str: #Если текс, добавляем туда переменные
+        text.format(**kwargs)
+        
+    return text
 
 def get_all_locales(key:str, **kwargs):
     """Возвращает текст с ключа key из каждой локализации
@@ -46,17 +52,13 @@ def get_all_locales(key:str, **kwargs):
         key (str): ключ для текста
 
     Returns:
-        dict[str]: ключ в словаре - язык
+        dict[str]: ключ в словаре - код языка
     """
-    lang_keys = config.get("available_locales")
     locales_dict = {}
 
-    for locale in lang_keys:
-        try:
-            locales_dict[locale] = translator.t(key, locale=locale, **kwargs)
-        except KeyError:
-            locales_dict[locale] = translator.t("no_text_key", locale=locale, **kwargs)
-    
+    for locale in available_locales:
+        locales_dict[locale] = t(key, locale, **kwargs)
+
     return locales_dict
 
 if __name__ == '__main__':
