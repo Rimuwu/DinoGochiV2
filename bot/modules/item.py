@@ -2,7 +2,7 @@ import json
 from pprint import pprint
 
 from bot.modules.localization import get_all_locales
-from bot.modules.data_format import DataFormat
+from bot.modules.data_format import random_dict
 
 with open('bot/json/items.json', encoding='utf-8') as f: items_data = json.load(f)['items']
 
@@ -94,7 +94,7 @@ class ItemBase:
                     abl[k] = self.data['abilities'][k]
 
                 elif type(self.data['abilities'][k]) == dict:
-                    abl[k] = DataFormat.random_dict(self.data['abilities'][k])
+                    abl[k] = random_dict(self.data['abilities'][k])
 
             d_it['abilities'] = abl
 
@@ -107,7 +107,7 @@ class ItemBase:
                             d_it['abilities'][ak] = preabil[ak]
 
                         elif type(preabil[ak]) == dict:
-                            d_it['abilities'][ak] = DataFormat.random_dict(preabil[ak])
+                            d_it['abilities'][ak] = random_dict(preabil[ak])
 
         return d_it
     
