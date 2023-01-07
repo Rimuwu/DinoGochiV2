@@ -3,7 +3,7 @@ import time
 from bot import config
 from bot.modules.dinosaur import Dino
 from bot.modules.item import CreateItem
-from bot.modules.localization import get_all_locales
+from bot.modules.localization import available_locales
 
 users = config.mongo_client.bot.users
 
@@ -25,14 +25,19 @@ class User:
         for dino_obj in dinosaurs.find({'owner_id': self.id}):
             dino_list.append(Dino(dino_obj))
 
+        self.dinos = dino_list
         return dino_list
     
-    # def generate_inventory(self) -> list:
-    #     inv = []
-    #     for item_dict in self.data['inventory']:
-    #         inv.append(CreateItem(item_data=item_dict).new())
+    def get_inventory(self) -> list:
+        items = config.mongo_client.bot.items
+        inv = []
+        for item_dict in items.find({'owner_id': self.id}):
+            del item_dict['_id']
+            del item_dict['owner_id']
+            inv.append(CreateItem(item_data=item_dict).new())
         
-    #     return inv
+        self.inventory = inv
+        return inv
     
     def view(self) -> None:
         """ Отображает все данные объекта."""
@@ -50,9 +55,8 @@ class User:
 
 
 def insert_user(userid:int, lang_code:str) -> None:
-    loc_codes = get_all_locales('language_code')
 
-    if lang_code not in loc_codes.keys():
+    if lang_code not in available_locales:
         lang_code = 'en'
 
     user_dict = {
