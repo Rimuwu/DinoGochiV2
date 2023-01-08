@@ -9,20 +9,20 @@ import json
 import os
 import sys
 
-CONFIG_PATH = "config.json"
+CONFIG_PATH = 'config.json'
 
 class Config:
     def __init__(self) -> None:
         """Класс настроек бота. Все основные переменные хранятся здесь
         """
-        self.bot_token = "NOTOKEN"
-        self.bot_name = "NONAME"
+        self.bot_token = 'NOTOKEN'
+        self.bot_name = 'NONAME'
         self.bot_devs = []
-        self.temp_dir = "bot/temp"
-        self.logs_dir = "bot/logs"
+        self.temp_dir = 'bot/temp'
+        self.logs_dir = 'bot/logs'
         self.is_ignore_name = True
         self.bot_group_id = 0
-        self.mongo_host = "localhost"
+        self.mongo_host = 'localhost'
         self.mongo_port = 27017
 
     def fromJSON(self, js: str) -> None:

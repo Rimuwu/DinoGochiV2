@@ -6,13 +6,13 @@ from bot.modules.user import User, insert_user
 from bot.modules.localization import t
 
 
-@bot.message_handler(commands=["start"], is_authorized=True)
+@bot.message_handler(commands=['start'], is_authorized=True)
 async def start_command_auth(message: types.Message):
     stickers = await bot.get_sticker_set('Stickers_by_DinoGochi_bot')
     sticker = choice(list(stickers.stickers)).file_id
     await bot.send_sticker(message.chat.id, sticker)
 
-@bot.message_handler(commands=["start"], is_authorized=False)
+@bot.message_handler(commands=['start'], is_authorized=False)
 async def start_game(message: types.Message):
     user = User(message.from_user.id)
 
@@ -25,8 +25,8 @@ async def start_game(message: types.Message):
 
         # markup_inline = types.InlineKeyboardMarkup()
 
-        # markup_inline.add(types.InlineKeyboardButton(text=b1, url="https://t.me/DinoGochi"))
-        # markup_inline.add(types.InlineKeyboardButton(text=b2, url="https://t.me/+pq9_21HXXYY4ZGQy"))
+        # markup_inline.add(types.InlineKeyboardButton(text=b1, url='https://t.me/DinoGochi'))
+        # markup_inline.add(types.InlineKeyboardButton(text=b2, url='https://t.me/+pq9_21HXXYY4ZGQy'))
 
         # bot.send_message(message.chat.id, text, parse_mode='html', reply_markup=markup_inline)
 
@@ -37,4 +37,4 @@ async def start_game(message: types.Message):
 
         # insert_user(user.id, message.from_user.language_code)
 
-        # users.update_one({"userid": user.id}, {"$set": {'eggs': id_l}})
+        # users.update_one({'userid': user.id}, {'$set': {'eggs': id_l}})

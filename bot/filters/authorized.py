@@ -10,7 +10,7 @@ class IsAuthorizedUser(AdvancedCustomFilter):
 
     async def check(self, message, status:bool):
         is_authorized = users.find_one(
-                { "userid": message.from_user.id
+                { 'userid': message.from_user.id
                 }) is not None
 
         if status:
