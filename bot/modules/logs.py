@@ -3,7 +3,7 @@ import time
 
 from colorama import Fore, Style
 
-from bot import config
+from bot.config import conf
 
 
 def console_message(message, lvl = 1) -> None:
@@ -32,7 +32,7 @@ def create_log():
 
     logging.basicConfig(
         level=logging.INFO,
-        filename=f"{config.conf.logs_dir}/{time.strftime('%Y %m-%d %H.%M.%S')}.log",
+        filename=f"{conf.logs_dir}/{time.strftime('%Y %m-%d %H.%M.%S')}.log",
         filemode="w", encoding='utf-8',
         format="%(asctime)s %(levelname)s %(message)s"
     )
