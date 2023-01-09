@@ -6,7 +6,7 @@ from colorama import Fore, Style
 from bot import config
 
 
-def console_message(message, lvl=1) -> None:
+def console_message(message, lvl = 1) -> None:
     """
     LVL: \n
     1 - info\n
