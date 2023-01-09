@@ -39,7 +39,7 @@
 
         "request_subscribe": {
 
-            "text": "📜 | Dear user!\n\n🎭 | The bot has an official telegram channel and a group, go to the group to find a topic for conversation or ask questions, as well as subscribe to the channel to receive interesting bonuses and news!\n\n❤ | This is not necessary, but we will be very grateful to you!",
+            "text": "📜 | Dear user!\n\n🎭 | The bot has an official telegram channel and a group, go to the group to find a topic for conversation or ask questions, as well as subscribe to the channel to receive interesting bonuses and news!\n\n❤ | This is not necessary, but we will be very grateful to you!\n\nWait a bit, an image will be generated now...",
 
             "button": ["🦖 | Subscribe", "🔮 | Enter"]
         },
