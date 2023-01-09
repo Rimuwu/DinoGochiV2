@@ -1,5 +1,8 @@
 import random
 
+def chunks(lst:list, n:int):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
     
 def random_dict(data: dict[str, int]) -> int | dict:
     """ Предоставляет общий формат данных, подерживающий 
