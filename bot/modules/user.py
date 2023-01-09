@@ -6,35 +6,34 @@ from bot.modules.item import CreateItem
 from bot.modules.localization import available_locales
 
 users = config.mongo_client.bot.users
+items = config.mongo_client.bot.items
+dinosaurs = config.mongo_client.bot.dinosaurs
 
 
 class User:
 
     def __init__(self, userid: int) -> None:
         """Создание объекта пользователя
-           telegram = True - надо ли запрашивать данные из телеги.
         """
         self.id = userid
         self.data = users.find_one({"userid": self.id})
     
     def get_dinos(self) -> list:
         """Возвращает список с объектами динозавров."""
-        dinosaurs = config.mongo_client.bot.dinosaurs
         dino_list = []
 
-        for dino_obj in dinosaurs.find({'owner_id': self.id}):
-            dino_list.append(Dino(dino_obj))
+        for dino_obj in dinosaurs.find({'owner_id': self.id}, {'_id': 1}):
+            dino_list.append(Dino(dino_obj['_id']))
 
         self.dinos = dino_list
         return dino_list
     
     def get_inventory(self) -> list:
-        items = config.mongo_client.bot.items
         inv = []
-        for item_dict in items.find({'owner_id': self.id}):
-            del item_dict['_id']
-            del item_dict['owner_id']
-            inv.append(CreateItem(item_data=item_dict).new())
+
+        for item_dict in items.find({'owner_id': self.id}, {'_id': 0, 'owner_id': 0}):
+            item = {'item': CreateItem(item_data=item_dict['items_data']).new(), "count": item_dict['count']}
+            inv.append(item)
         
         self.inventory = inv
         return inv
