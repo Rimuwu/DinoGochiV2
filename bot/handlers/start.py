@@ -4,6 +4,7 @@ from telebot import types
 from bot.exec import bot
 from bot.modules.user import User, insert_user
 from bot.modules.localization import t
+from bot.modules.images import create_eggs_image
 
 
 @bot.message_handler(commands=['start'], is_authorized=True)
@@ -16,25 +17,23 @@ async def start_command_auth(message: types.Message):
 async def start_game(message: types.Message):
     user = User(message.from_user.id)
 
-    if user.data == None:
-        text = t('request_subscribe.text', message.from_user.language_code)
-        b1, b2 = t('request_subscribe.button', message.from_user.language_code)
+    text = t('request_subscribe.text', message.from_user.language_code)
+    b1, b2 = t('request_subscribe.button', message.from_user.language_code)
+    start_game = t('start_game', message.from_user.language_code)
 
-        print(text)
-        print(b1, b2)
+    markup_inline = types.InlineKeyboardMarkup()
+    markup_inline.add(types.InlineKeyboardButton(text=b1, url='https://t.me/DinoGochi'))
+    markup_inline.add(types.InlineKeyboardButton(text=b2, url='https://t.me/+pq9_21HXXYY4ZGQy'))
 
-        # markup_inline = types.InlineKeyboardMarkup()
+    await bot.send_message(message.chat.id, text, parse_mode='html', reply_markup=markup_inline)
 
-        # markup_inline.add(types.InlineKeyboardButton(text=b1, url='https://t.me/DinoGochi'))
-        # markup_inline.add(types.InlineKeyboardButton(text=b2, url='https://t.me/+pq9_21HXXYY4ZGQy'))
+    photo, id_l = create_eggs_image()
 
-        # bot.send_message(message.chat.id, text, parse_mode='html', reply_markup=markup_inline)
+    markup_inline = types.InlineKeyboardMarkup()
+    markup_inline.add(*[types.InlineKeyboardButton(
+            text=f'🥚 {id_l.index(i) + 1}', 
+            callback_data=f'egg_answer {i}') for i in id_l]
+    )
 
-        # text = t('request_subscribe.start_game', message.from_user.language_code)
-
-        # photo, markup_inline, id_l = Functions.create_egg_image()
-        # bot.send_photo(message.chat.id, photo, text, reply_markup=markup_inline)
-
-        # insert_user(user.id, message.from_user.language_code)
-
-        # users.update_one({'userid': user.id}, {'$set': {'eggs': id_l}})
+    await bot.send_photo(message.chat.id, photo, start_game, reply_markup=markup_inline)
+    insert_user(user.id, message.from_user.language_code)
