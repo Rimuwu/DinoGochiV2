@@ -22,12 +22,5 @@ async def local_test_command(message: Message):
 async def user_data_command(message: Message):
     user = User(message.from_user.id)
 
-    dinos = user.get_dinos()
-    inv = user.get_inventory()
-
-    for i in dinos:
-        print(i.__dict__)
-    
-    print(inv)
-
+    user.view()
 
