@@ -43,7 +43,6 @@ class User:
 
         print(f'ID: {self.id}')
         print(f'DATA: {self.data}')
-        print(f'dino_len: {len(self.dinos)}')
     
     def update(self, update_data) -> None:
         """
