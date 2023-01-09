@@ -1,7 +1,7 @@
 import random
 
     
-def random_dict(data: dict) -> dict:
+def random_dict(data: dict[str, int]) -> int | dict:
     """ Предоставляет общий формат данных, подерживающий 
         случайные и статичные числа.
     
