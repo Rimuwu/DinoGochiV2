@@ -17,7 +17,7 @@ def get_data(itemid:str) -> dict:
 
 class ItemBase:
 
-    def __init__(self, item_id:str | int = None, item_data:dict = None, preabil:dict = None) -> None:
+    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
         ''' Создание объекта Item
 
             Получаем в класс либо id предмета либо формата {"item_id": string, "abilities": dict}\n
@@ -30,10 +30,10 @@ class ItemBase:
 
         '''
 
-        if item_id is not None: # Получаем стандартный предмет, если есть только id
+        if item_id != 0: # Получаем стандартный предмет, если есть только id
             self.id = str(item_id)
 
-        elif item_data is not None: # Предмет от пользователя, есть id и возможно abilities
+        elif item_data != {}: # Предмет от пользователя, есть id и возможно abilities
             self.id = str(item_data['item_id'])
             if 'abilities' in item_data.keys():
                 preabil = item_data['abilities']
@@ -44,10 +44,10 @@ class ItemBase:
         self.data = get_data(self.id)
         self.names = self.get_names()
         self.user_data = self.get_item_dict(preabil=preabil)
-        self.is_standart = self.is_standart()
+        self.is_standart = self.check_standart()
     
     def __str__(self) -> str:
-        return f"Item{self.data['type'].capitalize()}Object {self.name}"
+        return f"Item{self.data['type'].capitalize()}Object {self.names}"
 
     
     def get_names(self) -> dict:
@@ -71,7 +71,7 @@ class ItemBase:
         
         return name
     
-    def get_item_dict(self, preabil: dict = None) -> dict:
+    def get_item_dict(self, preabil: dict = {}) -> dict:
         ''' Создание словаря, хранящийся в инвентаре пользователя.\n
 
             Примеры: 
@@ -98,9 +98,9 @@ class ItemBase:
 
             d_it['abilities'] = abl
 
-        if preabil is not None:
+        if preabil != {}:
             if 'abilities' in d_it.keys():
-                for ak in d_it['abilities'].keys():
+                for ak in d_it['abilities']:
                     if ak in preabil.keys():
 
                         if type(preabil[ak]) == int:
@@ -111,7 +111,7 @@ class ItemBase:
 
         return d_it
     
-    def is_standart(self) -> bool:
+    def check_standart(self) -> bool:
         """Определяем ли стандартный ли предмет*.
 
         Для этого проверяем есть ли у него свои харрактеристик.\n
@@ -135,7 +135,7 @@ class ItemBase:
         """ Отображает все данные объекта."""
         
         print(f'ID: {self.id}')
-        print(f'NAME: {self.name}')
+        print(f'NAMES: {self.names}')
 
         print("USER_DATA: ", end='')
         pprint(self.user_data)
@@ -146,72 +146,72 @@ class ItemBase:
 
 class EatItem(ItemBase):
 
-    def __init__(self, item_id: str | int = None, item_data: dict = None, preabil: dict = {}) -> None:
+    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
 
 class EggItem(ItemBase):
 
-    def __init__(self, item_id: str | int = None, item_data: dict = None, preabil: dict = {}) -> None:
+    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
 
 class AccessoryItem(ItemBase):
 
-    def __init__(self, item_id: str | int = None, item_data: dict = None, preabil: dict = {}) -> None:
+    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
 
 class MaterialItem(ItemBase):
 
-    def __init__(self, item_id: str | int = None, item_data: dict = None, preabil: dict = {}) -> None:
+    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
 
 class RecipeItem(ItemBase):
 
-    def __init__(self, item_id: str | int = None, item_data: dict = None, preabil: dict = {}) -> None:
+    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
 
 class WeaponItem(ItemBase):
 
-    def __init__(self, item_id: str | int = None, item_data: dict = None, preabil: dict = {}) -> None:
+    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
 
 class AmmunitionItem(ItemBase):
 
-    def __init__(self, item_id: str | int = None, item_data: dict = None, preabil: dict = {}) -> None:
+    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
 
 class BackpackItem(ItemBase):
 
-    def __init__(self, item_id: str | int = None, item_data: dict = None, preabil: dict = {}) -> None:
+    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
     
 class ArmorItem(ItemBase):
 
-    def __init__(self, item_id: str | int = None, item_data: dict = None, preabil: dict = {}) -> None:
+    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
 
 class FreezingItem(ItemBase):
 
-    def __init__(self, item_id: str | int = None, item_data: dict = None, preabil: dict = {}) -> None:
+    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
 
 class DefrostingItem(ItemBase):
 
-    def __init__(self, item_id: str | int = None, item_data: dict = None, preabil: dict = {}) -> None:
+    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
 
 class CaseItem(ItemBase):
 
-    def __init__(self, item_id: str | int = None, item_data: dict = None, preabil: dict = {}) -> None:
+    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
 
 class CreateItem:
 
-    def __init__(self, item_id:str | int = None, item_data:dict = None, preabil:dict = {}):
+    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}):
         self.id = item_id
         self.item_data = item_data
         self.preabil = preabil
 
-        if item_id is not None:
+        if item_id != 0:
             self.data = get_data(str(self.id))
         else:
             self.data = get_data(item_data['item_id'])
