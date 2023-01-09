@@ -22,6 +22,7 @@ class Config:
         self.logs_dir = 'bot/logs'
         self.is_ignore_name = True
         self.bot_group_id = 0
+        self.mongo_url = ''
         self.mongo_host = 'localhost'
         self.mongo_port = 27017
 
@@ -55,4 +56,7 @@ else:
     else:
         sys.exit(f"{CONFIG_PATH} missed! Please, run {__name__}")
 
-mongo_client = pymongo.MongoClient(conf.mongo_host, conf.mongo_port)
+if conf.mongo_url:
+    mongo_client = pymongo.MongoClient(conf.mongo_url)
+else:
+    mongo_client = pymongo.MongoClient(conf.mongo_host, conf.mongo_port)
