@@ -42,11 +42,15 @@ class Config:
             sort_keys=True, indent=4)
  
 conf = Config()
+for way in conf.temp_dir, conf.logs_dir:
+    if not os.path.isdir(way):
+        os.mkdir(way) #Создаёт папку в директории  
+        print(f"I didn't find the {way} directory, so I created it.")
 
 if __name__ == '__main__':
     with open(CONFIG_PATH, 'w') as f:
         f.write(conf.toJSON())
-        sys.exit(f"{CONFIG_PATH} created! Please don't forget to set it up!")    
+        sys.exit(f"{CONFIG_PATH} created! Please don't forget to set it up!")
 else:
     if os.path.exists(CONFIG_PATH):
         with open(CONFIG_PATH, 'r') as f:
