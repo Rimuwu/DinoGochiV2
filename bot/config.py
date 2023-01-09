@@ -43,7 +43,7 @@ class Config:
  
 conf = Config()
 for way in conf.temp_dir, conf.logs_dir:
-    if not os.path.isdir(way):
+    if not os.path.exists(way):
         os.mkdir(way) #Создаёт папку в директории  
         print(f"I didn't find the {way} directory, so I created it.")
 
