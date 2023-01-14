@@ -1,13 +1,13 @@
 import time
 
-from bot import config
+from bot.config import mongo_client
 from bot.modules.dinosaur import Dino
 from bot.modules.item import CreateItem
 from bot.modules.localization import available_locales
 
-users = config.mongo_client.bot.users
-items = config.mongo_client.bot.items
-dinosaurs = config.mongo_client.bot.dinosaurs
+users = mongo_client.bot.users
+items = mongo_client.bot.items
+dinosaurs = mongo_client.bot.dinosaurs
 
 
 class User:

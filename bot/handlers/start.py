@@ -13,6 +13,7 @@ async def start_command_auth(message: types.Message):
     sticker = choice(list(stickers.stickers)).file_id
     await bot.send_sticker(message.chat.id, sticker)
 
+
 @bot.message_handler(commands=['start'], is_authorized=False)
 async def start_game(message: types.Message):
     user = User(message.from_user.id)
@@ -37,3 +38,10 @@ async def start_game(message: types.Message):
 
     await bot.send_photo(message.chat.id, photo, start_game, reply_markup=markup_inline)
     insert_user(user.id, message.from_user.language_code)
+
+
+@bot.callback_query_handler(func=None, startwith='egg_answer')
+async def egg_answer_callback(callback: types.CallbackQuery):
+    id = callback.data.split(' ')[1]
+
+    await bot.send_message(callback.from_user.id, id)
