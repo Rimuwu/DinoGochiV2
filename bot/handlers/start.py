@@ -5,6 +5,8 @@ from bot.exec import bot
 from bot.modules.user import User, insert_user
 from bot.modules.localization import t
 from bot.modules.images import create_eggs_image
+from bot.modules.data_format import list_to_keyboard, user_name
+
 
 
 @bot.message_handler(commands=['start'], is_authorized=True)
@@ -13,8 +15,20 @@ async def start_command_auth(message: types.Message):
     sticker = choice(list(stickers.stickers)).file_id
     await bot.send_sticker(message.chat.id, sticker)
 
-
 @bot.message_handler(commands=['start'], is_authorized=False)
+async def start_game_message(message: types.Message):
+    langue_code = message.from_user.language_code
+    username = user_name(message.from_user)
+    text = t('start_menu', langue_code)
+    buttons_list = [
+        t('commands_name.start_game', 
+        locale=langue_code, username=username)]
+    markup = list_to_keyboard(buttons_list)
+    
+    await bot.send_message(message.from_user.id, text, reply_markup=markup, parse_mode='HTML')
+
+
+@bot.message_handler(text='commands_name.start_game')
 async def start_game(message: types.Message):
     user = User(message.from_user.id)
 
