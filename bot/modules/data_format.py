@@ -1,4 +1,5 @@
 import random
+from telebot.types import ReplyKeyboardMarkup, User
 
 def chunks(lst:list, n:int):
     for i in range(0, len(lst), n):
@@ -30,6 +31,50 @@ def random_dict(data: dict[str, int]) -> int | dict:
             return data
     else:
         return data
+
+def list_to_keyboard(
+    buttons:list, 
+    row_width = 3, 
+    resize_keyboard = True, 
+    one_time_keyboard = None) -> ReplyKeyboardMarkup:
+    '''Превращает список со списками в объект клавиатуры.
+
+        Example:
+            butttons = [ ['привет'], ['отвяжись', 'ты кто?'] ]
+
+        >      привет
+          отвяжись  ты кто?
+        
+            butttons = ['привет','отвяжись','ты кто?'], 
+            row_width = 1
+
+        >  привет
+          отвяжись  
+          ты кто?
+    '''
+    markup = ReplyKeyboardMarkup(
+            row_width=row_width, 
+            resize_keyboard=resize_keyboard, 
+            one_time_keyboard=one_time_keyboard)
+
+    if len(buttons) == 1:
+        markup.add(*[i for i in buttons])
+
+    else:
+        for line in buttons:
+            markup.row(*[i for i in line])
+
+    return markup
+
+def user_name(user:User):
+
+    if user.username is not None:
+        return user.username
+    else:
+        if user.last_name is not None and user.first_name:
+            return f'{user.first_name} {user.last_name}'
+        else:
+            return user.first_name
 
 
 if __name__ == '__main__':
