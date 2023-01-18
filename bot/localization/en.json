@@ -12,7 +12,9 @@
             "confirm": "✅ Confirm"
         },
 
-        "commands_name": {},
+        "commands_name": {
+            "start_game": "🍡 Start playing"
+        },
 
         "items_name": {},
 
