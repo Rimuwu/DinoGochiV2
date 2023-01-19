@@ -1,6 +1,8 @@
 from telebot.asyncio_filters import AdvancedCustomFilter
-from bot.exec import bot
+
 from bot.config import conf
+from bot.exec import bot
+from bot.modules.logs import log
 
 
 class IsAdminUser(AdvancedCustomFilter):
@@ -10,8 +12,14 @@ class IsAdminUser(AdvancedCustomFilter):
         is_authorized = message.from_user.id in conf.bot_devs
         
         if status:
-            return is_authorized
+            result = is_authorized
         else:
-            return not is_authorized
+            result = not is_authorized
+
+        if conf.debug:
+            log(prefix='IsAdminUser', message=f'User: {message.from_user.id}, Admin: {is_authorized} -> {result}', lvl=0)
+
+        return result
+
 
 bot.add_custom_filter(IsAdminUser())

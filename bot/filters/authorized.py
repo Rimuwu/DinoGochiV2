@@ -1,6 +1,8 @@
 from telebot.asyncio_filters import AdvancedCustomFilter
+
+from bot.config import conf, mongo_client
 from bot.exec import bot
-from bot.config import  mongo_client
+from bot.modules.logs import log
 
 users = mongo_client.bot.users
 
@@ -14,8 +16,14 @@ class IsAuthorizedUser(AdvancedCustomFilter):
                 }) is not None
 
         if status:
-            return is_authorized
+            result = is_authorized
         else:
-            return not is_authorized
+            result = not is_authorized
+        
+        if conf.debug:
+            log(prefix='IsAuthorizedUser', message=f'User: {message.from_user.id}, Authorized: {is_authorized} -> {result}', lvl=0)
+
+        return result
+
 
 bot.add_custom_filter(IsAuthorizedUser())
