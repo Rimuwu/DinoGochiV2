@@ -2,7 +2,7 @@
 
 import json
 import os
-from bot.modules.logs import console_message
+from bot.modules.logs import log
 
 languages = {}
 available_locales = []
@@ -18,7 +18,7 @@ def load() -> None:
             available_locales.append(l_key)
             languages[l_key] = languages_f[l_key]
 
-    console_message(f"Загружено {len(languages.keys())} файла(ов) локализации.", 1)
+    log(f"Загружено {len(languages.keys())} файла(ов) локализации.", 1)
 
 def t(key: str, locale: str = "en", **kwargs) -> str:
     """Возвращает текст на нужном языке
@@ -30,22 +30,40 @@ def t(key: str, locale: str = "en", **kwargs) -> str:
     Returns:
         str: текст на нужном языке
     """
+
+    def get_text(locale_dict: dict, key: str):
+        text = locale_dict
+
+        for way_key in key.split('.'):
+            if way_key.isdigit():
+                way_key = int(way_key)
+
+            if way_key in text.keys():
+                text = text[way_key]
+            else:
+                return languages[locale]["no_text_key"].format(key=key)
+
+        if type(text) == str:
+            if text.startswith('#@') and text.endswith('@#'): # type: ignore
+                # Рекурсия дабы создать возможность делать ссылки на локализацию
+                # Пример ссылки #@language_name@#
+                text = text[2:][:-2]
+                text = get_text(locale_dict, text)
+
+        return text
+
     if locale not in available_locales:
         locale = 'en' # Если язык не найден, установить тот что точно есть
+    
+    locale_dict = languages[locale]
+    data = get_text(locale_dict, key)
 
-    text = languages[locale]
-    for way_key in key.split('.'):
-        if way_key in text.keys():
-            text = text[way_key]
-        else:
-            return languages[locale]["no_text_key"].format(key=key)
-
-    if type(text) == str: #Если текс, добавляем туда переменные
-        text.format(**kwargs)
+    if type(data) == str: #Добавляем переменные в текс
+        data = data.format(**kwargs) # type: ignore
         
-    return text
+    return data # type: ignore
 
-def get_all_locales(key:str, **kwargs):
+def get_all_locales(key: str, **kwargs) -> dict:
     """Возвращает текст с ключа key из каждой локализации
     
     Args:
