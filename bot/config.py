@@ -23,6 +23,7 @@ class Config:
         self.is_ignore_name = True
         self.bot_group_id = 0
         self.mongo_url = 'mongodb://localhost:27017'
+        self.debug = False
 
     def fromJSON(self, js: str) -> None:
         """Десереализует строку в данные
