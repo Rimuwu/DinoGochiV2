@@ -1,4 +1,6 @@
 {
+    "first_dino_time_incub": 600,
+
     "max_eat_items": 800,
 
     "new_year_item": "112",
