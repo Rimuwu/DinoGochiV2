@@ -15,14 +15,43 @@ class User:
     def __init__(self, userid: int) -> None:
         """Создание объекта пользователя
         """
-        self.id = userid
-        self.data = users.find_one({"userid": self.id})
+        self.userid = int(userid),
+
+        self.last_message = 0,
+        self.last_markup = 'main_menu',
+
+        self.notifications = {}
+        self.settings = {
+            'notifications': {},
+            'dino_id': None,
+            'profile_view': 1,
+            'inv_view': [2, 3],
+            'language_code': 'en',
+            },
+            
+        self.coins = 10, 
+        self.lvl = 0, 
+        self.xp = 0,
+        self.dead_dinos = 0,
+
+        self.user_dungeon = { 
+            'equipment': {'backpack': None},
+            'statistics': []
+            }
+        
+        self.FromBase() #Импортируем данные из базы
+        
+    def FromBase(self):
+        userdata = users.find_one({"userid": self.userid})
+
+        if userdata:
+            self.__dict__ = userdata
     
     def get_dinos(self) -> list:
         """Возвращает список с объектами динозавров."""
         dino_list = []
 
-        for dino_obj in dinosaurs.find({'owner_id': self.id}, {'_id': 1}):
+        for dino_obj in dinosaurs.find({'owner_id': self.userid}, {'_id': 1}):
             dino_list.append(Dino(dino_obj['_id']))
 
         self.dinos = dino_list
@@ -31,8 +60,11 @@ class User:
     def get_inventory(self) -> list:
         inv = []
 
-        for item_dict in items.find({'owner_id': self.id}, {'_id': 0, 'owner_id': 0}):
-            item = {'item': CreateItem(item_data=item_dict['items_data']).new(), "count": item_dict['count']}
+        for item_dict in items.find({'owner_id': self.userid}, {'_id': 0, 'owner_id': 0}):
+            item = {
+                'item': CreateItem(item_data=item_dict['items_data']).new(), 
+                "count": item_dict['count']
+                }
             inv.append(item)
         
         self.inventory = inv
@@ -41,18 +73,18 @@ class User:
     def view(self) -> None:
         """ Отображает все данные объекта."""
 
-        print(f'ID: {self.id}')
-        print(f'DATA: {self.data}')
+        print(f'userid: {self.userid}')
+        print(f'DATA: {self.__dict__}')
     
     def update(self, update_data) -> None:
         """
         {"$set": {'coins': 12}} - установить
         {"$inc": {'coins': 12}} - добавить
         """
-        self.data = users.update_one({"userid": self.id}, update_data)
+        self.data = users.update_one({"userid": self.userid}, update_data)
 
 
-def insert_user(userid:int, lang_code:str) -> None:
+def insert_user(userid: int, lang_code: str):
 
     if lang_code not in available_locales:
         lang_code = 'en'
@@ -62,11 +94,11 @@ def insert_user(userid:int, lang_code:str) -> None:
         'last_message': int(time.time()),
         'last_markup': 'main_menu',
         'notifications': {},
-        'settings': {'notifications': {},
-                    'dino_id': None,
-                    'profile_view': 1,
-                    'inv_view': [2, 3],
-                    'language_code': lang_code,
+        'settings': { 'notifications': {},
+                      'dino_id': None,
+                      'profile_view': 1,
+                      'inv_view': [2, 3],
+                      'language_code': lang_code,
                     },
         'coins': 10, 'lvl': 0, 'xp': 0,
         'dead_dinos': 0,
@@ -75,4 +107,4 @@ def insert_user(userid:int, lang_code:str) -> None:
                         } 
     }
 
-    users.insert_one(user_dict)
+    return users.insert_one(user_dict)
