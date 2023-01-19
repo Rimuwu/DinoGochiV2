@@ -6,7 +6,7 @@ from bot.modules.data_format import random_dict
 
 with open('bot/json/items.json', encoding='utf-8') as f: items_data = json.load(f)['items']
 
-def get_data(itemid:str) -> dict:
+def get_data(itemid: str) -> dict:
     """Получение данных из json"""
 
     # Проверяем еть ли предмет с таким ключём в items.json
@@ -17,7 +17,7 @@ def get_data(itemid:str) -> dict:
 
 class ItemBase:
 
-    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
+    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
         ''' Создание объекта Item
 
             Получаем в класс либо id предмета либо формата {"item_id": string, "abilities": dict}\n
@@ -84,7 +84,7 @@ class ItemBase:
                   >>> {'item_id': "30", 'abilities': {'uses': 10}}
 
         '''
-        d_it = {'item_id': self.id}
+        d_it = {'item_id': self.id, 'abilities': {}}
 
         if 'abilities' in self.data.keys():
             abl = {}
@@ -146,67 +146,67 @@ class ItemBase:
 
 class EatItem(ItemBase):
 
-    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
+    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
 
 class EggItem(ItemBase):
 
-    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
+    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
 
 class AccessoryItem(ItemBase):
 
-    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
+    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
 
 class MaterialItem(ItemBase):
 
-    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
+    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
 
 class RecipeItem(ItemBase):
 
-    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
+    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
 
 class WeaponItem(ItemBase):
 
-    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
+    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
 
 class AmmunitionItem(ItemBase):
 
-    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
+    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
 
 class BackpackItem(ItemBase):
 
-    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
+    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
     
 class ArmorItem(ItemBase):
 
-    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
+    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
 
 class FreezingItem(ItemBase):
 
-    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
+    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
 
 class DefrostingItem(ItemBase):
 
-    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
+    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
 
 class CaseItem(ItemBase):
 
-    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}) -> None:
+    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
 
 class CreateItem:
 
-    def __init__(self, item_id:str | int = 0, item_data:dict = {}, preabil:dict = {}):
+    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}):
         self.id = item_id
         self.item_data = item_data
         self.preabil = preabil
