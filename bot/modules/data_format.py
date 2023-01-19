@@ -1,7 +1,7 @@
 import random
 from telebot.types import ReplyKeyboardMarkup, User
 
-def chunks(lst:list, n:int):
+def chunks(lst: list, n: int):
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
     
@@ -33,9 +33,9 @@ def random_dict(data: dict[str, int]) -> int | dict:
         return data
 
 def list_to_keyboard(
-    buttons:list, 
-    row_width = 3, 
-    resize_keyboard = True, 
+    buttons: list, 
+    row_width: int = 3, 
+    resize_keyboard: bool = True, 
     one_time_keyboard = None) -> ReplyKeyboardMarkup:
     '''Превращает список со списками в объект клавиатуры.
 
@@ -66,7 +66,7 @@ def list_to_keyboard(
 
     return markup
 
-def user_name(user:User):
+def user_name(user: User):
 
     if user.username is not None:
         return user.username
