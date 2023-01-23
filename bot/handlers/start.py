@@ -60,14 +60,16 @@ async def start_game(message: types.Message):
 @bot.callback_query_handler(func=None, startwith='egg_answer', is_authorized=False)
 async def egg_answer_callback(callback: types.CallbackQuery):
     egg_id = int(callback.data.split()[1])
+    lang = callback.from_user.language_code
 
-    #Создание юзера
-    insert_user(callback.from_user.id, callback.from_user.language_code)
-    insert_dino(egg_id, callback.from_user.id)
-
-    edited_text = t('start_command.end_answer.edited_text', callback.from_user.language_code, egg_id=egg_id)
-    send_text = t('start_command.end_answer.send_text', callback.from_user.language_code)
+    # Сообщение
+    edited_text = t('start_command.end_answer.edited_text', lang)
+    send_text = t('start_command.end_answer.send_text', lang)
 
     await bot.edit_message_caption(edited_text, callback.message.chat.id, callback.message.message_id)
 
-    await bot.send_message(callback.message.chat.id, send_text, parse_mode='Markdown', reply_markup=m())
+    await bot.send_message(callback.message.chat.id, send_text, parse_mode='Markdown', reply_markup=m(language_code=lang))
+
+    # Создание юзера и динозавра
+    insert_user(callback.from_user.id, lang)
+    insert_dino(egg_id, callback.from_user.id)
