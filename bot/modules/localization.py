@@ -42,14 +42,7 @@ def t(key: str, locale: str = "en", **kwargs) -> str:
                 text = text[way_key]
             else:
                 return languages[locale]["no_text_key"].format(key=key)
-
-        if type(text) == str:
-            if text.startswith('#@') and text.endswith('@#'): # type: ignore
-                # Рекурсия дабы создать возможность делать ссылки на локализацию
-                # Пример ссылки #@language_name@#
-                text = text[2:][:-2]
-                text = get_text(locale_dict, text)
-
+        
         return text
 
     if locale not in available_locales:
@@ -62,6 +55,48 @@ def t(key: str, locale: str = "en", **kwargs) -> str:
         data = data.format(**kwargs) # type: ignore
         
     return data # type: ignore
+
+
+def tranlate_data(data: list | dict, locale: str = "en", key_prefix = '', **kwargs):
+    """ Переводит текст внутри словаря или списка
+        
+        Args:
+        key_prefix - добавляет ко всем ключам префикс
+
+        Example:
+            > data = ['button1', 'button2']
+            > key_prefix = 'commands_name.'
+        >> ['commands_name.button1', 'commands_name.button2']
+    """
+
+    if type(data) == list:
+
+        def tr_list(lst):
+            result_list = []
+            for element in lst:
+                if type(element) == str:
+                    if key_prefix:
+                        element = key_prefix + element
+
+                    result_list.append(t(element, locale, **kwargs))
+                else:
+                    result_list.append(tr_list(element))
+            
+            return result_list
+
+        result_list = tr_list(data)
+
+        return result_list
+    
+    elif type(data) == dict:
+        result_dict = {}
+        for key, value in data:
+            if key_prefix:
+                value = key_prefix + value
+
+            result_dict[key] = t(value, locale, **kwargs)
+        
+        return result_dict
 
 def get_all_locales(key: str, **kwargs) -> dict:
     """Возвращает текст с ключа key из каждой локализации
