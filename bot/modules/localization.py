@@ -20,6 +20,34 @@ def load() -> None:
 
     log(f"Загружено {len(languages.keys())} файла(ов) локализации.", 1)
 
+
+def get_data(key: str, locale: str = "en") -> str | dict:
+    """Возвращает данные локализации
+
+    Args:
+        key (str): ключ
+        locale (str, optional): язык. Defaults to "en".
+
+    Returns:
+        str | dict: возвращаемое
+    """
+    if locale not in available_locales:
+        locale = 'en' # Если язык не найден, установить тот что точно есть
+    
+    localed_data = languages[locale]
+
+    for way_key in key.split('.'):
+        if way_key.isdigit():
+            way_key = int(way_key)
+
+        if way_key in localed_data.keys():
+            localed_data = localed_data[way_key]
+        else:
+            return localed_data["no_text_key"].format(key=key)
+        
+    return localed_data
+
+
 def t(key: str, locale: str = "en", **kwargs) -> str:
     """Возвращает текст на нужном языке
 
@@ -30,31 +58,9 @@ def t(key: str, locale: str = "en", **kwargs) -> str:
     Returns:
         str: текст на нужном языке
     """
+    text = str(get_data(key, locale)).format(**kwargs) #Добавляем переменные в текст
 
-    def get_text(locale_dict: dict, key: str):
-        text = locale_dict
-
-        for way_key in key.split('.'):
-            if way_key.isdigit():
-                way_key = int(way_key)
-
-            if way_key in text.keys():
-                text = text[way_key]
-            else:
-                return languages[locale]["no_text_key"].format(key=key)
-        
-        return text
-
-    if locale not in available_locales:
-        locale = 'en' # Если язык не найден, установить тот что точно есть
-    
-    locale_dict = languages[locale]
-    data = get_text(locale_dict, key)
-
-    if type(data) == str: #Добавляем переменные в текс
-        data = data.format(**kwargs) # type: ignore
-        
-    return data # type: ignore
+    return text
 
 
 def tranlate_data(data: list | dict, locale: str = "en", key_prefix = '', **kwargs):

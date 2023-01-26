@@ -15,4 +15,15 @@ bot = AsyncTeleBot(conf.bot_token, state_storage=StateMemoryStorage())
 def run():
     create_log()
     log('start')
-    asyncio.run(bot.infinity_polling())
+
+    # заготовка поддержки асинхронных потоков
+    ioloop = asyncio.get_event_loop()
+
+    tasks = [
+        ioloop.create_task(bot.infinity_polling())
+    ]
+
+    wait_tasks = asyncio.wait(tasks)
+
+    ioloop.run_until_complete(wait_tasks)
+    ioloop.close()

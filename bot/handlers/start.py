@@ -7,7 +7,7 @@ from bot.exec import bot
 from bot.modules.data_format import list_to_keyboard, user_name
 from bot.modules.dinosaur import insert_dino
 from bot.modules.images import create_eggs_image
-from bot.modules.localization import t
+from bot.modules.localization import t, get_data
 from bot.modules.markup import markups_menu as m
 from bot.modules.user import insert_user
 
@@ -26,7 +26,7 @@ async def start_game_message(message: types.Message):
     username = user_name(message.from_user)
 
     text = t('start_command.first_message', langue_code, username=username)
-    buttons_list = [t('commands_name.start_game', locale=langue_code)]
+    buttons_list = [get_data('commands_name.start_game', locale=langue_code)]
     markup = list_to_keyboard(buttons_list)
     
     await bot.send_message(message.from_user.id, text, reply_markup=markup, parse_mode='HTML')
@@ -36,7 +36,7 @@ async def start_game(message: types.Message):
 
     #Сообщение-реклама
     text = t('start_command.request_subscribe.text', message.from_user.language_code)
-    b1, b2 = t('start_command.request_subscribe.buttons', message.from_user.language_code)
+    b1, b2 = get_data('start_command.request_subscribe.buttons', message.from_user.language_code)
 
     markup_inline = types.InlineKeyboardMarkup()
     markup_inline.add(types.InlineKeyboardButton(text=b1, url='https://t.me/DinoGochi'))
