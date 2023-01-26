@@ -1,11 +1,11 @@
-from telebot.types import ReplyKeyboardMarkup, User
+from telebot.types import ReplyKeyboardMarkup
 from bot.modules.localization import tranlate_data
 from bot.modules.data_format import list_to_keyboard
 
-def markups_menu(markup_key: str = 'main_menu', language_code: str = 'en', **kwargs):
+def markups_menu(markup_key: str = 'main_menu', language_code: str = 'en', **kwargs) -> ReplyKeyboardMarkup:
     """Главная функция создания меню для клавиатур
     """
-    prefix = ''
+    prefix = 'commands_name.'
     buttons = []
 
     if markup_key == 'main_menu':
@@ -14,7 +14,6 @@ def markups_menu(markup_key: str = 'main_menu', language_code: str = 'en', **kwa
             Дополнительые аргументы:
             faq - если True, то кнопка справочника не показывается
         """
-        prefix = 'commands_name.'
         buttons = [
             ['dino_profile', 'actions_menu', 'profile_menu'],
             ['settings_menu', 'friends_menu', 'faq'],

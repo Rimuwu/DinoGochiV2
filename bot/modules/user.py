@@ -1,7 +1,7 @@
 import time
 
 from bot.config import mongo_client
-from bot.modules.dinosaur import Dino
+from bot.modules.dinosaur import Dino, insert_dino
 from bot.modules.item import CreateItem
 from bot.modules.localization import available_locales
 
@@ -12,7 +12,7 @@ dinosaurs = mongo_client.bot.dinosaurs
 
 class User:
 
-    def __init__(self, userid: int) -> None:
+    def __init__(self, userid: int):
         """Создание объекта пользователя
         """
         self.userid = int(userid),
@@ -70,7 +70,7 @@ class User:
         self.inventory = inv
         return inv
     
-    def view(self) -> None:
+    def view(self):
         """ Отображает все данные объекта."""
 
         print(f'userid: {self.userid}')
@@ -82,6 +82,15 @@ class User:
         {"$inc": {'coins': 12}} - добавить
         """
         self.data = users.update_one({"userid": self.userid}, update_data)
+
+    def delete(self):
+        """Удаление юзера из базы.
+        """
+        ...
+
+    def create_dino(self):
+        """Создаёт динозавра привязанного к юзеру.
+        """
 
 
 def insert_user(userid: int, lang_code: str):

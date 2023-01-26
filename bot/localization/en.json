@@ -59,7 +59,7 @@
             "start_game": "🥚 | Choose an egg with a dinosaur!\n\n🦖 | Regardless of which egg you choose, you will get a cute dinosaur.",
 
             "end_answer": {
-                "edited_text": "🦖 | You have chosen an egg 🥚{egg_id}!",
+                "edited_text": "🥚 | Congratulations, your egg is incubating!",
                 
                 "send_text": "🧸 | Congratulations, you have your first dinosaur!\n\n🎇 | At the moment, the egg is incubating, and in 10 minutes a dinosaur will hatch out of it!\n\n🎮 | To view up-to-date information about the egg, click the `🦖 Dinosaur` button!\n\n🧨 | While you are waiting, study the interface, read the FAQ, configure the bot for yourself!"
             }
