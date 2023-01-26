@@ -2,7 +2,7 @@
 
 from telebot.types import Message
 from bot.exec import bot
-from bot.modules.localization import t, get_all_locales
+from bot.modules.localization import t
 
 from bot.modules.user import User
 
