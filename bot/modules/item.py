@@ -1,17 +1,16 @@
-import json
 from pprint import pprint
 
 from bot.modules.localization import get_all_locales
 from bot.modules.data_format import random_dict
+from bot.const import ITEMS
 
-with open('bot/json/items.json', encoding='utf-8') as f: items_data = json.load(f)['items']
 
 def get_data(itemid: str) -> dict:
     """Получение данных из json"""
 
     # Проверяем еть ли предмет с таким ключём в items.json
-    if itemid in items_data.keys():
-        return items_data[itemid]
+    if itemid in ITEMS['items'].keys():
+        return ITEMS['items'][itemid]
     else:
         raise Exception(f"The subject with ID {itemid} does not exist.")
 
@@ -27,7 +26,6 @@ class ItemBase:
               >>> Стандартный предмет - предмет никак не изменённый пользователем, сгенерированный из базы.
               >>> abilities - словарь с индивидуальными харрактеристиками предмета, прочность, использования и тд.
               >>> preabil - используется только для предмета создаваемого из базы, используется для создания нестандартного предмета.
-
         '''
 
         if item_id != 0: # Получаем стандартный предмет, если есть только id
