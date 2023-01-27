@@ -1,10 +1,13 @@
 from bot.tasks.taskmanager import add_task
 
 async def incuation():
-    ...
+    print('incubation')
 
-async def main():
-    ...
+async def inc():
+    print('inc')
+
+
 
 if __name__ != '__main__':
-    main()
+    add_task(incuation, units=5, wait=3)
+    add_task(inc, units=5)
