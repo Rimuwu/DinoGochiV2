@@ -17,9 +17,7 @@ def run():
     create_log()
     log('Привет! Я вижу ты так и не починил тот самый баг на 46-ой строчке...')
 
-    # заготовка поддержки асинхронных потоков
     ioloop = asyncio.get_event_loop()
-
     tasks = [
         ioloop.create_task(bot.infinity_polling())
     ]
