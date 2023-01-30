@@ -3,28 +3,22 @@ from random import randint, choice
 from time import time
 
 from bot import config
-from bot.const import GAME_SETTINGS
+from bot.const import GAME_SETTINGS, DINOS
+from bot.modules.data_format import random_quality
 
 dinosaurs = config.mongo_client.bot.dinosaurs
+incubations = config.mongo_client.bot.incubation
 
 class Dino:
 
     def __init__(self, baseid = None) -> None:
         """Создание объекта динозавра."""
         
-        # Берём из базы
-        if baseid is not None:
-            self.id = baseid
-            self.data = dinosaurs.find_one({"_id": self.id})
-
-            if self.data != None:
-                if 'name' in self.data.keys():
-                    self.name = self.data['name']
-                else:
-                    self.name = 'DinoEgg'
+        self.id = baseid
+        self.data = dinosaurs.find_one({"_id": self.id})
     
     def __str__(self) -> str:
-        return f"DinoObj {self.name}"
+        return f"Dino {self.data['name']}"
 
 
     def view(self) -> None:
@@ -40,54 +34,63 @@ class Dino:
         """
         self.data = dinosaurs.update_one({"_id": self.id}, update_data)
     
-def insert_dino(egg_id: int, owner_id: int, inc_time: int = 0, rarity: str = '', dino_id: int = 0):
-    """Создания динозавра в базе на стадии инкубации
+def incubation_dino(egg_id: int, owner_id: int, inc_time: int = 0, rarity: str = '', dino_id: int = 0):
+    """Создание инкубируемого динозавра
     """
+
     dino = {
-        'status': 'incubation', 
         'incubation_time': inc_time, 
         'egg_id': egg_id,
-        'owner_id': owner_id
-        }
+        'owner_id': owner_id,
+        'rarity': 'random',
+        'dino_id': 0
+    }
     
     if inc_time == 0: #Стандартное время инкцбации 
         dino['incubation_time'] = time() + GAME_SETTINGS['first_dino_time_incub']
     
+    if rarity: dino['rarity'] = rarity
+    if dino_id: dino['dino_id'] = dino_id
+    
+    return incubations.insert_one(dino)
+
+def insert_dino(owner_id: int, dino_id: int, quality: str=''):
+    """Создания динозавра в базе
+    """
+
+    dino_data = DINOS['elements'][str(dino_id)]
+    dino = {
+       'dino_id': dino_id,
+       'owner_id': owner_id,
+
+       'status': 'pass',
+       'name': dino_data['name'],
+       'quality': None,
+
+       'stats': {
+            'hp': 100, 'eat': randint(70, 100),
+            'game': randint(30, 90), 'mood': randint(20, 100),
+            'sleep': 100
+        },
+
+       'activ_items': {
+            'game': None, 'hunt': None,
+            'journey': None, 'sleep': None,
+            'armor': None,  'weapon': None,
+            'backpack': None
+       }
+    }
+
+    dino['quality'] = quality or dino_data['quality']
+
     return dinosaurs.insert_one(dino)
 
-def random_dino(baseid, quality: str = 'random', dino_id: int = 0):
+def random_dino(quality: str='random'):
+    """ Рандомизация динозавра по редкости
+    """
 
-        if quality == 'random':
-            r_event = randint(1, 100)
+    if quality == 'random':
+        quality = random_quality()
 
-            if r_event >= 1 and r_event <= 50:  # 50%
-                quality = 'com'
-            elif r_event > 50 and r_event <= 75:  # 25%
-                quality = 'unc'
-            elif r_event > 75 and r_event <= 90:  # 15%
-                quality = 'rar'
-            elif r_event > 90 and r_event <= 99:  # 9%
-                quality = 'myt'
-            elif r_event > 99 and r_event <= 100:  # 1%
-                quality = 'leg'
+    return choice(DINOS[quality])
 
-        while dino_id == 0:
-            p_var = choice(json_f['data']['dino'])
-            dino = json_f['elements'][str(p_var)]
-            if dino['image'][5:8] == quality:
-                dino_id = p_var
-
-        dino = json_f['elements'][str(dino_id)]
-        del user['dinos'][str(dino_id_remove)]
-        user['dinos'][Functions.user_dino_pn(user)] = {
-            'dino_id': dino_id, "status": 'dino',
-            'activ_status': 'pass_active', 'name': dino['name'],
-            'stats': {"heal": 100, 
-                      "eat": random.randint(70, 100), 
-                      'game': random.randint(50, 100),
-                      'mood': random.randint(7, 100), "unv": 100},
-            'games': [],
-            'quality': quality, 'dungeon': {"equipment": {'armor': None, 'weapon': None}}
-        }
-
-        users.update_one({"userid": user['userid']}, {"$set": {'dinos': user['dinos']}})
