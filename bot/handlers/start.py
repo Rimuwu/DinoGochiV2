@@ -5,7 +5,7 @@ from telebot import types
 
 from bot.exec import bot
 from bot.modules.data_format import list_to_keyboard, user_name
-from bot.modules.dinosaur import insert_dino
+from bot.modules.dinosaur import incubation_dino
 from bot.modules.images import create_eggs_image
 from bot.modules.localization import t, get_data
 from bot.modules.markup import markups_menu as m
@@ -72,4 +72,4 @@ async def egg_answer_callback(callback: types.CallbackQuery):
 
     # Создание юзера и динозавра
     insert_user(callback.from_user.id, lang)
-    insert_dino(egg_id, callback.from_user.id)
+    incubation_dino(egg_id, callback.from_user.id)
