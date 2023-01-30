@@ -1,31 +1,45 @@
 import asyncio
 from bot.modules.logs import log
 
-task_dict = {}
+ioloop = asyncio.get_event_loop()
+tasks = []
 
-def add_task(function, units: int=1, wait: int=0):
-    """Добавить для функции таймер выполнения 
-        time_type: str - second / minute / hour
-        units: int - повторение каждые ? секунд / минут / часов
-    """
-    
-    if function in task_dict:
-        raise Exception(f'Функция {function.__name__} добавлена повторно.')
-        
-    task_dict[function] = units, wait
-    return True
-
-async def task_executor(function, seconds: int, wait: int=0):
+async def _task_executor(function, repeat_time: float, delay: float):
     """Исполнитель всех задач с обработчиком ошибок и созданием потока
-       seconds: int - количество секунд между повторами
-       wait: int - ожидание перед стартом
     """
-    await asyncio.sleep(wait)
-
-    while True:
+    await asyncio.sleep(delay)
+    
+    if repeat_time:
+        while True:
+            try:
+                await function()
+            except Exception as error:
+                log(prefix=F"{function.__name__} error", message=str(error), lvl=3)
+            
+            await asyncio.sleep(repeat_time)
+    else:
         try:
             await function()
         except Exception as error:
             log(prefix=F"{function.__name__} error", message=str(error), lvl=3)
-        
-        await asyncio.sleep(seconds)
+            
+
+def add_task(function, repeat_time: float=0, delay: float=0):
+    """Добавить задачу в асинхрон
+
+    Args:
+        function (def): функция для задачи
+        repeat_time (int, optional): время повтора, если 0 то задача не зациклена. Defaults to 0.
+        delay (int, optional): задержка. Defaults to 0.
+    """
+    
+    task = ioloop.create_task(_task_executor(function, repeat_time, delay))
+
+    assert task not in tasks, f'Функция {function.__name__} добавлена повторно.'
+    
+    tasks.append(task)
+
+def run():
+    wait_tasks = asyncio.wait(tasks)
+    ioloop.run_until_complete(wait_tasks)
+    ioloop.close()

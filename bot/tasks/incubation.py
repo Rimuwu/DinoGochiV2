@@ -9,5 +9,5 @@ async def inc():
 
 
 if __name__ != '__main__':
-    add_task(incuation, units=5, wait=3)
-    add_task(inc, units=5)
+    add_task(incuation, 1, 3)
+    add_task(inc, 5)
