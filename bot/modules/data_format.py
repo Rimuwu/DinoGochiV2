@@ -73,6 +73,25 @@ def user_name(user: User):
         else:
             return user.first_name
 
+def random_quality() -> str:
+    """Случайная редкость
+    """
+    r_event = random.randint(1, 100)
+    quality = ''
+
+    if r_event >= 1 and r_event <= 50:  # 50%
+        quality = 'com'
+    elif r_event > 50 and r_event <= 75:  # 25%
+        quality = 'unc'
+    elif r_event > 75 and r_event <= 90:  # 15%
+        quality = 'rar'
+    elif r_event > 90 and r_event <= 99:  # 9%
+        quality = 'myt'
+    elif r_event > 99 and r_event <= 100:  # 1%
+        quality = 'leg'
+    
+    return quality
+
 
 if __name__ == '__main__':
     raise Exception("This file cannot be launched on its own!")
