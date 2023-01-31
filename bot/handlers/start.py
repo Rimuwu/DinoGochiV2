@@ -1,4 +1,3 @@
-import time
 from random import choice
 
 from telebot import types
@@ -50,14 +49,14 @@ async def start_game(message: types.Message):
     markup_inline = types.InlineKeyboardMarkup()
     markup_inline.add(*[types.InlineKeyboardButton(
             text=f'🥚 {id_l.index(i) + 1}', 
-            callback_data=f'egg_answer {i}') for i in id_l]
+            callback_data=f'start_egg {i}') for i in id_l]
     )
 
     start_game = str(t('start_command.start_game', message.from_user.language_code))
     await bot.send_photo(message.chat.id, photo, start_game, reply_markup=markup_inline)
 
 
-@bot.callback_query_handler(func=None, startwith='egg_answer', is_authorized=False)
+@bot.callback_query_handler(func=None, startwith='start_egg', is_authorized=False)
 async def egg_answer_callback(callback: types.CallbackQuery):
     egg_id = int(callback.data.split()[1])
     lang = callback.from_user.language_code
@@ -67,9 +66,8 @@ async def egg_answer_callback(callback: types.CallbackQuery):
     send_text = t('start_command.end_answer.send_text', lang)
 
     await bot.edit_message_caption(edited_text, callback.message.chat.id, callback.message.message_id)
-
     await bot.send_message(callback.message.chat.id, send_text, parse_mode='Markdown', reply_markup=m(language_code=lang))
 
-    # Создание юзера и динозавра
+    # Создание юзера и добавляем динозавра в инкубацию
     insert_user(callback.from_user.id, lang)
     incubation_dino(egg_id, callback.from_user.id)
