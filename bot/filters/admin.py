@@ -3,8 +3,6 @@ from telebot.types import Message
 
 from bot.config import conf
 from bot.exec import bot
-from bot.modules.logs import log
-
 
 class IsAdminUser(AdvancedCustomFilter):
     key = 'is_admin'
@@ -16,9 +14,6 @@ class IsAdminUser(AdvancedCustomFilter):
             result = is_authorized
         else:
             result = not is_authorized
-
-        # if conf.debug:
-        #     log(prefix='IsAdminUser', message=f'User: {message.from_user.id}, Admin: {is_authorized} -> {result}', lvl=0)
 
         return result
 
