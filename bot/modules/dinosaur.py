@@ -1,13 +1,14 @@
 from pprint import pprint
-from random import randint, choice
+from random import choice, randint
 from time import time
 
 from bot import config
-from bot.const import GAME_SETTINGS, DINOS
+from bot.const import DINOS, GAME_SETTINGS
 from bot.modules.data_format import random_quality
+from bot.modules.localization import log
 
 dinosaurs = config.mongo_client.bot.dinosaurs
-incubations = config.mongo_client.bot.incubation
+incubations = config.mongo_client.tasks.incubation
 
 class Dino:
 
@@ -18,7 +19,7 @@ class Dino:
         self.data = dinosaurs.find_one({"_id": self.id})
     
     def __str__(self) -> str:
-        return f"Dino {self.data['name']}"
+        return str(self)
 
 
     def view(self) -> None:
@@ -33,8 +34,17 @@ class Dino:
         {"$inc": {'stats.eat': 12}} - добавить
         """
         self.data = dinosaurs.update_one({"_id": self.id}, update_data)
+
+def random_dino(quality: str='random') -> int:
+    """ Рандомизация динозавра по редкости
+    """
+    if quality == 'random':
+        quality = random_quality()
     
-def incubation_dino(egg_id: int, owner_id: int, inc_time: int = 0, rarity: str = '', dino_id: int = 0):
+    dino_id = choice(DINOS[quality])
+    return dino_id
+    
+def incubation_dino(egg_id: int, owner_id: int, inc_time: int=0, rarity: str='random', dino_id: int=0):
     """Создание инкубируемого динозавра
     """
 
@@ -42,23 +52,22 @@ def incubation_dino(egg_id: int, owner_id: int, inc_time: int = 0, rarity: str =
         'incubation_time': inc_time, 
         'egg_id': egg_id,
         'owner_id': owner_id,
-        'rarity': 'random',
-        'dino_id': 0
+        'rarity': rarity,
+        'dino_id': dino_id
     }
     
     if inc_time == 0: #Стандартное время инкцбации 
-        dino['incubation_time'] = time() + GAME_SETTINGS['first_dino_time_incub']
+        dino['incubation_time'] = int(time()) + GAME_SETTINGS['first_dino_time_incub']
     
-    if rarity: dino['rarity'] = rarity
-    if dino_id: dino['dino_id'] = dino_id
-    
+    log(prefix='InsertEgg', message=f'owner_id: {owner_id} data: {dino}', lvl=0)
     return incubations.insert_one(dino)
 
-def insert_dino(owner_id: int, dino_id: int, quality: str=''):
+def insert_dino(owner_id: int, dino_id: int=0, quality: str='random'):
     """Создания динозавра в базе
     """
+    if not dino_id: dino_id = random_dino(quality)
+    dino_data = DINOS['elements'][str(dino_id)] #type: ignore
 
-    dino_data = DINOS['elements'][str(dino_id)]
     dino = {
        'dino_id': dino_id,
        'owner_id': owner_id,
@@ -70,27 +79,18 @@ def insert_dino(owner_id: int, dino_id: int, quality: str=''):
        'stats': {
             'hp': 100, 'eat': randint(70, 100),
             'game': randint(30, 90), 'mood': randint(20, 100),
-            'sleep': 100
+            'energy': randint(80, 100)
         },
 
        'activ_items': {
             'game': None, 'hunt': None,
             'journey': None, 'sleep': None,
+            
             'armor': None,  'weapon': None,
             'backpack': None
        }
     }
-
     dino['quality'] = quality or dino_data['quality']
 
+    log(prefix='InsertDino', message=f'owner_id: {owner_id} dino_id: {dino["dino_id"]} name: {dino["name"]} quality: {dino["quality"]}', lvl=0)
     return dinosaurs.insert_one(dino)
-
-def random_dino(quality: str='random'):
-    """ Рандомизация динозавра по редкости
-    """
-
-    if quality == 'random':
-        quality = random_quality()
-
-    return choice(DINOS[quality])
-
