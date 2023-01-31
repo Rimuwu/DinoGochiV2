@@ -5,3 +5,4 @@ from . import item
 from . import dinosaur
 from . import user
 from . import dungeon
+from . import notifications
