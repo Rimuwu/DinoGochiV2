@@ -3,7 +3,7 @@ import time
 from bot.config import mongo_client
 from bot.modules.dinosaur import Dino, insert_dino
 from bot.modules.item import CreateItem
-from bot.modules.localization import available_locales
+from bot.modules.localization import available_locales, log
 
 users = mongo_client.bot.users
 items = mongo_client.bot.items
@@ -22,7 +22,7 @@ class User:
 
         self.notifications = {}
         self.settings = {
-            'notifications': {},
+            'notifications': True,
             'dino_id': None,
             'profile_view': 1,
             'inv_view': [2, 3],
@@ -34,10 +34,7 @@ class User:
         self.xp = 0,
         self.dead_dinos = 0,
 
-        self.user_dungeon = { 
-            'equipment': {'backpack': None},
-            'statistics': []
-            }
+        self.user_dungeon = { 'statistics': [] }
         
         self.FromBase() #Импортируем данные из базы
         
@@ -103,7 +100,7 @@ def insert_user(userid: int, lang_code: str):
         'last_message': int(time.time()),
         'last_markup': 'main_menu',
         'notifications': {},
-        'settings': { 'notifications': {},
+        'settings': { 'notifications': True,
                       'dino_id': None,
                       'profile_view': 1,
                       'inv_view': [2, 3],
@@ -111,9 +108,8 @@ def insert_user(userid: int, lang_code: str):
                     },
         'coins': 10, 'lvl': 0, 'xp': 0,
         'dead_dinos': 0,
-        'user_dungeon': { 'equipment': {'backpack': None},
-                          'statistics': []
-                        } 
+        'user_dungeon': { 'statistics': [] } 
     }
 
+    log(prefix='InsertUser', message=f'User: {userid}', lvl=0)
     return users.insert_one(user_dict)
