@@ -1,6 +1,5 @@
 # Исполнитель бота
 
-from telebot import types
 from telebot.async_telebot import AsyncTeleBot
 from telebot.asyncio_handler_backends import State, StatesGroup
 from telebot.asyncio_storage import StateMemoryStorage
@@ -15,6 +14,7 @@ def run():
     create_log()
     log('Привет! Я вижу ты так и не починил тот самый баг на 46-ой строчке...')
     log('Это не баг, а фича!')
+    log('Ваша фича наминирована на оскар!')
 
     add_task(bot.infinity_polling)
     run_taskmanager()
