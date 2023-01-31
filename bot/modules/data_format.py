@@ -77,7 +77,7 @@ def random_quality() -> str:
     """Случайная редкость
     """
     r_event = random.randint(1, 100)
-    quality = ''
+    quality = 'com'
 
     if r_event >= 1 and r_event <= 50:  # 50%
         quality = 'com'
