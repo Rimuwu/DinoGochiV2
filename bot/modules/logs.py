@@ -9,7 +9,7 @@ from bot.config import conf
 def log(message: str, lvl: int = 1, prefix: str = 'Бот') -> None:
     """
     LVL: \n
-    0 - debug
+    0 - debug (активируется в config)
     1 - info\n
     2 - warning\n
     3 - error\n
@@ -17,8 +17,9 @@ def log(message: str, lvl: int = 1, prefix: str = 'Бот') -> None:
     """
 
     if lvl == 0:
-        logging.info(f'DEBUG: {message}')
-        print(Fore.CYAN + f"{strftime('%Y %m-%d %H.%M.%S')} {prefix}: {message}" + Style.RESET_ALL)
+        if conf.debug:
+            logging.info(f'DEBUG: {message}')
+            print(Fore.CYAN + f"{strftime('%Y %m-%d %H.%M.%S')} {prefix}: {message}" + Style.RESET_ALL)
     elif lvl == 1:
         logging.info(message)
         print(Fore.GREEN + f"{strftime('%Y %m-%d %H.%M.%S')} {prefix}: {message}" + Style.RESET_ALL)
