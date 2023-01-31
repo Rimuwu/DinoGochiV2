@@ -11,7 +11,6 @@ class IsEqual(AdvancedCustomFilter):
 
     async def check(self, message: Message, key: str):
         text = t(key, message.from_user.language_code)
-        
         return text == message.text
 
 
