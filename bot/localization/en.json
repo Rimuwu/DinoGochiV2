@@ -13,7 +13,15 @@
         },
 
         "commands_name": {
-            "start_game": "🍡 Start playing"
+            "start_game": "🍡 Start playing",
+
+            "dino_profile": "🦖 Dinosaur",
+            "settings_menu": "🔧 Settings",
+            "friends_menu": "👥 Friends",
+            "faq": "❗ FAQ",
+            "actions_menu": "🕹 Actions",
+            "profile_menu": "👁‍🗨 Profile",
+            "dino-tavern_menu": "🍺 Dino-tavern"
         },
 
         "items_name": {},
