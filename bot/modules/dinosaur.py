@@ -34,6 +34,9 @@ class Dino:
         {"$inc": {'stats.eat': 12}} - добавить
         """
         self.data = dinosaurs.update_one({"_id": self.id}, update_data)
+    
+    def delete(self):
+        dinosaurs.delete_one({'dino_id': self.id})
 
 def random_dino(quality: str='random') -> int:
     """ Рандомизация динозавра по редкости
