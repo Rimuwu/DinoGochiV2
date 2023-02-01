@@ -87,11 +87,9 @@ def tranlate_data(data: list | dict, locale: str = "en", key_prefix = '', **kwar
                     result_list.append(t(element, locale, **kwargs))
                 else:
                     result_list.append(tr_list(element))
-            
             return result_list
 
         result_list = tr_list(data)
-
         return result_list
     
     elif type(data) == dict:
@@ -101,7 +99,6 @@ def tranlate_data(data: list | dict, locale: str = "en", key_prefix = '', **kwar
                 value = key_prefix + value
 
             result_dict[key] = t(value, locale, **kwargs)
-        
         return result_dict
 
 def get_all_locales(key: str, **kwargs) -> dict:
@@ -116,7 +113,7 @@ def get_all_locales(key: str, **kwargs) -> dict:
     locales_dict = {}
 
     for locale in available_locales:
-        locales_dict[locale] = t(key, locale, **kwargs)
+        locales_dict[locale] = get_data(key, locale, **kwargs)
 
     return locales_dict
 
