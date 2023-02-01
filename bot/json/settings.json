@@ -1,4 +1,9 @@
-{
+{   
+    "collections": {
+        "bot": ["users", "dinosaurs", "items", "friends", "quests", "products", "referals", "management"],
+        "tasks": ["game", "incubation", "journey", "sleep", "collecting"]
+    },
+
     "first_dino_time_incub": 600,
 
     "max_eat_items": 800,
