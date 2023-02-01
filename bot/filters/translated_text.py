@@ -5,12 +5,14 @@ from telebot.types import Message
 from bot.exec import bot
 from bot.modules.localization import get_all_locales
 
-lang_commands = get_all_locales('commands_name') # {'en': {'start_game': ...}, }
-commands = {} # {'key': [...], }
-for lang in lang_commands:
-    for command_key in lang_commands[lang]:
-        commands[command_key] = commands.get(command_key, [])
-        commands[command_key].append(lang_commands[lang][command_key])
+commands = {} # {'key.key': [...], }
+directirys = ['commands_name', 'buttons_name'] # {'en': {'start_game': ...}, }
+for direct in directirys:
+    lang_commands = get_all_locales(direct)
+    for lang in lang_commands:
+        for command_key in lang_commands[lang]:
+            commands[f'{direct}.{command_key}'] = commands.get(f'{direct}.{command_key}', [])
+            commands[f'{direct}.{command_key}'].append(lang_commands[lang][command_key])
 
 class IsEqual(AdvancedCustomFilter):
     key = 'text'
