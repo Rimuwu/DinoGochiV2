@@ -42,22 +42,14 @@ class Config:
             sort_keys=True, indent=4)
  
 conf = Config()
-mongo_client = pymongo.MongoClient(conf.mongo_url)
-
-for way in conf.temp_dir, conf.logs_dir:
-    if not os.path.exists(way):
-        os.mkdir(way) #Создаёт папку в директории  
-        print(f"I didn't find the {way} directory, so I created it.")
-
 def check_base():
-    created_base = mongo_client.list_database_names()
-    needful_base = ['bot', 'tasks']
-    collections = {
-        'bot': ['users', 'dinosaurs', 'items', 'friends', 'quests', 'products', 'referals', 'management'],
-        'tasks': ['game', 'incubation', 'journey', 'sleep']
-    }
+    with open('bot/json/settings.json', encoding='utf-8') as f: 
+        GAME_SETTINGS = json.load(f)
 
-    for base in needful_base:
+    created_base = mongo_client.list_database_names()
+    collections = GAME_SETTINGS['collections']
+
+    for base in collections.keys():
         if base not in created_base:
             database = mongo_client[base]
             for col in collections[base]:
@@ -66,7 +58,6 @@ def check_base():
     print('The databases are checked and prepared for use.')
 
 if __name__ == '__main__':
-    check_base() # Проверка базы данных на наличие коллекций
     with open(CONFIG_PATH, 'w') as f:
         f.write(conf.toJSON())
         sys.exit(f"{CONFIG_PATH} created! Please don't forget to set it up!")
@@ -74,5 +65,13 @@ else:
     if os.path.exists(CONFIG_PATH):
         with open(CONFIG_PATH, 'r') as f:
             conf.fromJSON(f.read())
+
+        mongo_client = pymongo.MongoClient(conf.mongo_url)
+        check_base() # Проверка базы данных на наличие коллекций
+        for way in conf.temp_dir, conf.logs_dir:
+            if not os.path.exists(way):
+                os.mkdir(way) #Создаёт папку в директории  
+                print(f"I didn't find the {way} directory, so I created it.")
     else:
         sys.exit(f"{CONFIG_PATH} missed! Please, run {__name__}")
+    
