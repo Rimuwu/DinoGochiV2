@@ -80,14 +80,18 @@ class User:
         """
         self.data = users.update_one({"userid": self.userid}, update_data)
 
+    def full_delete(self):
+        """Удаление юзера и всё с ним связанное из базы.
+        """
+        for collection in [items, dinosaurs]:
+            collection.delete_many({'owner_id': self.userid})
+        
+        users.delete_one({'userid': self.userid})
+    
     def delete(self):
         """Удаление юзера из базы.
         """
-        ...
-
-    def create_dino(self):
-        """Создаёт динозавра привязанного к юзеру.
-        """
+        users.delete_one({'userid': self.userid})
 
 
 def insert_user(userid: int, lang_code: str):
