@@ -8,6 +8,7 @@ from bot.modules.localization import available_locales, log
 users = mongo_client.bot.users
 items = mongo_client.bot.items
 dinosaurs = mongo_client.bot.dinosaurs
+incubations = mongo_client.tasks.incubation
 
 
 class User:
@@ -15,44 +16,50 @@ class User:
     def __init__(self, userid: int):
         """Создание объекта пользователя
         """
-        self.userid = int(userid),
+        self.userid = userid
 
-        self.last_message = 0,
-        self.last_markup = 'main_menu',
+        self.last_message = 0
+        self.last_markup = 'main_menu'
 
         self.notifications = {}
         self.settings = {
             'notifications': True,
             'dino_id': None,
             'profile_view': 1,
-            'inv_view': [2, 3],
-            'language_code': 'en',
-            },
+            'inv_view': [2, 3]
+            }
             
-        self.coins = 10, 
-        self.lvl = 0, 
-        self.xp = 0,
-        self.dead_dinos = 0,
+        self.coins = 10
+        self.lvl = 0
+        self.xp = 0
+        self.dead_dinos = 0
 
         self.user_dungeon = { 'statistics': [] }
         
-        self.FromBase() #Импортируем данные из базы
-        
-    def FromBase(self):
         userdata = users.find_one({"userid": self.userid})
-
+        self.UpdateData(userdata) #Обновление данных
+        
+    def UpdateData(self, userdata):
         if userdata:
             self.__dict__ = userdata
     
     def get_dinos(self) -> list:
         """Возвращает список с объектами динозавров."""
         dino_list = []
-
         for dino_obj in dinosaurs.find({'owner_id': self.userid}, {'_id': 1}):
             dino_list.append(Dino(dino_obj['_id']))
 
         self.dinos = dino_list
         return dino_list
+    
+    def get_eggs(self) -> list:
+        """Возвращает список с объектами динозавров."""
+        eggs_list = []
+        for egg in incubations.find({'owner_id': self.userid}):
+            eggs_list.append(egg)
+
+        self.eggs = eggs_list
+        return eggs_list
     
     def get_inventory(self) -> list:
         inv = []
@@ -78,7 +85,8 @@ class User:
         {"$set": {'coins': 12}} - установить
         {"$inc": {'coins': 12}} - добавить
         """
-        self.data = users.update_one({"userid": self.userid}, update_data)
+        data = users.update_one({"userid": self.userid}, update_data)
+        self.UpdateData(data)
 
     def full_delete(self):
         """Удаление юзера и всё с ним связанное из базы.
