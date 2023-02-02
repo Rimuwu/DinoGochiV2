@@ -2,17 +2,17 @@ from pprint import pprint
 from random import choice, randint
 from time import time
 
-from bot import config
+from bot.config import mongo_client
 from bot.const import DINOS, GAME_SETTINGS
 from bot.modules.data_format import random_quality
 from bot.modules.localization import log
 
-dinosaurs = config.mongo_client.bot.dinosaurs
-incubations = config.mongo_client.tasks.incubation
+dinosaurs = mongo_client.bot.dinosaurs
+incubations = mongo_client.tasks.incubation
 
 class Dino:
 
-    def __init__(self, baseid = None) -> None:
+    def __init__(self, baseid: int):
         """Создание объекта динозавра."""
         
         self.id = baseid
@@ -22,13 +22,13 @@ class Dino:
         return str(self)
 
 
-    def view(self) -> None:
+    def view(self) :
         """ Отображает все данные объекта."""
 
         print('DATA: ', end='')
         pprint(self.data)
 
-    def update(self, update_data: dict[str, int]) -> None:
+    def update(self, update_data: dict):
         """
         {"$set": {'stats.eat': 12}} - установить
         {"$inc": {'stats.eat': 12}} - добавить
@@ -37,6 +37,42 @@ class Dino:
     
     def delete(self):
         dinosaurs.delete_one({'dino_id': self.id})
+    
+    def generate_image(self):
+        ...
+
+
+class Egg:
+
+    def __init__(self, baseid: int):
+        """Создание объекта яйца."""
+        
+        self.id = baseid
+        self.data = incubations.find_one({"_id": self.id})
+    
+    def __str__(self) -> str:
+        return str(self)
+
+
+    def view(self):
+        """ Отображает все данные объекта."""
+
+        print('DATA: ', end='')
+        pprint(self.data)
+
+    def update(self, update_data: dict):
+        """
+        {"$set": {'stats.eat': 12}} - установить
+        {"$inc": {'stats.eat': 12}} - добавить
+        """
+        self.data = incubations.update_one({"_id": self.id}, update_data)
+    
+    def delete(self):
+        incubations.delete_one({'_id': self.id})
+    
+    def generate_image(self):
+        ...
+
 
 def random_dino(quality: str='random') -> int:
     """ Рандомизация динозавра по редкости
