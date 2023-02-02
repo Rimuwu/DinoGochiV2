@@ -10,6 +10,7 @@ import os
 import sys
 
 CONFIG_PATH = 'config.json'
+SETTINGS_PATH = 'bot/json/settings.json'
 
 class Config:
     def __init__(self) -> None:
@@ -41,37 +42,42 @@ class Config:
         return json.dumps(self, default=lambda o: o.__dict__,
             sort_keys=True, indent=4)
  
-conf = Config()
-def check_base():
-    with open('bot/json/settings.json', encoding='utf-8') as f: 
-        GAME_SETTINGS = json.load(f)
+def check_base(client: pymongo.MongoClient):
+    if client.server_info(): print(f"{client.HOST}, mongo connected")
 
-    created_base = mongo_client.list_database_names()
-    collections = GAME_SETTINGS['collections']
+    with open(SETTINGS_PATH, encoding='utf-8') as f: 
+        settings = json.load(f)
+
+    created_base = client.list_database_names()
+    collections = settings['collections']
 
     for base in collections.keys():
         if base not in created_base:
-            database = mongo_client[base]
+            database = client[base]
             for col in collections[base]:
                 database.create_collection(col)
     
     print('The databases are checked and prepared for use.')
 
+conf = Config()
+
+def load():
+    if os.path.exists(CONFIG_PATH):
+        with open(CONFIG_PATH, 'r') as f: conf.fromJSON(f.read()) # Загрузка настроек
+    else:
+        sys.exit(f"{CONFIG_PATH} missed! Please, run {__name__}")
+
+    for way in conf.temp_dir, conf.logs_dir: # Проверка путей
+        if not os.path.exists(way):
+            os.mkdir(way) #Создаёт папку в директории  
+            print(f"I didn't find the {way} directory, so I created it.")
+
+
 if __name__ == '__main__':
     with open(CONFIG_PATH, 'w') as f:
         f.write(conf.toJSON())
         sys.exit(f"{CONFIG_PATH} created! Please don't forget to set it up!")
-else:
-    if os.path.exists(CONFIG_PATH):
-        with open(CONFIG_PATH, 'r') as f:
-            conf.fromJSON(f.read())
 
-        mongo_client = pymongo.MongoClient(conf.mongo_url)
-        check_base() # Проверка базы данных на наличие коллекций
-        for way in conf.temp_dir, conf.logs_dir:
-            if not os.path.exists(way):
-                os.mkdir(way) #Создаёт папку в директории  
-                print(f"I didn't find the {way} directory, so I created it.")
-    else:
-        sys.exit(f"{CONFIG_PATH} missed! Please, run {__name__}")
-    
+load()
+mongo_client = pymongo.MongoClient(conf.mongo_url)
+check_base(mongo_client) # Проверка базы данных на наличие коллекций
