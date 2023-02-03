@@ -4,6 +4,14 @@
         "tasks": ["game", "incubation", "journey", "sleep", "collecting"]
     },
 
+    "dino_rarity": {
+        "com": 50,
+        "unc": 25,
+        "rar": 15,
+        "myt": 9,
+        "leg": 1
+    },
+
     "first_dino_time_incub": 600,
 
     "max_eat_items": 800,

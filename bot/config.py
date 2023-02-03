@@ -8,9 +8,9 @@ import pymongo
 import json
 import os
 import sys
+from bot.const import GAME_SETTINGS
 
 CONFIG_PATH = 'config.json'
-SETTINGS_PATH = 'bot/json/settings.json'
 
 class Config:
     def __init__(self) -> None:
@@ -43,13 +43,10 @@ class Config:
             sort_keys=True, indent=4)
  
 def check_base(client: pymongo.MongoClient):
-    if client.server_info(): print(f"{client.HOST}, mongo connected")
-
-    with open(SETTINGS_PATH, encoding='utf-8') as f: 
-        settings = json.load(f)
+    if client.server_info(): print(f"{client.address}, mongo connected")
 
     created_base = client.list_database_names()
-    collections = settings['collections']
+    collections = GAME_SETTINGS['collections']
 
     for base in collections.keys():
         if base not in created_base:

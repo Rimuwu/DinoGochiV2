@@ -1,4 +1,5 @@
 import random
+from ..const import GAME_SETTINGS
 from telebot.types import ReplyKeyboardMarkup, User
 
 def chunks(lst: list, n: int):
@@ -76,20 +77,10 @@ def user_name(user: User):
 def random_quality() -> str:
     """Случайная редкость
     """
-    r_event = random.randint(1, 100)
-    quality = 'com'
+    rarities = list(GAME_SETTINGS['dino_rarity'].keys())
+    weights = list(GAME_SETTINGS['dino_rarity'].values())
 
-    if r_event >= 1 and r_event <= 50:  # 50%
-        quality = 'com'
-    elif r_event > 50 and r_event <= 75:  # 25%
-        quality = 'unc'
-    elif r_event > 75 and r_event <= 90:  # 15%
-        quality = 'rar'
-    elif r_event > 90 and r_event <= 99:  # 9%
-        quality = 'myt'
-    elif r_event > 99 and r_event <= 100:  # 1%
-        quality = 'leg'
-    
+    quality = random.choices(rarities, weights)[0]
     return quality
 
 
