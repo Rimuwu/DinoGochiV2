@@ -69,5 +69,5 @@ async def egg_answer_callback(callback: types.CallbackQuery):
     await bot.send_message(callback.message.chat.id, send_text, parse_mode='Markdown', reply_markup=m(language_code=lang))
 
     # Создание юзера и добавляем динозавра в инкубацию
-    insert_user(callback.from_user.id, lang)
+    insert_user(callback.from_user.id)
     incubation_dino(egg_id, callback.from_user.id)
