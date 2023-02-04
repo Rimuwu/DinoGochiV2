@@ -83,6 +83,25 @@ def random_quality() -> str:
     quality = random.choices(rarities, weights)[0]
     return quality
 
+def random_code(col: int=10):
+    """Генерирует случайный код из букв и цыфр
+    """
+    code = ''
+    letters = [
+        'a', 'b', 'c', 'd', 'e', 'f', 'g',
+        'h', 'i', 'j', 'k', 'l', 'm', 'n',
+        'o', 'p', 'q', 'r', 's', 't', 'u',
+        'v', 'w', 'x', 'y', 'z']
+
+    random.shuffle(letters)
+    while len(code) < col:
+        if random.randint(0, 1):
+            code += random.choice(letters)
+        else:
+            code += str(random.randint(0, 9))
+
+    return code
+
 
 if __name__ == '__main__':
     raise Exception("This file cannot be launched on its own!")
