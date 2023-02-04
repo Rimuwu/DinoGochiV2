@@ -11,6 +11,6 @@ async def start_game(message: types.Message):
     eggs = user.get_eggs()
 
     if len(dinos + eggs) == 0:
-        ...
+        pass
     else:
-         
+        pass
