@@ -1,4 +1,5 @@
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
+import io
 from random import choice 
 from bot.config import conf
 from bot.const import GAME_SETTINGS, DINOS
@@ -27,7 +28,4 @@ def create_eggs_image():
 
         id_l.append(rid)
 
-    bg_p.save(f'{conf.temp_dir}/eggs.png')
-    photo = open(f"{conf.temp_dir}/eggs.png", 'rb')
-
-    return photo, id_l
+    return bg_p, id_l
