@@ -36,12 +36,11 @@ class User:
 
         self.user_dungeon = { 'statistics': [] }
         
-        userdata = users.find_one({"userid": self.userid})
-        self.UpdateData(userdata) #Обновление данных
+        self.UpdateData(users.find_one({"userid": self.userid})) #Обновление данных
         
-    def UpdateData(self, userdata):
-        if userdata:
-            self.__dict__ = userdata
+    def UpdateData(self, data):
+        if data:
+            self.__dict__ = data
     
     def get_dinos(self) -> list:
         """Возвращает список с объектами динозавров."""
@@ -102,10 +101,7 @@ class User:
         users.delete_one({'userid': self.userid})
 
 
-def insert_user(userid: int, lang_code: str):
-
-    if lang_code not in available_locales:
-        lang_code = 'en'
+def insert_user(userid: int):
 
     user_dict = {
         'userid': userid,
@@ -115,8 +111,7 @@ def insert_user(userid: int, lang_code: str):
         'settings': { 'notifications': True,
                       'dino_id': None,
                       'profile_view': 1,
-                      'inv_view': [2, 3],
-                      'language_code': lang_code,
+                      'inv_view': [2, 3]
                     },
         'coins': 10, 'lvl': 0, 'xp': 0,
         'dead_dinos': 0,
