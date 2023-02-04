@@ -6,18 +6,45 @@ from bot.config import mongo_client
 from bot.const import DINOS, GAME_SETTINGS
 from bot.modules.data_format import random_quality
 from bot.modules.localization import log
+from bot.modules.images import create_egg_image
 
 dinosaurs = mongo_client.bot.dinosaurs
 incubations = mongo_client.tasks.incubation
 
 class Dino:
 
-    def __init__(self, baseid: int):
+    def __init__(self, baseid):
         """Создание объекта динозавра."""
         
-        self.id = baseid
-        self.data = dinosaurs.find_one({"_id": self.id})
-    
+        self._id = baseid
+
+        self.dino_id = 0
+        self.owner_id = 0
+
+        self.status = 'pass'
+        self.name = 'name'
+        self.quality = None
+
+        self.stats = {
+                'hp': 10, 'eat': 10,
+                'game': 10, 'mood': 10,
+                'energy': 10
+        }
+
+        self.activ_items = {
+                'game': None, 'hunt': None,
+                'journey': None, 'sleep': None,
+                
+                'armor': None,  'weapon': None,
+                'backpack': None
+        }
+
+        self.UpdateData(dinosaurs.find_one({"_id": self._id}))
+
+    def UpdateData(self, data):
+        if data:
+            self.__dict__ = data
+        
     def __str__(self) -> str:
         return str(self)
 
@@ -33,22 +60,34 @@ class Dino:
         {"$set": {'stats.eat': 12}} - установить
         {"$inc": {'stats.eat': 12}} - добавить
         """
-        self.data = dinosaurs.update_one({"_id": self.id}, update_data)
+        self.data = dinosaurs.update_one({"_id": self._id}, update_data)
     
     def delete(self):
-        dinosaurs.delete_one({'dino_id': self.id})
+        dinosaurs.delete_one({'dino_id': self._id})
     
-    def generate_image(self):
-        ...
+    def image(self, lang: str):
+        """Сгенерировать изображение объекта
+        """
+        return create_egg_image(self._id, lang)
 
 
 class Egg:
 
-    def __init__(self, baseid: int):
+    def __init__(self, baseid):
         """Создание объекта яйца."""
         
-        self.id = baseid
-        self.data = incubations.find_one({"_id": self.id})
+        self._id = baseid
+        self.incubation_time = 0, 
+        self.egg_id = 0,
+        self.owner_id = 0,
+        self.rarity = 'random',
+        self.dino_id = 0
+
+        self.UpdateData(incubations.find_one({"_id": self._id}))
+
+    def UpdateData(self, data):
+        if data:
+            self.__dict__ = data
     
     def __str__(self) -> str:
         return str(self)
@@ -65,12 +104,14 @@ class Egg:
         {"$set": {'stats.eat': 12}} - установить
         {"$inc": {'stats.eat': 12}} - добавить
         """
-        self.data = incubations.update_one({"_id": self.id}, update_data)
+        self.data = incubations.update_one({"_id": self._id}, update_data)
     
     def delete(self):
-        incubations.delete_one({'_id': self.id})
-    
-    def generate_image(self):
+        incubations.delete_one({'_id': self._id})
+
+    def image(self):
+        """Сгенерировать изображение объекта
+        """
         ...
 
 
