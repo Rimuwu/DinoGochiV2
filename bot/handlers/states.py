@@ -1,9 +1,10 @@
 from telebot.asyncio_handler_backends import State, StatesGroup
+from telebot.types import Message
 from bot.exec import bot
 
 
 @bot.message_handler(text='buttons_name.cancel', state='*')
-async def any_state(message):
+async def cancel(message: Message):
     """
     Состояние отмены
     """
@@ -15,7 +16,7 @@ async def any_state(message):
     #Дописать сюда возвращение к последней клавиатуре
 
 @bot.message_handler(commands=['state'])
-async def get_state(message):
+async def get_state(message: Message):
     """
     Состояние
     """
