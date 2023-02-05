@@ -251,6 +251,9 @@
         },
 
         "p_profile": {
+            "no_dinos_eggs": "🦕 | You don't have any dinosaurs or incubated eggs!",
+            "choose_dino": "🦕 | Choose a dinosaur / egg:",
+
             "text_info": "Information",
             "text_ost": "Left:",
             "rare_name": "Quality:",
@@ -352,7 +355,7 @@
             "return": "👥 | Return to the profile menu!"
         },
 
-        "opne_inventory": {
+        "open_inventory": {
 
             "info": "🔎 | Select an inventory filter: " ,
 
@@ -378,6 +381,34 @@
         "copy_m": {
             "info": "The response to the message for the newsletter is required",
             "no_message": "There must be an answer to the message!"
+        },
+
+        "item_info": {
+            "type_info": {
+
+                "+eat": {
+                    "type_name": "🍔 Food",
+                    "add_text": "*└* Effectiveness: {act}"
+                },
+
+                "+unv": {
+                    "type_name": "☕ Energy drink",
+                    "add_text": "*└* Effectiveness: {act}"
+                },
+
+                "freezing": {
+                    "type_name": "❄ Freezing",
+                    "add_text": "*└* This item stops the metabolism of the dinosaur, thereby it freezes."
+                },
+
+                "defrosting": {
+                    "type_name": "🔥 Defrosting",
+                    "add_text": "*└* The item restores the metabolism of the dinosaur."
+                },
+
+                "egg": {
+                }
+            }
         }
 
     }
