@@ -1,9 +1,9 @@
 import time
 
 from bot.config import mongo_client
-from bot.modules.dinosaur import Dino, insert_dino
+from bot.modules.dinosaur import Dino, Egg
 from bot.modules.item import CreateItem
-from bot.modules.localization import available_locales, log
+from bot.modules.localization import log
 
 users = mongo_client.bot.users
 items = mongo_client.bot.items
@@ -55,7 +55,7 @@ class User:
         """Возвращает список с объектами динозавров."""
         eggs_list = []
         for egg in incubations.find({'owner_id': self.userid}):
-            eggs_list.append(egg)
+            eggs_list.append(Egg(egg['_id']))
 
         self.eggs = eggs_list
         return eggs_list
