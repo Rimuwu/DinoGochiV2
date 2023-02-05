@@ -1,10 +1,9 @@
 from pprint import pprint
-from random import choice, randint
+from random import choice, randint, choices
 from time import time
 
 from bot.config import mongo_client
 from bot.const import DINOS, GAME_SETTINGS
-from bot.modules.data_format import random_quality
 from bot.modules.localization import log
 from bot.modules.images import create_egg_image
 
@@ -15,7 +14,6 @@ class Dino:
 
     def __init__(self, baseid):
         """Создание объекта динозавра."""
-        
         self._id = baseid
 
         self.dino_id = 0
@@ -50,7 +48,7 @@ class Dino:
 
 
     def view(self) :
-        """ Отображает все данные объекта."""
+        """Отображает все данные объекта."""
 
         print('DATA: ', end='')
         pprint(self.data)
@@ -68,7 +66,7 @@ class Dino:
     def image(self, lang: str):
         """Сгенерировать изображение объекта
         """
-        return create_egg_image(self._id, lang)
+        ...
 
 
 class Egg:
@@ -77,11 +75,11 @@ class Egg:
         """Создание объекта яйца."""
         
         self._id = baseid
-        self.incubation_time = 0, 
-        self.egg_id = 0,
-        self.owner_id = 0,
-        self.rarity = 'random',
-        self.dino_id = 0
+        self.incubation_time = 0
+        self.egg_id = 0
+        self.owner_id = 0
+        self.rarity = 'random'
+        self.egg_id = 0
 
         self.UpdateData(incubations.find_one({"_id": self._id}))
 
@@ -109,17 +107,21 @@ class Egg:
     def delete(self):
         incubations.delete_one({'_id': self._id})
 
-    def image(self):
-        """Сгенерировать изображение объекта
+    def image(self, lang: str='en'):
+        """Сгенерировать изображение объекта.
         """
-        ...
+        t_inc = self.incubation_time - int(time())
+        return create_egg_image(egg_id=self.egg_id, rare=self.rarity, seconds=t_inc, lang=lang)
 
 
 def random_dino(quality: str='random') -> int:
-    """ Рандомизация динозавра по редкости
+    """Рандомизация динозавра по редкости
     """
     if quality == 'random':
-        quality = random_quality()
+        rarities = list(GAME_SETTINGS['dino_rarity'].keys())
+        weights = list(GAME_SETTINGS['dino_rarity'].values())
+
+        quality = choices(rarities, weights)[0]
     
     dino_id = choice(DINOS[quality])
     return dino_id
