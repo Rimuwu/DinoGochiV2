@@ -1,4 +1,5 @@
 import random
+import string
 
 from telebot.types import ReplyKeyboardMarkup, User
 
@@ -77,22 +78,12 @@ def user_name(user: User):
         else:
             return user.first_name
 
-def random_code(col: int=10):
+def random_code(length: int=10):
     """Генерирует случайный код из букв и цыфр
     """
-    code = ''
-    letters = [
-        'a', 'b', 'c', 'd', 'e', 'f', 'g',
-        'h', 'i', 'j', 'k', 'l', 'm', 'n',
-        'o', 'p', 'q', 'r', 's', 't', 'u',
-        'v', 'w', 'x', 'y', 'z']
+    alphabet = string.ascii_letters + string.digits
 
-    random.shuffle(letters)
-    while len(code) < col:
-        if random.randint(0, 1):
-            code += random.choice(letters)
-        else:
-            code += str(random.randint(0, 9))
+    code = ''.join(random.choice(alphabet) for i in range(length))
 
     return code
 
@@ -105,7 +96,7 @@ def seconds_to_str(seconds: int, lang: str='en', mini: bool=False):
        > seconds=10000 lang='ru' mini=True
        > 1 д. 2 мин. 41 сек.
     """
-    time_format = get_data('time_format', lang) # type: dict
+    time_format = dict(get_data('time_format', lang)) # type: dict
     result = ''
 
     def ending_w(time_type: str, unit: int) -> str:
