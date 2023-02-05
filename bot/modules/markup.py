@@ -23,10 +23,8 @@ def markups_menu(markup_key: str = 'main_menu', language_code: str = 'en', **kwa
         if kwargs.get('faq', False): #Если передаём faq, то можно удалить кнопку
             buttons[1].remove('faq')
     
-    
     buttons = tranlate_data(
         data=buttons, 
         locale=language_code, 
         key_prefix=prefix) #Переводим текст внутри списка
-
     return list_to_keyboard(buttons) # type: ignore    
