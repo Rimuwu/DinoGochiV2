@@ -23,9 +23,7 @@
             "profile_menu": "👁‍🗨 Profile",
             "dino-tavern_menu": "🍺 Dino-tavern"
         },
-
-        "items_name": {},
-
+        
         "rare": {
             "com": ["Normal", "Normal"],
             "unc": ["Unusual", "Unusual"],
@@ -33,7 +31,14 @@
             "mys": ["Mystical", "Mystical"],
             "leg": ["Legendary", "Legendary"],
             "myt": ["Mythical", "Mythical"],
-            "ran": ["Random", "Random"]
+            "random": ["Random", "Random"]
+        },
+
+        "time_format": {
+            "second": ["seconds", "seconds", "seconds", "sec."],
+            "minute": ["minute", "minutes", "minutes", "min"],
+            "hour": ["hour", "hours", "hours", "hour."],
+            "day": ["day", "day", "days", "d."]
         },
 
         "items_names": {
