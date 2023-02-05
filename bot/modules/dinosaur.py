@@ -86,7 +86,7 @@ class Egg:
     def UpdateData(self, data):
         if data:
             self.__dict__ = data
-    
+
     def __str__(self) -> str:
         return str(self)
 
