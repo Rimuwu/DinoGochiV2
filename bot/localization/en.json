@@ -9,7 +9,8 @@
             "back": "↪️ Back",
             "enable": "✅ Enable",
             "disable": "❌ Disable",
-            "confirm": "✅ Confirm"
+            "confirm": "✅ Confirm",
+            "cancel": "❌ Cancel"
         },
 
         "commands_name": {
@@ -23,7 +24,7 @@
             "profile_menu": "👁‍🗨 Profile",
             "dino-tavern_menu": "🍺 Dino-tavern"
         },
-        
+
         "rare": {
             "com": ["Normal", "Normal"],
             "unc": ["Unusual", "Unusual"],
