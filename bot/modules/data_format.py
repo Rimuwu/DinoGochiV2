@@ -34,11 +34,7 @@ def random_dict(data: dict[str, int]) -> int | dict:
     return 0
 
 
-def list_to_keyboard(
-    buttons: list, 
-    row_width: int = 3, 
-    resize_keyboard: bool = True, 
-    one_time_keyboard = None) -> ReplyKeyboardMarkup:
+def list_to_keyboard(buttons: list, row_width: int = 3, resize_keyboard: bool = True, one_time_keyboard = None) -> ReplyKeyboardMarkup:
     '''Превращает список со списками в объект клавиатуры.
 
         Example:
@@ -54,10 +50,9 @@ def list_to_keyboard(
           отвяжись  
           ты кто?
     '''
-    markup = ReplyKeyboardMarkup(
-            row_width=row_width, 
-            resize_keyboard=resize_keyboard, 
-            one_time_keyboard=one_time_keyboard)
+    markup = ReplyKeyboardMarkup(row_width=row_width, 
+                                 resize_keyboard=resize_keyboard, 
+                                 one_time_keyboard=one_time_keyboard)
 
     if len(buttons) == 1:
         markup.add(*[i for i in buttons])
@@ -94,7 +89,7 @@ def seconds_to_str(seconds: int, lang: str='en', mini: bool=False):
        > 1 день 2 минуты 41 секунда
        
        > seconds=10000 lang='ru' mini=True
-       > 1 д. 2 мин. 41 сек.
+       > 1д. 2мин. 41сек.
     """
     time_format = dict(get_data('time_format', lang)) # type: dict
     result = ''
@@ -105,16 +100,14 @@ def seconds_to_str(seconds: int, lang: str='en', mini: bool=False):
         
         else:
             result = ''
-            if int(unit) not in [11, 12, 13, 14, 15]:
-                number = int(str(unit)[int(len(str(unit))) - 1:])
-            else:
-                number = int(unit)
+            if unit < 11 or unit > 14:
+                unit = unit % 10 # интересный факт, именно так можно легко получить послднюю цифру числа. Магия математики)
                 
-            if number == 1:
+            if unit == 1:
                 result = time_format[time_type][0]
-            elif number in [2, 3, 4]:
+            elif unit > 1 and unit <= 4:
                 result = time_format[time_type][1]
-            elif number > 4 or number == 0:
+            elif unit > 4 or unit == 0:
                 result = time_format[time_type][2]
         
         return result
