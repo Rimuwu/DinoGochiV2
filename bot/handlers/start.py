@@ -17,7 +17,9 @@ stickers = bot.get_sticker_set('Stickers_by_DinoGochi_bot')
 async def start_command_auth(message: types.Message):
     stickers = await bot.get_sticker_set('Stickers_by_DinoGochi_bot')
     sticker = choice(list(stickers.stickers)).file_id
-    await bot.send_sticker(message.chat.id, sticker)
+
+    langue_code = message.from_user.language_code
+    await bot.send_sticker(message.chat.id, sticker, reply_markup=m(language_code=langue_code))
 
 @bot.message_handler(commands=['start'], is_authorized=False)
 async def start_game_message(message: types.Message):
