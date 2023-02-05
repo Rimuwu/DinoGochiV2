@@ -44,7 +44,7 @@ async def start_game(message: types.Message):
     await bot.send_message(message.chat.id, text, parse_mode='html', reply_markup=markup_inline)
 
     #Создание изображения
-    photo, id_l = create_eggs_image()
+    img, id_l = create_eggs_image()
 
     markup_inline = types.InlineKeyboardMarkup()
     markup_inline.add(*[types.InlineKeyboardButton(
@@ -53,7 +53,7 @@ async def start_game(message: types.Message):
     )
 
     start_game = str(t('start_command.start_game', message.from_user.language_code))
-    await bot.send_photo(message.chat.id, photo, start_game, reply_markup=markup_inline)
+    await bot.send_photo(message.chat.id, img, start_game, reply_markup=markup_inline)
 
 
 @bot.callback_query_handler(func=None, startwith='start_egg', is_authorized=False)
