@@ -74,7 +74,7 @@ async def dino_profile(message: types.Message):
         async with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
             data['dino_answer'] = data_names
 
-        await bot.send_message(user.userid, t('p_profile.chose_dino', lang), reply_markup=keyboard)
+        await bot.send_message(user.userid, t('p_profile.choose_dino', lang), reply_markup=keyboard)
     # else:
     #     eggs = user.get_eggs()
     #     if len(eggs) != 0:
@@ -91,6 +91,6 @@ async def answer_dino(message: types.Message):
     async with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
         data_names  = data['dino_answer']
     await bot.delete_state(message.from_user.id, message.chat.id)
-    await bot.reset_data(message.from_user.id,  message.chat.id)
+    await bot.reset_data(message.from_user.id, message.chat.id)
     
     print(data_names)
