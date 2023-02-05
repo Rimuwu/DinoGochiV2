@@ -1,7 +1,7 @@
 #Активация встроенных фильтров
-from telebot import asyncio_filters
+from telebot.asyncio_filters import StateFilter, IsDigitFilter
 
 from bot.exec import bot
 
-bot.add_custom_filter(asyncio_filters.StateFilter(bot))
-bot.add_custom_filter(asyncio_filters.IsDigitFilter())
+bot.add_custom_filter(StateFilter(bot))
+bot.add_custom_filter(IsDigitFilter())
