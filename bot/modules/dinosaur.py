@@ -148,7 +148,7 @@ def insert_dino(owner_id: int, dino_id: int=0, quality: str='random'):
     """Создания динозавра в базе
     """
     if not dino_id: dino_id = random_dino(quality)
-    dino_data = DINOS['elements'][str(dino_id)] #type: ignore
+    dino_data = DINOS['elements'][str(dino_id)]
 
     dino = {
        'dino_id': dino_id,

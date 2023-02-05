@@ -27,4 +27,4 @@ def markups_menu(markup_key: str = 'main_menu', language_code: str = 'en', **kwa
         data=buttons, 
         locale=language_code, 
         key_prefix=prefix) #Переводим текст внутри списка
-    return list_to_keyboard(buttons) # type: ignore    
+    return list_to_keyboard(buttons) 
