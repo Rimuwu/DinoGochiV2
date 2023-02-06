@@ -2,6 +2,7 @@
 
 import json
 import os
+from typing import Any
 from bot.modules.logs import log
 
 languages = {}
@@ -21,7 +22,7 @@ def load() -> None:
     log(f"Загружено {len(languages.keys())} файла(ов) локализации.", 1)
 
 
-def get_data(key: str, locale: str = "en") -> str | dict:
+def get_data(key: str, locale: str = "en") -> Any:
     """Возвращает данные локализации
 
     Args:
@@ -63,7 +64,7 @@ def t(key: str, locale: str = "en", **kwargs) -> str:
     return text
 
 
-def tranlate_data(data: list | dict, locale: str = "en", key_prefix = '', **kwargs):
+def tranlate_data(data: list | dict, locale: str = "en", key_prefix = '', **kwargs) -> Any:
     """ Переводит текст внутри словаря или списка
         
         Args:
