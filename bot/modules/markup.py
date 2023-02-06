@@ -1,12 +1,23 @@
 from telebot.types import ReplyKeyboardMarkup
 from bot.modules.localization import tranlate_data
 from bot.modules.data_format import list_to_keyboard
+from bot.modules.user import User
 
-def markups_menu(markup_key: str = 'main_menu', language_code: str = 'en', **kwargs) -> ReplyKeyboardMarkup:
+def markups_menu(userid: int, markup_key: str = 'main_menu', language_code: str = 'en') -> ReplyKeyboardMarkup:
     """Главная функция создания меню для клавиатур
+       menus:
+       main_menu, last_menu
     """
-    prefix = 'commands_name.'
-    buttons = []
+    prefix, buttons = 'commands_name.', []
+    user = User(userid)
+
+    if markup_key == 'last_menu':
+       """Возращает к последнему меню
+       """
+       markup_key = user.last_markup
+    
+    else: #Сохранение последнего markup
+        user.update({'$set': {'last_markup': markup_key}})
 
     if markup_key == 'main_menu':
         """ Главное меню
@@ -20,11 +31,12 @@ def markups_menu(markup_key: str = 'main_menu', language_code: str = 'en', **kwa
             ['dino-tavern_menu']
         ]
 
-        if kwargs.get('faq', False): #Если передаём faq, то можно удалить кнопку
+        if user.settings.get('faq', 0): #Если передаём faq, то можно удалить кнопку
             buttons[1].remove('faq')
     
     buttons = tranlate_data(
         data=buttons, 
         locale=language_code, 
         key_prefix=prefix) #Переводим текст внутри списка
+    
     return list_to_keyboard(buttons) 
