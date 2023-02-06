@@ -4,6 +4,7 @@ import string
 from telebot.types import ReplyKeyboardMarkup, User
 
 from bot.modules.localization import get_data
+from bot.const import GAME_SETTINGS
 
 
 def chunks(lst: list, n: int):
@@ -72,6 +73,15 @@ def user_name(user: User):
             return f'{user.first_name} {user.last_name}'
         else:
             return user.first_name
+
+def random_quality() -> str:
+    """Случайная редкость
+    """
+    rarities = list(GAME_SETTINGS['dino_rarity'].keys())
+    weights = list(GAME_SETTINGS['dino_rarity'].values())
+
+    quality = random.choices(rarities, weights)[0]
+    return quality
 
 def random_code(length: int=10):
     """Генерирует случайный код из букв и цыфр
