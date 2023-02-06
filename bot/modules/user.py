@@ -26,7 +26,8 @@ class User:
             'notifications': True,
             'dino_id': None,
             'profile_view': 1,
-            'inv_view': [2, 3]
+            'inv_view': [2, 3],
+            'faq': True
             }
             
         self.coins = 10
@@ -72,6 +73,9 @@ class User:
         
         self.inventory = inv
         return inv
+
+    def get_friends(self) -> list:
+        ...
     
     def view(self):
         """ Отображает все данные объекта."""
@@ -85,7 +89,7 @@ class User:
         {"$inc": {'coins': 12}} - добавить
         """
         data = users.update_one({"userid": self.userid}, update_data)
-        self.UpdateData(data)
+        # self.UpdateData(data) #Не получается конвертировать в словарь возвращаемый объект
 
     def full_delete(self):
         """Удаление юзера и всё с ним связанное из базы.
@@ -111,7 +115,8 @@ def insert_user(userid: int):
         'settings': { 'notifications': True,
                       'dino_id': None,
                       'profile_view': 1,
-                      'inv_view': [2, 3]
+                      'inv_view': [2, 3], 
+                      'faq': True
                     },
         'coins': 10, 'lvl': 0, 'xp': 0,
         'dead_dinos': 0,
