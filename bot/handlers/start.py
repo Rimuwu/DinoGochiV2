@@ -19,7 +19,8 @@ async def start_command_auth(message: types.Message):
     sticker = choice(list(stickers.stickers)).file_id
 
     langue_code = message.from_user.language_code
-    await bot.send_sticker(message.chat.id, sticker, reply_markup=m(language_code=langue_code))
+    await bot.send_sticker(message.chat.id, sticker, 
+                           reply_markup=m(message.from_user.id, language_code=langue_code))
 
 @bot.message_handler(commands=['start'], is_authorized=False)
 async def start_game_message(message: types.Message):
@@ -68,7 +69,8 @@ async def egg_answer_callback(callback: types.CallbackQuery):
     send_text = t('start_command.end_answer.send_text', lang)
 
     await bot.edit_message_caption(edited_text, callback.message.chat.id, callback.message.message_id)
-    await bot.send_message(callback.message.chat.id, send_text, parse_mode='Markdown', reply_markup=m(language_code=lang))
+    await bot.send_message(callback.message.chat.id, send_text, parse_mode='Markdown', 
+                           reply_markup=m(callback.from_user.id, language_code=lang))
 
     # Создание юзера и добавляем динозавра в инкубацию
     insert_user(callback.from_user.id)
