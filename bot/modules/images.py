@@ -134,7 +134,6 @@ def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_vie
         sz, text_y = 450, 50
         x, y = 275, -80
 
-
         idraw.text((157, text_y), f'{heal}%', font = line1)
         idraw.text((298, text_y), f'{eat}%', font = line1)
         idraw.text((440, text_y), f'{energy}%', font = line1)
