@@ -1,11 +1,12 @@
 from pprint import pprint
-from random import choice, randint, choices
+from random import choice, randint
 from time import time
 
 from bot.config import mongo_client
 from bot.const import DINOS, GAME_SETTINGS
 from bot.modules.localization import log
-from bot.modules.images import create_egg_image
+from bot.modules.images import create_egg_image, create_dino_image
+from bot.modules.data_format import random_quality
 
 dinosaurs = mongo_client.bot.dinosaurs
 incubations = mongo_client.tasks.incubation
@@ -21,7 +22,7 @@ class Dino:
 
         self.status = 'pass'
         self.name = 'name'
-        self.quality = None
+        self.quality = 'com'
 
         self.stats = {
                 'hp': 10, 'eat': 10,
@@ -51,22 +52,23 @@ class Dino:
         """Отображает все данные объекта."""
 
         print('DATA: ', end='')
-        pprint(self.data)
+        pprint(self.__dict__)
 
     def update(self, update_data: dict):
         """
         {"$set": {'stats.eat': 12}} - установить
         {"$inc": {'stats.eat': 12}} - добавить
         """
-        self.data = dinosaurs.update_one({"_id": self._id}, update_data)
+        data = dinosaurs.update_one({"_id": self._id}, update_data)
+        # self.UpdateData(data) #Не получается конвертировать в словарь возвращаемый объект
     
     def delete(self):
         dinosaurs.delete_one({'dino_id': self._id})
     
-    def image(self, lang: str):
+    def image(self, profile_view: int=1):
         """Сгенерировать изображение объекта
         """
-        ...
+        return create_dino_image(self.dino_id, self.stats, self.quality, profile_view)
 
 
 class Egg:
@@ -95,14 +97,15 @@ class Egg:
         """ Отображает все данные объекта."""
 
         print('DATA: ', end='')
-        pprint(self.data)
+        pprint(self.__dict__)
 
     def update(self, update_data: dict):
         """
         {"$set": {'stats.eat': 12}} - установить
         {"$inc": {'stats.eat': 12}} - добавить
         """
-        self.data = incubations.update_one({"_id": self._id}, update_data)
+        data = incubations.update_one({"_id": self._id}, update_data)
+        # self.UpdateData(data) #Не получается конвертировать в словарь возвращаемый объект
     
     def delete(self):
         incubations.delete_one({'_id': self._id})
@@ -114,17 +117,10 @@ class Egg:
         return create_egg_image(egg_id=self.egg_id, rare=self.rarity, seconds=t_inc, lang=lang)
 
 
-def random_dino(quality: str='random') -> int:
+def random_dino(quality: str='com') -> int:
     """Рандомизация динозавра по редкости
     """
-    if quality == 'random':
-        rarities = list(GAME_SETTINGS['dino_rarity'].keys())
-        weights = list(GAME_SETTINGS['dino_rarity'].values())
-
-        quality = choices(rarities, weights)[0]
-    
-    dino_id = choice(DINOS[quality])
-    return dino_id
+    return choice(DINOS[quality])
     
 def incubation_dino(egg_id: int, owner_id: int, inc_time: int=0, rarity: str='random', dino_id: int=0):
     """Создание инкубируемого динозавра
@@ -147,9 +143,10 @@ def incubation_dino(egg_id: int, owner_id: int, inc_time: int=0, rarity: str='ra
 def insert_dino(owner_id: int, dino_id: int=0, quality: str='random'):
     """Создания динозавра в базе
     """
-    if not dino_id: dino_id = random_dino(quality)
-    dino_data = DINOS['elements'][str(dino_id)]
+    if quality == 'random': quality = random_quality()
+    if not dino_id: dino_id= random_dino(quality)
 
+    dino_data = DINOS['elements'][str(dino_id)]
     dino = {
        'dino_id': dino_id,
        'owner_id': owner_id,
