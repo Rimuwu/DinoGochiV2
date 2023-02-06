@@ -7,6 +7,7 @@ from bot.modules.user import User
 
 from bot.modules.dinosaur import Dino, Egg
 from bot.modules.data_format import list_to_keyboard, chunks
+from bot.modules.markup import markups_menu as m
 
 
 class States(StatesGroup):
@@ -44,7 +45,7 @@ async def dino_profile(message: types.Message):
         elif type(element) == Egg:
             text = egg_context(element, lang)
             
-        await bot.send_photo(message.from_user.id, img, text)
+        await bot.send_photo(message.from_user.id, img, text, reply_markup=m(message.from_user.id, 'last_menu', language_code=lang))
 
     else: # Несколько динозавров / яиц
         
@@ -57,10 +58,10 @@ async def dino_profile(message: types.Message):
             txt = ''
 
             if type(element) == Dino:
-                txt = f'{n}# 🦕 {element.name}'
+                txt = f'{n}🦕 {element.name}'
                 
             elif type(element) == Egg:
-                txt = f'{n}# 🥚'
+                txt = f'{n}🥚'
             
             data_names[txt] = element
             names.append(txt)
@@ -87,10 +88,15 @@ async def dino_profile(message: types.Message):
 @bot.message_handler(state=States.profile, is_authorized=True)
 async def answer_dino(message: types.Message):
     print(message.text)
+    lang = message.from_user.language_code
 
     async with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
-        data_names  = data['dino_answer']
+        data_names = data['dino_answer']
     await bot.delete_state(message.from_user.id, message.chat.id)
     await bot.reset_data(message.from_user.id, message.chat.id)
     
     print(data_names)
+
+    img = data_names[message.text].image()
+    text = '-'
+    await bot.send_photo(message.from_user.id, img, text, reply_markup=m(message.from_user.id, 'last_menu', language_code=lang))
