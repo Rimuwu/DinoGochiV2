@@ -1,7 +1,10 @@
 from telebot.types import ReplyKeyboardMarkup
-from bot.modules.localization import tranlate_data
+
+from bot.config import mongo_client
 from bot.modules.data_format import list_to_keyboard
-from bot.modules.user import User
+from bot.modules.localization import tranlate_data
+
+users = mongo_client.bot.users
 
 def markups_menu(userid: int, markup_key: str = 'main_menu', language_code: str = 'en') -> ReplyKeyboardMarkup:
     """Главная функция создания меню для клавиатур
@@ -9,15 +12,14 @@ def markups_menu(userid: int, markup_key: str = 'main_menu', language_code: str 
        main_menu, last_menu
     """
     prefix, buttons = 'commands_name.', []
-    user = User(userid)
 
     if markup_key == 'last_menu':
        """Возращает к последнему меню
        """
-       markup_key = user.last_markup
+       markup_key = users.find_one({'userid': userid}, {'last_markup': 1}) #type: ignore
     
     else: #Сохранение последнего markup
-        user.update({'$set': {'last_markup': markup_key}})
+        users.update_one({"userid": userid}, {'$set': {'last_markup': markup_key}})
 
     if markup_key == 'main_menu':
         """ Главное меню
@@ -30,8 +32,9 @@ def markups_menu(userid: int, markup_key: str = 'main_menu', language_code: str 
             ['settings_menu', 'friends_menu', 'faq'],
             ['dino-tavern_menu']
         ]
+        settings = users.find_one({'userid': userid}, {'settings': 1})
 
-        if user.settings.get('faq', 0): #Если передаём faq, то можно удалить кнопку
+        if settings.get('faq', 0): #Если передаём faq, то можно удалить кнопку #type: ignore
             buttons[1].remove('faq')
     
     buttons = tranlate_data(
