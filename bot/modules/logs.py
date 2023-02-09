@@ -41,7 +41,3 @@ def create_log():
         filemode="w", encoding='utf-8',
         format="%(asctime)s %(levelname)s %(message)s"
     )
-
-
-if __name__ == '__main__':
-    raise Exception("This file cannot be launched on its own!")

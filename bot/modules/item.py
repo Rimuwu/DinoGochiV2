@@ -237,6 +237,3 @@ class CreateItem:
             return class_dict[item_type](*data)
         else:
             return ItemBase(*data)
-
-if __name__ == '__main__':
-    raise Exception("This file cannot be launched on its own!")
