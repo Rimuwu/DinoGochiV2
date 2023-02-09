@@ -113,8 +113,11 @@ class Egg:
     def image(self, lang: str='en'):
         """Сгенерировать изображение объекта.
         """
-        t_inc = self.incubation_time - int(time())
+        t_inc = self.remaining_incubation_time()
         return create_egg_image(egg_id=self.egg_id, rare=self.rarity, seconds=t_inc, lang=lang)
+    
+    def remaining_incubation_time(self):
+        return self.incubation_time - int(time())
 
 
 def random_dino(quality: str='com') -> int:
