@@ -8,6 +8,9 @@ from bot.const import GAME_SETTINGS
 
 
 def chunks(lst: list, n: int):
+    """Делит список lst, на списки по n элементов
+       Возвращает генератор
+    """
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
     
@@ -34,10 +37,8 @@ def random_dict(data: dict[str, int]) -> int | dict:
 
     return 0
 
-
 def list_to_keyboard(buttons: list, row_width: int = 3, resize_keyboard: bool = True, one_time_keyboard = None) -> ReplyKeyboardMarkup:
     '''Превращает список со списками в объект клавиатуры.
-
         Example:
             butttons = [ ['привет'], ['отвяжись', 'ты кто?'] ]
 
@@ -64,8 +65,9 @@ def list_to_keyboard(buttons: list, row_width: int = 3, resize_keyboard: bool = 
 
     return markup
 
-def user_name(user: User):
-
+def user_name(user: User) -> str:
+    """Возвращает имя / ник, в зависимости от того, что есть
+    """
     if user.username is not None:
         return user.username
     else:
@@ -105,14 +107,16 @@ def seconds_to_str(seconds: int, lang: str='en', mini: bool=False):
     result = ''
 
     def ending_w(time_type: str, unit: int) -> str:
+        """Опредеяет окончание для слова
+        """
         if mini:
             return time_format[time_type][3]
         
         else:
             result = ''
             if unit < 11 or unit > 14:
-                unit = unit % 10 # интересный факт, именно так можно легко получить послднюю цифру числа. Магия математики)
-                
+                unit = unit % 10
+
             if unit == 1:
                 result = time_format[time_type][0]
             elif unit > 1 and unit <= 4:
@@ -122,7 +126,9 @@ def seconds_to_str(seconds: int, lang: str='en', mini: bool=False):
         
         return result
     
-    def seconds_to_time(seconds: int):
+    def seconds_to_time(seconds: int) -> dict:
+        """Преобразует число в словарь
+        """
         time_calculation = {
             'day': 86400, 'hour': 3600, 
             'minute': 60, 'second': 1
@@ -151,7 +157,24 @@ def seconds_to_str(seconds: int, lang: str='en', mini: bool=False):
     
     return result
 
+def near_key(n: int, data: dict, alternative: str='1'):
+    """Находит ближний ключ.
+       В словаре ключи должны быть str(числами) 
 
+       Пример:
+        n=4 data={'1': 1, '3': 123, '5': 5}
+        >>> 3, 123 #key, value
 
-if __name__ == '__main__':
-    raise Exception("This file cannot be launched on its own!")
+        alterantive - если не получилось найти ключ, будет возвращён
+    """
+
+    if str(n) not in data.keys():
+        while n != 1:
+            if str(n) not in data.keys():
+                n -= 1
+            else:
+                return data[str(n)]
+        else:
+            return data[alternative]
+    else:
+        return data[str(n)]
