@@ -7,8 +7,7 @@ from bot.modules.markup import markups_menu as m
 
 @bot.message_handler(text='buttons_name.cancel', state='*')
 async def cancel(message: Message):
-    """
-    Состояние отмены
+    """Состояние отмены
     """
 
     await bot.send_message(message.chat.id, "❌", 
@@ -17,12 +16,9 @@ async def cancel(message: Message):
     await bot.delete_state(message.from_user.id, message.chat.id)
     await bot.reset_data(message.from_user.id,  message.chat.id)
 
-    #Дописать сюда возвращение к последней клавиатуре
-
 @bot.message_handler(commands=['state'])
 async def get_state(message: Message):
-    """
-    Состояние
+    """Состояние
     """
     state = await bot.get_state(message.from_user.id, message.chat.id)
     await bot.send_message(message.chat.id, f'{state}')
