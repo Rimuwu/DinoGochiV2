@@ -1,6 +1,7 @@
 from random import choice, randint
 
 from PIL import Image, ImageDraw, ImageFont
+from telebot.util import pil_image_to_file
 
 from bot.const import DINOS, GAME_SETTINGS
 from bot.modules.data_format import seconds_to_str
@@ -30,7 +31,7 @@ def create_eggs_image():
         bg_p = trans_paste(image, bg_p, 1.0, (i * 512, 0)) #Накладываем изображение
         id_l.append(rid)
 
-    return bg_p, id_l
+    return pil_image_to_file(bg_p), id_l
 
 def create_egg_image(egg_id: int, rare: str='random', seconds: int=0, lang: str='en'):
     """Создаёт изобраение инкубации яйца
@@ -83,7 +84,7 @@ def create_egg_image(egg_id: int, rare: str='random', seconds: int=0, lang: str=
             font=line1, 
             fill=fill
     )
-    return img
+    return pil_image_to_file(img)
 
 def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_view: int=1):
     """Создание изображения динозавра
@@ -151,4 +152,4 @@ def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_vie
     dino_image = dino_image.resize((sz, sz), Image.Resampling.LANCZOS)
     img = trans_paste(dino_image, img, 1.0, (y + x, y, sz + y + x, sz + y ))
 
-    return img
+    return pil_image_to_file(img)
