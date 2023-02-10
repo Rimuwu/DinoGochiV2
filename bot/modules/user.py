@@ -45,32 +45,18 @@ class User:
     
     def get_dinos(self) -> list:
         """Возвращает список с объектами динозавров."""
-        dino_list = []
-        for dino_obj in dinosaurs.find({'owner_id': self.userid}, {'_id': 1}):
-            dino_list.append(Dino(dino_obj['_id']))
-
+        dino_list = get_dinos(self.userid)
         self.dinos = dino_list
         return dino_list
     
     def get_eggs(self) -> list:
         """Возвращает список с объектами динозавров."""
-        eggs_list = []
-        for egg in incubations.find({'owner_id': self.userid}):
-            eggs_list.append(Egg(egg['_id']))
-
+        eggs_list = get_eggs(self.userid)
         self.eggs = eggs_list
         return eggs_list
     
     def get_inventory(self) -> list:
-        inv = []
-
-        for item_dict in items.find({'owner_id': self.userid}, {'_id': 0, 'owner_id': 0}):
-            item = {
-                'item': CreateItem(item_data=item_dict['items_data']).new(), 
-                "count": item_dict['count']
-                }
-            inv.append(item)
-        
+        inv = get_inventory(self.userid)
         self.inventory = inv
         return inv
 
@@ -125,3 +111,29 @@ def insert_user(userid: int):
 
     log(prefix='InsertUser', message=f'User: {userid}', lvl=0)
     return users.insert_one(user_dict)
+
+def get_dinos(userid) -> list:
+    """Возвращает список с объектами динозавров."""
+    dino_list = []
+    for dino_obj in dinosaurs.find({'owner_id': userid}, {'_id': 1}):
+        dino_list.append(Dino(dino_obj['_id']))
+
+    return dino_list
+    
+def get_eggs(userid) -> list:
+    """Возвращает список с объектами динозавров."""
+    eggs_list = []
+    for egg in incubations.find({'owner_id': userid}):
+        eggs_list.append(Egg(egg['_id']))
+
+    return eggs_list
+
+def get_inventory(userid) -> list:
+    inv = []
+    for item_dict in items.find({'owner_id': userid}, {'_id': 0, 'owner_id': 0}):
+        item = {
+            'item': CreateItem(item_data=item_dict['items_data']).new(), 
+            "count": item_dict['count']
+            }
+        inv.append(item)
+    return inv
