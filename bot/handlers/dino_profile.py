@@ -1,7 +1,7 @@
 from telebot import types
 
 from bot.exec import bot
-from bot.modules.data_format import chunks, list_to_keyboard, near_key
+from bot.modules.data_format import chunks, list_to_keyboard, near_key_number
 from bot.modules.dinosaur import Dino, Egg
 from bot.modules.localization import t
 from bot.modules.markup import get_answer_keyboard, markups_menu as m
