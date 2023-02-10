@@ -45,7 +45,7 @@ class Dino:
             self.__dict__ = data
         
     def __str__(self) -> str:
-        return str(self)
+        return self.name
 
 
     def view(self) :
@@ -90,7 +90,7 @@ class Egg:
             self.__dict__ = data
 
     def __str__(self) -> str:
-        return str(self)
+        return f'{self._id} {self.rarity}'
 
 
     def view(self):
