@@ -86,7 +86,7 @@
                 "name": "🦖", "status": "👁‍🗨", "rare": "🧿",
 
                 "heal": "❤️", "eat": "🍕", "game": "🎮",
-                "mood": "🎈", "sleep": "🌙",
+                "mood": "🎈", "energy": "🌙",
 
                 "ac_sleep": "🌙", "ac_game": "🎮",
                 "ac_collecting": "🌿", "ac_journey": "🎍",
@@ -98,7 +98,7 @@
                 "name": "🧊", "status": "❄️", "rare": "☃️",
 
                 "heal": "☁️", "eat": "🥂", "game": "🎄",
-                "mood": "❄️", "sleep": "🕯",
+                "mood": "❄️", "energy": "🕯",
 
                 "ac_sleep": "🕯", "ac_game": "✨",
                 "ac_collecting": "🌿",  "ac_journey": "🌨",
@@ -110,7 +110,7 @@
                 "name": "🌸", "status": "💮", "rare": "🌿",
 
                 "heal": "🏵", "eat": "🥞", "game": "💐",
-                "mood": "🍯", "sleep": "✨",
+                "mood": "🍯", "energy": "✨",
 
                 "ac_sleep": "🌙", "ac_game": "🌾",
                 "ac_collecting": "🌻", "ac_journey": "🏔",
@@ -122,7 +122,7 @@
                 "name": "🍹", "status": "💐", "rare": "🥀",
 
                 "heal": "🌴", "eat": "🥜", "game": "🍨",
-                "mood": "⛺️", "sleep": "🍯",
+                "mood": "⛺️", "energy": "🍯",
 
                 "ac_sleep": "🎗", "ac_game": "🌾",
                 "ac_collecting": "🫐",  "ac_journey": "🏔",
@@ -134,7 +134,7 @@
                 "name": "🏮", "status": "🍁", "rare": "🥧",
 
                 "heal": "🍂", "eat": "🍷", "game": "🍁",
-                "mood": "🍃", "sleep": "🥀",
+                "mood": "🍃", "energy": "🥀",
 
                 "ac_sleep": "🍂", "ac_game": "🍁",
                 "ac_collecting": "🍊", "ac_journey": "🏔",

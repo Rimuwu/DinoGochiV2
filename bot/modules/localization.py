@@ -44,7 +44,7 @@ def get_data(key: str, locale: str = "en") -> Any:
         if way_key in localed_data.keys():
             localed_data = localed_data[way_key]
         else:
-            return localed_data["no_text_key"].format(key=key)
+            return languages[locale]["no_text_key"].format(key=key)
         
     return localed_data
 
