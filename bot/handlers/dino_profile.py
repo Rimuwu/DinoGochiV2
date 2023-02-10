@@ -27,7 +27,7 @@ async def dino_profile(userid: int, dino: Dino, lang: str):
     stats_text = ''
 
     for i in ['heal', 'eat', 'game', 'mood', 'energy']:
-        repl = near_key(dino.stats[i], replics[i])
+        repl = near_key_number(dino.stats[i], replics[i])
         stats_text += f'{tem[i]} {repl} \[ *{dino.stats[i]}%* ]\n'
 
     text = t('p_profile.profile_text', lang,
@@ -63,27 +63,27 @@ async def dino_profile(userid: int, dino: Dino, lang: str):
         # text += text_dict['collecting_progress'].format(progress=prog)
         pass
 
-    act_ii = []
-    for itmk in dino.activ_items.keys():
-        itm = dino.activ_items[itmk]
+    # act_ii = []
+    # for itmk in dino.activ_items.keys():
+    #     itm = dino.activ_items[itmk]
 
-        if itm == None:
-            act_ii.append(t(f'p_profile.no_item', lang))
+    #     if itm == None:
+    #         act_ii.append(t(f'p_profile.no_item', lang))
 
-        else:
-            item = Functions.item_name(str(itm['item_id']), bd_user['language_code'])
+    #     else:
+    #         item = Functions.item_name(str(itm['item_id']), bd_user['language_code'])
 
-            if 'abilities' in itm.keys() and 'endurance' in itm['abilities'].keys():
-                act_ii.append(f"{item} \[ *{itm['abilities']['endurance']}* ]")
-            else:
-                act_ii.append(f'{item}')
+    #         if 'abilities' in itm.keys() and 'endurance' in itm['abilities'].keys():
+    #             act_ii.append(f"{item} \[ *{itm['abilities']['endurance']}* ]")
+    #         else:
+    #             act_ii.append(f'{item}')
 
-    game, coll, jour, sleep = act_ii
-    text += "\n\n" + text_dict['accs'].format(
-            game=game, coll=coll, jour=jour, sleep=sleep,
-            em_game=tem['ac_game'], em_coll=tem['ac_collecting'], em_jour=tem['ac_journey'], 
-            em_sleep=tem['ac_sleep']
-    )
+    # game, coll, jour, sleep = act_ii
+    # text += "\n\n" + text_dict['accs'].format(
+    #         game=game, coll=coll, jour=jour, sleep=sleep,
+    #         em_game=tem['ac_game'], em_coll=tem['ac_collecting'], em_jour=tem['ac_journey'], 
+    #         em_sleep=tem['ac_sleep']
+    # )
 
     # затычка на случай если не сгенерируется изображение
     generate_image = open(f'images/remain/no_generate.png', 'rb')
