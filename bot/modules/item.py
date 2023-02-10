@@ -17,7 +17,7 @@ def get_data(itemid: str) -> dict:
 class ItemBase:
 
     def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
-        ''' Создание объекта Item
+        """ Создание объекта Item
 
             Получаем в класс либо id предмета либо формата {"item_id": string, "abilities": dict}\n
             abilities - не обязателен.
@@ -26,7 +26,7 @@ class ItemBase:
               >>> Стандартный предмет - предмет никак не изменённый пользователем, сгенерированный из базы.
               >>> abilities - словарь с индивидуальными харрактеристиками предмета, прочность, использования и тд.
               >>> preabil - используется только для предмета создаваемого из базы, используется для создания нестандартного предмета.
-        '''
+        """
 
         if item_id != 0: # Получаем стандартный предмет, если есть только id
             self.id = str(item_id)
@@ -35,7 +35,6 @@ class ItemBase:
             self.id = str(item_data['item_id'])
             if 'abilities' in item_data.keys():
                 preabil = item_data['abilities']
-            
         else:
             raise Exception(f"An empty object cannot be created.")
 
@@ -202,38 +201,28 @@ class CaseItem(ItemBase):
     def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
         super().__init__(item_id, item_data, preabil)
 
-class CreateItem:
 
-    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}):
-        self.id = item_id
-        self.item_data = item_data
-        self.preabil = preabil
 
-        if item_id != 0:
-            self.data = get_data(str(self.id))
-        else:
-            self.data = get_data(item_data['item_id'])
+def new(item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}):
+    data = (item_id, item_data, preabil)
+    item_type = item_data['type']
+    class_dict = {
+        '+eat': EatItem, 'egg': EggItem,
 
-    def new(self):
-        data = (self.id, self.item_data, self.preabil)
-        item_type = self.data['type']
-        class_dict = {
-            '+eat': EatItem, 'egg': EggItem,
+        'game_ac': AccessoryItem, 'journey_ac': AccessoryItem,
+        'unv_ac': AccessoryItem,  'hunt_ac': AccessoryItem,
 
-            'game_ac': AccessoryItem, 'journey_ac': AccessoryItem,
-            'unv_ac': AccessoryItem,  'hunt_ac': AccessoryItem,
+        'material': MaterialItem, 'recipe': RecipeItem,
 
-            'material': MaterialItem, 'recipe': RecipeItem,
+        'weapon': WeaponItem,  'ammunition': AmmunitionItem,
+        'backpack': BackpackItem, 'armor': ArmorItem,
 
-            'weapon': WeaponItem,  'ammunition': AmmunitionItem,
-            'backpack': BackpackItem, 'armor': ArmorItem,
+        'freezing': FreezingItem, 'defrosting': DefrostingItem,
 
-            'freezing': FreezingItem, 'defrosting': DefrostingItem,
+        'case': CaseItem
+    }
 
-            'case': CaseItem
-        }
-
-        if item_type in class_dict.keys():
-            return class_dict[item_type](*data)
-        else:
-            return ItemBase(*data)
+    if item_type in class_dict.keys():
+        return class_dict[item_type](*data)
+    else:
+        return ItemBase(*data)
