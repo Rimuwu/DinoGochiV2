@@ -3,7 +3,7 @@ from telebot.asyncio_handler_backends import State, StatesGroup
 
 from bot.const import GAME_SETTINGS
 from bot.exec import bot
-from bot.modules.data_format import near_key
+from bot.modules.data_format import chunks, list_to_keyboard, near_key_number
 from bot.modules.dinosaur import Dino, Egg
 from bot.modules.events import get_one_event
 from bot.modules.localization import get_data, t

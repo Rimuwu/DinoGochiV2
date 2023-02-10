@@ -157,24 +157,17 @@ def seconds_to_str(seconds: int, lang: str='en', mini: bool=False):
     
     return result
 
-def near_key(n: int, data: dict, alternative: str='1'):
-    """Находит ближний ключ.
-       В словаре ключи должны быть str(числами) 
+def near_key_number(n: int, data: dict, alternative: int=1):
+    """Находит ближайшее меньшее число среди ключей.
+       В словаре ключи должны быть str(числами), в порядке убывания
 
        Пример:
-        n=4 data={'1': 1, '3': 123, '5': 5}
-        >>> 3, 123 #key, value
+        n=6 data={'10': 'много', '5': 'средне', '2': 'мало'}
+        >>> 5, средне #key, value
 
         alterantive - если не получилось найти ключ, будет возвращён
     """
-
-    if str(n) not in data.keys():
-        while n != 1:
-            if str(n) not in data.keys():
-                n -= 1
-            else:
-                return data[str(n)]
-        else:
-            return data[alternative]
-    else:
-        return data[str(n)]
+    for key in data.keys():
+        if int(key) <= n:
+            return data[key]
+    return data[alternative]

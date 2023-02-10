@@ -20,7 +20,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu', language_code: str 
        markup_key = users.find_one(
            {'userid': userid}, {'last_markup': 1}
         ).get('last_markup') #type: ignore
-
+        
     else: #Сохранение последнего markup
         users.update_one({"userid": userid}, {'$set': {'last_markup': markup_key}})
 
