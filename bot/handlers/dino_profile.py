@@ -28,7 +28,7 @@ async def dino_profile(userid: int, dino: Dino, lang: str):
 
     for i in ['heal', 'eat', 'game', 'mood', 'energy']:
         repl = near_key_number(dino.stats[i], replics[i])
-        stats_text += f'{tem[i]} {repl} \[ *{dino.stats[i]}%* ]\n'
+        stats_text += f'{tem[i]} {repl} [ *{dino.stats[i]}%* ]\n'
 
     text = t('p_profile.profile_text', lang,
              em_name=tem['name'], dino_name=dino.name,
