@@ -2,7 +2,6 @@ import time
 
 from bot.config import mongo_client
 from bot.modules.dinosaur import Dino, Egg
-from bot.modules.item import new
 from bot.modules.localization import log
 
 users = mongo_client.bot.users
@@ -132,7 +131,7 @@ def get_inventory(userid) -> list:
     inv = []
     for item_dict in items.find({'owner_id': userid}, {'_id': 0, 'owner_id': 0}):
         item = {
-            'item': new(item_data=item_dict['items_data']), 
+            'item': item_dict['items_data'], 
             "count": item_dict['count']
             }
         inv.append(item)
