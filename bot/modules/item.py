@@ -1,9 +1,13 @@
-from pprint import pprint
-
+"""Пояснение:
+    >>> Стандартный предмет - предмет никак не изменённый пользователем, сгенерированный из базы.
+    >>> abilities - словарь с индивидуальными харрактеристиками предмета, прочность, использования и тд.
+    >>> preabil - используется только для предмета создаваемого из базы, используется для создания нестандартного предмета.
+"""
 from bot.modules.localization import get_all_locales
 from bot.modules.data_format import random_dict
 from bot.const import ITEMS
 
+items_names = {}
 
 def get_data(itemid: str) -> dict:
     """Получение данных из json"""
@@ -14,215 +18,94 @@ def get_data(itemid: str) -> dict:
     else:
         raise Exception(f"The subject with ID {itemid} does not exist.")
 
-class ItemBase:
+def load_items_names() -> dict:
+    """Загружает все имена предметов и имена из локалищации в один словарь. 
+       Приоритетным является локализация
+    """
+    items_names = {}
 
-    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
-        """ Создание объекта Item
+    loc_items_names = get_all_locales('items_names')
+    for item_key, item in ITEMS['items'].items():
+        items_names[item_key] = item['name']
 
-            Получаем в класс либо id предмета либо формата {"item_id": string, "abilities": dict}\n
-            abilities - не обязателен.
+        for loc_key in loc_items_names.keys():
+           loc_name = loc_items_names[loc_key].get(item_key)
+           if loc_name:
+               items_names[item_key][loc_key] = loc_name
 
-            Пояснение:
-              >>> Стандартный предмет - предмет никак не изменённый пользователем, сгенерированный из базы.
-              >>> abilities - словарь с индивидуальными харрактеристиками предмета, прочность, использования и тд.
-              >>> preabil - используется только для предмета создаваемого из базы, используется для создания нестандартного предмета.
-        """
+    return items_names
 
-        if item_id != 0: # Получаем стандартный предмет, если есть только id
-            self.id = str(item_id)
+def get_name(itemid: str, lang: str='en') -> str:
+    """Получение имени предмета"""
+    name = ''
+   
+    if itemid in items_names:
+        if lang not in items_names[itemid]:
+            lang = 'en'
+        name = items_names[itemid][lang]
+    return name
 
-        elif item_data != {}: # Предмет от пользователя, есть id и возможно abilities
-            self.id = str(item_data['item_id'])
-            if 'abilities' in item_data.keys():
-                preabil = item_data['abilities']
-        else:
-            raise Exception(f"An empty object cannot be created.")
+def get_item_dict(itemid: str, preabil: dict = {}) -> dict:
+    ''' Создание словаря, хранящийся в инвентаре пользователя.\n
 
-        self.data = get_data(self.id)
-        self.names = self.get_names()
-        self.user_data = self.get_item_dict(preabil=preabil)
-        self.is_standart = self.check_standart()
-    
-    def __str__(self) -> str:
-        return f"Item{self.data['type'].capitalize()}Object {self.names}"
+        Примеры: 
+            Просто предмет
+                >>> f(12)
+                >>> {'item_id': "12"}
 
-    
-    def get_names(self) -> dict:
-        """Внесение всех имён в данные предмета"""
+            Предмет с предустоновленными данными
+                >>> f(30, {'uses': 10})
+                >>> {'item_id': "30", 'abilities': {'uses': 10}}
 
-        # Получаем словарь со всеми альтернативные имена предметов из локализации
-        items_names = get_all_locales('items_names')
-        data_names = self.data['name']
-        name = {}
+    '''
+    d_it = {'item_id': itemid, 'abilities': {}}
+    data = get_data(itemid)
 
-        # Проверяем есть ли ключ с языком в данных и вносим новые.
-        # Приоритетом является имя из items.json
-        for lang_code in items_names:
-            if lang_code not in data_names.keys():
-                if self.id in items_names[lang_code]:
-                    name[lang_code] = items_names[lang_code][self.id]
-                    self.data['name'][lang_code] = items_names[lang_code][self.id]
-            
-            else:
-                name[lang_code] = data_names[lang_code]
-        
-        return name
-    
-    def get_item_dict(self, preabil: dict = {}) -> dict:
-        ''' Создание словаря, хранящийся в инвентаре пользователя.\n
+    if 'abilities' in data.keys():
+        abl = {}
+        for k in data['abilities'].keys():
 
-            Примеры: 
-                Просто предмет
-                  >>> f(12)
-                  >>> {'item_id': "12"}
+            if type(data['abilities'][k]) == int:
+                abl[k] = data['abilities'][k]
 
-                Предмет с предустоновленными 
-                  >>> f(30, {'uses': 10})
-                  >>> {'item_id': "30", 'abilities': {'uses': 10}}
+            elif type(data['abilities'][k]) == dict:
+                abl[k] = random_dict(data['abilities'][k])
 
-        '''
-        d_it = {'item_id': self.id, 'abilities': {}}
+        d_it['abilities'] = abl
 
-        if 'abilities' in self.data.keys():
-            abl = {}
-            for k in self.data['abilities'].keys():
+    if preabil != {}:
+        if 'abilities' in d_it.keys():
+            for ak in d_it['abilities']:
+                if ak in preabil.keys():
 
-                if type(self.data['abilities'][k]) == int:
-                    abl[k] = self.data['abilities'][k]
+                    if type(preabil[ak]) == int:
+                        d_it['abilities'][ak] = preabil[ak]
 
-                elif type(self.data['abilities'][k]) == dict:
-                    abl[k] = random_dict(self.data['abilities'][k])
+                    elif type(preabil[ak]) == dict:
+                        d_it['abilities'][ak] = random_dict(preabil[ak])
 
-            d_it['abilities'] = abl
+    return d_it
 
-        if preabil != {}:
-            if 'abilities' in d_it.keys():
-                for ak in d_it['abilities']:
-                    if ak in preabil.keys():
+def is_standart(item: dict) -> bool:
+    """Определяем ли стандартный ли предмет*.
 
-                        if type(preabil[ak]) == int:
-                            d_it['abilities'][ak] = preabil[ak]
+    Для этого проверяем есть ли у него свои харрактеристик.\n
+    Если их нет - значит он точно стандартный.\n
+    Если они есть и не изменены - стандартный.
+    Если есть и изменены - изменённый.
+    """
+    data = get_data(item['item_id'])
 
-                        elif type(preabil[ak]) == dict:
-                            d_it['abilities'][ak] = random_dict(preabil[ak])
-
-        return d_it
-    
-    def check_standart(self) -> bool:
-        """Определяем ли стандартный ли предмет*.
-
-        Для этого проверяем есть ли у него свои харрактеристик.\n
-        Если их нет - значит он точно стандартный.\n
-        Если они есть и не изменены - стандартный.
-        """
-
-        if list(self.user_data.keys()) == ['item_id']:
-            return True
-        else:
-            if 'abilities' in self.user_data.keys():
-                if self.user_data['abilities'] == self.data['abilities']:
-                    return True
-                else:
-                    return False
-            else:
-                return True
-
-
-    def view(self) -> None:
-        """ Отображает все данные объекта."""
-        
-        print(f'ID: {self.id}')
-        print(f'NAMES: {self.names}')
-
-        print("USER_DATA: ", end='')
-        pprint(self.user_data)
-
-        print("DATA: ", end='')
-        pprint(self.data)
-
-
-class EatItem(ItemBase):
-
-    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
-        super().__init__(item_id, item_data, preabil)
-
-class EggItem(ItemBase):
-
-    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
-        super().__init__(item_id, item_data, preabil)
-
-class AccessoryItem(ItemBase):
-
-    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
-        super().__init__(item_id, item_data, preabil)
-
-class MaterialItem(ItemBase):
-
-    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
-        super().__init__(item_id, item_data, preabil)
-
-class RecipeItem(ItemBase):
-
-    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
-        super().__init__(item_id, item_data, preabil)
-
-class WeaponItem(ItemBase):
-
-    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
-        super().__init__(item_id, item_data, preabil)
-
-class AmmunitionItem(ItemBase):
-
-    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
-        super().__init__(item_id, item_data, preabil)
-
-class BackpackItem(ItemBase):
-
-    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
-        super().__init__(item_id, item_data, preabil)
-    
-class ArmorItem(ItemBase):
-
-    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
-        super().__init__(item_id, item_data, preabil)
-
-class FreezingItem(ItemBase):
-
-    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
-        super().__init__(item_id, item_data, preabil)
-
-class DefrostingItem(ItemBase):
-
-    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
-        super().__init__(item_id, item_data, preabil)
-
-class CaseItem(ItemBase):
-
-    def __init__(self, item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}) -> None:
-        super().__init__(item_id, item_data, preabil)
-
-
-
-def new(item_id: str | int = 0, item_data: dict = {}, preabil: dict = {}):
-    data = (item_id, item_data, preabil)
-    item_type = item_data['type']
-    class_dict = {
-        '+eat': EatItem, 'egg': EggItem,
-
-        'game_ac': AccessoryItem, 'journey_ac': AccessoryItem,
-        'unv_ac': AccessoryItem,  'hunt_ac': AccessoryItem,
-
-        'material': MaterialItem, 'recipe': RecipeItem,
-
-        'weapon': WeaponItem,  'ammunition': AmmunitionItem,
-        'backpack': BackpackItem, 'armor': ArmorItem,
-
-        'freezing': FreezingItem, 'defrosting': DefrostingItem,
-
-        'case': CaseItem
-    }
-
-    if item_type in class_dict.keys():
-        return class_dict[item_type](*data)
+    if list(item.keys()) == ['item_id']:
+        return True
     else:
-        return ItemBase(*data)
+        if 'abilities' in item.keys():
+            if item['abilities'] == data['abilities']:
+                return True
+            else:
+                return False
+        else:
+            return True
+        
+
+items_names = load_items_names()
