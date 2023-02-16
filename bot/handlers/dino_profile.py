@@ -3,14 +3,15 @@ from telebot.asyncio_handler_backends import State, StatesGroup
 
 from bot.const import GAME_SETTINGS
 from bot.exec import bot
-from bot.modules.data_format import chunks, list_to_keyboard, near_key_number
+from bot.modules.data_format import near_key_number
 from bot.modules.dinosaur import Dino, Egg
 from bot.modules.events import get_one_event
+from bot.modules.item import get_name
 from bot.modules.localization import get_data, t
 from bot.modules.markup import get_answer_keyboard
 from bot.modules.markup import markups_menu as m
-from bot.modules.user import User
 from bot.modules.states import DinoStates
+from bot.modules.user import User
 
 
 async def dino_profile(userid: int, dino: Dino, lang: str):
@@ -20,22 +21,24 @@ async def dino_profile(userid: int, dino: Dino, lang: str):
     replics = get_data('p_profile.replics', lang)
     status_rep = t(f'p_profile.stats.{dino.status}', lang)
 
-    season = get_one_event("time_year")
+    season = get_one_event('time_year')
     tem = GAME_SETTINGS['events']['time_year'][season]
 
-    qual = text_rare[dino.quality][0]
     stats_text = ''
 
+    # Генерация блока со статистикой
     for i in ['heal', 'eat', 'game', 'mood', 'energy']:
         repl = near_key_number(dino.stats[i], replics[i])
-        stats_text += f'{tem[i]} {repl} [ *{dino.stats[i]}%* ]\n'
+        stats_text += f'{tem[i]} {repl} \[ *{dino.stats[i]}%* ]\n'
+    
+    kwargs = {
+        'em_name': tem['name'], 'dino_name': dino.name,
+        'em_status': tem['status'], 'status': status_rep,
+        'em_rare': tem['rare'], 'qual': text_rare[dino.quality][0],
 
-    text = t('p_profile.profile_text', lang,
-             em_name=tem['name'], dino_name=dino.name,
-             em_status=tem['status'], status=status_rep,
-             em_rare=tem['rare'], qual=qual,
-             stats=stats_text
-             )
+        'stats': stats_text
+    }
+    text = t('p_profile.profile_text', lang, formating=False).format(**kwargs)
 
     if dino.status == 'journey':
         # w_t = bd_dino['journey_time'] - time.time()
@@ -63,27 +66,22 @@ async def dino_profile(userid: int, dino: Dino, lang: str):
         # text += text_dict['collecting_progress'].format(progress=prog)
         pass
 
-    # act_ii = []
-    # for itmk in dino.activ_items.keys():
-    #     itm = dino.activ_items[itmk]
+    # Генерация блока с аксессуарами
+    acsess = {
+        'em_game': tem['ac_game'], 'em_coll': tem['ac_collecting'],
+        'em_jour': tem['ac_journey'], 'em_sleep': tem['ac_sleep']
+    }
+    for key, item in dino.activ_items.items():
+        if not item:
+           acsess[key] = t(f'p_profile.no_item', lang)
+        else:
+            name = get_name(item['item_id'], lang)
+            if 'abilities' in item.keys() and 'endurance' in item['abilities'].keys():
+               acsess[key] = f'{name} \[ *{item["abilities"]["endurance"]}* ]'
+            else:
+                acsess[key] = f'{name}'
 
-    #     if itm == None:
-    #         act_ii.append(t(f'p_profile.no_item', lang))
-
-    #     else:
-    #         item = Functions.item_name(str(itm['item_id']), bd_user['language_code'])
-
-    #         if 'abilities' in itm.keys() and 'endurance' in itm['abilities'].keys():
-    #             act_ii.append(f"{item} \[ *{itm['abilities']['endurance']}* ]")
-    #         else:
-    #             act_ii.append(f'{item}')
-
-    # game, coll, jour, sleep = act_ii
-    # text += "\n\n" + text_dict['accs'].format(
-    #         game=game, coll=coll, jour=jour, sleep=sleep,
-    #         em_game=tem['ac_game'], em_coll=tem['ac_collecting'], em_jour=tem['ac_journey'], 
-    #         em_sleep=tem['ac_sleep']
-    # )
+    text += t('p_profile.accs', lang, formating=False).format(**acsess)
 
     # затычка на случай если не сгенерируется изображение
     generate_image = open(f'images/remain/no_generate.png', 'rb')
@@ -102,7 +100,8 @@ async def dino_profile(userid: int, dino: Dino, lang: str):
         )
 
 async def egg_profile(userid: int, egg: Egg, lang: str):
-    text = t('p_profile.incubation_text', lang, time_end=egg.remaining_incubation_time())
+    text = t('p_profile.incubation_text', lang, 
+             time_end=egg.remaining_incubation_time())
     img = egg.image()
 
     await bot.send_photo(userid, img, text, reply_markup=m(userid, 'last_menu', language_code=lang))
