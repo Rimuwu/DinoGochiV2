@@ -8,7 +8,6 @@ import pymongo
 import json
 import os
 import sys
-from bot.const import GAME_SETTINGS
 
 CONFIG_PATH = 'config.json'
 
@@ -22,7 +21,17 @@ class Config:
         self.logs_dir = 'bot/logs'
         self.active_tasks = True
         self.bot_group_id = 0
+        self.ssh = False
+
+        # self.ssh_on = False
         self.mongo_url = 'mongodb://localhost:27017'
+
+        # self.ssh_on = True
+        self.ssh_host = 'db.example.com'
+        self.ssh_port = 21
+        self.ssh_user = 'user'
+        self.ssh_password = 'password'
+
         self.debug = False
 
     def fromJSON(self, js: str) -> None:
@@ -43,6 +52,7 @@ class Config:
             sort_keys=True, indent=4)
  
 def check_base(client: pymongo.MongoClient):
+    from bot.const import GAME_SETTINGS
     if client.server_info(): print(f"{client.address}, mongo connected")
 
     created_base = client.list_database_names()
@@ -74,7 +84,19 @@ if __name__ == '__main__':
     with open(CONFIG_PATH, 'w') as f:
         f.write(conf.toJSON())
         sys.exit(f"{CONFIG_PATH} created! Please don't forget to set it up!")
+else:
+    load()
+    if conf.ssh:
+        from ssh_pymongo import MongoSession
 
-load()
-mongo_client = pymongo.MongoClient(conf.mongo_url)
-check_base(mongo_client) # Проверка базы данных на наличие коллекций
+        session = MongoSession(
+            host=conf.ssh_host,
+            port=conf.ssh_port,
+            user=conf.ssh_user,
+            password=conf.ssh_password,
+        )
+        mongo_client = session.connection
+    else:
+        mongo_client = pymongo.MongoClient(conf.mongo_url)
+
+    check_base(mongo_client) # Проверка базы данных на наличие коллекций
