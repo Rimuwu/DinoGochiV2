@@ -49,7 +49,7 @@ def get_data(key: str, locale: str = "en") -> Any:
     return localed_data
 
 
-def t(key: str, locale: str = "en", **kwargs) -> str:
+def t(key: str, locale: str = "en", formating: bool = True, **kwargs) -> str:
     """Возвращает текст на нужном языке
 
     Args:
@@ -59,7 +59,9 @@ def t(key: str, locale: str = "en", **kwargs) -> str:
     Returns:
         str: текст на нужном языке
     """
-    text = str(get_data(key, locale)).format(**kwargs) #Добавляем переменные в текст
+    text = str(get_data(key, locale)) #Добавляем переменные в текст
+    if formating:
+        text = text.format(**kwargs)
 
     return text
 
