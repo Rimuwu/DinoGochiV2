@@ -55,13 +55,12 @@ def check_base(client: pymongo.MongoClient):
     from bot.const import GAME_SETTINGS
     if client.server_info(): print(f"{client.address}, mongo connected")
 
-    created_base = client.list_database_names()
     collections = GAME_SETTINGS['collections']
 
     for base in collections.keys():
-        if base not in created_base:
-            database = client[base]
-            for col in collections[base]:
+        database = client[base]
+        for col in collections[base]:
+            if col not in database.list_collection_names():
                 database.create_collection(col)
     
     print('The databases are checked and prepared for use.')
