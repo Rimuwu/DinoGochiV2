@@ -23,15 +23,18 @@ class Dino:
         self.status = 'pass'
         self.name = 'name'
         self.quality = 'com'
+        self.birth_time = 0
+        
+        self.notifications = {}
 
         self.stats = {
-                'hp': 10, 'eat': 10,
+                'heal': 10, 'eat': 10,
                 'game': 10, 'mood': 10,
                 'energy': 10
         }
 
         self.activ_items = {
-                'game': None, 'hunt': None,
+                'game': None, 'collecting': None,
                 'journey': None, 'sleep': None,
                 
                 'armor': None,  'weapon': None,
@@ -125,7 +128,7 @@ def random_dino(quality: str='com') -> int:
     """
     return choice(DINOS[quality])
     
-def incubation_dino(egg_id: int, owner_id: int, inc_time: int=0, rarity: str='random', dino_id: int=0):
+def incubation_dino(egg_id: int, owner_id: int, inc_time: int=0, quality: str='random', dino_id: int=0):
     """Создание инкубируемого динозавра
     """
 
@@ -133,7 +136,7 @@ def incubation_dino(egg_id: int, owner_id: int, inc_time: int=0, rarity: str='ra
         'incubation_time': inc_time, 
         'egg_id': egg_id,
         'owner_id': owner_id,
-        'rarity': rarity,
+        'quality': quality,
         'dino_id': dino_id
     }
     
@@ -157,15 +160,18 @@ def insert_dino(owner_id: int, dino_id: int=0, quality: str='random'):
        'status': 'pass',
        'name': dino_data['name'],
        'quality': None,
+       'birth_time': int(time()),
+
+       'notifications': {},
 
        'stats': {
-            'hp': 100, 'eat': randint(70, 100),
+            'heal': 100, 'eat': randint(70, 100),
             'game': randint(30, 90), 'mood': randint(20, 100),
             'energy': randint(80, 100)
         },
 
        'activ_items': {
-            'game': None, 'hunt': None,
+            'game': None, 'collecting': None,
             'journey': None, 'sleep': None,
             
             'armor': None,  'weapon': None,
