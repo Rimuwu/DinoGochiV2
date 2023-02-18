@@ -23,6 +23,6 @@ def run():
     log('У вас логи не логятся :/')
     log('Не вижу ошибок == нет ошибок!')
 
-    add_task(bot.infinity_polling)
-    log('Все готово! Взлетаем!', prefix='🟢 ')
+    add_task(bot.infinity_polling, skip_pending=True, timeout=300)
+    log('Все готово! Взлетаем!', prefix='Start')
     run_taskmanager()
