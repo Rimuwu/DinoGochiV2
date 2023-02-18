@@ -1,9 +1,8 @@
 from telebot import types
-from telebot.asyncio_handler_backends import State, StatesGroup
 
 from bot.const import GAME_SETTINGS
 from bot.exec import bot
-from bot.modules.data_format import near_key_number
+from bot.modules.data_format import near_key_number, seconds_to_str
 from bot.modules.dinosaur import Dino, Egg
 from bot.modules.events import get_one_event
 from bot.modules.item import get_name
@@ -101,8 +100,10 @@ async def dino_profile(userid: int, dino: Dino, lang: str):
 
 async def egg_profile(userid: int, egg: Egg, lang: str):
     text = t('p_profile.incubation_text', lang, 
-             time_end=egg.remaining_incubation_time())
-    img = egg.image()
+             time_end=seconds_to_str(
+        egg.remaining_incubation_time(), lang)
+        )
+    img = egg.image(lang)
 
     await bot.send_photo(userid, img, text, reply_markup=m(userid, 'last_menu', language_code=lang))
 
@@ -115,9 +116,10 @@ async def dino_handler(message: types.Message):
 
     ret_data = get_answer_keyboard(elements, lang)
 
+
     if ret_data['case'] == 0:
         await bot.send_message(user.userid, 
-            t('p_profile.no_dinos_eggs'), lang)
+            t('p_profile.no_dinos_eggs', lang))
 
     elif ret_data['case'] == 1:
         element = ret_data['element']
