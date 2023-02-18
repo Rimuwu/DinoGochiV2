@@ -13,7 +13,7 @@ async def incubation():
     data = list(incubations.find({'incubation_time': {'$lte': time()}})).copy()
 
     for egg in data:
-        insert_dino(egg['owner_id'], egg['dino_id']) #создаём динозавра
+        insert_dino(egg['owner_id'], egg['dino_id'], egg['quality']) #создаём динозавра
         incubations.delete_one({'_id': egg['_id']}) #удаляем динозавра из инкубаций
         await user_notification(egg['owner_id'], 'incubation_ready') #отправляем уведомление
     
