@@ -1,7 +1,8 @@
 {   
     "collections": {
-        "bot": ["users", "dinosaurs", "items", "friends", "quests", "products", "referals", "management"],
-        "tasks": ["game", "incubation", "journey", "sleep", "collecting"]
+        "bot": ["users", "dinosaurs", "items", "products", "management"],
+        "tasks": ["game", "incubation", "journey", "sleep", "collecting"],
+        "connections": ["referals", "friends", "dino_owners"]
     },
 
     "dino_rarity": {
