@@ -3,6 +3,8 @@ from bot.config import mongo_client, conf
 from time import time
 from bot.modules.notifications import user_notification
 from bot.modules.dinosaur import insert_dino
+from bot.exec import bot
+from bot.modules.data_format import user_name
 
 
 incubations = mongo_client.tasks.incubation
@@ -13,9 +15,19 @@ async def incubation():
     data = list(incubations.find({'incubation_time': {'$lte': time()}})).copy()
 
     for egg in data:
-        insert_dino(egg['owner_id'], egg['dino_id'], egg['quality']) #создаём динозавра
-        incubations.delete_one({'_id': egg['_id']}) #удаляем динозавра из инкубаций
-        await user_notification(egg['owner_id'], 'incubation_ready') #отправляем уведомление
+        #создаём динозавра
+        insert_dino(egg['owner_id'], egg['dino_id'], egg['quality']) 
+
+        #удаляем динозавра из инкубаций
+        incubations.delete_one({'_id': egg['_id']}) 
+
+        #отправляем уведомление
+        chat_user = await bot.get_chat_member(egg['owner_id'], egg['owner_id'])
+        user = chat_user.user
+
+        name = user_name(user)
+        await user_notification(egg['owner_id'], 
+                                'incubation_ready', user.language_code,user_name=name) 
     
 if __name__ != '__main__':
     if conf.active_tasks:
