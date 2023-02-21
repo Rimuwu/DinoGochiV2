@@ -60,13 +60,6 @@ class Dino:
     def __str__(self) -> str:
         return self.name
 
-
-    def view(self) :
-        """Отображает все данные объекта."""
-
-        print('DATA: ', end='')
-        pprint(self.__dict__)
-
     def update(self, update_data: dict):
         """
         {"$set": {'stats.eat': 12}} - установить
@@ -79,14 +72,27 @@ class Dino:
         """ Удаление всего, что связано с дино
         """
         dinosaurs.delete_one({'dino_id': self._id})
-        for collection in [game_task, sleep_task, 
-                           journey_task, collecting_task]:
+        for collection in [game_task, sleep_task, journey_task, 
+                           collecting_task]:
             collection.delete_many({'dino_id': self._id})
+
 
     def image(self, profile_view: int=1):
         """Сгенерировать изображение объекта
         """
         return create_dino_image(self.data_id, self.stats, self.quality, profile_view)
+
+    def collecting(self, coll_type: str):
+        return start_collecting(self._id, coll_type)
+    
+    def game(self, duration: int=1800, percent: int=1):
+        return start_game(self._id, duration, percent)
+    
+    def journey(self, duration: int=1800):
+        return start_journey(self._id, duration)
+    
+    def sleep(self, s_type: str='long', duration: int=1):
+        return start_sleep(self._id, s_type, duration)
 
 
 class Egg:
@@ -110,13 +116,6 @@ class Egg:
     def __str__(self) -> str:
         return f'{self._id} {self.rarity}'
 
-
-    def view(self):
-        """ Отображает все данные объекта."""
-
-        print('DATA: ', end='')
-        pprint(self.__dict__)
-
     def update(self, update_data: dict):
         """
         {"$set": {'stats.eat': 12}} - установить
@@ -127,6 +126,7 @@ class Egg:
     
     def delete(self):
         incubations.delete_one({'_id': self._id})
+
 
     def image(self, lang: str='en'):
         """Сгенерировать изображение объекта.
