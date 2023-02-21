@@ -6,10 +6,16 @@ from bot.config import mongo_client
 from bot.const import DINOS, GAME_SETTINGS
 from bot.modules.localization import log
 from bot.modules.images import create_egg_image, create_dino_image
-from bot.modules.data_format import random_quality
+from bot.modules.data_format import random_quality, random_code
 
 dinosaurs = mongo_client.bot.dinosaurs
 incubations = mongo_client.tasks.incubation
+dino_owners = mongo_client.connections.mongo_client
+
+game_task = mongo_client.tasks.game
+sleep_task = mongo_client.tasks.sleep
+journey_task = mongo_client.tasks.journey
+collecting_task = mongo_client.tasks.collecting
 
 class Dino:
 
@@ -17,13 +23,12 @@ class Dino:
         """Создание объекта динозавра."""
         self._id = baseid
 
-        self.dino_id = 0
-        self.owner_id = 0
+        self.data_id = 0
+        self.alt_id = 'alt_id' #альтернативный id 
 
         self.status = 'pass'
         self.name = 'name'
         self.quality = 'com'
-        self.birth_time = 0
         
         self.notifications = {}
 
@@ -39,6 +44,11 @@ class Dino:
                 
                 'armor': None,  'weapon': None,
                 'backpack': None
+        }
+
+        self.memory = {
+            'games': [],
+            'eat': []
         }
 
         self.UpdateData(dinosaurs.find_one({"_id": self._id}))
@@ -66,12 +76,17 @@ class Dino:
         # self.UpdateData(data) #Не получается конвертировать в словарь возвращаемый объект
     
     def delete(self):
+        """ Удаление всего, что связано с дино
+        """
         dinosaurs.delete_one({'dino_id': self._id})
-    
+        for collection in [game_task, sleep_task, 
+                           journey_task, collecting_task]:
+            collection.delete_many({'dino_id': self._id})
+
     def image(self, profile_view: int=1):
         """Сгенерировать изображение объекта
         """
-        return create_dino_image(self.dino_id, self.stats, self.quality, profile_view)
+        return create_dino_image(self.data_id, self.stats, self.quality, profile_view)
 
 
 class Egg:
@@ -146,21 +161,39 @@ def incubation_dino(egg_id: int, owner_id: int, inc_time: int=0, quality: str='r
     log(prefix='InsertEgg', message=f'owner_id: {owner_id} data: {dino}', lvl=0)
     return incubations.insert_one(dino)
 
-def insert_dino(owner_id: int, dino_id: int=0, quality: str='random'):
+def create_dino_connection(dino_baseid, owner_id: int, con_type: str='owner'):
+    """ Создаёт связь в базе между пользователем и динозавром
+        con_type = owner / add_owner
+    """
+
+    assert con_type in ['owner', 'add_owner'], f'Неподходящий аргумент {con_type}'
+
+    con = {
+        'dino_id': dino_baseid,
+        'owner_id': owner_id,
+        'type': con_type
+    }
+
+    log(prefix='CreateConnection', 
+        message=f'Dino - Owner Data: {con}', 
+        lvl=0)
+    return dino_owners.insert_one(con)
+
+def insert_dino(owner_id: int=0, dino_id: int=0, quality: str='random'):
     """Создания динозавра в базе
+       + связь с владельцем если передан owner_id 
     """
     if quality == 'random': quality = random_quality()
-    if not dino_id: dino_id= random_dino(quality)
+    if not dino_id: dino_id = random_dino(quality)
 
     dino_data = DINOS['elements'][str(dino_id)]
     dino = {
-       'dino_id': dino_id,
-       'owner_id': owner_id,
+       'data_id': dino_id,
+       'alt_id': f'{owner_id}_{random_code(8)}',
 
        'status': 'pass',
        'name': dino_data['name'],
        'quality': None,
-       'birth_time': int(time()),
 
        'notifications': {},
 
@@ -176,9 +209,94 @@ def insert_dino(owner_id: int, dino_id: int=0, quality: str='random'):
             
             'armor': None,  'weapon': None,
             'backpack': None
-       }
+       },
+
+       "memory": {
+            'games': [],
+            'eat': []
+        },
     }
     dino['quality'] = quality or dino_data['quality']
 
-    log(prefix='InsertDino', message=f'owner_id: {owner_id} dino_id: {dino["dino_id"]} name: {dino["name"]} quality: {dino["quality"]}', lvl=0)
-    return dinosaurs.insert_one(dino)
+    log(prefix='InsertDino', 
+        message=f'owner_id: {owner_id} dino_id: {dino["dino_id"]} name: {dino["name"]} quality: {dino["quality"]}', 
+        lvl=0)
+    
+    result = dinosaurs.insert_one(dino)
+    if owner_id != 0:
+        # Создание связи, если передан id владельца
+        create_dino_connection(result.inserted_id, owner_id)
+
+    return result
+
+def start_game(dino_baseid, duration: int=1800, percent: int=1):
+    """Запуск активности "игра". 
+       + Изменение статуса динозавра 
+    """
+
+    game = {
+        'dino_id': dino_baseid,
+        'game_start': int(time()),
+        'game_end': int(time()) + duration,
+        'game_percent': percent
+    }
+    result = game_task.insert_one(game)
+    dinosaurs.update_one({"_id": dino_baseid}, 
+                         {'$set': {'status': 'game'}})
+    return result
+
+def start_sleep(dino_baseid, s_type: str='long', duration: int=1):
+    """Запуск активности "сон". 
+       + Изменение статуса динозавра 
+    """
+
+    assert s_type in ['long', 'short'], f'Неподходящий аргумент {s_type}'
+
+    sleep = {
+        'dino_id': dino_baseid,
+        'sleep_start': int(time()),
+        'sleep_type': s_type
+    }
+    if s_type == 'short':
+        sleep['sleep_end'] = int(time()) + duration
+
+    result = sleep_task.insert_one(sleep)
+    dinosaurs.update_one({"_id": dino_baseid}, 
+                         {'$set': {'status': 'sleep'}})
+    return result
+
+def start_journey(dino_baseid, duration: int=1800):
+    """Запуск активности "путешествие". 
+       + Изменение статуса динозавра 
+    """
+
+    game = {
+        'dino_id': dino_baseid,
+        'journey_start': int(time()),
+        'journey_end': int(time()) + duration,
+        'journey_log': [],
+        'items': [],
+        'coins': 0
+    }
+    result = journey_task.insert_one(game)
+    dinosaurs.update_one({"_id": dino_baseid}, 
+                         {'$set': {'status': 'journey'}})
+    return result
+
+def start_collecting(dino_baseid, coll_type: str):
+    """Запуск активности "сбор пищи". 
+       + Изменение статуса динозавра 
+    """
+
+    assert coll_type in ['collecting', 'hunt', 'fishing', 'all'], f'Неподходящий аргумент {coll_type}'
+
+    game = {
+        'dino_id': dino_baseid,
+        'collecting_type': coll_type
+    }
+    result = collecting_task.insert_one(game)
+    dinosaurs.update_one({"_id": dino_baseid}, 
+                         {'$set': {'status': 'collecting'}})
+    return result
+
+
