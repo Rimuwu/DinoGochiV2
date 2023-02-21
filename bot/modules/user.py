@@ -7,7 +7,9 @@ from bot.modules.localization import log
 users = mongo_client.bot.users
 items = mongo_client.bot.items
 dinosaurs = mongo_client.bot.dinosaurs
+
 incubations = mongo_client.tasks.incubation
+dino_owners = mongo_client.connections.mongo_client
 
 
 class User:
@@ -34,7 +36,14 @@ class User:
         self.xp = 0
         self.dead_dinos = 0
 
-        self.user_dungeon = { 'statistics': [] }
+        self.user_dungeon = { 
+            'statistics': [],
+            'quests': {
+                'activ_quests': [],
+                'max_quests': 5,
+                'ended': 0
+                }
+            }
         
         self.UpdateData(users.find_one({"userid": self.userid})) #Обновление данных
         
@@ -79,10 +88,36 @@ class User:
     def full_delete(self):
         """Удаление юзера и всё с ним связанное из базы.
         """
-        for collection in [items, dinosaurs]:
+
+        for collection in [items]:
             collection.delete_many({'owner_id': self.userid})
-        
-        users.delete_one({'userid': self.userid})
+
+        """ При полном удалении есть возможность, что у динозавра
+            есть другие владельцы, значит мы должны передать им полные права
+            или наобраот удалить, чтобы не остался пустой динозавр
+        """
+        #запрашиваем все связи с владельцем
+        dinos_conn = list(dino_owners.find({'owner_id': self.userid}))
+        for conn in dinos_conn:
+            #Если он главный
+            if conn['type'] == 'owner':
+                #Удаляем его связь
+                dino_owners.delete_one({'_id': conn['_id']})
+
+                #Запрашиваем всех владельцев динозавра (тут уже не будет главного)
+                alt_conn_fo_dino = list(dino_owners.find(
+                    {'dino_id': conn['dino_id'], 'type': 'add_owner'}))
+
+                #Проверяем, пустой ли список
+                if len(alt_conn_fo_dino) > 1:
+                    #Связь с кем то есть, ищем первого попавшегося и делаем главным
+                    dino_owners.update_one({'dino_id': conn['dino_id']}, {'$set': {'type': 'owner'}})
+                else:
+                    # Если пустой, то удаляем динозавра (связи уже нет)
+                    Dino(conn['dino_id']).delete()
+
+        # Удаляем юзера
+        self.delete()
     
     def delete(self):
         """Удаление юзера из базы.
@@ -91,7 +126,6 @@ class User:
 
 
 def insert_user(userid: int):
-
     user_dict = {
         'userid': userid,
         'last_message': int(time.time()),
@@ -114,8 +148,8 @@ def insert_user(userid: int):
 def get_dinos(userid) -> list:
     """Возвращает список с объектами динозавров."""
     dino_list = []
-    for dino_obj in dinosaurs.find({'owner_id': userid}, {'_id': 1}):
-        dino_list.append(Dino(dino_obj['_id']))
+    for dino_obj in dino_owners.find({'owner_id': userid}, {'dino_id': 1}):
+        dino_list.append(Dino(dino_obj['dino_id']))
 
     return dino_list
     
