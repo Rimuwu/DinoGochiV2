@@ -25,7 +25,7 @@ class User:
         self.notifications = {}
         self.settings = {
             'notifications': True,
-            'dino_id': None,
+            'last_dino': None,
             'profile_view': 1,
             'inv_view': [2, 3],
             'faq': True
@@ -128,18 +128,27 @@ class User:
 def insert_user(userid: int):
     user_dict = {
         'userid': userid,
-        'last_message': int(time.time()),
+
+        'last_message_time': int(time.time()),
         'last_markup': 'main_menu',
-        'notifications': {},
+
         'settings': { 'notifications': True,
-                      'dino_id': None,
+                      'last_dino': None,
                       'profile_view': 1,
                       'inv_view': [2, 3], 
                       'faq': True
                     },
         'coins': 10, 'lvl': 0, 'xp': 0,
         'dead_dinos': 0,
-        'user_dungeon': { 'statistics': [] } 
+
+        'user_dungeon': { 
+            'statistics': [],
+            'quests': {
+                'activ_quests': [],
+                'max_quests': 5,
+                'ended': 0
+                }
+            }
     }
 
     log(prefix='InsertUser', message=f'User: {userid}', lvl=0)
