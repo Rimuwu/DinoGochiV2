@@ -216,17 +216,18 @@ def insert_dino(owner_id: int=0, dino_id: int=0, quality: str='random'):
             'eat': []
         },
     }
+
     dino['quality'] = quality or dino_data['quality']
 
     log(prefix='InsertDino', 
-        message=f'owner_id: {owner_id} dino_id: {dino["dino_id"]} name: {dino["name"]} quality: {dino["quality"]}', 
+        message=f'owner_id: {owner_id} dino_id: {dino_id} name: {dino["name"]} quality: {dino["quality"]}', 
         lvl=0)
-    
+
     result = dinosaurs.insert_one(dino)
     if owner_id != 0:
         # Создание связи, если передан id владельца
         create_dino_connection(result.inserted_id, owner_id)
-
+        
     return result
 
 def start_game(dino_baseid, duration: int=1800, percent: int=1):
