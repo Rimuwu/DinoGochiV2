@@ -1,19 +1,22 @@
 from telebot.types import ReplyKeyboardMarkup
 
 from bot.config import mongo_client
-from bot.modules.data_format import list_to_keyboard, chunks
-from bot.modules.localization import tranlate_data, t
+from bot.modules.data_format import chunks, list_to_keyboard
 from bot.modules.dinosaur import Dino, Egg
+from bot.modules.localization import t, tranlate_data
+from bot.modules.logs import log
 
 users = mongo_client.bot.users
 
 def markups_menu(userid: int, markup_key: str = 'main_menu', language_code: str = 'en') -> ReplyKeyboardMarkup:
     """Главная функция создания меню для клавиатур
        menus:
-       main_menu, settings_menu, last_menu
+       main_menu, settings_menu, profile_menu
+       last_menu, back_menu
     """
     prefix, buttons = 'commands_name.', []
     add_back_button = False
+
 
     if markup_key == 'back_menu':
         # Вернутся на одно меню назад
@@ -21,13 +24,17 @@ def markups_menu(userid: int, markup_key: str = 'main_menu', language_code: str 
                       'main_menu', 'profile_menu', 'market_menu'
                       'main_menu', 'friends_menu', 'referal_menu'
                       ]
+        markup_key = users.find_one(
+           {'userid': userid}, {'last_markup': 1}
+        ).get('last_markup') #type: ignore
+
         menu_ind = menus_list.index(markup_key)
-        if menu_ind:
+        if markup_key and markup_key != 'main_menu':
             markup_key = menus_list[menu_ind - 1]
         else:
             markup_key = 'main_menu'
 
-    elif markup_key == 'last_menu':
+    if markup_key == 'last_menu':
        """Возращает к последнему меню
        """
        markup_key = users.find_one(
@@ -50,14 +57,27 @@ def markups_menu(userid: int, markup_key: str = 'main_menu', language_code: str 
             buttons[1].remove('faq')
     
     elif markup_key == 'settings_menu':
+        # Меню настроек
         prefix = 'commands_name.settings.'
         add_back_button = True
-        # Меню настроек
         buttons = [
             ['notification', 'faq'],
             ['inventory', 'dino_profile'],
             ['dino_name'],
         ]
+    
+    elif markup_key == 'profile_menu':
+        # Меню ghjabkz
+        prefix = 'commands_name.profile.'
+        add_back_button = True
+        buttons = [
+            ['information', 'inventory'],
+            ['rayting', 'accessories', 'market'],
+        ]
+    
+    else:
+        log(prefix='Markup', 
+            message=f'not_found_key User: {userid}, Data: {markup_key}', lvl=2)
     
     buttons = tranlate_data(
         data=buttons, 
@@ -71,7 +91,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu', language_code: str 
 
 def get_answer_keyboard(elements: list[Dino | Egg], lang: str='en') -> dict:
     """
-    
+       
        return 
        {'case': 0} - нет динозавров / яиц
        {'case': 1, 'element': Dino | Egg} - 1 динозавр / яйцо 
