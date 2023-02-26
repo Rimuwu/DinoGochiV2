@@ -22,7 +22,15 @@
             "faq": "❗ Справочник",
             "actions_menu": "🕹 Действия",
             "profile_menu": "👁‍🗨 Профиль",
-            "dino-tavern_menu": "🍺 Дино-таверна"
+            "dino-tavern_menu": "🍺 Дино-таверна",
+
+            "settings": {
+                "notification": "❗ Уведомления",
+                "faq": "⁉ Видимость FAQ",
+                "dino_name": "💬 Переименовать динозавра",
+                "inventory": "🎞 Инвентарь",
+                "dino_profile": "🦕 Профиль"
+            }
         },
 
         "rare": {
