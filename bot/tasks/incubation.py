@@ -22,12 +22,16 @@ async def incubation():
         incubations.delete_one({'_id': egg['_id']}) 
 
         #отправляем уведомление
-        chat_user = await bot.get_chat_member(egg['owner_id'], egg['owner_id'])
-        user = chat_user.user
+        try:
+            chat_user = await bot.get_chat_member(egg['owner_id'], egg['owner_id'])
+            user = chat_user.user
+        except:
+            user = None
 
-        name = user_name(user)
-        await user_notification(egg['owner_id'], 
-                                'incubation_ready', user.language_code,user_name=name) 
+        if user:
+            name = user_name(user)
+            await user_notification(egg['owner_id'], 
+                        'incubation_ready', user.language_code,user_name=name) 
     
 if __name__ != '__main__':
     if conf.active_tasks:
