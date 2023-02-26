@@ -3,7 +3,7 @@ from bot.modules.localization import t
 from bot.modules.logs import log
 
 def dino_notification(dino_id, not_type: str):
-    """ Те уведомления, которые нужно отслеживать и отсылать 1 паз
+    """ Те уведомления, которые нужно отслеживать и отсылать 1 раз
     """
     print(dino_id, not_type)
 
@@ -25,4 +25,4 @@ async def user_notification(user_id: int, not_type: str, lang: str='en', **kwarg
     except Exception as error: 
         log(prefix='Notification Error', 
             message=f'User: {user_id}, Data: {not_type} Error: {error}', 
-            lvl=0)
+            lvl=3)
