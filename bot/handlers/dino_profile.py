@@ -116,7 +116,6 @@ async def dino_handler(message: types.Message):
 
     ret_data = get_answer_keyboard(elements, lang)
 
-
     if ret_data['case'] == 0:
         await bot.send_message(user.userid, 
             t('p_profile.no_dinos_eggs', lang))
