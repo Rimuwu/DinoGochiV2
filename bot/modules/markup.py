@@ -10,11 +10,24 @@ users = mongo_client.bot.users
 def markups_menu(userid: int, markup_key: str = 'main_menu', language_code: str = 'en') -> ReplyKeyboardMarkup:
     """Главная функция создания меню для клавиатур
        menus:
-       main_menu, last_menu
+       main_menu, settings_menu, last_menu
     """
     prefix, buttons = 'commands_name.', []
+    add_back_button = False
 
-    if markup_key == 'last_menu':
+    if markup_key == 'back_menu':
+        # Вернутся на одно меню назад
+        menus_list = ['main_menu', 'settings_menu', 
+                      'main_menu', 'profile_menu', 'market_menu'
+                      'main_menu', 'friends_menu', 'referal_menu'
+                      ]
+        menu_ind = menus_list.index(markup_key)
+        if menu_ind:
+            markup_key = menus_list[menu_ind - 1]
+        else:
+            markup_key = 'main_menu'
+
+    elif markup_key == 'last_menu':
        """Возращает к последнему меню
        """
        markup_key = users.find_one(
@@ -25,11 +38,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu', language_code: str 
         users.update_one({"userid": userid}, {'$set': {'last_markup': markup_key}})
 
     if markup_key == 'main_menu':
-        """ Главное меню
-
-            Дополнительые аргументы:
-            faq - если True, то кнопка справочника не показывается
-        """
+        # Главное меню
         buttons = [
             ['dino_profile', 'actions_menu', 'profile_menu'],
             ['settings_menu', 'friends_menu', 'faq'],
@@ -40,10 +49,23 @@ def markups_menu(userid: int, markup_key: str = 'main_menu', language_code: str 
         if settings.get('faq', 0): #Если передаём faq, то можно удалить кнопку #type: ignore
             buttons[1].remove('faq')
     
+    elif markup_key == 'settings_menu':
+        prefix = 'commands_name.settings.'
+        add_back_button = True
+        # Меню настроек
+        buttons = [
+            ['notification', 'faq'],
+            ['inventory', 'dino_profile'],
+            ['dino_name'],
+        ]
+    
     buttons = tranlate_data(
         data=buttons, 
         locale=language_code, 
         key_prefix=prefix) #Переводим текст внутри списка
+
+    if add_back_button:
+        buttons.append([t('buttons_name.back', language_code)])
     
     return list_to_keyboard(buttons)
 
