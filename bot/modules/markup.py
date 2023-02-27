@@ -13,9 +13,10 @@ def back_menu(userid) -> str:
     """
     markup_key = 'main_menu'
     menus_list = ['main_menu', 'settings_menu', 
-                  'main_menu', 'profile_menu', 'market_menu'
-                  'main_menu', 'friends_menu', 'referal_menu'
-                 ]
+                  'main_menu', 'profile_menu', 'market_menu',
+                  'main_menu', 'friends_menu', 'referal_menu',
+                  'main_menu', 'dino_tavern_menu', 'dungeon_menu'
+                 ] # схема всех путей меню клавиатур
     user_dict = users.find_one(
         {'userid': userid}, {'last_markup': 1}
     )
@@ -23,12 +24,8 @@ def back_menu(userid) -> str:
         markup_key = user_dict.get('last_markup', 'main_menu')
 
     menu_ind = menus_list.index(markup_key)
-    if markup_key and markup_key != 'main_menu':
-        markup_key = menus_list[menu_ind - 1]
-    else:
-        markup_key = 'main_menu'
-    
-    return markup_key
+    result = menus_list[menu_ind - 1]
+    return result
 
 def markups_menu(userid: int, markup_key: str = 'main_menu', language_code: str = 'en') -> ReplyKeyboardMarkup:
     """Главная функция создания меню для клавиатур
@@ -42,9 +39,11 @@ def markups_menu(userid: int, markup_key: str = 'main_menu', language_code: str 
     if markup_key == 'last_menu':
        """Возращает к последнему меню
        """
-       markup_key = users.find_one(
+       user_dict = users.find_one(
            {'userid': userid}, {'last_markup': 1}
-        ).get('last_markup') #type: ignore
+        )
+       if user_dict:
+           markup_key = user_dict.get('last_markup')
         
     else: #Сохранение последнего markup
         users.update_one({"userid": userid}, {'$set': {'last_markup': markup_key}})
@@ -58,7 +57,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu', language_code: str 
         ]
         settings = users.find_one({'userid': userid}, {'settings': 1}) or {}
 
-        if settings.get('faq', 0): #Если передаём faq, то можно удалить кнопку #type: ignore
+        if settings.get('faq', 0): #Если передаём faq, то можно удалить кнопку
             buttons[1].remove('faq')
     
     elif markup_key == 'settings_menu':
@@ -72,12 +71,30 @@ def markups_menu(userid: int, markup_key: str = 'main_menu', language_code: str 
         ]
     
     elif markup_key == 'profile_menu':
-        # Меню ghjabkz
+        # Меню профиля
         prefix = 'commands_name.profile.'
         add_back_button = True
         buttons = [
             ['information', 'inventory'],
             ['rayting', 'accessories', 'market'],
+        ]
+    
+    elif markup_key == 'friends_menu':
+        # Меню друзей
+        prefix = 'commands_name.friends.'
+        add_back_button = True
+        buttons = [
+            ['add_friend', 'friends_list', 'remove_friend'],
+            ['requests', 'referal'],
+        ]
+    
+    elif markup_key == 'market_menu':
+        # Меню рынка
+        prefix = 'commands_name.market.'
+        add_back_button = True
+        buttons = [
+            ['random', 'find'],
+            ['add_product', 'product_list', 'remove_product'],
         ]
     
     else:
