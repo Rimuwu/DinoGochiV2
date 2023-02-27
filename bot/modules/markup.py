@@ -8,31 +8,36 @@ from bot.modules.logs import log
 
 users = mongo_client.bot.users
 
+def back_menu(userid) -> str:
+    """Возвращает предыдущее меню
+    """
+    markup_key = 'main_menu'
+    menus_list = ['main_menu', 'settings_menu', 
+                  'main_menu', 'profile_menu', 'market_menu'
+                  'main_menu', 'friends_menu', 'referal_menu'
+                 ]
+    user_dict = users.find_one(
+        {'userid': userid}, {'last_markup': 1}
+    )
+    if user_dict:
+        markup_key = user_dict.get('last_markup', 'main_menu')
+
+    menu_ind = menus_list.index(markup_key)
+    if markup_key and markup_key != 'main_menu':
+        markup_key = menus_list[menu_ind - 1]
+    else:
+        markup_key = 'main_menu'
+    
+    return markup_key
+
 def markups_menu(userid: int, markup_key: str = 'main_menu', language_code: str = 'en') -> ReplyKeyboardMarkup:
     """Главная функция создания меню для клавиатур
        menus:
        main_menu, settings_menu, profile_menu
-       last_menu, back_menu
+       last_menu
     """
     prefix, buttons = 'commands_name.', []
     add_back_button = False
-
-
-    if markup_key == 'back_menu':
-        # Вернутся на одно меню назад
-        menus_list = ['main_menu', 'settings_menu', 
-                      'main_menu', 'profile_menu', 'market_menu'
-                      'main_menu', 'friends_menu', 'referal_menu'
-                      ]
-        markup_key = users.find_one(
-           {'userid': userid}, {'last_markup': 1}
-        ).get('last_markup') #type: ignore
-
-        menu_ind = menus_list.index(markup_key)
-        if markup_key and markup_key != 'main_menu':
-            markup_key = menus_list[menu_ind - 1]
-        else:
-            markup_key = 'main_menu'
 
     if markup_key == 'last_menu':
        """Возращает к последнему меню
