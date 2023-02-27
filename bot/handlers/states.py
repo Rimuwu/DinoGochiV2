@@ -9,7 +9,6 @@ from bot.modules.markup import markups_menu as m
 async def cancel(message: Message):
     """Состояние отмены
     """
-
     await bot.send_message(message.chat.id, "❌", 
                            reply_markup=m(message.from_user.id, 
                            'last_menu', message.from_user.language_code))
