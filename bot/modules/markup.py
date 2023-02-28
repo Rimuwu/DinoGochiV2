@@ -1,18 +1,21 @@
 from telebot.types import ReplyKeyboardMarkup
 
 from bot.config import mongo_client
-from bot.modules.data_format import chunks, list_to_keyboard
+from bot.modules.data_format import chunks, crop_text, list_to_keyboard
 from bot.modules.dinosaur import Dino, Egg
 from bot.modules.localization import t, tranlate_data
 from bot.modules.logs import log
+from bot.modules.user import User, get_last_dino
 
 users = mongo_client.bot.users
+dinosaurs = mongo_client.bot.dinosaurs
 
 def back_menu(userid) -> str:
     """Возвращает предыдущее меню
     """
     markup_key = 'main_menu'
-    menus_list = ['main_menu', 'settings_menu', 
+    menus_list = ['main_menu', 'settings_menu',
+                  'main_menu', 'actions_menu', 
                   'main_menu', 'profile_menu', 'market_menu',
                   'main_menu', 'friends_menu', 'referal_menu',
                   'main_menu', 'dino_tavern_menu', 'dungeon_menu'
@@ -35,6 +38,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu', language_code: str 
     """
     prefix, buttons = 'commands_name.', []
     add_back_button = False
+    kwargs = {}
 
     if markup_key == 'last_menu':
        """Возращает к последнему меню
@@ -97,6 +101,53 @@ def markups_menu(userid: int, markup_key: str = 'main_menu', language_code: str 
             ['add_product', 'product_list', 'remove_product'],
         ]
     
+    elif markup_key == 'actions_menu':
+
+        def get_buttons(dino: Dino) -> list:
+            data = ['journey', 'put_to_bed', 'collecting']
+            if dino.stats == 'journey':
+                data[0] = 'return'
+            elif dino.stats == 'sleep':
+                data[1] = 'awaken'
+            elif dino.stats == 'collecting':
+                data[2] = 'progress'
+
+            return data
+
+        # Меню действий
+        prefix = 'commands_name.actions.'
+        add_back_button = True
+        user = User(userid)
+        col_dinos = user.get_col_dinos() #Сохраняем кол. динозавров
+
+        if col_dinos == 0:
+            buttons = [
+                ['no_dino']
+            ]
+        if col_dinos == 1:
+            dino = user.get_dinos()[0]
+            dp_buttons = get_buttons(dino)
+
+            buttons = [
+                ["feed"],
+                ["entertainments", dp_buttons[0]],
+                [dp_buttons[1], dp_buttons[2]]
+            ]
+
+        else:
+            add_back_button = False
+            last_dino = get_last_dino(user)
+            if last_dino:
+                dino_button = 'notranslate.' + t('commands_name.actions.dino_button', language_code) + " " + crop_text(last_dino.name, 6)
+
+                dp_buttons = get_buttons(last_dino)
+                buttons = [
+                    ["feed"],
+                    ["entertainments", dp_buttons[0]],
+                    [dp_buttons[1], dp_buttons[2]],
+                    [dino_button, "noprefix.buttons_name.back"]
+                ]
+    
     else:
         log(prefix='Markup', 
             message=f'not_found_key User: {userid}, Data: {markup_key}', lvl=2)
@@ -104,7 +155,9 @@ def markups_menu(userid: int, markup_key: str = 'main_menu', language_code: str 
     buttons = tranlate_data(
         data=buttons, 
         locale=language_code, 
-        key_prefix=prefix) #Переводим текст внутри списка
+        key_prefix=prefix,
+        **kwargs
+        ) #Переводим текст внутри списка
 
     if add_back_button:
         buttons.append([t('buttons_name.back', language_code)])
