@@ -76,6 +76,9 @@ def tranlate_data(data: list | dict, locale: str = "en", key_prefix = '', **kwar
             > data = ['button1', 'button2']
             > key_prefix = 'commands_name.'
         >> ['commands_name.button1', 'commands_name.button2']
+
+        Чтобы отменить префикс, добавьте "noprefix." перед элементом.
+        Чтобы отменить перевод добавьте "notranslate." перед элементом.
     """
 
     if type(data) == list:
@@ -85,23 +88,35 @@ def tranlate_data(data: list | dict, locale: str = "en", key_prefix = '', **kwar
             for element in lst:
                 if type(element) == str:
                     if key_prefix:
-                        element = key_prefix + element
+                        if not element.startswith('noprefix.') and not element.startswith('notranslate.'):
+                            element = key_prefix + element
+                        else:
+                            element = element.replace('noprefix.', '')
 
-                    result_list.append(t(element, locale, **kwargs))
+                    if not element.startswith('notranslate.'):
+                        result_list.append(t(element, locale, **kwargs))
+                    else:
+                        result_list.append(
+                            element.replace('notranslate.', ''))
                 else:
                     result_list.append(tr_list(element))
+
             return result_list
 
         result_list = tr_list(data)
         return result_list
-    
+
     elif type(data) == dict:
         result_dict = {}
         for key, value in data:
             if key_prefix:
-                value = key_prefix + value
+                if not value.startswith('noprefix.'):
+                    value = key_prefix + value
+                else:
+                    value.replace('noprefix.', '')
 
             result_dict[key] = t(value, locale, **kwargs)
+
         return result_dict
 
 def get_all_locales(key: str, **kwargs) -> dict:
