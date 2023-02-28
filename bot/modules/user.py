@@ -9,7 +9,8 @@ items = mongo_client.bot.items
 dinosaurs = mongo_client.bot.dinosaurs
 
 incubations = mongo_client.tasks.incubation
-dino_owners = mongo_client.connections.mongo_client
+dino_owners = mongo_client.connections.dino_owners
+friends = mongo_client.connections.friends
 
 
 class User:
@@ -25,7 +26,7 @@ class User:
         self.notifications = {}
         self.settings = {
             'notifications': True,
-            'last_dino': None,
+            'last_dino': None, #храним ObjectId
             'profile_view': 1,
             'inv_view': [2, 3],
             'faq': True
@@ -56,6 +57,11 @@ class User:
         dino_list = get_dinos(self.userid)
         self.dinos = dino_list
         return dino_list
+
+    def get_col_dinos(self) -> int:
+        col = col_dinos(self.userid)
+        self.col_dinos = col
+        return col
     
     def get_eggs(self) -> list:
         """Возвращает список с объектами динозавров."""
@@ -64,12 +70,19 @@ class User:
         return eggs_list
     
     def get_inventory(self) -> list:
+        """Возвращает список с предметами в инвентаре"""
         inv = get_inventory(self.userid)
         self.inventory = inv
         return inv
 
-    def get_friends(self) -> list:
-        ...
+    def get_friends(self) -> dict[str, list[int]]:
+        """Возвращает словарь с 2 видами связей
+           friends - уже друзья
+           requests - запрос на добавление
+        """
+        friends_dict = get_frineds(self.userid)
+        self.friends = friends_dict
+        return friends_dict
     
     def view(self):
         """ Отображает все данные объекта."""
@@ -161,6 +174,9 @@ def get_dinos(userid) -> list:
         dino_list.append(Dino(dino_obj['dino_id']))
 
     return dino_list
+
+def col_dinos(userid) -> int:
+    return len(list(dino_owners.find({'owner_id': userid}, {'_id': 1})))
     
 def get_eggs(userid) -> list:
     """Возвращает список с объектами динозавров."""
@@ -179,3 +195,47 @@ def get_inventory(userid) -> list:
             }
         inv.append(item)
     return inv
+
+def get_frineds(userid) -> dict[str, list[int]]:
+    friends_dict = {
+        'friends': [],
+        'requests': []
+        }
+    alt = {'friendid': 'userid', 
+           'userid': 'friendid'
+           }
+
+    for st in ['userid', 'friendid']:
+        data_list = friends.find({st: userid, 'type': 'friends'})
+        for conn_data in data_list:
+            friends_dict['friends'].append(conn_data[alt[st]])
+
+        if st == 'userid':
+            data_list = friends.find({st: userid, 'type': 'requests'})
+            for conn_data in data_list:
+                friends_dict['requests'].append(conn_data[alt[st]])
+
+    return friends_dict
+
+def get_last_dino(user: User) -> Dino | None:
+    """Возвращает последнего выбранного динозавра.
+       Если None - вернёт первого
+       Если нет динозавров - None
+    """
+    last_dino = user.settings['last_dino']
+    if last_dino:
+        dino = dinosaurs.find_one({'_id': last_dino}, {"_id": 1})
+        if dino:
+            return Dino(dino['_id'])
+        else:
+            user.update({'$set': {'settings.last_dino': None}})
+            return get_last_dino(user)
+    else:
+        dino_lst = user.get_dinos()
+        if len(dino_lst):
+            dino = dino_lst[0]
+            user.update({'$set': {'settings.last_dino': dino._id}})
+            return dino
+        else:
+            user.update({'$set': {'settings.last_dino': None}})
+            return None
