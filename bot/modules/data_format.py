@@ -3,8 +3,8 @@ import string
 
 from telebot.types import ReplyKeyboardMarkup, User
 
-from bot.modules.localization import get_data
 from bot.const import GAME_SETTINGS
+from bot.modules.localization import get_data
 
 
 def chunks(lst: list, n: int):
@@ -171,3 +171,12 @@ def near_key_number(n: int, data: dict, alternative: int=1):
         if int(key) <= n:
             return data[key]
     return data[alternative]
+
+def crop_text(text: str, unit: int=10, postfix: str='...'):
+    """Обрезает текст и добавляет postfix в конце, 
+       если текст больше чем unit + len(postfix)
+    """
+    if len(text) > unit + len(postfix):
+        return text[:unit] + postfix
+    else:
+        return text
