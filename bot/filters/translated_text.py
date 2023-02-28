@@ -12,5 +12,13 @@ class IsEqual(AdvancedCustomFilter):
         text = t(key, message.from_user.language_code)
         return text == message.text
 
+class StartWith(AdvancedCustomFilter):
+    key = 'start_with'
+
+    async def check(self, message: Message, key: str):
+        text = t(key, message.from_user.language_code, False)
+        return message.text.startswith(text) #type: ignore
+
 
 bot.add_custom_filter(IsEqual())
+bot.add_custom_filter(StartWith())
