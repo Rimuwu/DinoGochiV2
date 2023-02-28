@@ -26,7 +26,7 @@ class Dino:
         self.data_id = 0
         self.alt_id = 'alt_id' #альтернативный id 
 
-        self.status = 'pass'
+        self.status = 'pass' # game, journey, sleep, collecting, dungeon
         self.name = 'name'
         self.quality = 'com'
         
