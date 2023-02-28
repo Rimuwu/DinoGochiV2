@@ -55,3 +55,11 @@ async def market_menu(message: Message):
 
     await bot.send_message(message.chat.id, t('menu_text.market', lang), 
                            reply_markup=m(userid, 'market_menu', lang))
+
+@bot.message_handler(text='commands_name.actions_menu', is_authorized=True)
+async def actions_menu(message: Message):
+    userid = message.from_user.id
+    lang = message.from_user.language_code
+
+    await bot.send_message(message.chat.id, t('menu_text.actions', lang), 
+                           reply_markup=m(userid, 'actions_menu', lang))
