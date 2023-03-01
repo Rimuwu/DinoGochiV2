@@ -100,7 +100,7 @@ def user_name(user: User) -> str:
     """Возвращает имя / ник, в зависимости от того, что есть
     """
     if user.username is not None:
-        return user.username
+        return f'@{user.username}'
     else:
         if user.last_name is not None and user.first_name:
             return f'{user.first_name} {user.last_name}'
