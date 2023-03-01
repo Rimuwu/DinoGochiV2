@@ -77,8 +77,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
             ['dino-tavern_menu']
         ]
         settings = users.find_one({'userid': userid}, {'settings': 1}) or {}
-
-        if settings.get('faq', 0): #Если передаём faq, то можно удалить кнопку
+        if not settings['settings'].get('faq', 0): #Если передаём faq, то можно удалить кнопку
             buttons[1].remove('faq')
     
     elif markup_key == 'settings_menu':
