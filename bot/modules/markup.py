@@ -30,15 +30,25 @@ def back_menu(userid) -> str:
     result = menus_list[menu_ind - 1]
     return result
 
-def markups_menu(userid: int, markup_key: str = 'main_menu', language_code: str = 'en') -> ReplyKeyboardMarkup:
+def markups_menu(userid: int, markup_key: str = 'main_menu', 
+                 language_code: str = 'en', last_menu: bool = False) -> ReplyKeyboardMarkup | None:
     """Главная функция создания меню для клавиатур
        menus:
        main_menu, settings_menu, profile_menu
        last_menu
+
+       last_menu - Если True, то меню будет изменено только если,
+       последнее меню совпадает с тем, на которое будет изменено
+       Пример:
+
+       markup_key: settings_menu, last_markup: profile_menu
+       >>> last_menu: True -> Меню не изменится
+       >>> last_menu: False -> Меню изменится
     """
     prefix, buttons = 'commands_name.', []
     add_back_button = False
     kwargs = {}
+    old_last_menu = None
 
     if markup_key == 'last_menu':
        """Возращает к последнему меню
@@ -48,8 +58,15 @@ def markups_menu(userid: int, markup_key: str = 'main_menu', language_code: str 
         )
        if user_dict:
            markup_key = user_dict.get('last_markup')
-        
+
     else: #Сохранение последнего markup
+        if last_menu:
+            user_dict = users.find_one(
+                {'userid': userid}, {'last_markup': 1}
+                )
+            if user_dict:
+                old_last_menu = user_dict.get('last_markup')
+            
         users.update_one({"userid": userid}, {'$set': {'last_markup': markup_key}})
 
     if markup_key == 'main_menu':
@@ -162,11 +179,22 @@ def markups_menu(userid: int, markup_key: str = 'main_menu', language_code: str 
     if add_back_button:
         buttons.append([t('buttons_name.back', language_code)])
     
-    return list_to_keyboard(buttons)
+    result = list_to_keyboard(buttons)
+    if last_menu:
+        user_dict = users.find_one(
+           {'userid': userid}, {'last_markup': 1}
+        )
+        if user_dict:
+            if not old_last_menu:
+                old_last_menu = user_dict.get('last_markup')
+
+            if old_last_menu != markup_key:
+                result = None
+    
+    return result
 
 def get_answer_keyboard(elements: list[Dino | Egg], lang: str='en') -> dict:
     """
-       
        return 
        {'case': 0} - нет динозавров / яиц
        {'case': 1, 'element': Dino | Egg} - 1 динозавр / яйцо 
