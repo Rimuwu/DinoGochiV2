@@ -1,4 +1,5 @@
 from telebot import types
+from telebot.types import Message
 
 from bot.const import GAME_SETTINGS
 from bot.exec import bot
@@ -109,7 +110,7 @@ async def egg_profile(userid: int, egg: Egg, lang: str):
 
 
 @bot.message_handler(text='commands_name.dino_profile', is_authorized=True)
-async def dino_handler(message: types.Message):
+async def dino_handler(message: Message):
     user = User(message.from_user.id)
     lang = message.from_user.language_code
     elements = user.get_dinos() + user.get_eggs()
@@ -137,7 +138,7 @@ async def dino_handler(message: types.Message):
         await bot.send_message(user.userid, t('p_profile.choose_dino', lang), reply_markup=ret_data['keyboard'])
 
 @bot.message_handler(state=DinoStates.choose_dino, is_authorized=True)
-async def answer_dino(message: types.Message):
+async def answer_dino(message: Message):
     userid = message.from_user.id
     lang = message.from_user.language_code
 
