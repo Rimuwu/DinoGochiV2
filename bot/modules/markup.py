@@ -118,6 +118,15 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
             ['add_product', 'product_list', 'remove_product'],
         ]
     
+    elif markup_key == 'dino_tavern_menu':
+        # Меню таверны
+        prefix = 'commands_name.dino_tavern.'
+        add_back_button = True
+        buttons = [
+            ['dungeon', 'quests'],
+            ['edit'],
+        ]
+    
     elif markup_key == 'actions_menu':
 
         def get_buttons(dino: Dino) -> list:
@@ -128,7 +137,6 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
                 data[1] = 'awaken'
             elif dino.stats == 'collecting':
                 data[2] = 'progress'
-
             return data
 
         # Меню действий
