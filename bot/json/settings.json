@@ -5,6 +5,21 @@
         "connections": ["referals", "friends", "dino_owners"]
     },
 
+    "please_create_this": {
+        "bot": {
+            "management": [
+                {
+                    "_id": "promo_codes",
+                    "codes": {}
+                },
+                {
+                    "_id": "in_tavern",
+                    "users": []
+                }
+            ]
+        }
+    },
+
     "dino_rarity": {
         "com": 50,
         "unc": 25,
