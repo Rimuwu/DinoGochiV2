@@ -52,7 +52,7 @@ class User:
         if data:
             self.__dict__ = data
     
-    def get_dinos(self) -> list:
+    def get_dinos(self) -> list[Dino]:
         """Возвращает список с объектами динозавров."""
         dino_list = get_dinos(self.userid)
         self.dinos = dino_list
@@ -63,13 +63,13 @@ class User:
         self.col_dinos = col
         return col
     
-    def get_eggs(self) -> list:
+    def get_eggs(self) -> list[Egg]:
         """Возвращает список с объектами динозавров."""
         eggs_list = get_eggs(self.userid)
         self.eggs = eggs_list
         return eggs_list
     
-    def get_inventory(self) -> list:
+    def get_inventory(self) -> list[dict]:
         """Возвращает список с предметами в инвентаре"""
         inv = get_inventory(self.userid)
         self.inventory = inv
@@ -167,7 +167,7 @@ def insert_user(userid: int):
     log(prefix='InsertUser', message=f'User: {userid}', lvl=0)
     return users.insert_one(user_dict)
 
-def get_dinos(userid) -> list:
+def get_dinos(userid) -> list[Dino]:
     """Возвращает список с объектами динозавров."""
     dino_list = []
     for dino_obj in dino_owners.find({'owner_id': userid}, {'dino_id': 1}):
