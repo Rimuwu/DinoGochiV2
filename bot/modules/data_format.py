@@ -1,7 +1,7 @@
 import random
 import string
 
-from telebot.types import ReplyKeyboardMarkup, User
+from telebot.types import ReplyKeyboardMarkup, User, InlineKeyboardMarkup, InlineKeyboardButton
 
 from bot.const import GAME_SETTINGS
 from bot.modules.localization import get_data
@@ -64,6 +64,37 @@ def list_to_keyboard(buttons: list, row_width: int = 3, resize_keyboard: bool = 
             markup.row(*[i for i in line])
 
     return markup
+
+def list_to_inline(buttons: list[dict], row_width: int = 3) -> InlineKeyboardMarkup:
+    '''Превращает список со списками в объект inlineKeyboard.
+        Example:
+            butttons = [ {'привет':'call_key'}, {'отвяжись':'call_key'}, {'ты кто?':'call_key'} ]
+
+        >      привет
+          отвяжись  ты кто?
+        
+            butttons = [ {'привет':'call_key', 'отвяжись':'call_key', 'ты кто?':'call_key'} ], 
+            row_width = 1
+
+        >  привет
+          отвяжись  
+          ты кто?
+    '''
+    inline = InlineKeyboardMarkup(row_width=row_width)
+
+    if len(buttons) == 1:
+        inline.add(
+            *[InlineKeyboardButton(
+            text=key, callback_data=item) for key, item in buttons[0].items()]
+              )
+
+    else:
+        for line in buttons:
+            inline.row(*[InlineKeyboardButton(
+                text=key, callback_data=item) for key, item in line.items()]
+                       )
+
+    return inline
 
 def user_name(user: User) -> str:
     """Возвращает имя / ник, в зависимости от того, что есть
