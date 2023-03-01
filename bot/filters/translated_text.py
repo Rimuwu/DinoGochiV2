@@ -13,7 +13,7 @@ class IsEqual(AdvancedCustomFilter):
         return text == message.text
 
 class StartWith(AdvancedCustomFilter):
-    key = 'start_with'
+    key = 'textstart'
 
     async def check(self, message: Message, key: str):
         text = t(key, message.from_user.language_code, False)

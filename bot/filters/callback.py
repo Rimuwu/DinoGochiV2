@@ -8,7 +8,7 @@ from bot.modules.logs import log
 
 
 class StartWith(AdvancedCustomFilter):
-    key = 'startwith'
+    key = 'callbackstart'
 
     async def check(self, callback: CallbackQuery, start_text: str):
         # log(prefix='Callback', message=f'User: {callback.from_user.id}, Data: {callback.data}', lvl=0)
