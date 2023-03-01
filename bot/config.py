@@ -23,10 +23,10 @@ class Config:
         self.bot_group_id = 0
         self.ssh = False
 
-        # self.ssh_on = False
+        # self.ssh = False
         self.mongo_url = 'mongodb://localhost:27017'
 
-        # self.ssh_on = True
+        # self.ssh = True
         self.ssh_host = 'db.example.com'
         self.ssh_port = 21
         self.ssh_user = 'user'
@@ -55,13 +55,24 @@ def check_base(client: pymongo.MongoClient):
     from bot.const import GAME_SETTINGS
     if client.server_info(): print(f"{client.address}, mongo connected")
 
+    #Создаёт документы и базы, необходимы для работы бота
     collections = GAME_SETTINGS['collections']
-
     for base in collections.keys():
         database = client[base]
         for col in collections[base]:
             if col not in database.list_collection_names():
                 database.create_collection(col)
+
+    #Создаёт документы, необходимые для работы бота
+    necessary_create = GAME_SETTINGS['please_create_this']
+    for base in necessary_create.keys(): 
+        database = client[base]
+        for col in necessary_create[base]:
+            collection = database[col]
+            for doc in necessary_create[base][col]:
+                fnd_doc = collection.find_one({"_id": doc['_id']}, {'_id': 1})
+                if not fnd_doc:
+                    collection.insert_one(doc)
     
     print('The databases are checked and prepared for use.')
 
