@@ -5,3 +5,5 @@ class DinoStates(StatesGroup):
 
 class SettingsStates(StatesGroup):
     settings_choose = State()
+    rename_dino_step_name = State()
+    rename_dino_step_confirmation = State()
