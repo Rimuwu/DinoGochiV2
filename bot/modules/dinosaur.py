@@ -299,5 +299,3 @@ def start_collecting(dino_baseid, coll_type: str):
     dinosaurs.update_one({"_id": dino_baseid}, 
                          {'$set': {'status': 'collecting'}})
     return result
-
-
