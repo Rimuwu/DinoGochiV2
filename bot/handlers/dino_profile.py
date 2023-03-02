@@ -8,9 +8,8 @@ from bot.modules.dinosaur import Dino, Egg
 from bot.modules.events import get_one_event
 from bot.modules.item import get_name
 from bot.modules.localization import get_data, t
-from bot.modules.markup import get_answer_keyboard
 from bot.modules.markup import markups_menu as m
-from bot.modules.states import DinoStates
+from bot.modules.states import dino_answer
 from bot.modules.user import User
 
 
@@ -109,47 +108,15 @@ async def egg_profile(userid: int, egg: Egg, lang: str):
 
     await bot.send_photo(userid, img, text, reply_markup=m(userid, 'last_menu', language_code=lang))
 
-
-@bot.message_handler(text='commands_name.dino_profile', is_authorized=True)
-async def dino_handler(message: Message):
-    user = User(message.from_user.id)
-    lang = message.from_user.language_code
-    elements = user.get_dinos() + user.get_eggs()
-
-    ret_data = get_answer_keyboard(elements, lang)
-
-    if ret_data['case'] == 0:
-        await bot.send_message(user.userid, 
-            t('p_profile.no_dinos_eggs', lang))
-
-    elif ret_data['case'] == 1:
-        element = ret_data['element']
-
-        if type(element) == Dino:
-            await dino_profile(user.userid, element, lang)
-        elif type(element) == Egg:
-            await egg_profile(user.userid, element, lang)
-
-    elif ret_data['case'] == 2:# Несколько динозавров / яиц
-        # Устанавливаем состояния и передаём данные
-        await bot.set_state(user.userid, DinoStates.choose_dino, message.chat.id)
-        async with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
-            data['dino_answer'] = ret_data['data_names']
-
-        await bot.send_message(user.userid, t('p_profile.choose_dino', lang), reply_markup=ret_data['keyboard'])
-
-@bot.message_handler(state=DinoStates.choose_dino, is_authorized=True)
-async def answer_dino(message: Message):
+async def transition(message: Message, element: Dino | Egg):
     userid = message.from_user.id
     lang = message.from_user.language_code
 
-    async with bot.retrieve_data(userid, message.chat.id) as data:
-        data_names = data['dino_answer']
-    await bot.delete_state(userid, message.chat.id)
-    await bot.reset_data(message.from_user.id,  message.chat.id)
-
-    element = data_names[message.text]
     if type(element) == Dino:
-        await dino_profile(userid, element, lang)
+        await dino_profile(userid, element, lang) #type: ignore
     elif type(element) == Egg:
-        await egg_profile(userid, element, lang)
+        await egg_profile(userid, element, lang) #type: ignore
+
+@bot.message_handler(text='commands_name.dino_profile', is_authorized=True)
+async def dino_handler(message: Message):
+    await dino_answer(transition, message) #Теперь всё работу делает функция 
