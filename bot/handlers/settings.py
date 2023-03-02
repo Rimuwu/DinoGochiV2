@@ -2,8 +2,8 @@ from telebot.types import Message, User
 
 from bot.config import mongo_client
 from bot.exec import bot
-from bot.modules.data_format import list_to_keyboard
-from bot.modules.localization import t
+from bot.modules.data_format import list_to_keyboard, chunks
+from bot.modules.localization import t, get_data
 from bot.modules.markup import tranlate_data, markups_menu as m
 from bot.modules.states import SettingsStates
 
@@ -72,6 +72,80 @@ async def faq_set(message: Message):
 
     await bot.send_message(userid, t('settings_faq.info', lang), 
                            reply_markup=keyboard)
+
+
+async def dino_profile(user, result):
+    data = get_data('profile_view.ans', user.language_code)
+    text = t(f'profile_view.result', user.language_code, res = data[result-1])
+    await bot.send_message(user.id, text, 
+                    reply_markup=m(user.id, 
+                    'last_menu', user.language_code))
+    users.update_one({'userid': user.id}, {"$set": {'settings.profile_view': result}})
+
+@bot.message_handler(text='commands_name.settings.dino_profile', 
+                     is_authorized=True)
+async def dino_profile_set(message: Message):
+    userid = message.from_user.id
+    lang = message.from_user.language_code
+
+    settings_data, time_list = {}, []
+
+    for i in get_data('profile_view.ans', lang):
+        time_list.append(i)
+        ind = time_list.index(i) + 1
+        settings_data[i] = ind
+
+    buttons = list(chunks(time_list, 2))
+    buttons.append([t('buttons_name.cancel', lang)])
+
+    keyboard = list_to_keyboard(buttons, 2)
+    await bot.set_state(userid, SettingsStates.settings_choose, 
+                        message.chat.id)
+    async with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
+        data['func'] = dino_profile
+        data['settings_data'] = settings_data
+
+    await bot.send_message(userid, t('profile_view.info', lang), 
+                           reply_markup=keyboard)
+
+
+async def inventory(user, result):
+    text = t(f'inv_set_pages.accept', user.language_code, 
+             gr = result[0], vr = result[1]
+             )
+    await bot.send_message(user.id, text, 
+                    reply_markup=m(user.id, 
+                    'last_menu', user.language_code))
+    users.update_one({'userid': user.id}, {"$set": {'settings.inv_view': result}})
+
+@bot.message_handler(text='commands_name.settings.inventory', 
+                     is_authorized=True)
+async def inventory_set(message: Message):
+    userid = message.from_user.id
+    lang = message.from_user.language_code
+
+    settings_data, time_list = {}, []
+
+    for i in get_data('inv_set_pages.ans', lang):
+        time_list.append(i)
+        settings_data[i] = list(int(strn) for strn in i.split(' | '))
+
+    buttons = list(chunks(time_list, 2))
+    buttons.append([t('buttons_name.cancel', lang)])
+
+    keyboard = list_to_keyboard(buttons, 2)
+    await bot.set_state(userid, SettingsStates.settings_choose, 
+                        message.chat.id)
+    async with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
+        data['func'] = inventory
+        data['settings_data'] = settings_data
+
+    await bot.send_message(userid, t('inv_set_pages.info', lang), 
+                           reply_markup=keyboard)
+
+
+
+
 
 @bot.message_handler(state=SettingsStates.settings_choose, is_authorized=True)
 async def answer_dino(message: Message):
