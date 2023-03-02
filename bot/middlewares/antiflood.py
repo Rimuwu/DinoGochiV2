@@ -4,7 +4,7 @@ from telebot.asyncio_handler_backends import BaseMiddleware, SkipHandler
 from telebot.types import Message
 from bot.exec import bot
 
-DEFAULT_RATE_LIMIT = 1
+DEFAULT_RATE_LIMIT = 0.8
 
 class AntifloodMiddleware(BaseMiddleware):
 
