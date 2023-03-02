@@ -73,9 +73,9 @@ def tranlate_data(data: list | dict, locale: str = "en", key_prefix = '', **kwar
         key_prefix - добавляет ко всем ключам префикс
 
         Example:
-            > data = ['button1', 'button2']
+            > data = ['enable', 'disable']
             > key_prefix = 'commands_name.'
-        >> ['commands_name.button1', 'commands_name.button2']
+        >> ['✅ Включить', '❌ Выключить']
 
         Чтобы отменить префикс, добавьте "noprefix." перед элементом.
         Чтобы отменить перевод добавьте "notranslate." перед элементом.
