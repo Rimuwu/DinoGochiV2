@@ -34,13 +34,18 @@ async def back_buttom(message: Message):
 async def settings_menu(message: Message):
     userid = message.from_user.id
     lang = message.from_user.language_code
+    prf_view_ans = get_data('profile_view.ans', lang)
 
     user = users.find_one({'userid': userid})
     if user:
         settings = user['settings']
-        text = t("menu_text.settings", lang, 
-                notif=settings["notifications"], vis_faq=settings['faq'])
-        text = text.replace("True", '✅').replace("False", '❌')
+        text = t('menu_text.settings', lang, 
+                notif=settings['notifications'], 
+                vis_faq=settings['faq'],
+                profile_view=prf_view_ans[settings['profile_view']-1],
+                inv_view=f"{settings['inv_view'][0]} | {settings['inv_view'][1]}"
+                )
+        text = text.replace('True', '✅').replace('False', '❌')
 
         await bot.send_message(message.chat.id, text, 
                                reply_markup=m(userid, 'settings_menu', lang))
