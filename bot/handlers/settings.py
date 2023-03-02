@@ -5,7 +5,8 @@ from bot.exec import bot
 from bot.modules.data_format import list_to_keyboard, chunks
 from bot.modules.localization import t, get_data
 from bot.modules.markup import tranlate_data, markups_menu as m
-from bot.modules.states import SettingsStates
+from bot.modules.states import SettingsStates, dino_answer
+from bot.modules.dinosaur import Dino
 
 users = mongo_client.bot.users
 
@@ -142,10 +143,7 @@ async def inventory_set(message: Message):
 
     await bot.send_message(userid, t('inv_set_pages.info', lang), 
                            reply_markup=keyboard)
-
-
-
-
+    
 
 @bot.message_handler(state=SettingsStates.settings_choose, is_authorized=True)
 async def answer_dino(message: Message):
@@ -164,3 +162,48 @@ async def answer_dino(message: Message):
         await bot.send_message(message.chat.id, "❌", 
                     reply_markup=m(message.from_user.id, 
                     'last_menu', message.from_user.language_code))
+
+
+async def transition(message: Message, dino: Dino):
+    userid = message.from_user.id
+    lang = message.from_user.language_code
+
+    text = t('rename_dino.info', lang, last_name=dino.name)
+    keyboard = [t('buttons_name.cancel', lang)]
+    markup = list_to_keyboard(keyboard, one_time_keyboard=True)
+
+    await bot.set_state(userid, SettingsStates.rename_dino_step_name, 
+                        message.chat.id)
+    async with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
+        data['dino'] = dino
+
+    await bot.send_message(message.chat.id, text, reply_markup=markup)
+
+@bot.message_handler(text='commands_name.settings.dino_name', 
+                     is_authorized=True)
+async def rename_dino(message: Message):
+    await dino_answer(transition, message, False) 
+
+@bot.message_handler(state=SettingsStates.rename_dino_step_name, is_authorized=True)
+async def rename_state(message: Message):
+    userid = message.from_user.id
+    lang = message.from_user.language_code
+
+    async with bot.retrieve_data(userid, message.chat.id) as data:
+        dino: Dino = data['dino']
+    
+    if len(str(message.text)) > 20:
+        text = t('rename_dino.err_name', lang, )
+        await bot.send_message(message.chat.id, text)
+    else:
+        await bot.delete_state(userid, message.chat.id)
+        await bot.reset_data(message.from_user.id,  message.chat.id)
+
+        last_name = dino.name
+        dino.update({'$set': {'name': message.text}})
+
+        text = t('rename_dino.rename', lang, last_name=last_name, dino_name=message.text)
+        await bot.send_message(message.chat.id, text, 
+                        reply_markup=m(userid, 'last_menu', lang))
+
+
