@@ -20,6 +20,7 @@ async def dino_profile(userid: int, dino: Dino, lang: str):
     text_rare = get_data('rare', lang)
     replics = get_data('p_profile.replics', lang)
     status_rep = t(f'p_profile.stats.{dino.status}', lang)
+    user = User(userid)
 
     season = get_one_event('time_year')
     tem = GAME_SETTINGS['events']['time_year'][season]
@@ -96,7 +97,7 @@ async def dino_profile(userid: int, dino: Dino, lang: str):
         chat_id=userid,
         message_id=msg.id,
         media=types.InputMedia(
-            type='photo', media=dino.image(), parse_mode='Markdown', caption=text)
+            type='photo', media=dino.image(user.settings['profile_view']), parse_mode='Markdown', caption=text)
         )
 
 async def egg_profile(userid: int, egg: Egg, lang: str):
