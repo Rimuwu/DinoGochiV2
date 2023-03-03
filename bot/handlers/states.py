@@ -34,14 +34,15 @@ async def answer_dino(message: Message):
     userid = message.from_user.id
 
     async with bot.retrieve_data(userid, message.chat.id) as data:
-        ret_data = data['data']
+        ret_data = data['dino_names']
         func = data['function']
+        data = data['data']
 
     await bot.delete_state(userid, message.chat.id)
     await bot.reset_data(message.from_user.id,  message.chat.id)
 
     if message.text in ret_data.keys():
-        await func(message, ret_data[message.text])
+        await func(ret_data[message.text], data=data)
     else:
         await bot.send_message(message.chat.id, "❌", 
                     reply_markup=m(message.from_user.id, 
