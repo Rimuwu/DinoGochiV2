@@ -16,11 +16,13 @@ class SettingsStates(StatesGroup):
     rename_dino_step_confirmation = State()
 
 
-async def dino_answer(function, message: Message, add_egg: bool=True):
+async def dino_answer(function, userid: int, chatid: int, 
+        lang: str, add_egg: bool=True, transmitted_data: dict={}):
     """Общая подготовительная функция для выбора динозавра
+       В переданную функцию передаёт 
+       >>> element: Dino | Egg, data: dict
     """
-    user = User(message.from_user.id)
-    lang = message.from_user.language_code
+    user = User(userid)
     elements = user.get_dinos()
     if add_egg: elements += user.get_eggs()
 
@@ -32,13 +34,13 @@ async def dino_answer(function, message: Message, add_egg: bool=True):
 
     elif ret_data['case'] == 1: #1 динозавр / яйцо, передаём инфу в функцию
         element = ret_data['element']
-        await function(message, element)
+        await function(element, transmitted_data)
 
     elif ret_data['case'] == 2:# Несколько динозавров / яиц
         # Устанавливаем состояния и передаём данные
-        await bot.set_state(user.userid, DinoStates.choose_dino, message.chat.id)
-        async with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
+        await bot.set_state(user.userid, DinoStates.choose_dino, chatid)
+        async with bot.retrieve_data(userid, chatid) as data:
             data['function'] = function
-            data['data'] = ret_data['data_names']
-
+            data['dino_names'] = ret_data['data_names']
+            data['data'] = transmitted_data
         await bot.send_message(user.userid, t('p_profile.choose_dino', lang), reply_markup=ret_data['keyboard'])
