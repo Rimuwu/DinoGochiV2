@@ -160,7 +160,9 @@ async def answer_dino(message: Message):
                     reply_markup=m(message.from_user.id, 'last_menu', message.from_user.language_code))
 
 
-async def transition(dino: Dino, userid: int, lang: str):
+async def transition(dino: Dino, data: dict):
+    userid = data['userid']
+    lang = data['lang']
 
     text = t('rename_dino.info', lang, last_name=dino.name)
     keyboard = [t('buttons_name.cancel', lang)]
@@ -178,7 +180,11 @@ async def transition(dino: Dino, userid: int, lang: str):
 async def rename_dino(message: Message):
     userid = message.from_user.id
     lang = message.from_user.language_code
-    await dino_answer(transition, userid, message.chat.id, lang, False) 
+    data = {
+        'userid': userid,
+        'lang': lang
+    }
+    await dino_answer(transition, userid, message.chat.id, lang, False, transmitted_data=data) 
 
 @bot.message_handler(state=SettingsStates.rename_dino_step_name, is_authorized=True)
 async def rename_state(message: Message):
