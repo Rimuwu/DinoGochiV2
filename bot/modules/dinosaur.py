@@ -1,16 +1,17 @@
-from pprint import pprint
 from random import choice, randint
 from time import time
 
 from bot.config import mongo_client
 from bot.const import DINOS, GAME_SETTINGS
+from bot.modules.data_format import random_code, random_quality
+from bot.modules.images import create_dino_image, create_egg_image
+from bot.modules.item import get_data
 from bot.modules.localization import log
-from bot.modules.images import create_egg_image, create_dino_image
-from bot.modules.data_format import random_quality, random_code
+from bot.modules.notifications import dino_notification
 
 dinosaurs = mongo_client.bot.dinosaurs
 incubations = mongo_client.tasks.incubation
-dino_owners = mongo_client.connections.mongo_client
+dino_owners = mongo_client.connections.dino_owners
 
 game_task = mongo_client.tasks.game
 sleep_task = mongo_client.tasks.sleep
@@ -51,7 +52,13 @@ class Dino:
             'eat': []
         }
 
-        self.UpdateData(dinosaurs.find_one({"_id": self._id}))
+        find_result = dinosaurs.find_one({"_id": self._id})
+        if not find_result:
+            find_result = dinosaurs.find_one({"alt_id": self._id})
+        if find_result:
+            self.UpdateData(find_result)
+        else:
+            log('Динозавр не найден', 3)
 
     def UpdateData(self, data):
         if data:
@@ -104,7 +111,7 @@ class Egg:
         self.incubation_time = 0
         self.egg_id = 0
         self.owner_id = 0
-        self.rarity = 'random'
+        self.quality = 'random'
         self.egg_id = 0
 
         self.UpdateData(incubations.find_one({"_id": self._id}))
@@ -114,7 +121,7 @@ class Egg:
             self.__dict__ = data
 
     def __str__(self) -> str:
-        return f'{self._id} {self.rarity}'
+        return f'{self._id} {self.quality}'
 
     def update(self, update_data: dict):
         """
@@ -132,7 +139,7 @@ class Egg:
         """Сгенерировать изображение объекта.
         """
         t_inc = self.remaining_incubation_time()
-        return create_egg_image(egg_id=self.egg_id, rare=self.rarity, seconds=t_inc, lang=lang)
+        return create_egg_image(egg_id=self.egg_id, rare=self.quality, seconds=t_inc, lang=lang)
     
     def remaining_incubation_time(self):
         return self.incubation_time - int(time())
@@ -227,8 +234,8 @@ def insert_dino(owner_id: int=0, dino_id: int=0, quality: str='random'):
     if owner_id != 0:
         # Создание связи, если передан id владельца
         create_dino_connection(result.inserted_id, owner_id)
-        
-    return result
+
+    return result, dino['alt_id']
 
 def start_game(dino_baseid, duration: int=1800, percent: int=1):
     """Запуск активности "игра". 
@@ -299,3 +306,45 @@ def start_collecting(dino_baseid, coll_type: str):
     dinosaurs.update_one({"_id": dino_baseid}, 
                          {'$set': {'status': 'collecting'}})
     return result
+
+def downgrade_accessory(dino: Dino, acc_type: str):
+    """Понижает прочность аксесуара
+       Return
+       >>> True - прочность понижена
+       >>> False - неправильный предмет / нет предмета
+    """
+    item = dino.activ_items[acc_type]
+
+    if item:
+        if 'abilities' in item and 'endurance' in item['abilities']:
+            num = randint(0, 2)
+            item['abilities']['endurance'] -= num
+
+            if item['abilities']['endurance'] <= 0:
+                dino.update({"$set": {f'activ_items.{acc_type}': None}})
+                dino_notification(dino._id, 'acc_broke')
+            else:
+                dino.update({"$inc": {f'activ_items.{acc_type}': num}})
+            return True
+        else:
+            return False
+    else:
+        return False
+
+def check_accessory(dino: Dino, item_id: str, downgrade: bool=False):
+    """Проверяет, активирован ли аксессуар с id - item_id
+       downgrade - если активирован, то вызывает понижение прочности предмета
+    """
+    data_item = get_data(item_id) #Получаем данные из json
+    acces_item = dino.activ_items[data_item['type']] #предмет / None
+
+    if acces_item:
+        if acces_item['item_id'] == item_id:
+            if downgrade:
+                return downgrade_accessory(dino, data_item['type'])
+            else:
+                return True
+        else:
+            return False
+    else:
+        return False
