@@ -1,6 +1,7 @@
 from bot.exec import bot
-from bot.modules.localization import t
+from bot.modules.localization import t, get_data
 from bot.modules.logs import log
+from bot.modules.inline import inline_menu
 
 def dino_notification(dino_id, not_type: str):
     """ Те уведомления, которые нужно отслеживать и отсылать 1 раз
@@ -10,18 +11,32 @@ def dino_notification(dino_id, not_type: str):
 async def user_notification(user_id: int, not_type: str, lang: str='en', **kwargs):
     """ Те которые в любом случае отправятся 1 раз
     """
-    text = not_type
+    text, markup_inline = not_type, None
     standart_notification = [
-        'incubation_ready'
+        
+    ]
+    unstandart_notification = [
+        'incubation_ready' # необходим dino_id 
     ]
 
     if not_type in standart_notification:
         text = t(f'notifications.{not_type}', lang, **kwargs)
+    
+    elif not_type in unstandart_notification:
+        data = get_data(f'notifications.{not_type}', lang)
+        text = data['text'].format(**kwargs)
+        markup_inline = inline_menu(data['inline_menu'], lang, **kwargs)
+    
+    else:
+        log(prefix='Notification not_type', 
+            message=f'User: {user_id}, Data: {not_type}', 
+            lvl=2)
+
 
     log(prefix='Notification', 
         message=f'User: {user_id}, Data: {not_type}', lvl=0)
     try:
-        await bot.send_message(user_id, text)
+        await bot.send_message(user_id, text, reply_markup=markup_inline)
     except Exception as error: 
         log(prefix='Notification Error', 
             message=f'User: {user_id}, Data: {not_type} Error: {error}', 
