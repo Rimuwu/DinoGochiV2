@@ -16,7 +16,7 @@ async def incubation():
 
     for egg in data:
         #создаём динозавра
-        insert_dino(egg['owner_id'], egg['dino_id'], egg['quality']) 
+        res, alt_id = insert_dino(egg['owner_id'], egg['dino_id'], egg['quality']) 
 
         #удаляем динозавра из инкубаций
         incubations.delete_one({'_id': egg['_id']}) 
@@ -31,7 +31,7 @@ async def incubation():
         if user:
             name = user_name(user)
             await user_notification(egg['owner_id'], 
-                        'incubation_ready', user.language_code,user_name=name) 
+                        'incubation_ready', user.language_code,user_name=name, dino_id=alt_id) 
     
 if __name__ != '__main__':
     if conf.active_tasks:
