@@ -1,7 +1,8 @@
 import random
 import string
 
-from telebot.types import ReplyKeyboardMarkup, User, InlineKeyboardMarkup, InlineKeyboardButton
+from telebot.types import (InlineKeyboardButton, InlineKeyboardMarkup,
+                           ReplyKeyboardMarkup, User)
 
 from bot.const import GAME_SETTINGS
 from bot.modules.localization import get_data
