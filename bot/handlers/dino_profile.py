@@ -104,10 +104,11 @@ async def egg_profile(userid: int, egg: Egg, lang: str):
         egg.remaining_incubation_time(), lang)
         )
     img = egg.image(lang)
-
     await bot.send_photo(userid, img, text, reply_markup=m(userid, 'last_menu', language_code=lang))
 
-async def transition(element: Dino | Egg, userid: int, lang: str):
+async def transition(element: Dino | Egg, data: dict):
+    userid = data['userid']
+    lang = data['lang']
 
     if type(element) == Dino:
         await dino_profile(userid, element, lang) #type: ignore
@@ -118,8 +119,11 @@ async def transition(element: Dino | Egg, userid: int, lang: str):
 async def dino_handler(message: Message):
     userid = message.from_user.id
     lang = message.from_user.language_code
-
-    await dino_answer(transition, userid, message.chat.id, lang) #Теперь всё работу делает функция 
+    data = {
+        'userid': userid,
+        'lang': lang
+    }
+    await dino_answer(transition, userid, message.chat.id, lang, transmitted_data=data) #Теперь всё работу делает функция 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('dino_profile'))
 async def answer_edit(call: types.CallbackQuery):
@@ -127,6 +131,9 @@ async def answer_edit(call: types.CallbackQuery):
 
     userid = call.from_user.id
     lang = call.from_user.language_code
-
+    data = {
+        'userid': userid,
+        'lang': lang
+    }
     dino = Dino(data)
-    await transition(dino, userid, lang)
+    await transition(dino, data)
