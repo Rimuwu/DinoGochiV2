@@ -137,6 +137,11 @@ class User:
         """Удаление юзера из базы.
         """
         users.delete_one({'userid': self.userid})
+    
+    def get_last_dino(self) -> Dino | None:
+        """Возвращает последнего динозавра или None
+        """
+        return last_dino(self)
 
 
 def insert_user(userid: int):
@@ -218,7 +223,7 @@ def get_frineds(userid) -> dict[str, list[int]]:
 
     return friends_dict
 
-def get_last_dino(user: User) -> Dino | None:
+def last_dino(user: User) -> Dino | None:
     """Возвращает последнего выбранного динозавра.
        Если None - вернёт первого
        Если нет динозавров - None
@@ -230,7 +235,7 @@ def get_last_dino(user: User) -> Dino | None:
             return Dino(dino['_id'])
         else:
             user.update({'$set': {'settings.last_dino': None}})
-            return get_last_dino(user)
+            return last_dino(user)
     else:
         dino_lst = user.get_dinos()
         if len(dino_lst):
