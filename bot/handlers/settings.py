@@ -14,8 +14,7 @@ users = mongo_client.bot.users
 async def notification(user: User, result: bool):
     text = t(f'not_set.{result}', user.language_code)
     await bot.send_message(user.id, text, 
-                    reply_markup=m(user.id, 
-                    'last_menu', user.language_code))
+                    reply_markup=m(user.id, 'last_menu', user.language_code))
     users.update_one({'userid': user.id}, {"$set": {'settings.notifications': result}})
 
 @bot.message_handler(text='commands_name.settings.notification', 
@@ -46,8 +45,7 @@ async def notification_set(message: Message):
 async def faq(user, result):
     text = t(f'settings_faq.{result}', user.language_code)
     await bot.send_message(user.id, text, 
-                    reply_markup=m(user.id, 
-                    'last_menu', user.language_code))
+                    reply_markup=m(user.id, 'last_menu', user.language_code))
     users.update_one({'userid': user.id}, {"$set": {'settings.faq': result}})
 
 @bot.message_handler(text='commands_name.settings.faq', 
@@ -115,8 +113,7 @@ async def inventory(user, result):
              gr = result[0], vr = result[1]
              )
     await bot.send_message(user.id, text, 
-                    reply_markup=m(user.id, 
-                    'last_menu', user.language_code))
+                    reply_markup=m(user.id, 'last_menu', user.language_code))
     users.update_one({'userid': user.id}, {"$set": {'settings.inv_view': result}})
 
 @bot.message_handler(text='commands_name.settings.inventory', 
@@ -160,29 +157,28 @@ async def answer_dino(message: Message):
         await func(user, settings_data[message.text])
     else:
         await bot.send_message(message.chat.id, "❌", 
-                    reply_markup=m(message.from_user.id, 
-                    'last_menu', message.from_user.language_code))
+                    reply_markup=m(message.from_user.id, 'last_menu', message.from_user.language_code))
 
 
-async def transition(message: Message, dino: Dino):
-    userid = message.from_user.id
-    lang = message.from_user.language_code
+async def transition(dino: Dino, userid: int, lang: str):
 
     text = t('rename_dino.info', lang, last_name=dino.name)
     keyboard = [t('buttons_name.cancel', lang)]
     markup = list_to_keyboard(keyboard, one_time_keyboard=True)
 
     await bot.set_state(userid, SettingsStates.rename_dino_step_name, 
-                        message.chat.id)
-    async with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
+                        userid)
+    async with bot.retrieve_data(userid, userid) as data:
         data['dino'] = dino
 
-    await bot.send_message(message.chat.id, text, reply_markup=markup)
+    await bot.send_message(userid, text, reply_markup=markup)
 
 @bot.message_handler(text='commands_name.settings.dino_name', 
                      is_authorized=True)
 async def rename_dino(message: Message):
-    await dino_answer(transition, message, False) 
+    userid = message.from_user.id
+    lang = message.from_user.language_code
+    await dino_answer(transition, userid, message.chat.id, lang, False) 
 
 @bot.message_handler(state=SettingsStates.rename_dino_step_name, is_authorized=True)
 async def rename_state(message: Message):
