@@ -27,7 +27,7 @@ async def edit_dino_buttom(message: Message):
                            t('edit_dino_button.edit', message.from_user.language_code), 
                            reply_markup=inline)
 
-@bot.callback_query_handler(callbackstart='edit_dino', func=lambda call: True)
+@bot.callback_query_handler(func=lambda call: call.data.startswith('edit_dino'))
 async def answer_edit(call: CallbackQuery):
     user_id = call.from_user.id
     lang = call.from_user.language_code
@@ -44,5 +44,24 @@ async def answer_edit(call: CallbackQuery):
                                t('edit_dino_button.susseful', lang, 
                                name=dino['name']),
                                reply_markup=m(user_id, 'actions_menu', lang, True)
-                           )
+                              )
+        
+async def short_sleep():
+    ...
+
+async def long_sleep():
+    ...
+
+@bot.message_handler(textstart='commands_name.actions.put_to_bed')
+async def put_to_bed(message: Message):
+    user_id = message.from_user.id
+    lang = message.from_user.language_code
+
+    user = User(user_id)
+    last_dino = user.get_last_dino()
+
+    # if last_dino:
+        
+
+
 
