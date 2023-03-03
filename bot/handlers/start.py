@@ -59,7 +59,8 @@ async def start_game(message: types.Message):
     await bot.send_photo(message.chat.id, img, start_game, reply_markup=markup_inline)
 
 
-@bot.callback_query_handler(func=None, startwith='start_egg', is_authorized=False)
+@bot.callback_query_handler(is_authorized=False, 
+                            func=lambda call: call.data.startswith('start_egg'))
 async def egg_answer_callback(callback: types.CallbackQuery):
     egg_id = int(callback.data.split()[1])
     lang = callback.from_user.language_code
