@@ -106,6 +106,5 @@ def is_standart(item: dict) -> bool:
                 return False
         else:
             return True
-        
 
 items_names = load_items_names()
