@@ -25,7 +25,6 @@ async def dino_profile(userid: int, dino: Dino, lang: str):
     tem = GAME_SETTINGS['events']['time_year'][season]
 
     stats_text = ''
-
     # Генерация блока со статистикой
     for i in ['heal', 'eat', 'game', 'mood', 'energy']:
         repl = near_key_number(dino.stats[i], replics[i])
@@ -108,9 +107,7 @@ async def egg_profile(userid: int, egg: Egg, lang: str):
 
     await bot.send_photo(userid, img, text, reply_markup=m(userid, 'last_menu', language_code=lang))
 
-async def transition(message: Message, element: Dino | Egg):
-    userid = message.from_user.id
-    lang = message.from_user.language_code
+async def transition(element: Dino | Egg, userid: int, lang: str):
 
     if type(element) == Dino:
         await dino_profile(userid, element, lang) #type: ignore
@@ -119,4 +116,17 @@ async def transition(message: Message, element: Dino | Egg):
 
 @bot.message_handler(text='commands_name.dino_profile', is_authorized=True)
 async def dino_handler(message: Message):
-    await dino_answer(transition, message) #Теперь всё работу делает функция 
+    userid = message.from_user.id
+    lang = message.from_user.language_code
+
+    await dino_answer(transition, userid, message.chat.id, lang) #Теперь всё работу делает функция 
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith('dino_profile'))
+async def answer_edit(call: types.CallbackQuery):
+    data = call.data.split()[1]
+
+    userid = call.from_user.id
+    lang = call.from_user.language_code
+
+    dino = Dino(data)
+    await transition(dino, userid, lang)
