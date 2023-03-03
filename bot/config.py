@@ -33,6 +33,7 @@ class Config:
         self.ssh_password = 'password'
 
         self.debug = False
+        self.donation_token = ''
 
     def fromJSON(self, js: str) -> None:
         """Десереализует строку в данные
