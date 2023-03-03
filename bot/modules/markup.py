@@ -5,7 +5,7 @@ from bot.modules.data_format import chunks, crop_text, list_to_keyboard
 from bot.modules.dinosaur import Dino, Egg
 from bot.modules.localization import t, tranlate_data
 from bot.modules.logs import log
-from bot.modules.user import User, get_last_dino
+from bot.modules.user import User, last_dino
 
 users = mongo_client.bot.users
 dinosaurs = mongo_client.bot.dinosaurs
@@ -76,8 +76,8 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
             ['settings_menu', 'friends_menu', 'faq'],
             ['dino-tavern_menu']
         ]
-        settings = users.find_one({'userid': userid}, {'settings': 1}) or {}
-        if not settings['settings'].get('faq', 0): #Если передаём faq, то можно удалить кнопку
+        settings = users.find_one({'userid': userid}, {'settings': 1}) or {'settings': {}}
+        if not settings['settings'].get('faq', 1): #Если передаём faq, то можно удалить кнопку
             buttons[1].remove('faq')
     
     elif markup_key == 'settings_menu':
@@ -160,11 +160,11 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
 
         else:
             add_back_button = False
-            last_dino = get_last_dino(user)
-            if last_dino:
-                dino_button = 'notranslate.' + t('commands_name.actions.dino_button', language_code) + " " + crop_text(last_dino.name, 6)
+            dino = last_dino(user)
+            if dino:
+                dino_button = f'notranslate.{t("commands_name.actions.dino_button", language_code)} {crop_text(dino.name, 6)}'
 
-                dp_buttons = get_buttons(last_dino)
+                dp_buttons = get_buttons(dino)
                 buttons = [
                     ["feed"],
                     ["entertainments", dp_buttons[0]],
