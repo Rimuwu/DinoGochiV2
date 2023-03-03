@@ -5,6 +5,7 @@ from bot.exec import bot
 from bot.modules.item import get_name, get_item_dict, get_data
 from bot.config import mongo_client
 from bot.modules.user import User
+from bot.modules.donation import get_donations
 
 dinosaurs = mongo_client.bot.dinosaurs
 
@@ -13,13 +14,5 @@ async def test_command(message: Message):
     user_id = message.from_user.id
 
     user = User(user_id)
-    print(user.get_friends())
 
-@bot.message_handler(start_with='commands_name.actions.dino_button')
-async def test_command2(message: Message):
-    user_id = message.from_user.id
-    print('ok')
-
-
-
-    
+    await bot.send_message(message.from_user.id, str(await get_donations()))
