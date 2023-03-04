@@ -13,14 +13,15 @@ async def user_notification(user_id: int, not_type: str, lang: str='en', **kwarg
     """
     text, markup_inline = not_type, None
     standart_notification = [
-        
+        "donation"
     ]
     unstandart_notification = [
         'incubation_ready' # необходим dino_id 
     ]
+    add_way = '.'+kwargs.get('add_way', '')
 
     if not_type in standart_notification:
-        text = t(f'notifications.{not_type}', lang, **kwargs)
+        text = t(f'notifications.{not_type}{add_way}', lang, **kwargs)
     
     elif not_type in unstandart_notification:
         data = get_data(f'notifications.{not_type}', lang)
