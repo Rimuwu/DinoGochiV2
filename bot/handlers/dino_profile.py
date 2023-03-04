@@ -95,7 +95,8 @@ async def dino_profile(userid: int, dino: Dino, lang: str):
         chat_id=userid,
         message_id=msg.id,
         media=types.InputMedia(
-            type='photo', media=dino.image(user.settings['profile_view']), parse_mode='Markdown', caption=text)
+            type='photo', media=dino.image(user.settings['profile_view']), 
+            parse_mode='Markdown', caption=text)
         )
 
 async def egg_profile(userid: int, egg: Egg, lang: str):
@@ -104,7 +105,8 @@ async def egg_profile(userid: int, egg: Egg, lang: str):
         egg.remaining_incubation_time(), lang)
         )
     img = egg.image(lang)
-    await bot.send_photo(userid, img, text, reply_markup=m(userid, 'last_menu', language_code=lang))
+    await bot.send_photo(userid, img, text, 
+                         reply_markup=m(userid, 'last_menu', language_code=lang))
 
 async def transition(element: Dino | Egg, data: dict):
     userid = data['userid']
@@ -123,7 +125,8 @@ async def dino_handler(message: Message):
         'userid': userid,
         'lang': lang
     }
-    await dino_answer(transition, userid, message.chat.id, lang, transmitted_data=data) #Теперь всё работу делает функция 
+    await dino_answer(transition, userid, message.chat.id, lang, 
+                      transmitted_data=data) #Теперь всё работу делает функция 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('dino_profile'))
 async def answer_edit(call: types.CallbackQuery):
