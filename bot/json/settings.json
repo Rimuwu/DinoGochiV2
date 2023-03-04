@@ -1,7 +1,7 @@
 {   
     "collections": {
         "bot": ["users", "dinosaurs", "items", "products", "management"],
-        "tasks": ["game", "incubation", "journey", "sleep", "collecting"],
+        "tasks": ["game", "incubation", "journey", "sleep", "collecting", "subscriptions"],
         "connections": ["referals", "friends", "dino_owners"]
     },
 
@@ -159,7 +159,27 @@
                 "activ_hunting": "🎯"
             }
         }
+    },
 
+    "products": {
+        "subscription_1": {
+            "type": "subscription",
+            "cost": {
+                "USD": 1,
+                "RUB": 115
+            }, 
+            "time": 2592000,
+            "items": [],
+            "premium_status": true
+        },
+        "rescue_kit": {
+            "type": "kit",
+            "cost": {
+                "USD": 0.3,
+                "RUB": 25
+            },
+            "items": [],
+            "premium_status": false
+        }
     }
-
 } 
