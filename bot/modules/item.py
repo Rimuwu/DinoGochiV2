@@ -3,11 +3,13 @@
     >>> abilities - словарь с индивидуальными харрактеристиками предмета, прочность, использования и тд.
     >>> preabil - используется только для предмета создаваемого из базы, используется для создания нестандартного предмета.
 """
-from bot.modules.localization import get_all_locales
-from bot.modules.data_format import random_dict
+from bot.config import mongo_client
 from bot.const import ITEMS
+from bot.modules.data_format import random_dict
+from bot.modules.localization import get_all_locales
 
 items_names = {}
+items = mongo_client.bot.items
 
 def get_data(itemid: str) -> dict:
     """Получение данных из json"""
@@ -106,5 +108,22 @@ def is_standart(item: dict) -> bool:
                 return False
         else:
             return True
+
+def AddItemToUser(userid: int, itemid: str, count: int, preabil: dict = {}):
+    assert count <= 0, f'AddItemToUser, count == {count}'
+
+    item = get_item_dict(itemid, preabil)
+    find_res = items.find_one({'owner_id': userid, 'items_data': item}, {'_id': 1})
+
+    if find_res:
+        items.update_one({'_id': find_res['_id']}, {'$inc': {'count': count}})
+    else:
+        item_dict = {
+            'owner_id': userid,
+            'items_data': item,
+            'count': count
+        }
+        items.insert_one(item_dict)
+
 
 items_names = load_items_names()
