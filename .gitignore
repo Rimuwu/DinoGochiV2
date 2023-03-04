@@ -1,7 +1,7 @@
 __pycache__
 bot/temp/
 bot/logs/
-bot/data/*.json
+bot/data/
 config.py
 venv
 .vscode
