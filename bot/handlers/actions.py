@@ -41,9 +41,8 @@ async def answer_edit(call: CallbackQuery):
     if dino:
         user.update({'$set': {'settings.last_dino': dino['_id']}})
         await bot.send_message(user_id, 
-                               t('edit_dino_button.susseful', lang, 
-                               name=dino['name']),
-                               reply_markup=m(user_id, 'actions_menu', lang, True)
+                t('edit_dino_button.susseful', lang, name=dino['name']),
+                reply_markup=m(user_id, 'actions_menu', lang, True)
                               )
         
 async def short_sleep():
@@ -60,7 +59,16 @@ async def put_to_bed(message: Message):
     user = User(user_id)
     last_dino = user.get_last_dino()
 
-    # if last_dino:
+    if last_dino:
+        if last_dino.status == 'pass':
+            ...
+        else:
+            await bot.send_message(user_id, t('put_to_bed.alredy_busy', lang),
+                reply_markup=m(user_id, 'last_menu', lang))
+    else:
+        await bot.send_message(user_id, t('edit_dino_button.notfouned', lang),
+                reply_markup=m(user_id, 'last_menu', lang))
+        
         
 
 
