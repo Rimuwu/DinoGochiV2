@@ -26,7 +26,7 @@ async def dino_answer(function, userid: int, chatid: int,
     elements = user.get_dinos()
     if add_egg: elements += user.get_eggs()
 
-    ret_data = get_answer_keyboard(elements, lang) #type: ignore
+    ret_data = get_answer_keyboard(elements, lang)
 
     if ret_data['case'] == 0:
         await bot.send_message(user.userid, 
@@ -43,4 +43,5 @@ async def dino_answer(function, userid: int, chatid: int,
             data['function'] = function
             data['dino_names'] = ret_data['data_names']
             data['data'] = transmitted_data
+
         await bot.send_message(user.userid, t('p_profile.choose_dino', lang), reply_markup=ret_data['keyboard'])

@@ -30,7 +30,7 @@ class User:
             'profile_view': 1,
             'inv_view': [2, 3],
             'faq': True,
-            'premium_status': 0
+            'premium_status': False
             }
             
         self.coins = 10

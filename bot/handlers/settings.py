@@ -184,7 +184,8 @@ async def rename_dino(message: Message):
         'userid': userid,
         'lang': lang
     }
-    await dino_answer(transition, userid, message.chat.id, lang, False, transmitted_data=data) 
+    await dino_answer(transition, userid, message.chat.id, lang, False, 
+                      transmitted_data=data) 
 
 @bot.message_handler(state=SettingsStates.rename_dino_step_name, is_authorized=True)
 async def rename_state(message: Message):

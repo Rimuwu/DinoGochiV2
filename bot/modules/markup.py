@@ -200,8 +200,10 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
     
     return result
 
-def get_answer_keyboard(elements: list[Dino | Egg], lang: str='en') -> dict:
+def get_answer_keyboard(elements, lang: str='en') -> dict:
     """
+       elements - Dino | Egg
+    
        return 
        {'case': 0} - нет динозавров / яиц
        {'case': 1, 'element': Dino | Egg} - 1 динозавр / яйцо 
