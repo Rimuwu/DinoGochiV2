@@ -110,6 +110,8 @@ def is_standart(item: dict) -> bool:
             return True
 
 def AddItemToUser(userid: int, itemid: str, count: int, preabil: dict = {}):
+    """Добавление предмета в инвентарь
+    """
     assert count <= 0, f'AddItemToUser, count == {count}'
 
     item = get_item_dict(itemid, preabil)
@@ -124,6 +126,35 @@ def AddItemToUser(userid: int, itemid: str, count: int, preabil: dict = {}):
             'count': count
         }
         items.insert_one(item_dict)
+
+def RemoveItemFromUser(userid: int, itemid: str, 
+            count: int, preabil: dict = {}):
+    """Удаление предмета из инвентаря
+       return
+       True - всё нормально, удалил
+       False - предмета нет или количесвто слишком большое
+    """
+    assert count <= 0, f'RemoveItemFromUser, count == {count}'
+
+    item = get_item_dict(itemid, preabil)
+    find_res = items.find_one({'owner_id': userid, 'items_data': item}, {'_id': 1, 'count': 1})
+
+    if find_res:
+        if find_res['count'] - count > 0:
+            items.update_one({'_id': find_res['_id']}, 
+                            {'$inc': {'count': count * -1}})
+            return True
+        
+        if find_res['count'] - count == 0:
+            items.delete_one({'_id': find_res['_id']})
+            return True
+
+        if find_res['count'] - count < 0:
+            return False
+        
+    else:
+        return False
+
 
 
 items_names = load_items_names()
