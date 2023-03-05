@@ -1,4 +1,4 @@
-import time
+from time import time
 
 from bot.config import mongo_client
 from bot.modules.dinosaur import Dino, Egg
@@ -11,7 +11,7 @@ dinosaurs = mongo_client.bot.dinosaurs
 incubations = mongo_client.tasks.incubation
 dino_owners = mongo_client.connections.dino_owners
 friends = mongo_client.connections.friends
-
+subscriptions = mongo_client.tasks.subscriptions
 
 class User:
 
@@ -148,7 +148,7 @@ def insert_user(userid: int):
     user_dict = {
         'userid': userid,
 
-        'last_message_time': int(time.time()),
+        'last_message_time': int(time()),
         'last_markup': 'main_menu',
 
         'settings': { 'notifications': True,
@@ -245,3 +245,34 @@ def last_dino(user: User) -> Dino | None:
         else:
             user.update({'$set': {'settings.last_dino': None}})
             return None
+
+def award_premium(userid:int, end_time:int | str):
+    """
+    Присуждение премиум статуса юзеру
+    {
+        'userid': int,
+        'sub_start': int,
+        'sub_end': int | str (inf),
+        'end_notif': bool (отправлено ли уведомление о окончании подписки)
+    }
+    """
+    user_doc = subscriptions.find_one({'userid': userid})
+    if user_doc:
+        if type(end_time) == str:
+            user_doc['sub_end'] = end_time
+        elif type(end_time) == int:
+            user_doc['sub_end'] += end_time
+        
+        subscriptions.update_one({'userid': userid}, {'$set': {'sub_end': user_doc['sub_end']}})
+    else:
+        if type(end_time) == int:
+            end_time = int(time()) + end_time #type: ignore
+
+        user_doc = {
+            'userid': userid,
+            'sub_start': int(time()),
+            'sub_end': end_time,
+            'end_notif': False
+        }
+        subscriptions.insert_one(user_doc)
+        users.update_one({'userid': userid}, {'$set': {'settings.premium_status': True}})
