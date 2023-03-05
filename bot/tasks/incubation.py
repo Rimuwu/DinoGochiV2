@@ -1,18 +1,18 @@
-from bot.taskmanager import add_task
-from bot.config import mongo_client, conf
 from time import time
-from bot.modules.notifications import user_notification
-from bot.modules.dinosaur import insert_dino
+
+from bot.config import conf, mongo_client
 from bot.exec import bot
 from bot.modules.data_format import user_name
-
+from bot.modules.dinosaur import insert_dino
+from bot.modules.notifications import user_notification
+from bot.taskmanager import add_task
 
 incubations = mongo_client.tasks.incubation
 
 async def incubation():
     """Проверка инкубируемых яиц
     """
-    data = list(incubations.find({'incubation_time': {'$lte': time()}})).copy()
+    data = list(incubations.find({'incubation_time': {'$lte': int(time())}})).copy() #$lte - (<=)
 
     for egg in data:
         #создаём динозавра
