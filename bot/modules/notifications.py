@@ -35,7 +35,7 @@ async def user_notification(user_id: int, not_type: str, lang: str='en', **kwarg
 
 
     log(prefix='Notification', 
-        message=f'User: {user_id}, Data: {not_type}', lvl=0)
+        message=f'User: {user_id}, Data: {not_type} Kwargs: {kwargs}', lvl=0)
     try:
         await bot.send_message(user_id, text, reply_markup=markup_inline)
     except Exception as error: 
