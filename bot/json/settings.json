@@ -165,21 +165,31 @@
         "subscription_1": {
             "type": "subscription",
             "cost": {
-                "USD": 1,
-                "RUB": 115
+                "1": {
+                    "USD": 1,
+                    "RUB": 75
+                },
+                "2": {
+                    "USD": 2,
+                    "RUB": 150
+                },
+                "3": {
+                    "USD": 2.5,
+                    "RUB": 189
+                }
             }, 
             "time": 2592000,
-            "items": [],
-            "premium_status": true
+            "items": []
         },
         "rescue_kit": {
             "type": "kit",
             "cost": {
-                "USD": 0.3,
-                "RUB": 25
+                "1": {
+                    "USD": 0.3,
+                    "RUB": 25
+                }
             },
-            "items": [],
-            "premium_status": false
+            "items": ["1", "1", "1", "1", "17", "17", "17", "33", "33", "100", "99", "98", "82"]
         }
     }
 } 
