@@ -18,6 +18,13 @@ def get_products():
         product = products[product_key]
 
         for currency in all_currency:
-            product['cost'][currency] = convert(
-                product['cost'][main_currency], main_currency, currency)
+            for col_key in product['cost'].keys():
+                product['cost'][col_key][currency] = convert(
+                    product['cost'][col_key][main_currency], main_currency, currency)
     return products
+
+def get_all_currency():
+    curren = all_currency.copy()
+    curren.append(main_currency)
+    curren.append('RUB')
+    return curren
