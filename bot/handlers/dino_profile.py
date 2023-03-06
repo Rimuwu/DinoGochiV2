@@ -9,7 +9,7 @@ from bot.modules.events import get_one_event
 from bot.modules.item import get_name
 from bot.modules.localization import get_data, t
 from bot.modules.markup import markups_menu as m
-from bot.modules.states import dino_answer
+from bot.modules.states import ChooseDinoState
 from bot.modules.user import User
 
 
@@ -108,9 +108,9 @@ async def egg_profile(userid: int, egg: Egg, lang: str):
     await bot.send_photo(userid, img, text, 
                          reply_markup=m(userid, 'last_menu', language_code=lang))
 
-async def transition(element: Dino | Egg, data: dict):
-    userid = data['userid']
-    lang = data['lang']
+async def transition(element: Dino | Egg, transmitted_data: dict):
+    userid = transmitted_data['userid']
+    lang = transmitted_data['lang']
 
     if type(element) == Dino:
         await dino_profile(userid, element, lang) #type: ignore
@@ -121,12 +121,8 @@ async def transition(element: Dino | Egg, data: dict):
 async def dino_handler(message: Message):
     userid = message.from_user.id
     lang = message.from_user.language_code
-    data = {
-        'userid': userid,
-        'lang': lang
-    }
-    await dino_answer(transition, userid, message.chat.id, lang, 
-                      transmitted_data=data) #Теперь всё работу делает функция 
+
+    await ChooseDinoState(transition, userid, message.chat.id, lang) 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('dino_profile'))
 async def answer_edit(call: types.CallbackQuery):
