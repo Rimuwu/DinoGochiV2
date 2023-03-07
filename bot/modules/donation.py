@@ -204,11 +204,12 @@ async def check_donations():
                             donat['amount'], error, None, False, donat['created_at_ts'],
                             product_col
                             )
+            processed_donations[str(donat['id'])] = donation_data
+            
         else:
             if int(time()) - donat['created_at_ts'] >= 3024001:
                 del processed_donations[str(donat['id'])]
 
-        processed_donations[str(donat['id'])] = donation_data
     save(processed_donations)
 
 
