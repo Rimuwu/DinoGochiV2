@@ -336,7 +336,7 @@ def check_accessory(dino: Dino, item_id: str, downgrade: bool=False):
        downgrade - если активирован, то вызывает понижение прочности предмета
     """
     data_item = get_data(item_id) #Получаем данные из json
-    acces_item = dino.activ_items[data_item['type']] #предмет / None
+    acces_item = dino.activ_items[data_item['type'][:-3]] #предмет / None
 
     if acces_item:
         if acces_item['item_id'] == item_id:
