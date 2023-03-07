@@ -56,13 +56,12 @@ def list_to_keyboard(buttons: list, row_width: int = 3, resize_keyboard: bool = 
     markup = ReplyKeyboardMarkup(row_width=row_width, 
                                  resize_keyboard=resize_keyboard, 
                                  one_time_keyboard=one_time_keyboard)
-
-    if len(buttons) == 1:
-        markup.add(*[i for i in buttons])
-
-    else:
-        for line in buttons:
-            markup.row(*[i for i in line])
+    
+    for line in buttons:
+        if type(line) == list:
+            markup.add(*[i for i in line])
+        else:
+            markup.add(line)
 
     return markup
 
