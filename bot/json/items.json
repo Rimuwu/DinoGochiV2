@@ -279,7 +279,7 @@
               "en": "🧸 Bear",
               "ru": "🧸 Мишка"
           },
-          "type": "unv_ac",
+          "type": "sleep_ac",
           "descriptionru": "Добавляет режимы сна.",
           "descriptionen": "Adds sleep modes.",
           "abilities": {
