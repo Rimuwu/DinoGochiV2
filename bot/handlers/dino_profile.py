@@ -130,9 +130,9 @@ async def answer_edit(call: types.CallbackQuery):
 
     userid = call.from_user.id
     lang = call.from_user.language_code
-    data = {
+    trans_data = {
         'userid': userid,
         'lang': lang
     }
     dino = Dino(data)
-    await transition(dino, data)
+    await transition(dino, trans_data)
