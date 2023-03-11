@@ -173,7 +173,7 @@ def insert_user(userid: int):
     log(prefix='InsertUser', message=f'User: {userid}', lvl=0)
     return users.insert_one(user_dict)
 
-def get_dinos(userid) -> list[Dino]:
+def get_dinos(userid: int) -> list[Dino]:
     """Возвращает список с объектами динозавров."""
     dino_list = []
     for dino_obj in dino_owners.find({'owner_id': userid}, {'dino_id': 1}):
@@ -181,10 +181,10 @@ def get_dinos(userid) -> list[Dino]:
 
     return dino_list
 
-def col_dinos(userid) -> int:
+def col_dinos(userid: int) -> int:
     return len(list(dino_owners.find({'owner_id': userid}, {'_id': 1})))
     
-def get_eggs(userid) -> list:
+def get_eggs(userid: int) -> list:
     """Возвращает список с объектами динозавров."""
     eggs_list = []
     for egg in incubations.find({'owner_id': userid}):
@@ -192,7 +192,7 @@ def get_eggs(userid) -> list:
 
     return eggs_list
 
-def get_inventory(userid) -> list:
+def get_inventory(userid: int) -> list:
     inv = []
     for item_dict in items.find({'owner_id': userid}, {'_id': 0, 'owner_id': 0}):
         item = {
@@ -202,7 +202,7 @@ def get_inventory(userid) -> list:
         inv.append(item)
     return inv
 
-def get_frineds(userid) -> dict[str, list[int]]:
+def get_frineds(userid: int) -> dict[str, list[int]]:
     friends_dict = {
         'friends': [],
         'requests': []
