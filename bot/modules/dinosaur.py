@@ -1,6 +1,8 @@
 from random import choice, randint
 from time import time
 
+from bson.objectid import ObjectId
+
 from bot.config import mongo_client
 from bot.const import DINOS, GAME_SETTINGS
 from bot.modules.data_format import random_code, random_quality
@@ -20,7 +22,7 @@ collecting_task = mongo_client.tasks.collecting
 
 class Dino:
 
-    def __init__(self, baseid):
+    def __init__(self, baseid: ObjectId):
         """Создание объекта динозавра."""
         self._id = baseid
 
@@ -104,7 +106,7 @@ class Dino:
 
 class Egg:
 
-    def __init__(self, baseid):
+    def __init__(self, baseid: ObjectId):
         """Создание объекта яйца."""
         
         self._id = baseid
@@ -168,7 +170,7 @@ def incubation_dino(egg_id: int, owner_id: int, inc_time: int=0, quality: str='r
     log(prefix='InsertEgg', message=f'owner_id: {owner_id} data: {dino}', lvl=0)
     return incubations.insert_one(dino)
 
-def create_dino_connection(dino_baseid, owner_id: int, con_type: str='owner'):
+def create_dino_connection(dino_baseid: ObjectId, owner_id: int, con_type: str='owner'):
     """ Создаёт связь в базе между пользователем и динозавром
         con_type = owner / add_owner
     """
@@ -237,7 +239,7 @@ def insert_dino(owner_id: int=0, dino_id: int=0, quality: str='random'):
 
     return result, dino['alt_id']
 
-def start_game(dino_baseid, duration: int=1800, percent: int=1):
+def start_game(dino_baseid: ObjectId, duration: int=1800, percent: int=1):
     """Запуск активности "игра". 
        + Изменение статуса динозавра 
     """
@@ -253,7 +255,7 @@ def start_game(dino_baseid, duration: int=1800, percent: int=1):
                          {'$set': {'status': 'game'}})
     return result
 
-def start_sleep(dino_baseid, s_type: str='long', duration: int=1):
+def start_sleep(dino_baseid: ObjectId, s_type: str='long', duration: int=1):
     """Запуск активности "сон". 
        + Изменение статуса динозавра 
     """
@@ -273,7 +275,7 @@ def start_sleep(dino_baseid, s_type: str='long', duration: int=1):
                          {'$set': {'status': 'sleep'}})
     return result
 
-def start_journey(dino_baseid, duration: int=1800):
+def start_journey(dino_baseid: ObjectId, duration: int=1800):
     """Запуск активности "путешествие". 
        + Изменение статуса динозавра 
     """
@@ -291,7 +293,7 @@ def start_journey(dino_baseid, duration: int=1800):
                          {'$set': {'status': 'journey'}})
     return result
 
-def start_collecting(dino_baseid, coll_type: str):
+def start_collecting(dino_baseid: ObjectId, coll_type: str):
     """Запуск активности "сбор пищи". 
        + Изменение статуса динозавра 
     """
@@ -307,7 +309,7 @@ def start_collecting(dino_baseid, coll_type: str):
                          {'$set': {'status': 'collecting'}})
     return result
 
-def downgrade_accessory(dino: Dino, acc_type: str):
+async def downgrade_accessory(dino: Dino, acc_type: str):
     """Понижает прочность аксесуара
        Return
        >>> True - прочность понижена
@@ -322,7 +324,7 @@ def downgrade_accessory(dino: Dino, acc_type: str):
 
             if item['abilities']['endurance'] <= 0:
                 dino.update({"$set": {f'activ_items.{acc_type}': None}})
-                dino_notification(dino._id, 'acc_broke')
+                await dino_notification(dino._id, 'acc_broke')
             else:
                 dino.update({"$inc": {f'activ_items.{acc_type}': num}})
             return True
