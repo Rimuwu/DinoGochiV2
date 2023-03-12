@@ -130,11 +130,11 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
 
         def get_buttons(dino: Dino) -> list:
             data = ['journey', 'put_to_bed', 'collecting']
-            if dino.stats == 'journey':
+            if dino.status == 'journey':
                 data[0] = 'return'
-            elif dino.stats == 'sleep':
+            elif dino.status == 'sleep':
                 data[1] = 'awaken'
-            elif dino.stats == 'collecting':
+            elif dino.status == 'collecting':
                 data[2] = 'progress'
             return data
 
