@@ -3,10 +3,9 @@ from time import time
 from bson.objectid import ObjectId
 
 from bot.config import conf, mongo_client
-from bot.exec import bot
-from bot.modules.data_format import seconds_to_str
 from bot.modules.notifications import dino_notification
 from bot.taskmanager import add_task
+from bot.modules.dinosaur import end_sleep
 
 sleepers = mongo_client.tasks.sleep
 dinosaurs = mongo_client.bot.dinosaurs
@@ -21,15 +20,6 @@ SHORT_SLEEP_TIME_MIN = LONG_SLEEP_TIME_MIN // 2
 SHORT_MAX_UNIT_AFTER = SHORT_SLEEP_TIME_MIN // SHORT_SLEEP_COLDOWN_MIN
 SHORT_ONE_TIME = SHORT_MAX_UNIT_AFTER // 100
 
-
-async def end_sleep(dinoid: ObjectId, sleeperid: ObjectId, sec_time: int):
-    dinosaurs.update_one({'_id': dinoid}, {'$set': {'status': 'pass'}})
-    sleepers.delete_one({'_id': sleeperid})
-
-    await dino_notification(dinoid, 'sleep_end', 
-                            add_time_end=True,
-                            secs=sec_time)
-
 async def one_time(data, one_time_unit):
     for sleeper in data:
         add_energy, sec_time = 0, 0
@@ -43,11 +33,11 @@ async def one_time(data, one_time_unit):
         if dino:
             energy = dino['stats']['energy']
             if energy >= 100:
-                await end_sleep(dino['_id'], sleeper['_id'], sec_time)
+                await end_sleep(sleeper['dino_id'], sleeper['_id'], sec_time)
             else:
                 if energy + one_time_unit >= 100:
                     add_energy = 100 - energy
-                    await end_sleep(dino['_id'], sleeper['_id'], sec_time)
+                    await end_sleep(sleeper['dino_id'], sleeper['_id'], sec_time)
                 else:
                     add_energy = one_time_unit
                 dinosaurs.update_one({'_id': dino['_id']}, {'$inc': {'stats.energy': add_energy}})
@@ -65,7 +55,7 @@ async def short_check_notification():
     for sleeper in data:
         dino = dinosaurs.find_one({'_id': sleeper['dino_id']})
         if dino:
-            await end_sleep(dino['_id'], sleeper['_id'], 
+            await end_sleep(sleeper['dino_id'], sleeper['_id'], 
                             sleeper['sleep_end'] - sleeper['sleep_start'])
 
 async def short_check():
