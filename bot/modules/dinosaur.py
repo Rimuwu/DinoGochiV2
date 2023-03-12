@@ -275,6 +275,19 @@ def start_sleep(dino_baseid: ObjectId, s_type: str='long', duration: int=1):
                          {'$set': {'status': 'sleep'}})
     return result
 
+async def end_sleep(dino_id: ObjectId, sleeperid: ObjectId, sec_time: int=0, send_notif: bool=True):
+    """Заканчивает сон и отсылает уведомление.
+       sec_time - время в секундах, сколько спал дино.
+    """
+    sleep_task.delete_one({'_id': sleeperid})
+
+    dinosaurs.update_one({'_id': dino_id}, 
+                         {'$set': {'status': 'pass'}})
+    if send_notif:
+        await dino_notification(dino_id, 'sleep_end', 
+                            add_time_end=True,
+                            secs=sec_time)
+
 def start_journey(dino_baseid: ObjectId, duration: int=1800):
     """Запуск активности "путешествие". 
        + Изменение статуса динозавра 
@@ -350,3 +363,18 @@ def check_accessory(dino: Dino, item_id: str, downgrade: bool=False):
             return False
     else:
         return False
+
+def edited_stats(before: int, unit: int):
+    """ Лёгкая функция проверки на 
+        0 <= unit <= 100 
+    """
+    after = 0
+
+    if before + unit > 100:
+        after = 100
+    elif before + unit < 0:
+        after = 0
+    else:
+        after = before + unit
+
+    return after
