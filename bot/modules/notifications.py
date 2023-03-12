@@ -17,6 +17,10 @@ def dino_notification_delete(dino_id: ObjectId, not_type: str):
 
 async def dino_notification(dino_id: ObjectId, not_type: str, **kwargs):
     """ Те уведомления, которые нужно отслеживать и отсылать 1 раз
+        В аргументы автоматически добавляется имя динозавра.
+
+        Если передать add_time_end=True то в аргументы дополнительно будет добавлен ключ
+        time_end в формате времени, секудны берутся из ключа secs
     """
     dino = dinosaurs.find_one({"_id": dino_id})
     owners = list(dino_owners.find({'dino_id': dino_id}))
