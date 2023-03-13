@@ -142,14 +142,14 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
         prefix = 'commands_name.actions.'
         add_back_button = True
         user = User(userid)
-        col_dinos = user.get_col_dinos() #Сохраняем кол. динозавров
+        col_dinos = user.get_col_dinos #Сохраняем кол. динозавров
 
         if col_dinos == 0:
             buttons = [
                 ['no_dino']
             ]
         if col_dinos == 1:
-            dino = user.get_dinos()[0]
+            dino = user.get_dinos[0]
             dp_buttons = get_buttons(dino)
 
             buttons = [
@@ -229,7 +229,7 @@ def get_answer_keyboard(elements, lang: str='en') -> dict:
             data_names[txt] = element
             names.append(txt)
             
-        buttons_list = list(chunks(names, 2)) #делим на строчки по 2 элемента
+        buttons_list = chunks(names, 2) #делим на строчки по 2 элемента
         buttons_list.append([t('buttons_name.cancel', lang)]) #добавляем кнопку отмены
         keyboard = list_to_keyboard(buttons_list, 2) #превращаем список в клавиатуру
 

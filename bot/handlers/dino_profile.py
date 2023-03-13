@@ -134,5 +134,5 @@ async def answer_edit(call: types.CallbackQuery):
         'userid': userid,
         'lang': lang
     }
-    dino = Dino(data)
+    dino = Dino(data) #type: ignore
     await transition(dino, trans_data)

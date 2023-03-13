@@ -97,7 +97,7 @@ async def dino_profile_set(message: Message):
         ind = time_list.index(i) + 1
         settings_data[i] = ind
 
-    buttons = list(chunks(time_list, 2))
+    buttons = chunks(time_list, 2)
     buttons.append([t('buttons_name.cancel', lang)])
 
     keyboard = list_to_keyboard(buttons, 2)
@@ -131,7 +131,7 @@ async def inventory_set(message: Message):
         time_list.append(i)
         settings_data[i] = list(int(strn) for strn in i.split(' | '))
 
-    buttons = list(chunks(time_list, 2))
+    buttons = chunks(time_list, 2)
     buttons.append([t('buttons_name.cancel', lang)])
     keyboard = list_to_keyboard(buttons, 2)
 

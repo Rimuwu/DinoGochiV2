@@ -87,7 +87,7 @@ async def tavern_menu(message: Message):
     userid = message.from_user.id
     lang = message.from_user.language_code
     user = User(userid)
-    friends = user.get_friends()['friends']
+    friends = user.get_friends['friends']
     text = ''
 
     management.update_one({'_id': 'in_tavern'}, {'$push': {'users': userid}})

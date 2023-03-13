@@ -25,7 +25,7 @@ async def edit_dino_buttom(message: Message):
     """
     user_id = message.from_user.id
     user = User(user_id)
-    dinos = user.get_dinos()
+    dinos = user.get_dinos
     data_names = {}
 
     for element in dinos:
