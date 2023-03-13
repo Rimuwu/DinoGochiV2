@@ -53,29 +53,34 @@ class User:
         if data:
             self.__dict__ = data
     
+    @property
     def get_dinos(self) -> list[Dino]:
         """Возвращает список с объектами динозавров."""
         dino_list = get_dinos(self.userid)
         self.dinos = dino_list
         return dino_list
 
+    @property
     def get_col_dinos(self) -> int:
         col = col_dinos(self.userid)
         self.col_dinos = col
         return col
     
+    @property
     def get_eggs(self) -> list[Egg]:
         """Возвращает список с объектами динозавров."""
         eggs_list = get_eggs(self.userid)
         self.eggs = eggs_list
         return eggs_list
     
+    @property
     def get_inventory(self) -> list[dict]:
         """Возвращает список с предметами в инвентаре"""
         inv = get_inventory(self.userid)
         self.inventory = inv
         return inv
 
+    @property
     def get_friends(self) -> dict[str, list[int]]:
         """Возвращает словарь с 2 видами связей
            friends - уже друзья
@@ -237,7 +242,7 @@ def last_dino(user: User) -> Dino | None:
             user.update({'$set': {'settings.last_dino': None}})
             return last_dino(user)
     else:
-        dino_lst = user.get_dinos()
+        dino_lst = user.get_dinos
         if len(dino_lst):
             dino = dino_lst[0]
             user.update({'$set': {'settings.last_dino': dino._id}})
@@ -276,3 +281,27 @@ def award_premium(userid:int, end_time:int | str):
         }
         subscriptions.insert_one(user_doc)
         users.update_one({'userid': userid}, {'$set': {'settings.premium_status': True}})
+
+def max_dino_col(lvl: int, user_id: int=0, premium: bool=False):
+    """Возвращает доступное количесвто динозавров, беря во внимание уровень и статус
+       Если передаётся user_id то считает сколько динозавров у юзера вместе с лимитом
+    """
+    col = {
+        'standart': {
+            'now': 0, 'limit': 0
+        },
+        'additional': {
+            'now': 0, 'limit': 1
+        }
+    }
+
+    if premium: col['standart']['limit'] += 1
+    col['standart']['limit'] += (lvl // 20 + 1) - lvl // 80
+
+    if user_id:
+        dinos = dino_owners.find({'owner_id': user_id})
+        for dino in dinos:
+            if dino['type'] == 'owner': col['standart']['now'] += 1
+            else: col['additional']['now'] += 1
+
+    return col
