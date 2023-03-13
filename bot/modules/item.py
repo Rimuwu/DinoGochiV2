@@ -18,7 +18,7 @@ def get_data(itemid: str) -> dict:
     if itemid in ITEMS['items'].keys():
         return ITEMS['items'][itemid]
     else:
-        raise Exception(f"The subject with ID {itemid} does not exist.")
+        return {}
 
 def load_items_names() -> dict:
     """Загружает все имена предметов и имена из локалищации в один словарь. 
@@ -119,6 +119,7 @@ def AddItemToUser(userid: int, itemid: str, count: int = 1, preabil: dict = {}):
 
     if find_res:
         items.update_one({'_id': find_res['_id']}, {'$inc': {'count': count}})
+        return 'plus count'
     else:
         item_dict = {
             'owner_id': userid,
@@ -126,6 +127,7 @@ def AddItemToUser(userid: int, itemid: str, count: int = 1, preabil: dict = {}):
             'count': count
         }
         items.insert_one(item_dict)
+        return 'new item'
 
 def RemoveItemFromUser(userid: int, itemid: str, 
             count: int = 1, preabil: dict = {}):
@@ -153,5 +155,45 @@ def RemoveItemFromUser(userid: int, itemid: str,
             return False
     else:
         return False
+    
+def item_code(item: dict, v_id: bool = True) -> str:
+    """Создаёт код-строку предмета, основываясь на его
+       харрактеристиках.
+       
+       v_id - определяет добавлять ли буквенный индефикатор
+    """
+    text = ''
+
+    if v_id: text = f"id{item['item_id']}"
+
+    if 'abilities' in item.keys():
+        for key, item in item['abilities'].items():
+            if v_id:
+                text += f".{key[:2]}{item}"
+            else:
+                text += str(item)
+    return text
+
+def decode_item(code: str) -> dict:
+    """Превращает код в словарь
+    """
+    split = code.split('.')
+    ids = {
+        'us': 'uses', 'en': 'endurance',
+        'ma': 'mana', 'st': 'stack'
+    }
+    data = {}
+
+    for part in split:
+        scode = part[:2]
+        value = part[2:]
+        
+        if scode == 'id':
+            data['item_id'] = value
+        else:
+            if 'abilities' not in data.keys(): data['abilities'] = {}
+            data['abilities'][ ids[scode] ] = value
+
+    return data
 
 items_names = load_items_names()
