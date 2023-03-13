@@ -13,6 +13,9 @@ class GeneralStates(StatesGroup):
     ChooseConfirm = State() # Состояние для подтверждения (да / нет)
     ChooseOption = State() # Состояние для выбора среди вариантов
 
+class AlternativeStates(StatesGroup):
+    Inventory = State() # Состояние открытого инвентаря
+
 
 def add_if_not(data: dict, userid: int, chatid: int, lang: str):
     """Добавляет минимальные данные для работы"""
@@ -30,8 +33,8 @@ async def ChooseDinoState(function, userid: int, chatid: int,
        >>> element: Dino | Egg, transmitted_data: dict
     """
     user = User(userid)
-    elements = user.get_dinos()
-    if add_egg: elements += user.get_eggs()
+    elements = user.get_dinos
+    if add_egg: elements += user.get_eggs
     
     transmitted_data = add_if_not(transmitted_data, userid, chatid, lang)
     ret_data = get_answer_keyboard(elements, lang)
