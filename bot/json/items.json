@@ -6,7 +6,7 @@
               "ru": "🍯 Баночка мёда",
               "en": "🍯 Jar of honey"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 10,
           "+hp": 15,
           "class": "ALL",
@@ -19,7 +19,7 @@
               "ru": "🍪 Печенье",
               "en": "🍪 Cookies"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 5,
           "class": "ALL",
           "+mood": 10,
@@ -66,7 +66,7 @@
               "ru": "🍖 Мясо кабана",
               "en": "🍖 Wild boar meat"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 25,
           "class": "Carnivore",
           "ns_craft": {
@@ -84,7 +84,7 @@
               "ru": "🌿 Связка трав",
               "en": "🌿 A bunch of herbs"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 25,
           "class": "Herbivore",
           "ns_craft": {
@@ -102,7 +102,7 @@
               "ru": "🍤 Рыба",
               "en": "🍤 Fish"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 25,
           "class": "Flying",
           "ns_craft": {
@@ -124,7 +124,7 @@
               "en": "🥩 Wolf Meat",
               "ru": "🥩 Мясо волка"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 15,
           "class": "Carnivore",
           "ns_craft": {
@@ -142,7 +142,7 @@
               "en": "🌾 A bunch of herbs",
               "ru": "🌾 Травы с полей"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 15,
           "class": "Herbivore",
           "ns_craft": {
@@ -164,7 +164,7 @@
               "en": "🍣 Seafood",
               "ru": "🍣 Морепродукты"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 15,
           "class": "Flying",
           "ns_craft": {
@@ -182,7 +182,7 @@
               "en": "🍒 Berries",
               "ru": "🍒 Ягоды"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 20,
           "class": "Herbivore",
           "ns_craft": {
@@ -204,7 +204,7 @@
               "en": "🍗 Chicken leg",
               "ru": "🍗 Куриная ножка"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 20,
           "class": "Carnivore",
           "ns_craft": {
@@ -226,7 +226,7 @@
               "en": "🦪 Small fish",
               "ru": "🦪 Мелкая рыба"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 20,
           "class": "Flying",
           "ns_craft": {
@@ -294,7 +294,7 @@
               "en": "🧪 Medicinal mixture",
               "ru": "🧪 Лечебная смесь"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 1,
           "+hp": 15,
           "class": "ALL",
@@ -307,7 +307,7 @@
               "en": "🍕 Slice of pizza",
               "ru": "🍕 Кусочек пиццы"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 25,
           "class": "ALL",
           "+mood": 15,
@@ -326,7 +326,7 @@
               "en": "🥞 Sweet pancakes",
               "ru": "🥞 Сладкие блинчики"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 20,
           "class": "ALL",
           "+mood": 20,
@@ -581,7 +581,7 @@
               "en": "🍵 Medicinal drink",
               "ru": "🍵 Лекарственный напиток"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 5,
           "+hp": 25,
           "-mood": 10,
@@ -633,7 +633,7 @@
               "en": "🍀 Exquisite herbs",
               "ru": "🍀 Изысканные травы"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 45,
           "class": "Herbivore",
           "image": "item35",
@@ -645,7 +645,7 @@
               "en": "🍵 Tea",
               "ru": "🍵 Чай"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": -30,
           "class": "ALL",
           "+energy": 25,
@@ -696,7 +696,7 @@
               "en": "🥩 Fried meat",
               "ru": "🥩 Жареное мясо"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 40,
           "class": "Carnivore",
           "image": "item38",
@@ -740,7 +740,7 @@
               "en": "🥗 Salad",
               "ru": "🥗 Салат"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 70,
           "class": "Herbivore",
           "image": "item40",
@@ -783,7 +783,7 @@
               "en": "🥣 Soup",
               "ru": "🥣 Суп"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 55,
           "class": "Flying",
           "image": "item42",
@@ -902,7 +902,7 @@
               "en": "🍪 A set of cookies",
               "ru": "🍪 Набор печенек"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 6,
           "class": "ALL",
           "+mood": 10,
@@ -918,7 +918,7 @@
               "en": "🍕 Pizza",
               "ru": "🍕 Пицца"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 25,
           "class": "ALL",
           "+mood": 15,
@@ -947,7 +947,7 @@
               "en": "🌮 Tacos",
               "ru": "🌮 Тако"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 75,
           "class": "ALL",
           "+mood": 40,
@@ -1437,7 +1437,7 @@
               "en": "🍫 Chocolate",
               "ru": "🍫 Шоколад"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 10,
           "class": "ALL",
           "+energy": 5,
@@ -1450,7 +1450,7 @@
               "en": "🍬 Candy",
               "ru": "🍬 Конфеты"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 3,
           "class": "ALL",
           "+mood": 5,
@@ -1493,7 +1493,7 @@
               "en": "🌽 Corn",
               "ru": "🌽 Кукуруза"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 10,
           "class": "Herbivore",
           "image": "item71",
@@ -1505,7 +1505,7 @@
               "en": "🍿 Popcorn",
               "ru": "🍿 Попкорн"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 20,
           "class": "ALL",
           "+mood": 25,
@@ -1550,7 +1550,7 @@
               "en": "🧃 Juice",
               "ru": "🧃 Сок"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 10,
           "class": "ALL",
           "+mood": 20,
@@ -1586,7 +1586,7 @@
               "en": "🌶️ Spicy",
               "ru": "🌶️ Специи"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 5,
           "-hp": 2,
           "class": "Herbivore",
@@ -1599,7 +1599,7 @@
               "en": "🥩 Spicy steak",
               "ru": "🥩 Острый стейк"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 50,
           "class": "Carnivore",
           "image": "item77",
@@ -1646,7 +1646,7 @@
               "en": "🍌 Banana",
               "ru": "🍌 Банан"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 15,
           "class": "Herbivore",
           "image": "item79",
@@ -1658,7 +1658,7 @@
               "en": "🦀 Crab",
               "ru": "🦀 Краб"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 50,
           "class": "Flying",
           "image": "item80",
@@ -1670,7 +1670,7 @@
               "en": "☕️ Coffee",
               "ru": "☕️ Кофе"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 5,
           "+energy": 30,
           "class": "ALL",
@@ -1683,7 +1683,7 @@
               "en": "🍄 Mushroom",
               "ru": "🍄 Гриб"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 15,
           "+mood": 10,
           "-hp": 2,
@@ -1697,7 +1697,7 @@
               "en": "🍲 Broth",
               "ru": "🍲 Бульон"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 50,
           "+hp": 10,
           "class": "ALL",
@@ -1742,7 +1742,7 @@
               "en": "🍚 Rice",
               "ru": "🍚 Рис"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 10,
           "class": "Herbivore",
           "image": "item85",
@@ -1754,7 +1754,7 @@
               "en": "🍣 Sushi",
               "ru": "🍣 Суши"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 30,
           "class": "ALL",
           "image": "item86",
@@ -1792,7 +1792,7 @@
               "en": "☕️ Hot chocolate",
               "ru": "☕️ Горячий шоколад"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 10,
           "+energy": 20,
           "class": "ALL",
@@ -1831,7 +1831,7 @@
               "en": "🎂 Cake",
               "ru": "🎂 Торт"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 40,
           "class": "ALL",
           "+mood": 100,
@@ -1909,7 +1909,7 @@
               "en": "🍛 Curry",
               "ru": "🍛 Карри"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 50,
           "class": "ALL",
           "image": "item92",
@@ -1955,7 +1955,7 @@
               "en": "🍡 Dango",
               "ru": "🍡 Данго"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 20,
           "+mood": 15,
           "class": "ALL",
@@ -1968,7 +1968,7 @@
               "en": "🥜 Grains",
               "ru": "🥜 Зерна"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 10,
           "class": "Herbivore",
           "image": "item95",
@@ -1980,7 +1980,7 @@
               "en": "🍞 Bread",
               "ru": "🍞 Хлеб"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 30,
           "class": "ALL",
           "image": "item96",
@@ -2018,7 +2018,7 @@
               "en": "🥧 Berry pie",
               "ru": "🥧 Ягодный пирог"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 50,
           "+mood": 20,
           "class": "Herbivore",
@@ -2031,7 +2031,7 @@
               "en": "🥘 Fish pie",
               "ru": "🥘 Рыбный пирог"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 60,
           "+energy": 10,
           "class": "Flying",
@@ -2044,7 +2044,7 @@
               "en": "🍲 Meat pie",
               "ru": "🍲 Мясной пирог"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 60,
           "+hp": 10,
           "class": "Carnivore",
@@ -2159,7 +2159,7 @@
               "en": "🥓 Bacon",
               "ru": "🥓 Бекон"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 30,
           "class": "Carnivore",
           "image": "item104",
@@ -2198,7 +2198,7 @@
               "en": "🍱 Bento",
               "ru": "🍱 Бенто"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 100,
           "+mood": 20,
           "+hp": 20,
@@ -2246,7 +2246,7 @@
               "en": "🥪 Sandwich",
               "ru": "🥪 Бутерброд"
           },
-          "type": "+eat",
+          "type": "eat",
           "act": 50,
           "class": "ALL",
           "image": "item108",
