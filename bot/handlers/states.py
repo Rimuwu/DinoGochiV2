@@ -7,26 +7,23 @@ from bot.modules.markup import markups_menu as m
 from bot.modules.states import GeneralStates
 from bot.modules.localization import t, get_data
 
+async def cancel(message):
+    await bot.send_message(message.chat.id, "❌", 
+          reply_markup=m(message.from_user.id, 'last_menu', message.from_user.language_code))
+    await bot.delete_state(message.from_user.id, message.chat.id)
+    await bot.reset_data(message.from_user.id,  message.chat.id)
 
 @bot.message_handler(text='buttons_name.cancel', state='*')
 async def cancel_m(message: Message):
     """Состояние отмены
     """
-    await bot.send_message(message.chat.id, "❌", 
-                           reply_markup=m(message.from_user.id, 
-                           'last_menu', message.from_user.language_code))
-    await bot.delete_state(message.from_user.id, message.chat.id)
-    await bot.reset_data(message.from_user.id,  message.chat.id)
+    await cancel(message)
 
 @bot.message_handler(commands=['cancel'], state='*')
 async def cancel_c(message: Message):
-    """Состояние отмены
+    """Команда отмены
     """
-    await bot.send_message(message.chat.id, "❌", 
-                           reply_markup=m(message.from_user.id, 
-                           'last_menu', message.from_user.language_code))
-    await bot.delete_state(message.from_user.id, message.chat.id)
-    await bot.reset_data(message.from_user.id,  message.chat.id)
+    await cancel(message)
 
 
 @bot.message_handler(commands=['state'])
