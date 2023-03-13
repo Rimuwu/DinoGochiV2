@@ -7,13 +7,14 @@ from telebot.types import (InlineKeyboardButton, InlineKeyboardMarkup,
 from bot.const import GAME_SETTINGS
 from bot.modules.localization import get_data
 
-
-def chunks(lst: list, n: int):
+def chunks(lst: list, n: int) -> list:
     """Делит список lst, на списки по n элементов
        Возвращает генератор
     """
-    for i in range(0, len(lst), n):
-        yield lst[i:i + n]
+    def work():
+        for i in range(0, len(lst), n):
+            yield lst[i:i + n]
+    return list(work())
     
 def random_dict(data: dict[str, int]) -> int | dict:
     """ Предоставляет общий формат данных, подерживающий 
