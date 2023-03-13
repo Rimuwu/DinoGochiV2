@@ -6,3 +6,4 @@ from . import test
 from . import settings
 from . import actions
 from . import transition
+from . import inventory
