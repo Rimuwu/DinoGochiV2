@@ -13,8 +13,10 @@ class GeneralStates(StatesGroup):
     ChooseConfirm = State() # Состояние для подтверждения (да / нет)
     ChooseOption = State() # Состояние для выбора среди вариантов
 
-class AlternativeStates(StatesGroup):
+class InventoryStates(StatesGroup):
     Inventory = State() # Состояние открытого инвентаря
+    InventorySearch = State() # Состояние поиска в инвентаре
+    InventorySetFilters = State()
 
 
 def add_if_not(data: dict, userid: int, chatid: int, lang: str):
