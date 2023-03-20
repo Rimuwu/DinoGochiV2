@@ -200,7 +200,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
     
     return result
 
-def get_answer_keyboard(elements, lang: str='en') -> dict:
+def get_answer_keyboard(elements: list, lang: str='en') -> dict:
     """
        elements - Dino | Egg
     
