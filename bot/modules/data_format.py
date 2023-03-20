@@ -91,7 +91,7 @@ def list_to_inline(buttons: list[dict], row_width: int = 3) -> InlineKeyboardMar
 
     else:
         for line in buttons:
-            inline.row(*[InlineKeyboardButton(
+            inline.add(*[InlineKeyboardButton(
                 text=key, callback_data=item) for key, item in line.items()]
                        )
 
