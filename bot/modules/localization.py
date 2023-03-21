@@ -22,6 +22,18 @@ def load() -> None:
     log(f"Загружено {len(languages.keys())} файла(ов) локализации.", 1)
 
 
+def alternative_language(lang: str):
+    languages = {
+        'ru': ['ua', 'en']
+    }
+
+    for key, item in languages.items():
+        if lang in item: 
+            return key
+    else:
+        return lang
+
+
 def get_data(key: str, locale: str = "en") -> Any:
     """Возвращает данные локализации
 
@@ -32,6 +44,7 @@ def get_data(key: str, locale: str = "en") -> Any:
     Returns:
         str | dict: возвращаемое
     """
+    locale = alternative_language(locale)
     if locale not in available_locales:
         locale = 'en' # Если язык не найден, установить тот что точно есть
     
