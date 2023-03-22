@@ -10,6 +10,7 @@ from bot.modules.localization import get_data, t
 from bot.modules.markup import list_to_keyboard
 from bot.modules.states import InventoryStates
 from bot.modules.user import get_inventory
+from bot.modules.item import item_info
 
 from .states import cancel
 
@@ -17,7 +18,16 @@ users = mongo_client.bot.users
 back_button, forward_button = '◀', '▶'
 
 async def send_item_info(item, transmitted_data):
-    print(item, transmitted_data)
+    userid = transmitted_data['userid']
+    lang = transmitted_data['lang']
+    chatid = transmitted_data['chatid']
+    
+    text, image = item_info(item, lang)
+    if image == None:
+        await bot.send_message(chatid, text, parse_mode='Markdown')
+    else:
+        await bot.send_photo(chatid, image, text, parse_mode='Markdown')
+
 
 async def swipe_page(userid: int, chatid: int):
     """ Панель-сообщение смены страницы инвентаря
@@ -45,9 +55,13 @@ async def swipe_page(userid: int, chatid: int):
         '⚙️': 'inventory_menu filters', '⏭': 'inventory_menu end_page'
         }
 
+    if not settings['changing_filters']:
+        del buttons['⚙️']
+
     if filters:
-        buttons['🗑'] = 'inventory_menu clear_filters'
-        menu_text += t('inventory.clear_filters', settings['lang'])
+        if settings['changing_filters']:
+            buttons['🗑'] = 'inventory_menu clear_filters'
+            menu_text += t('inventory.clear_filters', settings['lang'])
 
     if items:
         buttons['❌🔎'] = 'inventory_menu clear_search'
@@ -97,7 +111,9 @@ async def filter_menu(userid: int, chatid: int):
     keyboard = list_to_keyboard([ t('buttons_name.cancel', settings['lang']) ])
 
     if 'edited_message' in settings and settings['edited_message']:
-        await bot.edit_message_text(menu_text, chatid, settings['edited_message'], reply_markup=inl_menu, parse_mode='Markdown')
+        try:
+            await bot.edit_message_text(menu_text, chatid, settings['edited_message'], reply_markup=inl_menu, parse_mode='Markdown')
+        except: pass
     else:
         await bot.send_message(chatid, text, reply_markup=keyboard)
         msg = await bot.send_message(chatid, menu_text, 
@@ -108,10 +124,17 @@ async def filter_menu(userid: int, chatid: int):
 
 async def start_inv(userid: int, chatid: int, lang: str, 
                     type_filter: list = [], item_filter: list = [], 
-                    start_page: int = 0, 
-                    function = None, transmitted_data={}):
+                    start_page: int = 0, changing_filters: bool = True,
+                    function = None, transmitted_data=None):
     """ Функция запуска инвентаря
     """
+    
+    if not transmitted_data:
+        transmitted_data = {}
+    
+    if 'userid' not in transmitted_data: transmitted_data['userid'] = userid
+    if 'chatid' not in transmitted_data: transmitted_data['chatid'] = chatid
+    if 'lang' not in transmitted_data: transmitted_data['lang'] = lang
     
     user_settings = users.find_one({'userid': userid}, {'settings': 1})
     if user_settings: inv_view = user_settings['settings']['inv_view']
@@ -145,7 +168,9 @@ async def start_inv(userid: int, chatid: int, lang: str,
             data['items'] = item_filter
 
             data['settings'] = {'view': inv_view, 'lang': lang, 
-                                'row': row, 'page': start_page}
+                                'row': row, 'page': start_page,
+                                'changing_filters': changing_filters
+                                }
             
             data['function'] = function
             data['transmitted_data'] = transmitted_data
@@ -293,7 +318,11 @@ async def filter_callback(call: CallbackQuery):
         # Данная функция не открывает новый инвентарь, а возвращает к меню
         async with bot.retrieve_data(userid, chatid) as data:
             filters = data['filters']
-
+            settings = data['settings']
+            
+        if 'edited_message' in settings:
+            await bot.delete_message(chatid, settings['edited_message'])
+            
         await start_inv(userid, chatid, lang, filters)
     
     if call_data[1] == 'filter':
