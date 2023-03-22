@@ -28,7 +28,8 @@ def add_if_not(data: dict, userid: int, chatid: int, lang: str):
 
 
 async def ChooseDinoState(function, userid: int, chatid: int, 
-        lang: str, add_egg: bool=True, transmitted_data: dict={}):
+        lang: str, add_egg: bool=True, 
+        transmitted_data: dict | None=None):
     """ Устанавливает состояние ожидания динозавра
 
        В переданную функцию передаёт 
@@ -37,6 +38,7 @@ async def ChooseDinoState(function, userid: int, chatid: int,
     user = User(userid)
     elements = user.get_dinos
     if add_egg: elements += user.get_eggs
+    if not transmitted_data: transmitted_data = {}
     
     transmitted_data = add_if_not(transmitted_data, userid, chatid, lang)
     ret_data = get_answer_keyboard(elements, lang)
@@ -60,14 +62,16 @@ async def ChooseDinoState(function, userid: int, chatid: int,
         await bot.send_message(user.userid, t('p_profile.choose_dino', lang), reply_markup=ret_data['keyboard'])
 
 async def ChooseIntState(function, userid: int, 
-                         chatid: int, lang: str,
-                         min_int: int = 1, max_int: int = 10,
-                         transmitted_data: dict = {}):
+                chatid: int, lang: str,
+                min_int: int = 1, max_int: int = 10,
+                transmitted_data: dict | None=None):
     """ Устанавливает состояние ожидания числа
 
         В переданную функцию передаёт 
         >>> number: int, transmitted_data: dict
     """
+    
+    if not transmitted_data: transmitted_data = {}
     
     transmitted_data = add_if_not(transmitted_data, userid, chatid, lang)
     await bot.set_state(userid, GeneralStates.ChooseInt, chatid)
@@ -80,12 +84,13 @@ async def ChooseIntState(function, userid: int,
 async def ChooseStringState(function, userid: int, 
                          chatid: int, lang: str,
                          min_len: int = 1, max_len: int = 10,
-                         transmitted_data: dict = {}):
+                         transmitted_data: dict | None=None):
     """ Устанавливает состояние ожидания сообщения
 
         В переданную функцию передаёт 
         >>> string: str, transmitted_data: dict
     """
+    if not transmitted_data: transmitted_data = {}
     
     transmitted_data = add_if_not(transmitted_data, userid, chatid, lang)
     await bot.set_state(userid, GeneralStates.ChooseString, chatid)
@@ -97,12 +102,13 @@ async def ChooseStringState(function, userid: int,
 
 async def ChooseConfirmState(function, userid: int, 
                          chatid: int, lang: str,
-                         transmitted_data: dict = {}):
+                         transmitted_data: dict | None=None):
     """ Устанавливает состояние ожидания подтверждения действия
 
         В переданную функцию передаёт 
         >>> answer: bool, transmitted_data: dict
     """
+    if not transmitted_data: transmitted_data = {}
     
     transmitted_data = add_if_not(transmitted_data, userid, chatid, lang)
     await bot.set_state(userid, GeneralStates.ChooseConfirm, chatid)
@@ -113,12 +119,13 @@ async def ChooseConfirmState(function, userid: int,
 async def ChooseOptionState(function, userid: int, 
                          chatid: int, lang: str,
                          options: dict = {},
-                         transmitted_data: dict = {}):
+                         transmitted_data: dict | None=None):
     """ Устанавливает состояние ожидания выбора опции
 
         В переданную функцию передаёт 
         >>> answer: ???, transmitted_data: dict
     """
+    if not transmitted_data: transmitted_data = {}
     
     transmitted_data = add_if_not(transmitted_data, userid, chatid, lang)
     await bot.set_state(userid, GeneralStates.ChooseOption, chatid)
