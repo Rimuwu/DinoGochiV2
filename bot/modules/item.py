@@ -7,6 +7,8 @@ from bot.config import mongo_client
 from bot.const import ITEMS
 from bot.modules.data_format import random_dict
 from bot.modules.localization import get_all_locales
+from bot.modules.localization import get_data as get_loc_data
+from bot.modules.logs import log
 
 items_names = {}
 items = mongo_client.bot.items
@@ -33,8 +35,7 @@ def load_items_names() -> dict:
         for loc_key in loc_items_names.keys():
            loc_name = loc_items_names[loc_key].get(item_key)
            if loc_name:
-               items_names[item_key][loc_key] = loc_name
-
+               items_names[item_key][loc_key] = loc_name['name']
     return items_names
 
 def get_name(itemid: str, lang: str='en') -> str:
@@ -195,5 +196,76 @@ def decode_item(code: str) -> dict:
             data['abilities'][ ids[scode] ] = value
 
     return data
+
+def sort_materials(not_sort_list: list, lang: str, 
+                   separator: str = ',') -> str:
+    """Создание сообщение нужных материалов для крафта
+
+    Args:
+        not_sort_list (list): Список с материалами из базы предметов
+          example: [{"item": "26", "type": "delete"}, 
+                    {"item": "26", "type": "delete"}]
+        lang (str): язык
+        separator (str, optional): Разделитель материалов. Defaults to ','.
+
+    Returns:
+        str: Возвращает строку для вывода материалов крафта
+    """
+    col_dict, items_list, check_items = {}, [], []
+
+    # Счмтает предметы
+    for i in not_sort_list:
+        item = i['item']
+        if item not in col_dict: col_dict[item] = 1
+        else: col_dict[item] += 1
+
+    # Собирает текст
+    for i in not_sort_list:
+        item = i['item']
+        col = col_dict[item]
+        
+        if i not in check_items:
+            text = get_name(item, lang)
+            if i['type'] == 'endurance':
+                text += f" (⬇ -{i['act']})"
+            if col > 1:
+                text += f' x{col_dict[item]}'
+
+            items_list.append(text)
+            check_items.append(i)
+
+    return f"{separator} ".join(items_list)
+
+def item_info(item: dict, lang: str):
+    standart = ['freezing', 'defrosting', 'dummy', 'material']
+    image = None
+    
+    item_id: str = item['item_id']
+    data_item: dict = get_data(item_id)
+    item_name: str = get_name(item_id, lang)
+    rank_item: str = data_item['rank']
+    type_item: str = data_item['type']
+    
+    loc_d = get_loc_data('item_info', lang)
+    text = ''
+    
+    if type_item in standart:
+        text += loc_d['static']['cap'] + '\n'
+        text += loc_d['static']['name'].format(name=item_name) + '\n'
+        
+        rank = loc_d['rank'][rank_item]
+        text += loc_d['static']['rank'].format(rank=rank) + '\n'
+        
+        type_name = loc_d['type_info'][type_item]['type_name']
+        text += loc_d['static']['type'].format(type=type_name) + '\n'
+        text += loc_d['type_info'][type_item]['add_text']
+    
+    if 'image' in data_item.keys():
+        try:
+            image = open(f"images/items/{data_item['image']}.png", 'rb')
+        except:
+            log(f'Item {item_id} image incorrect', 4)
+    
+    return text, image
 
 items_names = load_items_names()
