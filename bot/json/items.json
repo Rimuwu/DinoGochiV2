@@ -263,7 +263,7 @@
               "en": "🛠 Tools",
               "ru": "🛠 Инструменты"
           },
-          "type": "hunt_ac",
+          "type": "collecting_ac",
           "descriptionru": "Ускоряют сбор пищи.",
           "descriptionen": "Accelerate the collection of food.",
           "act": 10,
@@ -521,7 +521,7 @@
               "en": "🔥 Torch",
               "ru": "🔥 Факел"
           },
-          "type": "hunt_ac",
+          "type": "collecting_ac",
           "descriptionru": "Во время собирательства, есть шанс найти более изысканные травы.",
           "descriptionen": "While gathering, there is a chance to find more refined herbs.",
           "abilities": {
