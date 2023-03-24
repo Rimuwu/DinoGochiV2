@@ -3,14 +3,14 @@
     >>> abilities - словарь с индивидуальными харрактеристиками предмета, прочность, использования и тд.
     >>> preabil - используется только для предмета создаваемого из базы, используется для создания нестандартного предмета.
 """
-from pprint import pprint
-
 from bot.config import mongo_client
 from bot.const import ITEMS
 from bot.modules.data_format import random_dict
 from bot.modules.localization import get_all_locales
 from bot.modules.localization import get_data as get_loc_data
 from bot.modules.logs import log
+
+from bson.objectid import ObjectId
 
 items_names = {}
 items = mongo_client.bot.items
@@ -211,7 +211,6 @@ def decode_item(code: str) -> dict:
         else:
             if 'abilities' not in data.keys(): data['abilities'] = {}
             data['abilities'][ ids[scode] ] = value
-
     return data
 
 def sort_materials(not_sort_list: list, lang: str, 
@@ -445,5 +444,11 @@ def item_info(item: dict, lang: str):
             log(f'Item {item_id} image incorrect', 4)
     
     return text, image
+
+def exchange_item(item: dict, from_user: int, to_user: int, count: int=1):
+    ...
+
+def use_item(item: dict, count: int, dino: ObjectId):
+    ...
 
 items_names = load_items_names()
