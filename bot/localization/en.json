@@ -43,9 +43,381 @@
         },
 
         "items_names": {
-
-            "110": "📦 Сase"
-
+            "1": {
+                "name": "🍯 Jar of honey"
+            },
+            "2": {
+                "name": "🍪 Cookies"
+            },
+            "3": {
+                "name": "🥚 Mysterious egg"
+            },
+            "4": {
+                "name": "⏲ Timer",
+                "description": "Gives you the opportunity to find out how long the game will last."
+            },
+            "5": {
+                "name": "🍖 Wild boar meat"
+            },
+            "6": {
+                "name": "🌿 A bunch of herbs"
+            },
+            "7": {
+                "name": "🍤 Fish"
+            },
+            "8": {
+                "name": "🥩 Wolf Meat"
+            },
+            "9": {
+                "name": "🌾 A bunch of herbs"
+            },
+            "10": {
+                "name": "🍣 Seafood"
+            },
+            "11": {
+                "name": "🍒 Berries"
+            },
+            "12": {
+                "name": "🍗 Chicken leg"
+            },
+            "13": {
+                "name": "🦪 Small fish"
+            },
+            "14": {
+                "name": "🧥 Raincoat",
+                "description": "Cancels the penalty for the Rain event."
+            },
+            "15": {
+                "name": "🛠 Tools",
+                "description": "Accelerate the collection of food."
+            },
+            "16": {
+                "name": "🧸 Bear",
+                "description": "Adds sleep modes."
+            },
+            "17": {
+                "name": "🧪 Medicinal mixture"
+            },
+            "18": {
+                "name": "🍕 Slice of pizza"
+            },
+            "19": {
+                "name": "🥞 Sweet pancakes"
+            },
+            "20": {
+                "name": "🥚 Unusual egg"
+            },
+            "21": {
+                "name": "🥚 Ordinary egg"
+            },
+            "22": {
+                "name": "🥚 Rare egg"
+            },
+            "23": {
+                "name": "🥚 Rare egg"
+            },
+            "24": {
+                "name": "🥚 Legendary Egg"
+            },
+            "25": {
+                "name": "📄 An empty piece of paper"
+            },
+            "26": {
+                "name": "👢 Leather"
+            },
+            "27": {
+                "name": "🥢 Tree branches"
+            },
+            "28": {
+                "name": "🐡 Fish oil"
+            },
+            "29": {
+                "name": "🧤 Leather clothing",
+                "description": "Cancels the penalty for the fight event."
+            },
+            "30": {
+                "name": "📜 Leather clothing",
+                "description": "The recipe for creating a beautiful leather jacket."
+            },
+            "31": {
+                "name": "🔥 Torch",
+                "description": "While gathering, there is a chance to find more refined herbs."
+            },
+            "32": {
+                "name": "📜 Torch Recipe",
+                "description": "A recipe for creating a torch that will light your way."
+            },
+            "33": {
+                "name": "🍵 Medicinal drink"
+            },
+            "34": {
+                "name": "📜 Medicinal drink",
+                "description": "Рецепт изготовления отвратительного на вкус, но лечебного напитка."
+            },
+            "35": {
+                "name": "🍀 Exquisite herbs"
+            },
+            "36": {
+                "name": "🍵 Tea"
+            },
+            "37": {
+                "name": "📜 Tea recipe",
+                "description": "The recipe for making fragrant tea."
+            },
+            "38": {
+                "name": "🥩 Fried meat"
+            },
+            "39": {
+                "name": "📜 Fried meat",
+                "description": "Who doesn't like to eat a piece of well-cooked meat? The dinosaur won't refuse either."
+            },
+            "40": {
+                "name": "🥗 Salad"
+            },
+            "41": {
+                "name": "📜 Salad",
+                "description": "Isn't the dinosaur tired of eating grass alone? Maybe we'd better make a salad of several herbs? My dinosaur liked the result!"
+            },
+            "42": {
+                "name": "🥣 Soup"
+            },
+            "43": {
+                "name": "📜 Soup",
+                "description": "'A fish lives in water, why do I eat it dry?' - That's probably what every dinosaur thinks, he just hasn't tried fish soup yet."
+            },
+            "44": {
+                "name": "🧩 Board games",
+                "description": "Adds 4 board games for dinosaur!"
+            },
+            "45": {
+                "name": "👜 Travel bag",
+                "description": "Increases the chance of travel events."
+            },
+            "46": {
+                "name": "📜 Travel bag",
+                "description": "During the journey, the dinosaur needs a place to store all the things found, a hiking bag will help us here!"
+            },
+            "47": {
+                "name": "🍪 A set of cookies"
+            },
+            "48": {
+                "name": "🍕 Pizza"
+            },
+            "49": {
+                "name": "🔮 Magic Stone"
+            },
+            "50": {
+                "name": "🌮 Tacos"
+            },
+            "51": {
+                "name": "🦴 Bone"
+            },
+            "52": {
+                "name": "🧱 Iron"
+            },
+            "53": {
+                "name": "🗡 Bone Sword"
+            },
+            "54": {
+                "name": "💘 Bone Arrow"
+            },
+            "55": {
+                "name": "🏹 Bone Bow"
+            },
+            "56": {
+                "name": "📜 Taco Recipe",
+                "description": "Tacos, excellent food that all dinosaurs of all kinds adore!"
+            },
+            "57": {
+                "name": "📜 Bone Sword",
+                "description": "A sharpened sword made of undead bones."
+            },
+            "58": {
+                "name": "📜 Bone Bow",
+                "description": "A bow made of a couple of bones, shoots properly."
+            },
+            "59": {
+                "name": "📜 Bone Arrow",
+                "description": "Bone breaking bones."
+            },
+            "60": {
+                "name": "🎒 Ordinary backpack"
+            },
+            "61": {
+                "name": "📜 Ordinary backpack",
+                "description": "A school backpack equipped for dungeons."
+            },
+            "62": {
+                "name": "🛡 Bone Shield"
+            },
+            "63": {
+                "name": "📜 Bone Shield",
+                "description": "A shield of bones, just a shield."
+            },
+            "64": {
+                "name": "⛏ Bone Pickaxe"
+            },
+            "65": {
+                "name": "📜 Bone Pickaxe",
+                "description": "A bone pickaxe is not effective in combat, because everyone knows that an axe is a more formidable weapon. But effective in resource extraction."
+            },
+            "66": {
+                "name": "❄ Freezing"
+            },
+            "67": {
+                "name": "🔥 Defrosting"
+            },
+            "68": {
+                "name": "🍫 Chocolate"
+            },
+            "69": {
+                "name": "🍬 Candy"
+            },
+            "70": {
+                "name": "📜 Candy recipe",
+                "description": "Recipe for making a whole bunch of chocolates"
+            },
+            "71": {
+                "name": "🌽 Corn"
+            },
+            "72": {
+                "name": "🍿 Popcorn"
+            },
+            "73": {
+                "name": "📜 Popcorn recipe",
+                "description": "Popcorn recipe. Time to watch a movie!"
+            },
+            "74": {
+                "name": "🧃 Juice"
+            },
+            "75": {
+                "name": "📜 Juice recipe",
+                "description": "Fresh juice recipe"
+            },
+            "76": {
+                "name": "🌶️ Spicy"
+            },
+            "77": {
+                "name": "🥩 Spicy steak"
+            },
+            "78": {
+                "name": "📜 Spicy steak",
+                "description": "The recipe for a spicy but tasty steak"
+            },
+            "79": {
+                "name": "🍌 Banana"
+            },
+            "80": {
+                "name": "🦀 Crab"
+            },
+            "81": {
+                "name": "☕️ Coffee"
+            },
+            "82": {
+                "name": "🍄 Mushroom"
+            },
+            "83": {
+                "name": "🍲 Broth"
+            },
+            "84": {
+                "name": "📜 Broth recipe",
+                "description": "Recipe for a rich meat broth"
+            },
+            "85": {
+                "name": "🍚 Rice"
+            },
+            "86": {
+                "name": "🍣 Sushi"
+            },
+            "87": {
+                "name": "📜 Sushi recipe",
+                "description": "Recipe for making sushi. They say it's a perfectly balanced meal."
+            },
+            "88": {
+                "name": "☕️ Hot chocolate"
+            },
+            "89": {
+                "name": "📜 Hot chocolate",
+                "description": "Hot chocolate recipe. Ideal for keeping warm in winter"
+            },
+            "90": {
+                "name": "🎂 Cake"
+            },
+            "91": {
+                "name": "📜 Cake recipe",
+                "description": "Recipe for a large cake. Cake is a lie"
+            },
+            "92": {
+                "name": "🍛 Curry"
+            },
+            "93": {
+                "name": "📜 Curry recipe",
+                "description": "Curry recipe. It's such a spicy rice dish"
+            },
+            "94": {
+                "name": "🍡 Dango"
+            },
+            "95": {
+                "name": "🥜 Grains"
+            },
+            "96": {
+                "name": "🍞 Bread"
+            },
+            "97": {
+                "name": "📜 Bread recipe",
+                "description": "Recipe for making bread"
+            },
+            "98": {
+                "name": "🥧 Berry pie"
+            },
+            "99": {
+                "name": "🥘 Fish pie"
+            },
+            "100": {
+                "name": "🍲 Meat pie"
+            },
+            "101": {
+                "name": "📜 Berry pie",
+                "description": "The recipe for the sweetest pie"
+            },
+            "102": {
+                "name": "📜 Fish pie",
+                "description": "Recipe for making the healthiest pie"
+            },
+            "103": {
+                "name": "📜 Meat pie",
+                "description": "The recipe for the most satisfying pie"
+            },
+            "104": {
+                "name": "🥓 Bacon"
+            },
+            "105": {
+                "name": "📜 Bacon recipe",
+                "description": "Recipe for making bacon"
+            },
+            "106": {
+                "name": "🍱 Bento"
+            },
+            "107": {
+                "name": "📜 Bento recipe",
+                "description": "The recipe for a bento. Everything you need for a complete meal is here."
+            },
+            "108": {
+                "name": "🥪 Sandwich"
+            },
+            "109": {
+                "name": "📜 Sandwich recipe",
+                "description": "Recipe for a sandwich. Good for a quick snack"
+            },
+            "110": {
+                "name": "📦 A chest with food"
+            },
+            "111": {
+                "name": "📦 Recipes chest"
+            },
+            "112": {
+                "name": "🎁 Gift 2023"
+            }
         },
 
         "no_text_key": "❌ The text corresponding to key {key} is not found, contact the developer!",
