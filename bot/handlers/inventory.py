@@ -10,7 +10,8 @@ from bot.modules.localization import get_data, t
 from bot.modules.markup import list_to_keyboard
 from bot.modules.states import InventoryStates
 from bot.modules.user import get_inventory
-from bot.modules.item import item_info
+from bot.modules.item import item_info, decode_item
+from bot.modules.inline import item_info_markup
 
 from .states import cancel
 
@@ -18,15 +19,17 @@ users = mongo_client.bot.users
 back_button, forward_button = '◀', '▶'
 
 async def send_item_info(item, transmitted_data):
-    userid = transmitted_data['userid']
     lang = transmitted_data['lang']
     chatid = transmitted_data['chatid']
     
     text, image = item_info(item, lang)
-    if image == None:
-        await bot.send_message(chatid, text, parse_mode='Markdown')
+    markup = item_info_markup(item, lang)
+    if image is None:
+        await bot.send_message(chatid, text, 'Markdown',
+                            reply_markup=markup)
     else:
-        await bot.send_photo(chatid, image, text, parse_mode='Markdown')
+        await bot.send_photo(chatid, image, text, 'Markdown', 
+                            reply_markup=markup)
 
 
 async def swipe_page(userid: int, chatid: int):
@@ -264,6 +267,22 @@ async def inv_callback(call: CallbackQuery):
         # Очищает фильтры
         await start_inv(chatid, chatid, lang)
 
+@bot.callback_query_handler(func=lambda call: call.data.startswith('item'))
+async def item_callback(call: CallbackQuery):
+    call_data = call.data.split()
+    chatid = call.message.chat.id
+    userid = call.from_user.id
+    lang = call.from_user.language_code
+    item = decode_item(call_data[2])
+    
+    if item:
+        if call_data[1] == 'info':
+            text, image = item_info(item, lang)
+            
+            if image is None:
+                await bot.send_message(chatid, text, 'Markdown')
+            else:
+                await bot.send_photo(chatid, image, text, 'Markdown')
 
 # Поиск внутри инвентаря
 @bot.callback_query_handler(state=InventoryStates.InventorySearch, 
