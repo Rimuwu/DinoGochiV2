@@ -4,11 +4,11 @@ from telebot.types import Message
 from bot.exec import bot
 from bot.modules.logs import log
 from bot.modules.markup import markups_menu as m
-from bot.modules.states import GeneralStates
+from bot.modules.states_tools import GeneralStates
 from bot.modules.localization import t, get_data
 
-async def cancel(message):
-    await bot.send_message(message.chat.id, "❌", 
+async def cancel(message, text:str = "❌"):
+    await bot.send_message(message.chat.id, text, 
           reply_markup=m(message.from_user.id, 'last_menu', message.from_user.language_code))
     await bot.delete_state(message.from_user.id, message.chat.id)
     await bot.reset_data(message.from_user.id,  message.chat.id)
@@ -32,9 +32,11 @@ async def get_state(message: Message):
     """
     state = await bot.get_state(message.from_user.id, message.chat.id)
     await bot.send_message(message.chat.id, f'{state}')
-    async with bot.retrieve_data(message.from_user.id, 
-                                 message.chat.id) as data: 
-        log(data)
+    try:
+        async with bot.retrieve_data(message.from_user.id, 
+                                 message.chat.id) as data: log(data)
+    except: pass
+        
 
 @bot.message_handler(state=GeneralStates.ChooseDino, is_authorized=True)
 async def ChooseDino(message: Message):
@@ -141,6 +143,7 @@ async def ChooseConfirm(message: Message):
     async with bot.retrieve_data(userid, message.chat.id) as data:
         func = data['function']
         transmitted_data = data['transmitted_data']
+        cancel_status = data['cancel']
 
     buttons = get_data('buttons_name', lang)
     buttons_data = {
@@ -148,15 +151,18 @@ async def ChooseConfirm(message: Message):
         buttons['confirm']: True,
         buttons['disable']: False
     }
-
-    if content in buttons_data:
-        await bot.delete_state(userid, message.chat.id)
-        await bot.reset_data(message.from_user.id,  message.chat.id)
-        await func(buttons_data[content], transmitted_data=transmitted_data)
-
+    
+    if cancel_status:
+        await cancel(message)
     else:
-        await bot.send_message(message.chat.id, 
-                t('states.ChooseConfirm.error_not_confirm', lang))
+        if content in buttons_data:
+            await bot.delete_state(userid, message.chat.id)
+            await bot.reset_data(message.from_user.id,  message.chat.id)
+            await func(buttons_data[content], transmitted_data=transmitted_data)
+
+        else:
+            await bot.send_message(message.chat.id, 
+                    t('states.ChooseConfirm.error_not_confirm', lang))
 
 @bot.message_handler(state=GeneralStates.ChooseOption, is_authorized=True)
 async def ChooseOption(message: Message):
