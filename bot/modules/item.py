@@ -42,6 +42,8 @@ def load_items_names() -> dict:
                 items_names[item_key][loc_key] = f"{item_key}_name"
     return items_names
 
+items_names = load_items_names()
+
 def get_name(itemid: str, lang: str='en') -> str:
     """Получение имени предмета"""
     name = ''
@@ -445,10 +447,8 @@ def item_info(item: dict, lang: str):
     
     return text, image
 
-def exchange_item(item: dict, from_user: int, to_user: int, count: int=1):
+def exchange_item(item: dict, from_user: int, to_user: int, count: int = 1):
     ...
 
-def use_item(item: dict, count: int, dino: ObjectId):
+def use_item(item: dict, count: int, dino: ObjectId | None = None):
     ...
-
-items_names = load_items_names()
