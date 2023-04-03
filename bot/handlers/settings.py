@@ -5,7 +5,7 @@ from bot.exec import bot
 from bot.modules.data_format import list_to_keyboard, chunks
 from bot.modules.localization import t, get_data
 from bot.modules.markup import tranlate_data, markups_menu as m
-from bot.modules.states import ChooseDinoState, ChooseOptionState, ChooseStringState, ChooseConfirmState
+from bot.modules.states_tools import ChooseDinoState, ChooseOptionState, ChooseStringState, ChooseConfirmState
 from bot.modules.dinosaur import Dino
 
 users = mongo_client.bot.users
