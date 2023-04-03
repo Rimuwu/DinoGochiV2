@@ -9,7 +9,7 @@ from bot.modules.events import get_one_event
 from bot.modules.item import get_name
 from bot.modules.localization import get_data, t
 from bot.modules.markup import markups_menu as m
-from bot.modules.states import ChooseDinoState
+from bot.modules.states_tools import ChooseDinoState
 from bot.modules.user import User
 
 
@@ -126,7 +126,7 @@ async def dino_handler(message: Message):
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('dino_profile'))
 async def answer_edit(call: types.CallbackQuery):
-    data = call.data.split()[1]
+    dino_data = call.data.split()[1]
 
     userid = call.from_user.id
     lang = call.from_user.language_code
@@ -134,5 +134,5 @@ async def answer_edit(call: types.CallbackQuery):
         'userid': userid,
         'lang': lang
     }
-    dino = Dino(data) #type: ignore
+    dino = Dino(dino_data) #type: ignore
     await transition(dino, trans_data)
