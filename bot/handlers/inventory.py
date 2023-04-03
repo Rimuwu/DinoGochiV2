@@ -1,24 +1,34 @@
 
 from fuzzywuzzy import fuzz
+from telebot.asyncio_handler_backends import State, StatesGroup
 from telebot.types import CallbackQuery, Message
 
 from bot.config import mongo_client
 from bot.exec import bot
 from bot.modules.data_format import list_to_inline
+from bot.modules.inline import item_info_markup
 from bot.modules.inventory import inventory_pages
+from bot.modules.item import decode_item, item_info
 from bot.modules.localization import get_data, t
 from bot.modules.markup import list_to_keyboard
-from bot.modules.states import InventoryStates
+from bot.modules.markup import markups_menu as m
 from bot.modules.user import get_inventory
-from bot.modules.item import item_info, decode_item
-from bot.modules.inline import item_info_markup
-
-from .states import cancel
 
 users = mongo_client.bot.users
 back_button, forward_button = '◀', '▶'
 
-async def send_item_info(item, transmitted_data):
+class InventoryStates(StatesGroup):
+    Inventory = State() # Состояние открытого инвентаря
+    InventorySearch = State() # Состояние поиска в инвентаре
+    InventorySetFilters = State() # Состояние настройки фильтров в инвентаре
+
+async def cancel(message):
+    await bot.send_message(message.chat.id, "❌", 
+          reply_markup=m(message.from_user.id, 'last_menu', message.from_user.language_code))
+    await bot.delete_state(message.from_user.id, message.chat.id)
+    await bot.reset_data(message.from_user.id,  message.chat.id)
+    
+async def send_item_info(item: dict, transmitted_data: dict):
     lang = transmitted_data['lang']
     chatid = transmitted_data['chatid']
     
@@ -30,7 +40,6 @@ async def send_item_info(item, transmitted_data):
     else:
         await bot.send_photo(chatid, image, text, 'Markdown', 
                             reply_markup=markup)
-
 
 async def swipe_page(userid: int, chatid: int):
     """ Панель-сообщение смены страницы инвентаря
@@ -125,10 +134,10 @@ async def filter_menu(userid: int, chatid: int):
         async with bot.retrieve_data(
             userid, chatid) as data: data['settings']['edited_message'] = msg.id
 
-async def start_inv(userid: int, chatid: int, lang: str, 
+async def start_inv(function, userid: int, chatid: int, lang: str, 
                     type_filter: list = [], item_filter: list = [], 
                     start_page: int = 0, changing_filters: bool = True,
-                    function = None, transmitted_data=None):
+                    transmitted_data=None):
     """ Функция запуска инвентаря
     """
     
@@ -145,6 +154,8 @@ async def start_inv(userid: int, chatid: int, lang: str,
 
     invetory = get_inventory(userid)
     pages, row, items_data, names = inventory_pages(invetory, lang, inv_view, type_filter, item_filter)
+    
+    # if function is None:function = send_item_info
 
     if not pages:
         await bot.send_message(chatid, t('inventory.null', lang))
@@ -160,7 +171,8 @@ async def start_inv(userid: int, chatid: int, lang: str,
                 transmitted_data = old_transmitted_data
         except: 
             # Если не передана функция, то вызывается функция информация о передмете
-            function = send_item_info
+            if function is None:
+                function = send_item_info
             
         await bot.set_state(userid, InventoryStates.Inventory, chatid)
         async with bot.retrieve_data(userid, chatid) as data:
@@ -192,7 +204,7 @@ async def open_inventory(message: Message):
     lang = message.from_user.language_code
     chatid = message.chat.id
 
-    await start_inv(userid, chatid, lang)
+    await start_inv(None, userid, chatid, lang)
 
 @bot.message_handler(state=InventoryStates.Inventory, is_authorized=True)
 async def inventory(message: Message):
@@ -242,7 +254,7 @@ async def inv_callback(call: CallbackQuery):
     
     elif call_data == 'clear_search':
         # Очищает поиск
-        await start_inv(chatid, chatid, lang)
+        await start_inv(None, chatid, chatid, lang)
     
     elif call_data == 'filters':
         # Активирует настройку филтров
@@ -265,7 +277,7 @@ async def inv_callback(call: CallbackQuery):
     
     elif call_data == 'clear_filters':
         # Очищает фильтры
-        await start_inv(chatid, chatid, lang)
+        await start_inv(None, chatid, chatid, lang)
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('item'))
 async def item_callback(call: CallbackQuery):
@@ -320,7 +332,7 @@ async def seacr_message(message: Message):
                 searched.append(item_id)
 
     if searched:
-        await start_inv(userid, chatid, lang, item_filter=searched)
+        await start_inv(None, userid, chatid, lang, item_filter=searched)
     else:
         await bot.send_message(chatid, t('inventory.search_null', lang))
 
@@ -342,7 +354,7 @@ async def filter_callback(call: CallbackQuery):
         if 'edited_message' in settings:
             await bot.delete_message(chatid, settings['edited_message'])
             
-        await start_inv(userid, chatid, lang, filters)
+        await start_inv(None, userid, chatid, lang, filters)
     
     if call_data[1] == 'filter':
         async with bot.retrieve_data(userid, chatid) as data:
