@@ -11,7 +11,7 @@ from bot.modules.dinosaur import (Dino, check_accessory, edited_stats,
 from bot.modules.localization import get_data, t
 from bot.modules.markup import list_to_keyboard
 from bot.modules.markup import markups_menu as m
-from bot.modules.states import ChooseIntState, ChooseOptionState
+from bot.modules.states_tools import ChooseIntState, ChooseOptionState
 from bot.modules.user import User
 
 users = mongo_client.bot.users
@@ -38,15 +38,15 @@ async def edit_dino_buttom(message: Message):
                            reply_markup=inline)
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('edit_dino'))
-async def answer_edit(call: CallbackQuery):
+async def answer_edit(callback: CallbackQuery):
     """ Изменение последнего динозавра (кнопка)
     """
-    user_id = call.from_user.id
-    lang = call.from_user.language_code
+    user_id = callback.from_user.id
+    lang = callback.from_user.language_code
     user = User(user_id)
 
-    message = call.message
-    data = call.data.split()[1]
+    message = callback.message
+    data = callback.data.split()[1]
 
     await bot.delete_message(user_id, message.id)
     dino = dinosaurs.find_one({'alt_id': data}, {'_id': 1, 'name': 1})
