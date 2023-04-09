@@ -3,14 +3,14 @@
     >>> abilities - словарь с индивидуальными харрактеристиками предмета, прочность, использования и тд.
     >>> preabil - используется только для предмета создаваемого из базы, используется для создания нестандартного предмета.
 """
+from bson.objectid import ObjectId
+
 from bot.config import mongo_client
 from bot.const import ITEMS
 from bot.modules.data_format import random_dict
 from bot.modules.localization import get_all_locales
 from bot.modules.localization import get_data as get_loc_data
 from bot.modules.logs import log
-
-from bson.objectid import ObjectId
 
 items_names = {}
 items = mongo_client.bot.items
@@ -77,7 +77,7 @@ def get_item_dict(itemid: str, preabil: dict = {}) -> dict:
                 >>> {'item_id': "30", 'abilities': {'uses': 10}}
 
     '''
-    d_it = {'item_id': itemid, 'abilities': {}}
+    d_it = {'item_id': itemid}
     data = get_data(itemid)
 
     if 'abilities' in data.keys():
@@ -90,7 +90,7 @@ def get_item_dict(itemid: str, preabil: dict = {}) -> dict:
             elif type(data['abilities'][k]) == dict:
                 abl[k] = random_dict(data['abilities'][k])
 
-        d_it['abilities'] = abl
+        d_it['abilities'] = abl #type: ignore
 
     if preabil != {}:
         if 'abilities' in d_it.keys():
@@ -98,10 +98,10 @@ def get_item_dict(itemid: str, preabil: dict = {}) -> dict:
                 if ak in preabil.keys():
 
                     if type(preabil[ak]) == int:
-                        d_it['abilities'][ak] = preabil[ak]
+                        d_it['abilities'][ak] = preabil[ak] #type: ignore
 
                     elif type(preabil[ak]) == dict:
-                        d_it['abilities'][ak] = random_dict(preabil[ak])
+                        d_it['abilities'][ak] = random_dict(preabil[ak]) #type: ignore
 
     return d_it
 
@@ -138,16 +138,16 @@ def AddItemToUser(userid: int, itemid: str, count: int = 1, preabil: dict = {}):
     find_res = items.find_one({'owner_id': userid, 'items_data': item}, {'_id': 1})
 
     if find_res:
-        items.update_one({'_id': find_res['_id']}, {'$inc': {'count': count}})
-        return 'plus count'
+        res = items.update_one({'_id': find_res['_id']}, {'$inc': {'count': count}})
+        return 'plus_count', find_res
     else:
         item_dict = {
             'owner_id': userid,
             'items_data': item,
             'count': count
         }
-        items.insert_one(item_dict)
-        return 'new item'
+        res = items.insert_one(item_dict)
+        return 'new_item', res
 
 def RemoveItemFromUser(userid: int, itemid: str, 
             count: int = 1, preabil: dict = {}):
@@ -334,52 +334,53 @@ def item_info(item: dict, lang: str):
     type_name = loc_d['type_info'][type_loc]['type_name']
     text += loc_d['static']['type'].format(type=type_name) + '\n'
     
+    # Быстрая обработка предметов без фич
     if type_item in standart:
         dp_text += loc_d['type_info'][type_loc]['add_text']
-        
+    #Еда
     elif type_item == 'eat':
         dp_text += loc_d['type_info'][
             type_loc]['add_text'].format(act=data_item['act'])
-        
+    # Аксы
     elif type_item in ['game_ac', 'sleep_ac', 'journey_ac', 'collecting_ac']:
         dp_text += loc_d['type_info'][
             type_loc]['add_text'].format(
                 item_decription=get_description(item_id, lang))
-    
+    # Рецепты
     elif type_item == 'recipe':
         dp_text += loc_d['type_info'][
             type_loc]['add_text'].format(
                 create=sort_materials(data_item['create'], lang),
                 materials=sort_materials(data_item['materials'], lang),
                 item_decription=get_description(item_id, lang))
-    
+    # Оружие
     elif type_item == 'weapon':
         dp_text += loc_d['type_info'][
             type_loc]['add_text'].format(
                 ammunition=counts_items(data_item['ammunition'], lang),
                 min=data_item['damage']['min'],
                 max=data_item['damage']['max'])
-    
+    # Боеприпасы
     elif type_item == 'ammunition':
         dp_text += loc_d['type_info'][
             type_loc]['add_text'].format(
                 add_damage=data_item['add_damage'])
-    
+    # Броня
     elif type_item == 'armor':
         dp_text += loc_d['type_info'][
             type_loc]['add_text'].format(
                 reflection=data_item['reflection'])
-    
+    # Рюкзаки
     elif type_item == 'backpack':
         dp_text += loc_d['type_info'][
             type_loc]['add_text'].format(
                 capacity=data_item['capacity'])
-    
+    # Кейсы
     elif type_item == 'case':
         dp_text += loc_d['type_info'][
             type_loc]['add_text'].format(
                 content=get_case_content(data_item['drop_items'], lang))
-    
+    # Информация о внутренних свойствах
     if 'abilities' in item.keys():
         if 'uses' in item['abilities'].keys():
             text += loc_d['static']['uses'].format(
@@ -438,7 +439,7 @@ def item_info(item: dict, lang: str):
             else:
                 text += '*├* '
             text += i
-    
+    # Картиночка
     if 'image' in data_item.keys():
         try:
             image = open(f"images/items/{data_item['image']}.png", 'rb')
@@ -450,5 +451,8 @@ def item_info(item: dict, lang: str):
 def exchange_item(item: dict, from_user: int, to_user: int, count: int = 1):
     ...
 
-def use_item(item: dict, count: int, dino: ObjectId | None = None):
-    ...
+# def use_item(item: dict, count: int, dino: ObjectId | None = None):
+#     item_id: str = item['item_id']
+#     data_item: dict = get_data(item_id)
+#     item_name: str = get_name(item_id, lang)
+#     type_item: str = data_item['type']
