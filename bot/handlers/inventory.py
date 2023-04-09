@@ -1,202 +1,24 @@
 
 from fuzzywuzzy import fuzz
-from telebot.asyncio_handler_backends import State, StatesGroup
 from telebot.types import CallbackQuery, Message
 
 from bot.config import mongo_client
 from bot.exec import bot
-from bot.modules.data_format import list_to_inline
-from bot.modules.inline import item_info_markup
-from bot.modules.inventory import inventory_pages
-from bot.modules.item import decode_item, item_info
+from bot.modules.inventory_tools import (InventoryStates, back_button, filter_menu,
+                                   forward_button, search_menu, start_inv,
+                                   swipe_page, send_item_info)
+from bot.modules.item import decode_item
 from bot.modules.localization import get_data, t
-from bot.modules.markup import list_to_keyboard
 from bot.modules.markup import markups_menu as m
-from bot.modules.user import get_inventory
+from bot.modules.states_tools import data_for_use
 
 users = mongo_client.bot.users
-back_button, forward_button = '◀', '▶'
-
-class InventoryStates(StatesGroup):
-    Inventory = State() # Состояние открытого инвентаря
-    InventorySearch = State() # Состояние поиска в инвентаре
-    InventorySetFilters = State() # Состояние настройки фильтров в инвентаре
 
 async def cancel(message):
     await bot.send_message(message.chat.id, "❌", 
           reply_markup=m(message.from_user.id, 'last_menu', message.from_user.language_code))
     await bot.delete_state(message.from_user.id, message.chat.id)
     await bot.reset_data(message.from_user.id,  message.chat.id)
-    
-async def send_item_info(item: dict, transmitted_data: dict):
-    lang = transmitted_data['lang']
-    chatid = transmitted_data['chatid']
-    
-    text, image = item_info(item, lang)
-    markup = item_info_markup(item, lang)
-    if image is None:
-        await bot.send_message(chatid, text, 'Markdown',
-                            reply_markup=markup)
-    else:
-        await bot.send_photo(chatid, image, text, 'Markdown', 
-                            reply_markup=markup)
-
-async def swipe_page(userid: int, chatid: int):
-    """ Панель-сообщение смены страницы инвентаря
-    """
-    async with bot.retrieve_data(userid, chatid) as data:
-        pages = data['pages']
-        settings = data['settings']
-        items = data['items']
-        filters = data['filters']
-
-    keyboard = list_to_keyboard(pages[settings['page']], settings['row'])
-
-    # Добавляем стрелочки
-    if len(pages) > 1:
-        keyboard.add(*[back_button, t('buttons_name.cancel', settings['lang']), forward_button])
-    else:
-        keyboard.add(t('buttons_name.cancel', settings['lang']))
-
-    # Генерация текста и меню
-    menu_text = t('inventory.menu', settings['lang'], 
-                  page=settings['page']+1, col=len(pages))
-    text = t('inventory.update_page', settings['lang'])
-    buttons = {
-        '⏮': 'inventory_menu first_page', '🔎': 'inventory_menu search', 
-        '⚙️': 'inventory_menu filters', '⏭': 'inventory_menu end_page'
-        }
-
-    if not settings['changing_filters']:
-        del buttons['⚙️']
-
-    if filters:
-        if settings['changing_filters']:
-            buttons['🗑'] = 'inventory_menu clear_filters'
-            menu_text += t('inventory.clear_filters', settings['lang'])
-
-    if items:
-        buttons['❌🔎'] = 'inventory_menu clear_search'
-
-    inl_menu = list_to_inline([buttons], 4)
-    await bot.send_message(chatid, text, reply_markup=keyboard)
-    await bot.send_message(chatid, menu_text, reply_markup=inl_menu, parse_mode='Markdown')
-
-async def search_menu(userid: int, chatid: int):
-    """ Панель-сообщение поиска
-    """
-    async with bot.retrieve_data(userid, chatid) as data:
-        settings = data['settings']
-
-    menu_text = t('inventory.search', settings['lang'])
-    buttons = {'❌': 'inventory_search close'}
-    inl_menu = list_to_inline([buttons])
-
-    text = t('inventory.update_search', settings['lang'])
-    keyboard = list_to_keyboard([ t('buttons_name.cancel', settings['lang']) ])
-
-    await bot.send_message(chatid, text, reply_markup=keyboard)
-    await bot.send_message(chatid, menu_text, 
-                           parse_mode='Markdown', reply_markup=inl_menu)
-    
-async def filter_menu(userid: int, chatid: int):
-    """ Панель-сообщение выбора фильтра
-    """
-    async with bot.retrieve_data(userid, chatid) as data:
-        settings = data['settings']
-        filters = data['filters']
-
-    menu_text = t('inventory.choice_filter', settings['lang'])
-    filters_data = get_data('inventory.filters_data', settings['lang'])
-    buttons = {}
-    for key, item in filters_data.items():
-        name = item['name']
-        if list(set(filters) & set(item['keys'])):
-            name = "✅" + name
-
-        buttons[name] = f'inventory_filter filter {key}'
-
-    cancel = {'✅': 'inventory_filter close'}
-    inl_menu = list_to_inline([buttons, cancel])
-
-    text = t('inventory.update_filter', settings['lang'])
-    keyboard = list_to_keyboard([ t('buttons_name.cancel', settings['lang']) ])
-
-    if 'edited_message' in settings and settings['edited_message']:
-        try:
-            await bot.edit_message_text(menu_text, chatid, settings['edited_message'], reply_markup=inl_menu, parse_mode='Markdown')
-        except: pass
-    else:
-        await bot.send_message(chatid, text, reply_markup=keyboard)
-        msg = await bot.send_message(chatid, menu_text, 
-                            parse_mode='Markdown', reply_markup=inl_menu)
-        
-        async with bot.retrieve_data(
-            userid, chatid) as data: data['settings']['edited_message'] = msg.id
-
-async def start_inv(function, userid: int, chatid: int, lang: str, 
-                    type_filter: list = [], item_filter: list = [], 
-                    start_page: int = 0, changing_filters: bool = True,
-                    transmitted_data=None):
-    """ Функция запуска инвентаря
-    """
-    
-    if not transmitted_data:
-        transmitted_data = {}
-    
-    if 'userid' not in transmitted_data: transmitted_data['userid'] = userid
-    if 'chatid' not in transmitted_data: transmitted_data['chatid'] = chatid
-    if 'lang' not in transmitted_data: transmitted_data['lang'] = lang
-    
-    user_settings = users.find_one({'userid': userid}, {'settings': 1})
-    if user_settings: inv_view = user_settings['settings']['inv_view']
-    else: inv_view = [2, 3]
-
-    invetory = get_inventory(userid)
-    pages, row, items_data, names = inventory_pages(invetory, lang, inv_view, type_filter, item_filter)
-    
-    # if function is None:function = send_item_info
-
-    if not pages:
-        await bot.send_message(chatid, t('inventory.null', lang))
-    else:
-        try:
-            async with bot.retrieve_data(userid, chatid) as data:
-                old_function = data['function']
-                old_transmitted_data = data['transmitted_data']
-            
-            if old_function:
-                function = old_function
-            if old_transmitted_data:
-                transmitted_data = old_transmitted_data
-        except: 
-            # Если не передана функция, то вызывается функция информация о передмете
-            if function is None:
-                function = send_item_info
-            
-        await bot.set_state(userid, InventoryStates.Inventory, chatid)
-        async with bot.retrieve_data(userid, chatid) as data:
-            data['pages'] = pages
-            data['items_data'] = items_data
-            data['names'] = names
-            data['filters'] = type_filter
-            data['items'] = item_filter
-
-            data['settings'] = {'view': inv_view, 'lang': lang, 
-                                'row': row, 'page': start_page,
-                                'changing_filters': changing_filters
-                                }
-            
-            data['function'] = function
-            data['transmitted_data'] = transmitted_data
-
-        await swipe_page(userid, chatid)
-
-async def open_inv(userid: int, chatid: int):
-    """ Внутренняя фунция для возврата в инвентарь
-    """
-    await bot.set_state(userid, InventoryStates.Inventory, chatid)
-    await swipe_page(userid, chatid)
 
 @bot.message_handler(text='commands_name.profile.inventory', is_authorized=True, state=None)
 async def open_inventory(message: Message):
@@ -289,12 +111,13 @@ async def item_callback(call: CallbackQuery):
     
     if item:
         if call_data[1] == 'info':
-            text, image = item_info(item, lang)
-            
-            if image is None:
-                await bot.send_message(chatid, text, 'Markdown')
-            else:
-                await bot.send_photo(chatid, image, text, 'Markdown')
+            await send_item_info(item, {'chatid': chatid, 'lang': lang})
+        elif call_data[1] == 'use':
+            await data_for_use(item, userid, chatid, lang)
+        elif call_data[1] == 'delete':
+            ...
+        elif call_data[1] == 'exchange':
+            ...
 
 # Поиск внутри инвентаря
 @bot.callback_query_handler(state=InventoryStates.InventorySearch, 
