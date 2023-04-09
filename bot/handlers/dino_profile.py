@@ -12,7 +12,6 @@ from bot.modules.markup import markups_menu as m
 from bot.modules.states_tools import ChooseDinoState
 from bot.modules.user import User
 
-
 async def dino_profile(userid: int, dino: Dino, lang: str):
     text = ''
 
