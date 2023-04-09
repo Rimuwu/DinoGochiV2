@@ -36,7 +36,6 @@ async def get_state(message: Message):
         async with bot.retrieve_data(message.from_user.id, 
                                  message.chat.id) as data: log(data)
     except: pass
-        
 
 @bot.message_handler(state=GeneralStates.ChooseDino, is_authorized=True)
 async def ChooseDino(message: Message):
