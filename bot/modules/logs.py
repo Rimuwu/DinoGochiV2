@@ -16,7 +16,7 @@ logging.basicConfig(
 def log(message: str, lvl: int = 1, prefix: str = 'Бот') -> None:
     """
     LVL: \n
-    0 - debug (активируется в config)
+    0 - debug (активируется в config)\n
     1 - info\n
     2 - warning\n
     3 - error\n
