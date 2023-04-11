@@ -11,6 +11,7 @@ from bot.modules.localization import t
 from bot.modules.markup import list_to_keyboard
 from bot.modules.markup import markups_menu as m
 from bot.modules.user import get_inventory
+from bot.modules.logs import log
 
 users = mongo_client.bot.users
 back_button, forward_button = '◀', '▶'
@@ -53,31 +54,26 @@ def inventory_pages(items: list[dict], lang: str = 'en',
                 add_item = True
             else:
                 try:
-                    if data['type'] in type_filter:
-                        add_item = True
-                    if item['item_id'] in item_filter:
-                        add_item = True
-                except:
-                    print(data)
-            
+                    if data['type'] in type_filter: add_item = True
+                    if item['item_id'] in item_filter: add_item = True
+                except: log(str(data), 2)
+                
             # Если предмет показывается на страницах
             if add_item:
                 name = get_name(item['item_id'], lang)
                 count = base_item['count']
                 standart = is_standart(item)
 
-                if standart:
-                    end_name = f"{name} x{count}"
+                if standart: end_name = f"{name} x{count}"
                 else:
                     code = item_code(item, False)
                     end_name = f"{name} ({code}) x{count}"
-
                 items_data[end_name] = item
-                
+
     items_names = list(items_data.keys())
     items_names.sort()
 
-    # Создаёт список, повторяюзий панель инвентаря
+    # Создаёт список, со структурой инвентаря
     pages = chunks(chunks(items_names, horizontal), vertical)
 
     # Добавляет пустые панели для поддержания структуры
@@ -87,9 +83,7 @@ def inventory_pages(items: list[dict], lang: str = 'en',
                 i.append([' ' for _ in range(horizontal)])
     
     # Нужно, чтобы стрелки корректно отображались
-    if horizontal < 3:
-        horizontal = 3
-
+    if horizontal < 3 and len(pages) > 1: horizontal = 3
     return pages, horizontal, items_data, items_names
     
 async def send_item_info(item: dict, transmitted_data: dict):
@@ -133,13 +127,14 @@ async def swipe_page(userid: int, chatid: int):
 
     if not settings['changing_filters']:
         del buttons['⚙️']
+        del buttons['🔎']
 
     if filters:
-        if settings['changing_filters']:
+        if settings['changing_filters'] and settings['changing_filters']:
             buttons['🗑'] = 'inventory_menu clear_filters'
             menu_text += t('inventory.clear_filters', settings['lang'])
 
-    if items:
+    if items and settings['changing_filters']:
         buttons['❌🔎'] = 'inventory_menu clear_search'
 
     inl_menu = list_to_inline([buttons], 4)
@@ -201,12 +196,10 @@ async def filter_menu(userid: int, chatid: int):
 async def start_inv(function, userid: int, chatid: int, lang: str, 
                     type_filter: list = [], item_filter: list = [], 
                     start_page: int = 0, changing_filters: bool = True,
-                    transmitted_data=None):
+                    transmitted_data: dict | None = None):
     """ Функция запуска инвентаря
     """
-    
-    if not transmitted_data:
-        transmitted_data = {}
+    if not transmitted_data: transmitted_data = {}
     
     if 'userid' not in transmitted_data: transmitted_data['userid'] = userid
     if 'chatid' not in transmitted_data: transmitted_data['chatid'] = chatid
@@ -223,20 +216,18 @@ async def start_inv(function, userid: int, chatid: int, lang: str,
 
     if not pages:
         await bot.send_message(chatid, t('inventory.null', lang))
+        return False, 'cancel'
     else:
         try:
             async with bot.retrieve_data(userid, chatid) as data:
                 old_function = data['function']
                 old_transmitted_data = data['transmitted_data']
             
-            if old_function:
-                function = old_function
-            if old_transmitted_data:
-                transmitted_data = old_transmitted_data
+            if old_function: function = old_function
+            if old_transmitted_data: transmitted_data = old_transmitted_data
         except: 
             # Если не передана функция, то вызывается функция информация о передмете
-            if function is None:
-                function = send_item_info
+            if function is None: function = send_item_info
             
         await bot.set_state(userid, InventoryStates.Inventory, chatid)
         async with bot.retrieve_data(userid, chatid) as data:
@@ -248,13 +239,13 @@ async def start_inv(function, userid: int, chatid: int, lang: str,
 
             data['settings'] = {'view': inv_view, 'lang': lang, 
                                 'row': row, 'page': start_page,
-                                'changing_filters': changing_filters
-                                }
-            
+                                'changing_filters': changing_filters}
+
             data['function'] = function
             data['transmitted_data'] = transmitted_data
 
         await swipe_page(userid, chatid)
+        return True, 'inv'
 
 async def open_inv(userid: int, chatid: int):
     """ Внутренняя фунция для возврата в инвентарь
