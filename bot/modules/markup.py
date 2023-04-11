@@ -234,3 +234,28 @@ def get_answer_keyboard(elements: list, lang: str='en') -> dict:
         keyboard = list_to_keyboard(buttons_list, 2) #превращаем список в клавиатуру
 
         return {'case': 2, 'keyboard': keyboard, 'data_names': data_names}
+    
+def count_markup(max_count: int, lang: str='en') -> ReplyKeyboardMarkup:
+    """Создаёт клавиатуру для быстрого выбора числа
+        Предлагает выбрать 1, max_count // 2, max_count
+
+    Args:
+        max_count (int): Максимальное доступное вводимое число
+        lang (str): Язык кнопки отмены
+    """
+    counts = ["x1"]
+    if max_count > 1: counts.append(f"x{max_count}")
+    if max_count >= 4: counts.insert(1, f"x{max_count // 2}")
+    
+    return list_to_keyboard([counts, t('buttons_name.cancel', lang)])
+
+def confirm_markup(lang: str='en') -> ReplyKeyboardMarkup:
+    """Создаёт клавиатуру для подтверждения
+
+    Args:
+        lang (str, optional):  Язык кнопок
+    """
+    return list_to_keyboard([
+        [t('buttons_name.confirm', lang)], 
+        [t('buttons_name.cancel', lang)]]
+    )
