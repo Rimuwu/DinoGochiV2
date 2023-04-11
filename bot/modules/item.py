@@ -175,6 +175,17 @@ def RemoveItemFromUser(userid: int, itemid: str,
             return False
     else:
         return False
+
+def CheckItemFromUser(userid: int, item_data: dict, count: int = 1):
+    """Проверяет есть ли count предметов у человека
+    """
+    find_res = items.find_one({'owner_id': userid, 
+                               'items_data': item_data,
+                               'count': {'$gt': count}
+                               })
+    
+    if find_res: return True
+    return False
     
 def item_code(item: dict, v_id: bool = True) -> str:
     """Создаёт код-строку предмета, основываясь на его
@@ -212,7 +223,7 @@ def decode_item(code: str) -> dict:
             data['item_id'] = value
         else:
             if 'abilities' not in data.keys(): data['abilities'] = {}
-            data['abilities'][ ids[scode] ] = value
+            data['abilities'][ ids[scode] ] = int(value)
     return data
 
 def sort_materials(not_sort_list: list, lang: str, 
@@ -451,8 +462,11 @@ def item_info(item: dict, lang: str):
 def exchange_item(item: dict, from_user: int, to_user: int, count: int = 1):
     ...
 
-# def use_item(item: dict, count: int, dino: ObjectId | None = None):
-#     item_id: str = item['item_id']
-#     data_item: dict = get_data(item_id)
-#     item_name: str = get_name(item_id, lang)
-#     type_item: str = data_item['type']
+def use_item(userid: int, lang: str, item: dict, count: int, 
+             dino: ObjectId | None = None, combine_item: dict = {}):
+    item_id: str = item['item_id']
+    data_item: dict = get_data(item_id)
+    item_name: str = get_name(item_id, lang)
+    type_item: str = data_item['type']
+    
+    print('УРАААААА, спустя 4 дня работы ты дошёл до функции use_item!')
