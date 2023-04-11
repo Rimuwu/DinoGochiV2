@@ -10,7 +10,7 @@ from bot.modules.inventory_tools import (InventoryStates, back_button, filter_me
 from bot.modules.item import decode_item
 from bot.modules.localization import get_data, t
 from bot.modules.markup import markups_menu as m
-from bot.modules.states_tools import data_for_use
+from bot.modules.states_tools import data_for_use_item
 
 users = mongo_client.bot.users
 
@@ -113,7 +113,7 @@ async def item_callback(call: CallbackQuery):
         if call_data[1] == 'info':
             await send_item_info(item, {'chatid': chatid, 'lang': lang})
         elif call_data[1] == 'use':
-            await data_for_use(item, userid, chatid, lang)
+            await data_for_use_item(item, userid, chatid, lang)
         elif call_data[1] == 'delete':
             ...
         elif call_data[1] == 'exchange':
