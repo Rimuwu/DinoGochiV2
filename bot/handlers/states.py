@@ -142,7 +142,7 @@ async def ChooseConfirm(message: Message):
     async with bot.retrieve_data(userid, message.chat.id) as data:
         func = data['function']
         transmitted_data = data['transmitted_data']
-        cancel_status = data['cancel']
+        cancel_status = transmitted_data['cancel']
 
     buttons = get_data('buttons_name', lang)
     buttons_data = {
@@ -151,17 +151,18 @@ async def ChooseConfirm(message: Message):
         buttons['disable']: False
     }
     
-    if cancel_status:
-        await cancel(message)
-    else:
-        if content in buttons_data:
+    if content in buttons_data:
+        
+        if not(buttons_data[content]) and cancel_status:
+            await cancel(message)
+        else:
             await bot.delete_state(userid, message.chat.id)
             await bot.reset_data(message.from_user.id,  message.chat.id)
             await func(buttons_data[content], transmitted_data=transmitted_data)
 
-        else:
-            await bot.send_message(message.chat.id, 
-                    t('states.ChooseConfirm.error_not_confirm', lang))
+    else:
+        await bot.send_message(message.chat.id, 
+                t('states.ChooseConfirm.error_not_confirm', lang))
 
 @bot.message_handler(state=GeneralStates.ChooseOption, is_authorized=True)
 async def ChooseOption(message: Message):
