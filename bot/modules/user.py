@@ -29,7 +29,6 @@ class User:
             'last_dino': None, #храним ObjectId
             'profile_view': 1,
             'inv_view': [2, 3],
-            'faq': True,
             'premium_status': False
             }
             
