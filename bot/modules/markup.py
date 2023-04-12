@@ -17,6 +17,7 @@ def back_menu(userid) -> str:
     menus_list = ['main_menu', 'settings_menu',
                   'main_menu', 'actions_menu', 
                   'main_menu', 'profile_menu', 'market_menu',
+                  'main_menu', 'profile_menu', 'about_menu',
                   'main_menu', 'friends_menu', 'referal_menu',
                   'main_menu', 'dino_tavern_menu', 'dungeon_menu'
                  ] # схема всех путей меню клавиатур
@@ -73,20 +74,17 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
         # Главное меню
         buttons = [
             ['dino_profile', 'actions_menu', 'profile_menu'],
-            ['settings_menu', 'friends_menu', 'faq'],
+            ['settings_menu', 'friends_menu'],
             ['dino-tavern_menu']
         ]
-        settings = users.find_one({'userid': userid}, {'settings': 1}) or {'settings': {}}
-        if not settings['settings'].get('faq', 1): #Если передаём faq, то можно удалить кнопку
-            buttons[1].remove('faq')
     
     elif markup_key == 'settings_menu':
         # Меню настроек
         prefix = 'commands_name.settings.'
         add_back_button = True
         buttons = [
-            ['notification', 'faq'],
-            ['inventory', 'dino_profile'],
+            ['notification', 'inventory'],
+            ['dino_profile'],
             ['dino_name'],
         ]
     
@@ -96,7 +94,16 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
         add_back_button = True
         buttons = [
             ['information', 'inventory'],
-            ['rayting', 'accessories', 'market'],
+            ['rayting', 'about', 'market'],
+        ]
+    
+    elif markup_key == 'about_menu':
+        # Меню о боте
+        prefix = 'commands_name.about.'
+        add_back_button = True
+        buttons = [
+            ['team', 'support'],
+            ['faq', 'links'],
         ]
     
     elif markup_key == 'friends_menu':
