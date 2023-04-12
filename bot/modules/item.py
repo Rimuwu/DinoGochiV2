@@ -3,7 +3,6 @@
     >>> abilities - словарь с индивидуальными харрактеристиками предмета, прочность, использования и тд.
     >>> preabil - используется только для предмета создаваемого из базы, используется для создания нестандартного предмета.
 """
-from bson.objectid import ObjectId
 
 from bot.config import mongo_client
 from bot.const import ITEMS
@@ -458,15 +457,3 @@ def item_info(item: dict, lang: str):
             log(f'Item {item_id} image incorrect', 4)
     
     return text, image
-
-def exchange_item(item: dict, from_user: int, to_user: int, count: int = 1):
-    ...
-
-def use_item(userid: int, lang: str, item: dict, count: int, 
-             dino: ObjectId | None = None, combine_item: dict = {}):
-    item_id: str = item['item_id']
-    data_item: dict = get_data(item_id)
-    item_name: str = get_name(item_id, lang)
-    type_item: str = data_item['type']
-    
-    print('УРАААААА, спустя 4 дня работы ты дошёл до функции use_item!')
