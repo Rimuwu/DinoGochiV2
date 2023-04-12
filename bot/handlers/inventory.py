@@ -69,16 +69,19 @@ async def inv_callback(call: CallbackQuery):
     userid = call.from_user.id
     lang = call.from_user.language_code
     
-    if call_data == 'search':
+    async with bot.retrieve_data(userid, chatid) as data:
+        changing_filter = data['settings']['changing_filters']
+    
+    if call_data == 'search' and changing_filter:
         # Активирует поиск
         await bot.set_state(userid, InventoryStates.InventorySearch, chatid)
         await search_menu(chatid, chatid)
     
-    elif call_data == 'clear_search':
+    elif call_data == 'clear_search' and changing_filter:
         # Очищает поиск
         await start_inv(None, chatid, chatid, lang)
     
-    elif call_data == 'filters':
+    elif call_data == 'filters' and changing_filter:
         # Активирует настройку филтров
         await bot.set_state(userid, InventoryStates.InventorySetFilters, chatid)
         await filter_menu(chatid, chatid)
@@ -97,7 +100,7 @@ async def inv_callback(call: CallbackQuery):
         async with bot.retrieve_data(userid, chatid) as data: data['settings']['page'] = page
         await swipe_page(chatid, chatid)
     
-    elif call_data == 'clear_filters':
+    elif call_data == 'clear_filters' and changing_filter:
         # Очищает фильтры
         await start_inv(None, chatid, chatid, lang)
 
