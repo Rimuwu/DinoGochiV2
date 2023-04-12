@@ -3,7 +3,8 @@ from telebot.asyncio_handler_backends import State, StatesGroup
 from bot.config import mongo_client
 from bot.exec import bot
 from bot.modules.inventory_tools import start_inv
-from bot.modules.item import get_data, get_name, use_item
+from bot.modules.item import get_data, get_name
+from bot.modules.item_tools import use_item
 from bot.modules.localization import t
 from bot.modules.markup import (confirm_markup, count_markup,
                                 get_answer_keyboard)
@@ -273,19 +274,19 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
 
 async def adapter(return_data: dict, transmitted_data: dict):
     del return_data['confirm']
-    
-    use_item(transmitted_data['userid'], transmitted_data['chatid'], 
+    send_status, return_text = use_item(transmitted_data['userid'], transmitted_data['lang'], 
              transmitted_data['items_data'], **return_data)
 
 async def data_for_use_item(item: dict, userid: int, chatid: int, lang: str):
-    item_id: str = item['item_id']
-    data_item: dict = get_data(item_id)
-    type_item: str = data_item['type']
-    item_name = get_name(item_id, lang)
-    steps = []
-    transmitted_data = {'items_data': item}
+    item_id = item['item_id']
+    data_item = get_data(item_id)
+    type_item = data_item['type']
     
     base_item = items.find_one({'owner_id': userid, 'items_data': item})
+    transmitted_data = {'items_data': item}
+    item_name = get_name(item_id, lang)
+    steps = []
+    ok = True
 
     if type(base_item) is None:
         await bot.send_message(chatid, t('item_use.no_item', lang))
@@ -334,16 +335,20 @@ async def data_for_use_item(item: dict, userid: int, chatid: int, lang: str):
                     'message': {'text': t('css.wait_count', lang), 
                                 'reply_markup': count_markup(max_count)}}
             ]
-        steps.insert(0, {"type": 'bool', "name": 'confirm', 
-                         "data": {'cancel': True}, 'message': 
-                             {
-                                'text': t('css.confirm', lang, name=item_name),
-                                'reply_markup': confirm_markup(lang)
-                             }
-                        }
-                     )
-        await ChooseStepState(adapter, userid, chatid, lang, steps, 
-                              transmitted_data=transmitted_data)
+        else:
+            ok = False
+            await bot.send_message(chatid, t('item_use.cannot_be_used', lang))
+
+        if ok:
+            steps.insert(0, {
+                "type": 'bool', "name": 'confirm', 
+                "data": {'cancel': True}, 
+                'message': {
+                    'text': t('css.confirm', lang, name=item_name), 'reply_markup': confirm_markup(lang)
+                    }
+                })
+            await ChooseStepState(adapter, userid, chatid, lang, steps, 
+                                transmitted_data=transmitted_data)
 
 async def back_to_state():
     """ Функция возвращает к прошлому состоянию. 
