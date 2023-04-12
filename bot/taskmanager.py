@@ -36,7 +36,7 @@ def add_task(function, repeat_time: float=0, delay: float=0, **kwargs):
     task = ioloop.create_task(_task_executor(function, repeat_time, delay, **kwargs))
 
     assert task not in tasks, f'Функция {function.__name__} добавлена повторно.'
-    
+    log(f'{function.__name__} добавлена в задачи временем повтора {repeat_time} и задержкой {delay}', 0)
     tasks.append(task)
 
 def run():
