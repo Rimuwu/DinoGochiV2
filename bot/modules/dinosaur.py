@@ -7,7 +7,6 @@ from bot.config import mongo_client
 from bot.const import DINOS, GAME_SETTINGS
 from bot.modules.data_format import random_code, random_quality
 from bot.modules.images import create_dino_image, create_egg_image
-from bot.modules.item import get_data
 from bot.modules.localization import log
 from bot.modules.notifications import dino_notification
 
@@ -102,6 +101,10 @@ class Dino:
     
     def sleep(self, s_type: str='long', duration: int=1):
         return start_sleep(self._id, s_type, duration)
+    
+    @property
+    def data(self):
+        return get_dino_data(self.data_id)
 
 
 class Egg:
@@ -146,6 +149,14 @@ class Egg:
     def remaining_incubation_time(self):
         return self.incubation_time - int(time())
 
+
+def get_dino_data(data_id: int):
+    data = {}
+    try:
+        data = DINOS['elements'][str(data_id)]
+    except Exception as e:
+        log(f'Ошибка в получении данных динозавра -> {e}', 3)
+    return data
 
 def random_dino(quality: str='com') -> int:
     """Рандомизация динозавра по редкости
@@ -195,7 +206,7 @@ def insert_dino(owner_id: int=0, dino_id: int=0, quality: str='random'):
     if quality == 'random': quality = random_quality()
     if not dino_id: dino_id = random_dino(quality)
 
-    dino_data = DINOS['elements'][str(dino_id)]
+    dino_data = get_dino_data(dino_id)
     dino = {
        'data_id': dino_id,
        'alt_id': f'{owner_id}_{random_code(8)}',
@@ -239,7 +250,8 @@ def insert_dino(owner_id: int=0, dino_id: int=0, quality: str='random'):
 
     return result, dino['alt_id']
 
-def start_game(dino_baseid: ObjectId, duration: int=1800, percent: int=1):
+def start_game(dino_baseid: ObjectId, duration: int=1800, 
+               percent: int=1):
     """Запуск активности "игра". 
        + Изменение статуса динозавра 
     """
@@ -255,7 +267,8 @@ def start_game(dino_baseid: ObjectId, duration: int=1800, percent: int=1):
                          {'$set': {'status': 'game'}})
     return result
 
-def start_sleep(dino_baseid: ObjectId, s_type: str='long', duration: int=1):
+def start_sleep(dino_baseid: ObjectId, s_type: str='long', 
+                duration: int=1):
     """Запуск активности "сон". 
        + Изменение статуса динозавра 
     """
@@ -275,7 +288,8 @@ def start_sleep(dino_baseid: ObjectId, s_type: str='long', duration: int=1):
                          {'$set': {'status': 'sleep'}})
     return result
 
-async def end_sleep(dino_id: ObjectId, sleeperid: ObjectId, sec_time: int=0, send_notif: bool=True):
+async def end_sleep(dino_id: ObjectId, sleeperid: ObjectId, 
+                    sec_time: int=0, send_notif: bool=True):
     """Заканчивает сон и отсылает уведомление.
        sec_time - время в секундах, сколько спал дино.
     """
@@ -322,59 +336,13 @@ def start_collecting(dino_baseid: ObjectId, coll_type: str):
                          {'$set': {'status': 'collecting'}})
     return result
 
-async def downgrade_accessory(dino: Dino, acc_type: str):
-    """Понижает прочность аксесуара
-       Return
-       >>> True - прочность понижена
-       >>> False - неправильный предмет / нет предмета
-    """
-    item = dino.activ_items[acc_type]
-
-    if item:
-        if 'abilities' in item and 'endurance' in item['abilities']:
-            num = randint(0, 2)
-            item['abilities']['endurance'] -= num
-
-            if item['abilities']['endurance'] <= 0:
-                dino.update({"$set": {f'activ_items.{acc_type}': None}})
-                await dino_notification(dino._id, 'acc_broke')
-            else:
-                dino.update({"$inc": {f'activ_items.{acc_type}': num}})
-            return True
-        else:
-            return False
-    else:
-        return False
-
-def check_accessory(dino: Dino, item_id: str, downgrade: bool=False):
-    """Проверяет, активирован ли аксессуар с id - item_id
-       downgrade - если активирован, то вызывает понижение прочности предмета
-    """
-    data_item = get_data(item_id) #Получаем данные из json
-    acces_item = dino.activ_items[data_item['type'][:-3]] #предмет / None
-
-    if acces_item:
-        if acces_item['item_id'] == item_id:
-            if downgrade:
-                return downgrade_accessory(dino, data_item['type'])
-            else:
-                return True
-        else:
-            return False
-    else:
-        return False
-
 def edited_stats(before: int, unit: int):
     """ Лёгкая функция проверки на 
         0 <= unit <= 100 
     """
     after = 0
-
-    if before + unit > 100:
-        after = 100
-    elif before + unit < 0:
-        after = 0
-    else:
-        after = before + unit
+    if before + unit > 100: after = 100
+    elif before + unit < 0: after = 0
+    else: after = before + unit
 
     return after
