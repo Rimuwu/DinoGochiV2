@@ -6,8 +6,8 @@ from telebot.types import CallbackQuery, Message
 from bot.config import mongo_client
 from bot.exec import bot
 from bot.modules.data_format import list_to_inline, seconds_to_str
-from bot.modules.dinosaur import (Dino, check_accessory, edited_stats,
-                                  end_sleep, start_sleep)
+from bot.modules.dinosaur import Dino, edited_stats, end_sleep, start_sleep
+from bot.modules.item_tools import check_accessory
 from bot.modules.localization import get_data, t
 from bot.modules.markup import list_to_keyboard
 from bot.modules.markup import markups_menu as m
