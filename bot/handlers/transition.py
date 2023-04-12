@@ -1,13 +1,15 @@
+from asyncio import sleep
+
 from telebot.types import Message
+from telebot.util import antiflood
 
 from bot.config import mongo_client
 from bot.exec import bot
+from bot.modules.data_format import user_name
 from bot.modules.localization import get_data, t
 from bot.modules.markup import back_menu
 from bot.modules.markup import markups_menu as m
 from bot.modules.user import User
-from bot.modules.data_format import user_name
-from asyncio import sleep
 
 users = mongo_client.bot.users
 management = mongo_client.bot.management
@@ -40,8 +42,7 @@ async def settings_menu(message: Message):
     if user:
         settings = user['settings']
         text = t('menu_text.settings', lang, 
-                notif=settings['notifications'], 
-                vis_faq=settings['faq'],
+                notif=settings['notifications'],
                 profile_view=prf_view_ans[settings['profile_view']-1],
                 inv_view=f"{settings['inv_view'][0]} | {settings['inv_view'][1]}"
                 )
@@ -108,9 +109,28 @@ async def tavern_menu(message: Message):
                 text_to_friend = t('menu_text.dino_tavern.went', 
                                    friend.language_code, 
                                    name=user_name(message.from_user))
-                await bot.send_message(friendid, text_to_friend)
-                await sleep(0.5)
+                try:
+                    await bot.send_message(
+                        friendid, text_to_friend)
+                except:
+                    await sleep(0.5)
+                    try: 
+                        await bot.send_message(
+                            friendid, text_to_friend)
+                    except: pass
     else:
         text += '❌'
 
     await bot.edit_message_text(text=text, chat_id=userid, message_id=msg.message_id)
+
+@bot.message_handler(text='commands_name.profile.about', is_authorized=True)
+async def about_menu(message: Message):
+    userid = message.from_user.id
+    lang = message.from_user.language_code
+
+    iambot = await bot.get_me()
+    bot_name = iambot.username
+    
+    await bot.send_message(message.chat.id, t(
+        'menu_text.about', lang, bot_name=bot_name), 
+                           reply_markup=m(userid, 'about_menu', lang))
