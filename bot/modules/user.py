@@ -304,3 +304,8 @@ def max_dino_col(lvl: int, user_id: int=0, premium: bool=False):
             else: col['additional']['now'] += 1
 
     return col
+
+async def experience_enhancement(userid: int, xp: int):
+    """Повышает количество опыта, если выполнены условия то повышает уровень и отпарвляет уведомление
+    """
+    ...
