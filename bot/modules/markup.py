@@ -204,7 +204,6 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
 
             if old_last_menu != markup_key:
                 result = None
-    
     return result
 
 def get_answer_keyboard(elements: list, lang: str='en') -> dict:
@@ -242,7 +241,8 @@ def get_answer_keyboard(elements: list, lang: str='en') -> dict:
 
         return {'case': 2, 'keyboard': keyboard, 'data_names': data_names}
     
-def count_markup(max_count: int, lang: str='en') -> ReplyKeyboardMarkup:
+    
+def count_markup(max_count: int=1, lang: str='en') -> ReplyKeyboardMarkup:
     """Создаёт клавиатуру для быстрого выбора числа
         Предлагает выбрать 1, max_count // 2, max_count
 
