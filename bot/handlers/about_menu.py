@@ -110,7 +110,7 @@ async def support_buttons(call: CallbackQuery):
                 media=InputMedia(type='photo', media=image, caption=text))
     else:
         if product_key != 'non_repayable': product = products[product_key]
-        markup_inline = InlineKeyboardMarkup(row_width=3)
+        markup_inline = InlineKeyboardMarkup(row_width=2)
         
         text_data = get_data('support_command', lang)
         product_bio = text_data['products_bio'][product_key]
