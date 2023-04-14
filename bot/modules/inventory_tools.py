@@ -86,12 +86,15 @@ def inventory_pages(items: list[dict], lang: str = 'en',
     if horizontal < 3 and len(pages) > 1: horizontal = 3
     return pages, horizontal, items_data, items_names
     
-async def send_item_info(item: dict, transmitted_data: dict):
+async def send_item_info(item: dict, transmitted_data: dict, mark: bool=True):
     lang = transmitted_data['lang']
     chatid = transmitted_data['chatid']
     
     text, image = item_info(item, lang)
-    markup = item_info_markup(item, lang)
+    
+    if mark: markup = item_info_markup(item, lang)
+    else: markup = None
+    
     if image is None:
         await bot.send_message(chatid, text, 'Markdown',
                             reply_markup=markup)
