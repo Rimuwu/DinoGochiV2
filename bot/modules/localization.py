@@ -74,7 +74,11 @@ def t(key: str, locale: str = "en", formating: bool = True, **kwargs) -> str:
     """
     text = str(get_data(key, locale)) #Добавляем переменные в текст
     if formating:
-        text = text.format(**kwargs)
+        try:
+            text = text.format(**kwargs)
+        except KeyError as e:
+            log(f'Не удалось выполнить форматирование, ошибка -> {e}', 2)
+            
 
     return text
 
