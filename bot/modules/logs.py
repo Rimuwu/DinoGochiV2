@@ -9,7 +9,7 @@ logging.basicConfig(
     level=logging.INFO,
     filename=f"{conf.logs_dir}/{strftime('%Y %m-%d %H.%M.%S')}.log",
     filemode="w", 
-    format="%(asctime)s %(levelname)s %(message)s" # encoding='utf-8',
+    format="%(asctime)s %(levelname)s %(message)s"
 )
 
 def log(message: str, lvl: int = 1, prefix: str = 'Бот') -> None:
