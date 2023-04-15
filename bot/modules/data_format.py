@@ -1,11 +1,11 @@
 import random
 import string
 
-from telebot.types import (InlineKeyboardButton, InlineKeyboardMarkup,
-                           ReplyKeyboardMarkup, User)
+from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, User
 
 from bot.const import GAME_SETTINGS
 from bot.modules.localization import get_data
+
 
 def chunks(lst: list, n: int) -> list:
     """Делит список lst, на списки по n элементов
@@ -16,28 +16,30 @@ def chunks(lst: list, n: int) -> list:
             yield lst[i:i + n]
     return list(work())
     
-def random_dict(data: dict[str, int]) -> int | dict:
-    """ Предоставляет общий формат данных, подерживающий 
-        случайные и статичные числа.
+def random_dict(data: dict):
+    """Предоставляет общий формат данных, подерживающий 
+       случайные и статичные элементы.
     
-    Примеры словаря:
-        >>> {"min": 1, "max": 2, "type": "random"}
-        >>> {"act": 1, "type": "static"}
+    Типы словаря:
+    { "min": 1, "max": 2, "type": "random" }
+    >>> Случайное число от 1 до 2
+    { "act": [12, 42, 1] "type": "choice" } 
+    >>> Случайный элемент
+    { "act": 1, "type": "static" }
+    >>> Статичное число 1
     """
-
-    if 'type' not in data:
-        return data
-
-    if data["type"] == "static":
-        return data['act']
+    if data["type"] == "static": return data['act']
 
     elif data["type"] == "random":
-        if data['min'] >= data['max']:
-            return 0
-        else:
+        if data['min'] < data['max']:
             return random.randint(data['min'], data['max'])
+        else: return data['min']
+    
+    elif data["type"] == "choice":
+        if data['act']: return random.choice(data['act'])
+        else: return 0
+    return data
 
-    return 0
 
 def list_to_keyboard(buttons: list, row_width: int = 3, resize_keyboard: bool = True, one_time_keyboard = None) -> ReplyKeyboardMarkup:
     '''Превращает список со списками в объект клавиатуры.
@@ -66,7 +68,7 @@ def list_to_keyboard(buttons: list, row_width: int = 3, resize_keyboard: bool = 
 
     return markup
 
-def list_to_inline(buttons: list[dict], row_width: int = 3) -> InlineKeyboardMarkup:
+def list_to_inline(buttons: list, row_width: int = 3) -> InlineKeyboardMarkup:
     '''Превращает список со списками в объект inlineKeyboard.
         Example:
             butttons = [ {'привет':'call_key'}, {'отвяжись':'call_key'}, {'ты кто?':'call_key'} ]
