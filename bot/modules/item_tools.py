@@ -14,7 +14,7 @@ from bot.modules.logs import log
 from bot.modules.markup import confirm_markup, count_markup, markups_menu
 from bot.modules.notifications import dino_notification
 from bot.modules.states_tools import ChooseStepState
-from bot.modules.user import experience_enhancement
+from bot.modules.user import experience_enhancement, User
 from bot.modules.data_format import random_dict
 
 users = mongo_client.bot.users
@@ -99,8 +99,8 @@ async def end_craft(transmitted_data: dict):
                                      items=counts_items(created_items, lang)), 
                            parse_mode='Markdown', reply_markup=markups_menu(userid, 'last_menu', lang))
 
-async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int, 
-             dino, combine_item: dict = {}):
+async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1, 
+             dino=None, combine_item: dict = {}):
     return_text = 'no_text'
     dino_update_list = []
     use_status, send_status, use_baff_status = True, True, True
@@ -236,9 +236,38 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int,
     elif data_item['type'] == 'case':
         send_status = False
         drop = data_item['drop_items']; shuffle(drop)
+        drop_items = {}
         
-        col_repit = random_dict(data_item['col_repit'])
+        col_repit = random_dict(data_item['col_repit']) #type: int
+        for _ in range(col_repit):
+            drop_item = None
+            while drop_item == None:
+                for iterable_data in drop:
+                    if randint(1, iterable_data['chance'][1]) <= iterable_data['chance'][0]:
+                        drop_item = iterable_data
+                        break
+
+            drop_col = random_dict(drop_item['col'])
+            if drop_item['id'] in drop_items: drop_items[drop_items['id']] += drop_col
+            else: drop_items[drop_items['id']] = drop_col
+            
+            drop_item_data = get_data(drop_item['id'])
+            image = open(f"images/items/{drop_item_data['image']}.png", 'rb')
+            
+            await bot.send_photo(userid, image, t('item_use.case.drop_item'), 
+                                 parse_mode='Markdown', reply_markup=markups_menu(userid, 'last_menu', lang))
+    
+    elif data_item['type'] == 'egg':
+        user = User(userid)
+        dino_limit = user.max_dino_col()['standart']
         
+        if dino_limit['now'] < dino_limit['limit']:
+            ...
+        else:
+            send_status = False
+            return_text = t('item_use.egg.egg_limit', lang, 
+                            limit=dino_limit['limit'])
+
     # print(use_status, send_status, use_baff_status)
     # print(dino_update_list)
     # print(return_text)
