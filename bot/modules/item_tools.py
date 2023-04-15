@@ -1,4 +1,4 @@
-from random import randint
+from random import randint, shuffle
 
 from bot.config import mongo_client
 from bot.const import GAME_SETTINGS
@@ -15,6 +15,7 @@ from bot.modules.markup import confirm_markup, count_markup, markups_menu
 from bot.modules.notifications import dino_notification
 from bot.modules.states_tools import ChooseStepState
 from bot.modules.user import experience_enhancement
+from bot.modules.data_format import random_dict
 
 users = mongo_client.bot.users
 items = mongo_client.bot.items
@@ -99,8 +100,8 @@ async def end_craft(transmitted_data: dict):
                            parse_mode='Markdown', reply_markup=markups_menu(userid, 'last_menu', lang))
 
 async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int, 
-             dino: Dino | None = None, combine_item: dict = {}):
-    return_text = ''
+             dino, combine_item: dict = {}):
+    return_text = 'no_text'
     dino_update_list = []
     use_status, send_status, use_baff_status = True, True, True
 
@@ -231,7 +232,12 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int,
         else:
             use_status, send_status = False, True
             return_text = t('item_use.recipe.not_enough_m', lang, materials=counts_items(not_enough_items, lang))
+    
+    elif data_item['type'] == 'case':
+        send_status = False
+        drop = data_item['drop_items']; shuffle(drop)
         
+        col_repit = random_dict(data_item['col_repit'])
         
     # print(use_status, send_status, use_baff_status)
     # print(dino_update_list)
