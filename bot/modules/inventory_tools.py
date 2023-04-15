@@ -21,9 +21,9 @@ class InventoryStates(StatesGroup):
     InventorySearch = State() # Состояние поиска в инвентаре
     InventorySetFilters = State() # Состояние настройки фильтров в инвентаре
 
-def inventory_pages(items: list[dict], lang: str = 'en', 
-                    view: list[int] = [2, 3], type_filter: list[str] = [],
-                    item_filter: list[str] = []):
+def inventory_pages(items: list, lang: str = 'en', 
+                    view: list = [2, 3], type_filter: list = [],
+                    item_filter: list = []):
     """ Создаёт и сортируем страницы инвентаря
 
     type_filter - если не пустой то отбирает предметы по их типу
@@ -199,7 +199,7 @@ async def filter_menu(userid: int, chatid: int):
 async def start_inv(function, userid: int, chatid: int, lang: str, 
                     type_filter: list = [], item_filter: list = [], 
                     start_page: int = 0, changing_filters: bool = True,
-                    transmitted_data: dict | None = None):
+                    transmitted_data = None):
     """ Функция запуска инвентаря
     """
     if not transmitted_data: transmitted_data = {}

@@ -107,7 +107,7 @@ async def egg_profile(userid: int, egg: Egg, lang: str):
     await bot.send_photo(userid, img, text, 
                          reply_markup=m(userid, 'last_menu', language_code=lang))
 
-async def transition(element: Dino | Egg, transmitted_data: dict):
+async def transition(element, transmitted_data: dict):
     userid = transmitted_data['userid']
     lang = transmitted_data['lang']
 

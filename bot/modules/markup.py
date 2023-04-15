@@ -32,7 +32,7 @@ def back_menu(userid) -> str:
     return result
 
 def markups_menu(userid: int, markup_key: str = 'main_menu', 
-                 language_code: str = 'en', last_menu: bool = False) -> ReplyKeyboardMarkup | None:
+                 language_code: str = 'en', last_menu: bool = False):
     """Главная функция создания меню для клавиатур
        menus:
        main_menu, settings_menu, profile_menu

@@ -83,7 +83,7 @@ def t(key: str, locale: str = "en", formating: bool = True, **kwargs) -> str:
     return text
 
 
-def tranlate_data(data: list | dict, locale: str = "en", key_prefix = '', **kwargs) -> Any:
+def tranlate_data(data, locale: str = "en", key_prefix = '', **kwargs) -> Any:
     """ Переводит текст внутри словаря или списка
         
         Args:

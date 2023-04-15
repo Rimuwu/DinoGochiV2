@@ -53,7 +53,7 @@ class User:
             self.__dict__ = data
     
     @property
-    def get_dinos(self) -> list[Dino]:
+    def get_dinos(self) -> list:
         """Возвращает список с объектами динозавров."""
         dino_list = get_dinos(self.userid)
         self.dinos = dino_list
@@ -66,21 +66,21 @@ class User:
         return col
     
     @property
-    def get_eggs(self) -> list[Egg]:
+    def get_eggs(self) -> list:
         """Возвращает список с объектами динозавров."""
         eggs_list = get_eggs(self.userid)
         self.eggs = eggs_list
         return eggs_list
     
     @property
-    def get_inventory(self) -> list[dict]:
+    def get_inventory(self) -> list:
         """Возвращает список с предметами в инвентаре"""
         inv = get_inventory(self.userid)
         self.inventory = inv
         return inv
 
     @property
-    def get_friends(self) -> dict[str, list[int]]:
+    def get_friends(self) -> dict:
         """Возвращает словарь с 2 видами связей
            friends - уже друзья
            requests - запрос на добавление
@@ -142,7 +142,7 @@ class User:
         """
         users.delete_one({'userid': self.userid})
     
-    def get_last_dino(self) -> Dino | None:
+    def get_last_dino(self):
         """Возвращает последнего динозавра или None
         """
         return last_dino(self)
@@ -177,7 +177,7 @@ def insert_user(userid: int):
     log(prefix='InsertUser', message=f'User: {userid}', lvl=0)
     return users.insert_one(user_dict)
 
-def get_dinos(userid: int) -> list[Dino]:
+def get_dinos(userid: int) -> list:
     """Возвращает список с объектами динозавров."""
     dino_list = []
     for dino_obj in dino_owners.find({'owner_id': userid}, {'dino_id': 1}):
@@ -206,7 +206,7 @@ def get_inventory(userid: int) -> list:
         inv.append(item)
     return inv
 
-def get_frineds(userid: int) -> dict[str, list[int]]:
+def get_frineds(userid: int) -> dict:
     friends_dict = {
         'friends': [],
         'requests': []
@@ -227,7 +227,7 @@ def get_frineds(userid: int) -> dict[str, list[int]]:
 
     return friends_dict
 
-def last_dino(user: User) -> Dino | None:
+def last_dino(user: User):
     """Возвращает последнего выбранного динозавра.
        Если None - вернёт первого
        Если нет динозавров - None
@@ -250,7 +250,7 @@ def last_dino(user: User) -> Dino | None:
             user.update({'$set': {'settings.last_dino': None}})
             return None
 
-def award_premium(userid:int, end_time:int | str):
+def award_premium(userid:int, end_time):
     """
     Присуждение премиум статуса юзеру
     {

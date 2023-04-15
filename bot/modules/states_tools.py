@@ -26,7 +26,7 @@ def add_if_not(data: dict, userid: int, chatid: int, lang: str):
 
 async def ChooseDinoState(function, userid: int, chatid: int, 
         lang: str, add_egg: bool=True, 
-        transmitted_data: dict | None=None):
+        transmitted_data=None):
     """ Устанавливает состояние ожидания динозавра
 
        В function передаёт 
@@ -68,7 +68,7 @@ async def ChooseDinoState(function, userid: int, chatid: int,
 async def ChooseIntState(function, userid: int, 
                 chatid: int, lang: str,
                 min_int: int = 1, max_int: int = 10,
-                transmitted_data: dict | None=None):
+                transmitted_data=None):
     """ Устанавливает состояние ожидания числа
 
         В function передаёт 
@@ -96,7 +96,7 @@ async def ChooseIntState(function, userid: int,
 async def ChooseStringState(function, userid: int, 
                          chatid: int, lang: str,
                          min_len: int = 1, max_len: int = 10,
-                         transmitted_data: dict | None=None):
+                         transmitted_data=None):
     """ Устанавливает состояние ожидания сообщения
 
         В function передаёт 
@@ -118,7 +118,7 @@ async def ChooseStringState(function, userid: int,
 
 async def ChooseConfirmState(function, userid: int, 
                          chatid: int, lang: str, cancel: bool=False,
-                         transmitted_data: dict | None=None):
+                         transmitted_data=None):
     """ Устанавливает состояние ожидания подтверждения действия
 
         В function передаёт 
@@ -140,7 +140,7 @@ async def ChooseConfirmState(function, userid: int,
 async def ChooseOptionState(function, userid: int, 
                          chatid: int, lang: str,
                          options: dict = {},
-                         transmitted_data: dict | None=None):
+                         transmitted_data=None):
     """ Устанавливает состояние ожидания выбора опции
 
         В function передаёт 
@@ -167,7 +167,7 @@ async def ChooseOptionState(function, userid: int,
 async def ChooseStepState(function, userid: int, 
                          chatid: int, lang: str,
                          steps: list = [],
-                         transmitted_data: dict | None=None):
+                         transmitted_data=None):
     """ Конвеерная Система Состояний
         Устанавливает ожидание нескольких ответов, запуская состояния по очереди.
         
