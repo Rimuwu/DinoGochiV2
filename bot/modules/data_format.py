@@ -36,9 +36,9 @@ def random_dict(data: dict):
         else: return data['min']
     
     elif data["type"] == "choice":
-        if data['act']: return random.choice(data['act'])
+        if data['act']: return random.choice(data['act']) #type: int
         else: return 0
-    return data
+    return 0
 
 
 def list_to_keyboard(buttons: list, row_width: int = 3, resize_keyboard: bool = True, one_time_keyboard = None) -> ReplyKeyboardMarkup:
