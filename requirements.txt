@@ -1,0 +1,8 @@
+pyTelegramBotAPI==4.10.0
+aiohttp==3.8.4
+pymongo==4.3.3
+fuzzywuzzy==0.18.0
+python-Levenshtein==0.20.9
+CurrencyConverter==0.17.6
+Pillow==9.5.0
+colorama==0.4.6
