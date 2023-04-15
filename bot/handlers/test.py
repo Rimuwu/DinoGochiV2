@@ -10,8 +10,8 @@ from time import time
 from pprint import pprint
 from bot.modules.currency import convert
 from bot.modules.notifications import user_notification
-from bot.modules.inventory import inventory_pages
-from bot.modules.markup import list_to_keyboard
+from bot.modules.inventory_tools import inventory_pages
+from bot.modules.markup import list_to_keyboard, count_markup
 from asyncio import sleep
 from bot.const import ITEMS
 from bot.modules.states_tools import ChooseStepState
@@ -33,3 +33,12 @@ async def test_command(message: Message):
     ]
     
     await ChooseStepState(func, user_id, user_id, 'ru', steps)
+
+
+
+@bot.message_handler(commands=['add_8'])
+async def add(message: Message):
+    user_id = message.from_user.id
+    
+    m, res = AddItemToUser(user_id, "8", 20)
+    print(m, res)
