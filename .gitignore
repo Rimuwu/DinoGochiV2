@@ -5,5 +5,6 @@ bot/data/
 config.py
 venv
 .vscode
+.venv
 config.json
 .state-save
