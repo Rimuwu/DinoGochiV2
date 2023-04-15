@@ -146,6 +146,16 @@ class User:
         """Возвращает последнего динозавра или None
         """
         return last_dino(self)
+    
+    def max_dino_col(self):
+        """Возвращает доступное количесвто динозавров, беря во внимание уровень и статус,
+           считает сколько динозавров у юзера вместе с лимитом
+           {
+             'standart': { 'now': 0, 'limit': 0},
+             'additional': {'now': 0, 'limit': 1}
+            }
+        """
+        return max_dino_col(self.lvl, self.userid, self.settings['premium_status'])
 
 
 def insert_user(userid: int):
@@ -284,6 +294,10 @@ def award_premium(userid:int, end_time):
 def max_dino_col(lvl: int, user_id: int=0, premium: bool=False):
     """Возвращает доступное количесвто динозавров, беря во внимание уровень и статус
        Если передаётся user_id то считает сколько динозавров у юзера вместе с лимитом
+       {
+          'standart': { 'now': 0, 'limit': 0},
+           'additional': {'now': 0, 'limit': 1}
+        }
     """
     col = {
         'standart': {
