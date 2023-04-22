@@ -207,15 +207,13 @@ async def start_inv(function, userid: int, chatid: int, lang: str,
     if 'userid' not in transmitted_data: transmitted_data['userid'] = userid
     if 'chatid' not in transmitted_data: transmitted_data['chatid'] = chatid
     if 'lang' not in transmitted_data: transmitted_data['lang'] = lang
-    
+
     user_settings = users.find_one({'userid': userid}, {'settings': 1})
     if user_settings: inv_view = user_settings['settings']['inv_view']
     else: inv_view = [2, 3]
 
     invetory = get_inventory(userid)
     pages, row, items_data, names = inventory_pages(invetory, lang, inv_view, type_filter, item_filter)
-    
-    # if function is None:function = send_item_info
 
     if not pages:
         await bot.send_message(chatid, t('inventory.null', lang))
