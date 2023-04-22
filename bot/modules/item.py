@@ -16,7 +16,7 @@
 
 from bot.config import mongo_client
 from bot.const import ITEMS
-from bot.modules.data_format import random_dict
+from bot.modules.data_format import random_dict, seconds_to_str
 from bot.modules.localization import get_all_locales
 from bot.modules.localization import get_data as get_loc_data
 from bot.modules.logs import log
@@ -541,6 +541,14 @@ def item_info(item: dict, lang: str):
         dp_text += loc_d['type_info'][
             type_loc]['add_text'].format(
                 content=get_case_content(data_item['drop_items'], lang))
+    # Яйца
+    elif type_item == 'egg':
+        end_time = seconds_to_str(data_item['incub_time'], lang)
+        dp_text += loc_d['type_info'][
+            type_loc]['add_text'].format(
+                inc_time=end_time, 
+                rarity=get_loc_data(f'rare.{data_item["inc_type"]}', lang)[1])
+            
     # Информация о внутренних свойствах
     if 'abilities' in item.keys():
         if 'stack' in item['abilities'].keys():
