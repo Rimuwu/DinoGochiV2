@@ -4,11 +4,14 @@ from telebot.types import CallbackQuery, Message
 
 from bot.config import mongo_client
 from bot.exec import bot
+from bot.modules.data_format import seconds_to_str
+from bot.modules.dinosaur import incubation_egg
 from bot.modules.inventory_tools import (InventoryStates, back_button,
                                          filter_menu, forward_button,
                                          search_menu, send_item_info,
                                          start_inv, swipe_page)
-from bot.modules.item import decode_item
+from bot.modules.item import CheckItemFromUser, decode_item, get_name, RemoveItemFromUser
+from bot.modules.item import get_data as get_item_data
 from bot.modules.item_tools import data_for_use_item
 from bot.modules.localization import get_data, t
 from bot.modules.markup import markups_menu as m
@@ -122,6 +125,32 @@ async def item_callback(call: CallbackQuery):
             ...
         elif call_data[1] == 'exchange':
             ...
+        elif call_data[1] == 'egg':
+            ret_data = CheckItemFromUser(userid, item)
+
+            if ret_data['status']:
+                egg_id = call_data[3]
+                item_data = get_item_data(item['item_id'])
+                end_time = seconds_to_str(item_data['incub_time'], lang)
+                i_name = get_name(item['item_id'], lang)
+
+                await bot.send_message(chatid, 
+                        t('item_use.egg.incubation', lang, 
+                          item_name = i_name, end_time=end_time),  
+                          reply_markup=m(userid, 'last_menu', lang))
+                
+                if RemoveItemFromUser(userid, item['item_id'], 1):
+                    incubation_egg(int(egg_id), userid, item_data['incub_time'], item_data['inc_type'])
+                
+                    new_text = t('item_use.egg.edit_content', lang)
+                    await bot.edit_message_caption(new_text, chatid, call.message.id, reply_markup=None)
+            else:
+                await bot.send_message(chatid, 
+                        t('item_use.cannot_be_used', lang),  
+                          reply_markup=m(userid, 'last_menu', lang))
+                
+        else:
+            print('item_callback')
 
 # Поиск внутри инвентаря
 @bot.callback_query_handler(state=InventoryStates.InventorySearch, 
