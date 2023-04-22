@@ -1,6 +1,8 @@
 {
     "1": {
-      "+hp": 15,
+      "buffs": {
+        "heal": 15
+      },
       "act": 10,
       "class": "ALL",
       "image": "item1",
@@ -8,7 +10,9 @@
       "type": "eat"
     },
     "2": {
-      "+mood": 10,
+      "buffs": {
+        "mood": 10
+      },
       "act": 5,
       "class": "ALL",
       "image": "item2",
@@ -280,7 +284,9 @@
       "type": "sleep_ac"
     },
     "17": {
-      "+hp": 15,
+      "buffs": {
+        "heal": 15
+      },
       "act": 1,
       "class": "ALL",
       "image": "item17",
@@ -288,7 +294,9 @@
       "type": "eat"
     },
     "18": {
-      "+mood": 15,
+      "buffs": {
+        "mood": 15
+      },
       "act": 25,
       "class": "ALL",
       "image": "item18",
@@ -314,7 +322,9 @@
       "type": "eat"
     },
     "19": {
-      "+mood": 20,
+      "buffs": {
+        "mood": 20
+      },
       "act": 20,
       "class": "ALL",
       "image": "item19",
@@ -549,8 +559,10 @@
       "type": "recipe"
     },
     "33": {
-      "+hp": 25,
-      "-mood": 10,
+      "buffs": {
+        "heal": 25,
+        "mood": -10
+      },
       "act": 5,
       "class": "ALL",
       "image": "item33",
@@ -601,7 +613,9 @@
       "type": "eat"
     },
     "36": {
-      "+energy": 25,
+      "buffs": {
+        "energy": 25
+      },
       "act": -30,
       "class": "ALL",
       "image": "item36",
@@ -813,7 +827,9 @@
       "type": "recipe"
     },
     "47": {
-      "+mood": 10,
+      "buffs": {
+        "mood": 10
+      },
       "abilities": {
         "uses": 15
       },
@@ -824,7 +840,9 @@
       "type": "eat"
     },
     "48": {
-      "+mood": 15,
+      "buffs": {
+        "mood": 15
+      },
       "abilities": {
         "uses": 9
       },
@@ -843,7 +861,9 @@
       "type": "material"
     },
     "50": {
-      "+mood": 40,
+      "buffs": {
+        "mood": 40
+      },
       "act": 75,
       "class": "ALL",
       "image": "item50",
@@ -874,9 +894,6 @@
       "type": "weapon"
     },
     "54": {
-      "abilities": {
-        "stack": 66
-      },
       "add_damage": 0,
       "add_effects": [],
       "image": "item54",
@@ -1282,7 +1299,9 @@
       "type": "defrosting"
     },
     "68": {
-      "+energy": 5,
+      "buffs": {
+        "energy": 5
+      },
       "act": 10,
       "class": "ALL",
       "image": "item68",
@@ -1290,8 +1309,10 @@
       "type": "eat"
     },
     "69": {
-      "+energy": 2,
-      "+mood": 5,
+      "buffs": {
+        "energy": 2,
+        "mood": 5
+      },
       "abilities": {
         "uses": 10
       },
@@ -1333,7 +1354,9 @@
       "type": "eat"
     },
     "72": {
-      "+mood": 25,
+      "buffs": {
+        "mood": 25
+      },
       "act": 20,
       "class": "ALL",
       "image": "item72",
@@ -1370,7 +1393,9 @@
       "type": "recipe"
     },
     "74": {
-      "+mood": 20,
+      "buffs": {
+        "mood": 20
+      },
       "act": 10,
       "class": "ALL",
       "image": "item74",
@@ -1398,7 +1423,9 @@
       "type": "recipe"
     },
     "76": {
-      "-hp": 2,
+      "buffs": {
+        "heal": -2
+      },
       "act": 5,
       "class": "Herbivore",
       "image": "item76",
@@ -1460,7 +1487,9 @@
       "type": "eat"
     },
     "81": {
-      "+energy": 30,
+      "buffs": {
+        "energy": 30
+      },
       "act": 5,
       "class": "ALL",
       "image": "item81",
@@ -1468,8 +1497,10 @@
       "type": "eat"
     },
     "82": {
-      "+mood": 10,
-      "-hp": 2,
+      "buffs": {
+        "heal": -2,
+        "mood": 10
+      },
       "act": 15,
       "class": "Herbivore",
       "image": "item82",
@@ -1477,7 +1508,9 @@
       "type": "eat"
     },
     "83": {
-      "+hp": 10,
+      "buffs": {
+        "heal": 10
+      },
       "act": 50,
       "class": "ALL",
       "image": "item83",
@@ -1552,7 +1585,9 @@
       "type": "recipe"
     },
     "88": {
-      "+energy": 20,
+      "buffs": {
+        "energy": 20
+      },
       "act": 10,
       "class": "ALL",
       "image": "item88",
@@ -1584,7 +1619,9 @@
       "type": "recipe"
     },
     "90": {
-      "+mood": 100,
+      "buffs": {
+        "mood": 100
+      },
       "abilities": {
         "uses": 6
       },
@@ -1698,7 +1735,9 @@
       "type": "recipe"
     },
     "94": {
-      "+mood": 15,
+      "buffs": {
+        "mood": 15
+      },
       "act": 20,
       "class": "ALL",
       "image": "item94",
@@ -1744,7 +1783,9 @@
       "type": "recipe"
     },
     "98": {
-      "+mood": 20,
+      "buffs": {
+        "mood": 20
+      },
       "act": 50,
       "class": "Herbivore",
       "image": "item98",
@@ -1752,7 +1793,9 @@
       "type": "eat"
     },
     "99": {
-      "+energy": 10,
+      "buffs": {
+        "energy": 10
+      },
       "act": 60,
       "class": "Flying",
       "image": "item99",
@@ -1760,7 +1803,9 @@
       "type": "eat"
     },
     "100": {
-      "+hp": 10,
+      "buffs": {
+        "heal": 10
+      },
       "act": 60,
       "class": "Carnivore",
       "image": "item100",
@@ -1896,8 +1941,10 @@
       "type": "recipe"
     },
     "106": {
-      "+hp": 20,
-      "+mood": 20,
+      "buffs": {
+        "heal": 20,
+        "mood": 20
+      },
       "abilities": {
         "uses": 2
       },
