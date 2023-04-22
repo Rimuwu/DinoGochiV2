@@ -153,7 +153,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
 
         if col_dinos == 0:
             buttons = [
-                ['no_dino']
+                ['no_dino', 'noprefix.buttons_name.back']
             ]
         if col_dinos == 1:
             dino = user.get_dinos[0]
