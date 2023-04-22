@@ -128,7 +128,7 @@ def is_standart(item: dict) -> bool:
     else:
         if 'abilities' in item.keys():
             if item['abilities']:
-                if item['abilities'] == data['abilities']:
+                if item.get('abilities', {}) == data.get('abilities', {}):
                     return True
                 else:
                     return False
@@ -251,6 +251,7 @@ def DowngradeItem(userid: int, item: dict, count: int,
        
        Args:
          edit - Можно ли функции изменять или удалять предмет из базы
+         count - сколько есть в инвентаре
     """
     max_characteristic = CalculateAbilitie(item, count, characteristic)
     if not max_characteristic: return {'status': False, 'action': 'max_characteristic_error', 'item': item} #У предмета нет такой характериситики 
@@ -287,6 +288,7 @@ def DowngradeItem(userid: int, item: dict, count: int,
             # Предмет и количество изменились, отправляем их обратно
             return {'status': True, 'action': 'edit_item', 
                     'item': new_item, 'count': end_count}
+    return {'status': False, 'action': 'error'}
 
 def CheckItemFromUser(userid: int, item_data: dict, count: int = 1) -> dict:
     """Проверяет есть ли count предметов у человека
@@ -551,11 +553,6 @@ def item_info(item: dict, lang: str):
             
     # Информация о внутренних свойствах
     if 'abilities' in item.keys():
-        if 'stack' in item['abilities'].keys():
-            text += loc_d['static']['stack'].format(
-                stack=item['abilities']['stack']
-            ) + '\n'
-        
         for iterable_key in ['uses', 'endurance', 'mana']:
             if iterable_key in item['abilities'].keys():
                 text += loc_d['static'][iterable_key].format(
@@ -563,42 +560,35 @@ def item_info(item: dict, lang: str):
                 ) + '\n'
 
     text += dp_text
+    item_bonus = data_item.get('buffs', [])
+    add_bonus, add_penaltie = [], []
     
-    all_bonuses = ['+mood', '+energy', '+eat', '+hp']
-    item_bonus = list(set(all_bonuses) & set(data_item.keys()))
-    
-    if item_bonus:
+    for bonus in item_bonus:
+        if item_bonus[bonus] > 0:
+            add_bonus.append(loc_d['bonuses']['+' + bonus].format(
+                item_bonus[bonus]))
+        else:
+            add_penaltie.append(loc_d['penalties']['-' + bonus].format(
+                item_bonus[bonus]))
+
+    if add_bonus:
         text += loc_d['static']['add_bonus']
-        bon_lst = []
-        
-        for bonus in item_bonus:
-            bon_lst.append(loc_d['bonuses'][bonus].format(data_item[bonus]))
 
-        end = bon_lst[-1]
-        for i in bon_lst:
-            if i == end:
-                text += '*└* '
-            else:
-                text += '*├* '
-            text += i
+        for i in add_bonus:
+            if i == add_bonus[-1]:
+                text += f'*└* {i}'
+            else: 
+                text += f'*├* {i}\n'
     
-    all_penalties = ['-mood', "-eat", '-energy', '-hp']
-    item_penalties = list(set(all_penalties) & set(data_item.keys()))
-    
-    if item_penalties:
+    if add_penaltie:
         text += loc_d['static']['add_penaltie']
-        pen_lst = []
         
-        for penaltie in item_penalties:
-            pen_lst.append(loc_d['penalties'][penaltie].format(data_item[penaltie]))
-
-        end = pen_lst[-1]
-        for i in pen_lst:
-            if i == end:
+        for i in add_penaltie:
+            if i == add_penaltie[-1]:
                 text += '*└* '
-            else:
-                text += '*├* '
+            else: text += '*├* '
             text += i
+
     # Картиночка
     if 'image' in data_item.keys():
         try:
