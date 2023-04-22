@@ -4,7 +4,6 @@ from telebot.types import (CallbackQuery, InlineKeyboardButton,
 from bot.config import mongo_client
 from bot.exec import bot
 from bot.modules.localization import get_data, t
-from bot.modules.markup import markups_menu as m
 from bot.modules.currency import get_all_currency, get_products
 from bot.modules.item import counts_items
 from bot.modules.data_format import seconds_to_str
@@ -16,8 +15,14 @@ users = mongo_client.bot.users
 async def team(message: Message):
     lang = message.from_user.language_code
     chatid = message.chat.id
-
-    await bot.send_message(chatid, t('about_menu.team', lang), parse_mode='html')
+    
+    lang_text = t('language_name', lang)
+    author_loc = t('localization_author', lang)
+    
+    await bot.send_message(chatid, t('about_menu.team', lang, 
+                                     lang_name=lang_text,
+                                     author=author_loc
+                                    ), parse_mode='html')
 
 @bot.message_handler(text='commands_name.about.links', 
                      is_authorized=True)
