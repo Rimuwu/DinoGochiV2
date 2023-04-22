@@ -103,7 +103,7 @@ async def end_craft(transmitted_data: dict):
         created_items.append(i['item'])
     
     await bot.send_message(chatid, t('item_use.recipe.create', lang, 
-                                     items=counts_items(created_items, lang)), 
+                                     items=counts_items(created_items*count, lang)), 
                            parse_mode='Markdown', reply_markup=markups_menu(userid, 'last_menu', lang))
 
 async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1, 
@@ -318,7 +318,7 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
         if upd_values: dino_now.update({'$inc': upd_values})
     
     if use_status:
-        if not is_standart(item) and 'uses' in item['abilities']:
+        if 'abilities' in item and 'uses' in item['abilities']:
             # Если предмет имеет свои харрактеристики, а в частности количество использований, то снимаем их, при том мы знаем что предмета в инвентаре и так count
             if item['abilities']['uses'] != -666:
                 res = DowngradeItem(userid, item, count, 'uses', count)
@@ -326,7 +326,7 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
                     log(f'Item downgrade error - {res} {userid} {item}', 3)
         else:
             # В остальных случаях просто снимаем нужное количество
-            if is_standart(item):
+            if 'abilities' in item:
                 res = RemoveItemFromUser(userid, item['item_id'], count)
             else:
                 res = RemoveItemFromUser(userid, item['item_id'], 
