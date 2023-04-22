@@ -42,9 +42,8 @@
     "3": {
       "image": "item3",
       "inc_type": "random",
-      "incub_time": 12,
+      "incub_time": 43200,
       "rank": "rare",
-      "time_tag": "h",
       "type": "egg"
     },
     "4": {
@@ -325,7 +324,7 @@
     "20": {
       "image": "item20",
       "inc_type": "unc",
-      "incub_time": 24,
+      "incub_time": 86400,
       "ns_craft": {
         "1": {
           "create": [
@@ -346,13 +345,12 @@
         }
       },
       "rank": "mystical",
-      "time_tag": "h",
       "type": "egg"
     },
     "21": {
       "image": "item21",
       "inc_type": "com",
-      "incub_time": 30,
+      "incub_time": 1800,
       "ns_craft": {
         "1": {
           "create": [
@@ -373,13 +371,12 @@
         }
       },
       "rank": "mystical",
-      "time_tag": "m",
       "type": "egg"
     },
     "22": {
       "image": "item22",
       "inc_type": "rar",
-      "incub_time": 48,
+      "incub_time": 172800,
       "ns_craft": {
         "1": {
           "create": [
@@ -400,13 +397,12 @@
         }
       },
       "rank": "mystical",
-      "time_tag": "h",
       "type": "egg"
     },
     "23": {
       "image": "item23",
       "inc_type": "myt",
-      "incub_time": 72,
+      "incub_time": 259200,
       "ns_craft": {
         "1": {
           "create": [
@@ -427,15 +423,13 @@
         }
       },
       "rank": "mystical",
-      "time_tag": "h",
       "type": "egg"
     },
     "24": {
       "image": "item24",
       "inc_type": "leg",
-      "incub_time": 110,
+      "incub_time": 396000,
       "rank": "legendary",
-      "time_tag": "h",
       "type": "egg"
     },
     "25": {
@@ -659,7 +653,7 @@
     },
     "39": {
       "abilities": {
-        "uses": 30
+        "uses": 10
       },
       "create": [
         {
@@ -881,12 +875,11 @@
     },
     "54": {
       "abilities": {
-        "stack": 1
+        "stack": 66
       },
       "add_damage": 0,
       "add_effects": [],
       "image": "item54",
-      "max_stack": 66,
       "rank": "uncommon",
       "type": "ammunition"
     },
