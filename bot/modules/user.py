@@ -47,6 +47,8 @@ class User:
             }
         
         self.UpdateData(users.find_one({"userid": self.userid})) #Обновление данных
+        if 'premium_status' not in self.settings:
+            self.settings['premium_status'] = False
         
     def UpdateData(self, data):
         if data:
