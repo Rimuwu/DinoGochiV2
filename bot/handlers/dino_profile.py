@@ -11,6 +11,7 @@ from bot.modules.localization import get_data, t
 from bot.modules.markup import markups_menu as m
 from bot.modules.states_tools import ChooseDinoState
 from bot.modules.user import User
+from bot.modules.inline import dino_profile_markup
 
 async def dino_profile(userid: int, dino: Dino, lang: str):
     text = ''
@@ -65,6 +66,7 @@ async def dino_profile(userid: int, dino: Dino, lang: str):
         pass
 
     # Генерация блока с аксессуарами
+    add_blok = False
     acsess = {
         'em_game': tem['ac_game'], 'em_coll': tem['ac_collecting'],
         'em_jour': tem['ac_journey'], 'em_sleep': tem['ac_sleep']
@@ -73,18 +75,21 @@ async def dino_profile(userid: int, dino: Dino, lang: str):
         if not item:
            acsess[key] = t(f'p_profile.no_item', lang)
         else:
+            add_blok = True
             name = get_name(item['item_id'], lang)
             if 'abilities' in item.keys() and 'endurance' in item['abilities'].keys():
                acsess[key] = f'{name} \[ *{item["abilities"]["endurance"]}* ]'
             else:
                 acsess[key] = f'{name}'
-
-    text += t('p_profile.accs', lang, formating=False).format(**acsess)
-
+                
+    menu = dino_profile_markup(add_blok, lang)
+    if add_blok:
+        text += t('p_profile.accs', lang, formating=False).format(**acsess)
+    
     # затычка на случай если не сгенерируется изображение
     generate_image = open(f'images/remain/no_generate.png', 'rb')
     msg = await bot.send_photo(userid, generate_image, text,
-                parse_mode='Markdown')
+                parse_mode='Markdown', reply_markup=menu)
 
     await bot.send_message(userid, t('p_profile.return', lang), 
                 reply_markup=m(userid, 'last_menu', lang))
@@ -95,7 +100,8 @@ async def dino_profile(userid: int, dino: Dino, lang: str):
         message_id=msg.id,
         media=types.InputMedia(
             type='photo', media=dino.image(user.settings['profile_view']), 
-            parse_mode='Markdown', caption=text)
+            parse_mode='Markdown', caption=text),
+        reply_markup=menu
         )
 
 async def egg_profile(userid: int, egg: Egg, lang: str):
