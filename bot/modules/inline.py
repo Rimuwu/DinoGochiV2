@@ -6,6 +6,7 @@ from bot.modules.item import get_item_dict, get_name, item_code
 from bot.modules.localization import get_data as get_loc_data
 from bot.modules.localization import t
 from bot.modules.logs import log
+from bot.modules.data_format import list_to_inline
 
 
 def inline_menu(markup_key: str = 'delete_message', lang: str = 'en', **kwargs):
@@ -29,18 +30,17 @@ def inline_menu(markup_key: str = 'delete_message', lang: str = 'en', **kwargs):
     return markup_inline
 
 def item_info_markup(item: dict, lang):
-    markup_inline = InlineKeyboardMarkup()
     item_data = get_item_data(item['item_id'])
     loc_data = get_loc_data('item_info.static.buttons', lang)
+    buttons_dict = {}
+
+    if item_data['type'] not in ['material', 'ammunition']:
+        buttons_dict[loc_data['use']] = f"item use {item_code(item)}"
     
-    markup_inline.add(
-        InlineKeyboardButton(text=loc_data['use'], 
-                        callback_data=f"item use {item_code(item)}"),
-        InlineKeyboardButton(text=loc_data['delete'],
-                        callback_data=f"item delete {item_code(item)}")
-    )
-    markup_inline.add(InlineKeyboardButton(text=loc_data['exchange'],
-                        callback_data=f"item exchange {item_code(item)}"))
+    buttons_dict[loc_data['delete']] = f"item delete {item_code(item)}"
+    buttons_dict[loc_data['exchange']] = f"item exchange {item_code(item)}"
+
+    markup_inline = list_to_inline([buttons_dict], 2)
 
     if item_data['type'] == 'recipe':
         for item_cr in item_data["create"]:
@@ -64,3 +64,7 @@ def item_info_markup(item: dict, lang):
                             callback_data=f"ns_craft {item_code(item)} {cr_dct_id} {cr_dct_id}"))
     
     return markup_inline
+
+def dino_profile_markup():
+    # Инлайн меню с быстрыми действиями. Например как снять аксессуар
+    ...
