@@ -163,12 +163,12 @@ def random_dino(quality: str='com') -> int:
     """
     return choice(DINOS[quality])
     
-def incubation_dino(egg_id: int, owner_id: int, inc_time: int=0, quality: str='random', dino_id: int=0):
+def incubation_egg(egg_id: int, owner_id: int, inc_time: int=0, quality: str='random', dino_id: int=0):
     """Создание инкубируемого динозавра
     """
 
     dino = {
-        'incubation_time': inc_time, 
+        'incubation_time': inc_time + int(time()), 
         'egg_id': egg_id,
         'owner_id': owner_id,
         'quality': quality,
