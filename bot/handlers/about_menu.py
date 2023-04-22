@@ -42,7 +42,7 @@ async def main_support_menu(chatid: int, lang: str):
     a = 0
     for key, bio in prd_text.items():
         a += 1
-        text += f'{a}. {bio["name"]} — {bio["short"]}\n\n'
+        text += f'{a}. *{bio["name"]}* — {bio["short"]}\n\n'
         buttons[bio["name"]] = f'support info {key}'
     
     markup_inline = InlineKeyboardMarkup(row_width=2)
@@ -62,7 +62,7 @@ async def support(message: Message):
     
     image, text, markup_inline = await main_support_menu(chatid, lang)
     
-    await bot.send_photo(chatid, image, text, reply_markup=markup_inline)
+    await bot.send_photo(chatid, image, text, reply_markup=markup_inline, parse_mode='Markdown')
 
 @bot.message_handler(text='commands_name.about.faq', 
                      is_authorized=True)
@@ -112,7 +112,7 @@ async def support_buttons(call: CallbackQuery):
                 chat_id=chatid,
                 message_id=messageid,
                 reply_markup=markup_inline,
-                media=InputMedia(type='photo', media=image, caption=text))
+                media=InputMedia(type='photo', media=image, caption=text, parse_mode='Markdown'))
     else:
         if product_key != 'non_repayable': product = products[product_key]
         markup_inline = InlineKeyboardMarkup(row_width=2)
