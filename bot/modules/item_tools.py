@@ -4,18 +4,19 @@ from bot.config import mongo_client
 from bot.const import GAME_SETTINGS
 from bot.exec import bot
 from bot.modules.dinosaur import Dino, edited_stats
-from bot.modules.item import (AddAlternativeItem, AddItemToUser,
+from bot.modules.item import (AddItemToUser,
                               CalculateAbilitie, CheckItemFromUser,
                               DowngradeItem, EditItemFromUser,
                               RemoveItemFromUser, counts_items, get_data,
-                              get_item_dict, get_name)
+                              get_item_dict, get_name, item_code, is_standart)
 from bot.modules.localization import t
 from bot.modules.logs import log
 from bot.modules.markup import confirm_markup, count_markup, markups_menu
 from bot.modules.notifications import dino_notification
 from bot.modules.states_tools import ChooseStepState
 from bot.modules.user import experience_enhancement, User
-from bot.modules.data_format import random_dict
+from bot.modules.data_format import random_dict, list_to_inline
+from bot.modules.images import create_eggs_image
 
 users = mongo_client.bot.users
 items = mongo_client.bot.items
@@ -67,7 +68,7 @@ def exchange_item(item: dict, from_user: int, to_user: int,
     ...
 
 async def end_craft(transmitted_data: dict):
-    """ Завершает крафт удаляя и создавая предметы (не понижает почность предметов и не удаляет саам рецепт)
+    """ Завершает крафт удаляя и создавая предметы (не понижает прочность предметов и не удаляет сам рецепт)
     """
     materials = transmitted_data['materials']
     userid = transmitted_data['userid']
@@ -76,21 +77,27 @@ async def end_craft(transmitted_data: dict):
     count = transmitted_data['count']
     lang = transmitted_data['lang']
     
+    # Удаление материалов
     for iteriable_item in materials['delete']:
         item_id = iteriable_item['item_id']
         RemoveItemFromUser(userid, item_id)
 
+    # Добавление предметов
     for create_data in data_item['create']:
         if create_data['type'] == 'create':
-            AddItemToUser(userid, create_data['item'], 1)
+            preabil = create_data.get('abilities', {}) # Берёт характеристики если они есть
+            AddItemToUser(userid, create_data['item'], 1, preabil)
     
+    # Вычисление опыта за крафт
     if 'rank' in data_item.keys():
         xp = GAME_SETTINGS['xp_craft'][data_item['rank']] * count
     else:
-        xp =  GAME_SETTINGS['xp_craft']['common'] * count
+        xp = GAME_SETTINGS['xp_craft']['common'] * count
 
+    # Начисление опыта за крафт
     await experience_enhancement(userid, xp)
     
+    # Создание сообщения
     created_items = []
     for i in data_item['create']:
         created_items.append(i['item'])
@@ -122,31 +129,22 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
             if data_item['class'] == 'ALL' or (
                 data_item['class'] == dino.data['class']):
                 # Получаем конечную характеристику
-                eat_stat = edited_stats(dino.stats['eat'], 
+                dino.stats['eat'] = edited_stats(dino.stats['eat'], 
                                    data_item['act'] * count)
-                # Добавляем словарь в список обновлений, которые будут выполнены по окончанию работы
-                dino_update_list.append({
-                    '$set': {'stats.eat': eat_stat}
-                    })
 
                 return_text = t('item_use.eat.great', lang, 
-                         item_name=item_name, eat_stat=eat_stat)
+                         item_name=item_name, eat_stat=dino.stats['eat'])
             
             else:
                 # Если еда не соответствует классу, то убираем дполнительные бафы.
                 use_baff_status = False
-                loses_eat = randint(0, (data_item['act'] * count) // 2)
-                loses_mood = randint(1, 10)
-                # Получаем конечную характеристики
-                eat_stat = edited_stats(dino.stats['eat'], loses_eat)
-                mood_stat = edited_stats(dino.stats['mood'], loses_mood)
-                # Добавляем словарь в список обновлений, которые будут выполнены по окончанию работы
-                dino_update_list.append({
-                    '$set': {'stats.eat': eat_stat,
-                             "stats.mood": mood_stat
-                            }
-                    })
+                loses_eat = randint(0, (data_item['act'] * count) // 2) * -1
+                loses_mood = randint(1, 10) * -1
                 
+                # Получаем конечную характеристики
+                dino.stats['eat'] = edited_stats(dino.stats['eat'], loses_eat)
+                dino.stats['mood'] = edited_stats(dino.stats['mood'], loses_mood)
+
                 return_text = t('item_use.eat.bad', lang, item_name=item_name,
                          loses_eat=loses_eat, loses_mood=loses_mood)
     
@@ -164,9 +162,16 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
             use_status = False
         else:
             if dino.activ_items[accessory_type]:
-                AddAlternativeItem(userid, dino.activ_items[accessory_type]) #type: ignore
-            dino_update_list.append({
-                '$set': {f'activ_items.{accessory_type}': item}})
+                AddItemToUser(userid, 
+                              dino.activ_items[accessory_type]['item_id'], 1, 
+                              dino.activ_items[accessory_type]['abilities'])
+            if is_standart(item):
+                # Защита от вечных аксессуаров
+                dino_update_list.append({
+                    '$set': {f'activ_items.{accessory_type}': get_item_dict(item['item_id'])}})
+            else:
+                dino_update_list.append({
+                    '$set': {f'activ_items.{accessory_type}': item}})
             
             return_text = t('item_use.accessory.change', lang)
     
@@ -254,23 +259,80 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
             drop_item_data = get_data(drop_item['id'])
             image = open(f"images/items/{drop_item_data['image']}.png", 'rb')
             
-            await bot.send_photo(userid, image, t('item_use.case.drop_item'), 
+            await bot.send_photo(userid, image, 
+                                 t('item_use.case.drop_item', lang), 
                                  parse_mode='Markdown', reply_markup=markups_menu(userid, 'last_menu', lang))
     
     elif data_item['type'] == 'egg':
         user = User(userid)
         dino_limit = user.max_dino_col()['standart']
+        use_status = False
         
         if dino_limit['now'] < dino_limit['limit']:
-            ...
-        else:
             send_status = False
+            buttons = {}
+            image, eggs = create_eggs_image()
+            code = item_code(item)
+
+            for i in range(3): buttons[f'🥚 {i+1}'] = f'item egg {code} {eggs[i]}'
+            buttons = list_to_inline([buttons])
+
+            await bot.send_photo(userid, image, 
+                                 t('item_use.egg.egg_answer', lang), 
+                                 parse_mode='Markdown', reply_markup=buttons)
+            await bot.send_message(userid, 
+                                   t('item_use.egg.plug', lang),     
+                                   reply_markup=markups_menu(userid, 'last_menu', lang))
+        else:
             return_text = t('item_use.egg.egg_limit', lang, 
                             limit=dino_limit['limit'])
+    
+    if data_item.get('buffs', []) and use_status and use_status and dino:
+        # Применяем бонусы от предметов
+        return_text += '\n\n'
+        
+        for bonus in data_item['buffs']:
+            if data_item['buffs'][bonus] > 0:
+                bonus_name = '+' + bonus
+            else: bonus_name = '-' + bonus
+            
+            dino.stats[bonus] = edited_stats(dino.stats[bonus], 
+                         data_item['buffs'][bonus] * count)
 
-    # print(use_status, send_status, use_baff_status)
-    # print(dino_update_list)
-    # print(return_text)
+            return_text += t(f'item_use.buff.{bonus_name}', lang, 
+                            unit=data_item['buffs'][bonus])
+
+    if dino_update_list and dino:
+        # Обновляем данные, не связанные с харрактеристиками, например активные предметы
+        for i in dino_update_list: dino.update(i)
+    
+    if dino:
+        # Обновляем данные харрактеристик
+        upd_values = {}
+        dino_now: Dino = Dino(dino._id)
+        if dino_now.stats != dino.stats:
+            for i in dino_now.stats:
+                if dino_now.stats[i] != dino.stats[i]:
+                    upd_values['stats.'+i] = dino.stats[i] - dino_now.stats[i]
+    
+        if upd_values: dino_now.update({'$inc': upd_values})
+    
+    if use_status:
+        if not is_standart(item) and 'uses' in item['abilities']:
+            # Если предмет имеет свои харрактеристики, а в частности количество использований, то снимаем их, при том мы знаем что предмета в инвентаре и так count
+            if item['abilities']['uses'] != -666:
+                res = DowngradeItem(userid, item, count, 'uses', count)
+                if not res['status']: 
+                    log(f'Item downgrade error - {res} {userid} {item}', 3)
+        else:
+            # В остальных случаях просто снимаем нужное количество
+            if is_standart(item):
+                res = RemoveItemFromUser(userid, item['item_id'], count)
+            else:
+                res = RemoveItemFromUser(userid, item['item_id'], 
+                                         count, item['abilities'])
+            if not res: log(f'Item remove error {userid} {item}', 3)
+
     return send_status, return_text
 
 async def edit_craft(return_data: dict, transmitted_data: dict):
@@ -371,21 +433,15 @@ async def data_for_use_item(item: dict, userid: int, chatid: int, lang: str):
                 {"type": 'dino', "name": 'dino', "data": {"add_egg": False}, 
                     'message': None}
             ]
-        elif type_item == 'ammunition':
-            steps = [
-                {"type": 'inv', "name": 'combine_item', "data": {
-                    'item_filter': [item_id],
-                    'changing_filters': False
-                        }, 
-                    'message': {'text': t('css.combine', lang, 
-                                          name=item_name)}}
-            ]
         elif type_item == 'case':
             steps = [
                 {"type": 'int', "name": 'count', "data": {"max_int": max_count}, 
                     'message': {'text': t('css.wait_count', lang), 
                                 'reply_markup': count_markup(max_count)}}
             ]
+        elif type_item == 'egg':
+            steps = []
+            
         else:
             ok = False
             await bot.send_message(chatid, t('item_use.cannot_be_used', lang))
