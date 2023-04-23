@@ -8,8 +8,9 @@ from bot.modules.states_tools import GeneralStates
 from bot.modules.localization import t, get_data
 
 async def cancel(message, text:str = "❌"):
-    await bot.send_message(message.chat.id, text, 
-          reply_markup=m(message.from_user.id, 'last_menu', message.from_user.language_code))
+    if text:
+        await bot.send_message(message.chat.id, text, 
+            reply_markup=m(message.from_user.id, 'last_menu', message.from_user.language_code))
     await bot.delete_state(message.from_user.id, message.chat.id)
     await bot.reset_data(message.from_user.id,  message.chat.id)
 
