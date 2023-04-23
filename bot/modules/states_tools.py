@@ -250,7 +250,7 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
             if ret_data['message']:
                 await bot.send_message(userid, **ret_data['message'])
         # Обновление данных состояния
-        if not start:
+        if not start and func_answer:
             async with bot.retrieve_data(userid, chatid) as data:
                 data['transmitted_data'] = transmitted_data
 
