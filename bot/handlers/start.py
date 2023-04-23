@@ -10,6 +10,7 @@ from bot.modules.localization import t, get_data
 from bot.modules.markup import markups_menu as m
 from bot.modules.user import insert_user
 from bot.const import GAME_SETTINGS
+from bot.handlers.states import cancel
 
 stickers = bot.get_sticker_set('Stickers_by_DinoGochi_bot')
 
@@ -22,6 +23,8 @@ async def start_command_auth(message: types.Message):
     langue_code = message.from_user.language_code
     await bot.send_sticker(message.chat.id, sticker, 
                            reply_markup=m(message.from_user.id, language_code=langue_code))
+    
+    await cancel(message, '')
 
 @bot.message_handler(commands=['start'], is_authorized=False)
 async def start_game_message(message: types.Message):
