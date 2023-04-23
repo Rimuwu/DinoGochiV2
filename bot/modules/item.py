@@ -157,15 +157,6 @@ def AddItemToUser(userid: int, itemid: str, count: int = 1, preabil: dict = {}):
         res = items.insert_one(item_dict)
         return 'new_item', res
 
-def AddAlternativeItem(userid: int, item: dict, count: int = 1):
-    """Пересобирает данный предмета в подходящие для AddItemToUser и срздаём предмет
-    """
-    itemid = item['item_id']
-    preabil = {}
-    
-    if 'abilities' in item.keys(): preabil = item['abilities']
-    return AddItemToUser(userid, itemid, count, preabil)
-
 def RemoveItemFromUser(userid: int, itemid: str, 
             count: int = 1, preabil: dict = {}):
     """Удаление предмета из инвентаря
@@ -337,7 +328,48 @@ def EditItemFromUser(userid: int, now_item: dict, new_data: dict, new_count: int
         return True
     else:
         return False
+
+def combine_items(userid: int, itemid: str, preabil: dict = {}):
+    """Объединяет документы базы для правильной работы бота
+    """
     
+    item = get_item_dict(itemid, preabil)
+    find_res = items.find({'owner_id': userid, 'items_data': item})
+    if find_res:
+
+        list_items = list(find_res)
+        if len(list_items) > 1:
+            
+            new_item = list_items[0]
+            count = 0
+            if is_standart(item):
+                for base_item in list_items:
+                    count += base_item['count']
+                new_item['count'] = count
+        
+            else:
+                new_item = list_items[0]
+                new_item['items_data']['abilities'] = {}
+                count = 0
+                
+                for base_item in list_items:
+                    count += base_item['count']
+                    for key, value in base_item['items_data']['abilities'].items():
+                        if key not in new_item['items_data']['abilities']:
+                            new_item['items_data']['abilities'][key] = value
+                        else:
+                            new_item['items_data']['abilities'][key] += value
+                
+                for key, value in new_item['items_data']['abilities'].items():
+                    add_count, new_item['items_data']['abilities'][key] = ReverseCalculateAbilitie(itemid, value, key)
+                    count += add_count
+
+                new_item['count'] = count
+                
+                # Добавить сюда удаление и изменение предмета
+    
+    return False
+        
 
 def item_code(item: dict, v_id: bool = True) -> str:
     """Создаёт код-строку предмета, основываясь на его
