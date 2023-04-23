@@ -12,7 +12,7 @@ from bot.modules.inventory_tools import (InventoryStates, back_button,
                                          start_inv, swipe_page)
 from bot.modules.item import CheckItemFromUser, decode_item, get_name, RemoveItemFromUser
 from bot.modules.item import get_data as get_item_data
-from bot.modules.item_tools import data_for_use_item
+from bot.modules.item_tools import data_for_use_item, delete_item_action
 from bot.modules.localization import get_data, t
 from bot.modules.markup import markups_menu as m
 
@@ -122,7 +122,7 @@ async def item_callback(call: CallbackQuery):
         elif call_data[1] == 'use':
             await data_for_use_item(item, userid, chatid, lang)
         elif call_data[1] == 'delete':
-            ...
+            await delete_item_action(userid, chatid, item, lang)
         elif call_data[1] == 'exchange':
             ...
         elif call_data[1] == 'egg':
