@@ -456,3 +456,58 @@ async def data_for_use_item(item: dict, userid: int, chatid: int, lang: str):
                 })
             await ChooseStepState(adapter, userid, chatid, lang, steps, 
                                 transmitted_data=transmitted_data)
+
+async def delete_action(return_data: dict, transmitted_data: dict):
+    userid = transmitted_data['userid']
+    chatid = transmitted_data['chatid']
+    lang = transmitted_data['lang']
+    item = transmitted_data['items_data']
+    count = return_data['count']
+    item_name = transmitted_data['item_name']
+    preabil = {}
+    
+    if 'abilities' in item: preabil = item['abilities']
+    
+    res = RemoveItemFromUser(userid, item['item_id'], count, preabil)
+    if res:
+        await bot.send_message(chatid, t('delete_action.delete', lang,  
+                                         name=item_name, count=count), 
+                               reply_markup=
+                               markups_menu(userid, 'last_menu', lang))
+    else:
+        await bot.send_message(chatid, t('delete_action.error', lang), 
+                               reply_markup=
+                               markups_menu(userid, 'last_menu', lang))
+        
+
+async def delete_item_action(userid: int, chatid:int, item: dict, lang: str):
+    steps = []
+    base_item = items.find_one({'owner_id': userid, 'items_data': item})
+    transmitted_data = {'items_data': item, 'item_name': ''}
+    
+    if base_item:
+        item_id = item['item_id']
+        max_count = base_item['count']
+        
+        item_name = get_name(item_id, lang)
+        transmitted_data['item_name'] = item_name
+        
+        steps.append({"type": 'int', "name": 'count', 
+                      "data": {"max_int": max_count}, 
+                      'message': {'text': t('css.wait_count', lang), 
+                                  'reply_markup': count_markup(max_count)}}
+        )
+        steps.insert(0, {
+                "type": 'bool', "name": 'confirm', 
+                "data": {'cancel': True}, 
+                'message': {
+                    'text': t('css.delete', lang, name=item_name), 'reply_markup': confirm_markup(lang)
+                    }
+                })
+    
+        await ChooseStepState(delete_action, userid, chatid, lang, steps, 
+                                transmitted_data=transmitted_data)
+    else:
+        await bot.send_message(chatid, t('delete_action.error', lang), 
+                               reply_markup=
+                               markups_menu(userid, 'last_menu', lang))
