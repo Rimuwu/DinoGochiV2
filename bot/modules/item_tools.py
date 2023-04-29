@@ -3,20 +3,20 @@ from random import randint, shuffle
 from bot.config import mongo_client
 from bot.const import GAME_SETTINGS
 from bot.exec import bot
+from bot.modules.data_format import list_to_inline, random_dict
 from bot.modules.dinosaur import Dino, edited_stats
-from bot.modules.item import (AddItemToUser,
-                              CalculateAbilitie, CheckItemFromUser,
-                              DowngradeItem, EditItemFromUser,
-                              RemoveItemFromUser, counts_items, get_data,
-                              get_item_dict, get_name, item_code, is_standart)
+from bot.modules.images import create_eggs_image
+from bot.modules.item import (AddItemToUser, CalculateDowngradeitem,
+                              CheckItemFromUser, EditItemFromUser,
+                              RemoveItemFromUser, UseAutoRemove, counts_items,
+                              get_data, get_item_dict, get_name, is_standart,
+                              item_code)
 from bot.modules.localization import t
 from bot.modules.logs import log
 from bot.modules.markup import confirm_markup, count_markup, markups_menu
 from bot.modules.notifications import dino_notification
 from bot.modules.states_tools import ChooseStepState
-from bot.modules.user import experience_enhancement, User
-from bot.modules.data_format import random_dict, list_to_inline
-from bot.modules.images import create_eggs_image
+from bot.modules.user import User, experience_enhancement
 
 users = mongo_client.bot.users
 items = mongo_client.bot.items
@@ -74,8 +74,13 @@ async def end_craft(transmitted_data: dict):
     userid = transmitted_data['userid']
     chatid = transmitted_data['chatid']
     data_item = transmitted_data['data_item']
+    delete_item = transmitted_data['delete_item']
     count = transmitted_data['count']
     lang = transmitted_data['lang']
+    
+    # Удаление рецепта
+    print(delete_item, 'delete_item')
+    UseAutoRemove(userid, delete_item, count)
     
     # Удаление материалов
     for iteriable_item in materials['delete']:
@@ -177,7 +182,8 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
     
     elif type_item == 'recipe':
         materials = {'delete': [], 'edit': {}}
-        send_status = False #Проверка может завершится позднее завершения функции, отправим текст самостоятельно
+        send_status, use_status = False, False 
+        #Проверка может завершится позднее завершения функции, отправим текст самостоятельно, так же юзер может и отказаться, удалим предмет сами
 
         for iterable_item in data_item['materials']:
             iterable_id: str = iterable_item['item']
@@ -207,6 +213,12 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
         if not not_enough_items:
             if materials['edit']:
                 steps = []
+                transmitted_data = {
+                        'count': count, 
+                        'materials': materials,
+                        'data_item': data_item,
+                        'delete_item': item
+                                    }
                 
                 for iterable_key in materials['edit']:
                     for iterable_id in materials['edit'][iterable_key]:
@@ -220,10 +232,7 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
                                             }}
                         )
                 await ChooseStepState(edit_craft, userid, 
-                                      chatid, lang, steps,
-                                      {'count': count, 'materials': materials,
-                                       'data_item': data_item
-                                       })
+                                      chatid, lang, steps, transmitted_data)
             else:
                 transmitted_data = {
                     'userid': userid,
@@ -231,7 +240,8 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
                     'lang': lang,
                     'materials': materials,
                     'count': count,
-                    'data_item': data_item
+                    'data_item': data_item,
+                    'delete_item': item
                 }
                 await end_craft(transmitted_data)
         else:
@@ -243,7 +253,7 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
         drop = data_item['drop_items']; shuffle(drop)
         drop_items = {}
         
-        col_repit = random_dict(data_item['col_repit']) #type: int
+        col_repit = random_dict(data_item['col_repit'])
         for _ in range(col_repit):
             drop_item = None
             while drop_item == None:
@@ -317,22 +327,7 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
     
         if upd_values: dino_now.update({'$inc': upd_values})
     
-    if use_status:
-        if 'abilities' in item and 'uses' in item['abilities']:
-            # Если предмет имеет свои харрактеристики, а в частности количество использований, то снимаем их, при том мы знаем что предмета в инвентаре и так count
-            if item['abilities']['uses'] != -666:
-                res = DowngradeItem(userid, item, count, 'uses', count)
-                if not res['status']: 
-                    log(f'Item downgrade error - {res} {userid} {item}', 3)
-        else:
-            # В остальных случаях просто снимаем нужное количество
-            if 'abilities' in item:
-                res = RemoveItemFromUser(userid, item['item_id'], count)
-            else:
-                res = RemoveItemFromUser(userid, item['item_id'], 
-                                         count, item['abilities'])
-            if not res: log(f'Item remove error {userid} {item}', 3)
-
+    if use_status: UseAutoRemove(userid, item, count)
     return send_status, return_text
 
 async def edit_craft(return_data: dict, transmitted_data: dict):
@@ -345,34 +340,31 @@ async def edit_craft(return_data: dict, transmitted_data: dict):
     for iterable_key in materials['edit']:
         for item_key, unit in materials['edit'][iterable_key].items():
             item = return_data[item_key]
-            ret_data = DowngradeItem(userid, item, 1, 
-                                     iterable_key, unit, edit=False)
-            items_data.append(ret_data)
+            ret_data = CalculateDowngradeitem(item, iterable_key, unit)
+            items_data.append({"data": ret_data, 'old_item': item})
 
     ok = True
     for iterable_data in items_data.copy(): 
-        if not iterable_data['status']:
+        if iterable_data['data']['status'] == 'cannot':
             ok = False
+            item_name = get_name(iterable_data['old_item']['item_id'], lang)
             
-            if iterable_data['action'] == 'unit_>_max_characteristic':
-                item_name = get_name(iterable_data['item']['item_id'], lang)
-                await bot.send_message(chatid, 
-                    t('item_use.recipe.enough_characteristics', lang,item_name=item_name), 
-                    parse_mode='Markdown', 
-                    reply_markup=markups_menu(userid, 'last_menu', lang))
-            else:
-                log(f'Непредвиденная ошибка в edit_craft -> {iterable_data}\n{items_data}', 3)
-    
+            await bot.send_message(chatid, 
+                t('item_use.recipe.enough_characteristics', lang, item_name=item_name), 
+                parse_mode='Markdown', 
+                reply_markup=markups_menu(userid, 'last_menu', lang))
+
     if ok:
         for iterable_data in items_data.copy(): 
-            if iterable_data['action'] == 'need_remove_item':
-                RemoveItemFromUser(userid, iterable_data['item_id'], 
-                                   iterable_data['count'], 
-                                   iterable_data['item']['abilities'])
-            elif iterable_data['action'] == 'edit_item':
-                EditItemFromUser(userid, return_data[iterable_data['item']['item_id']], iterable_data['item'], iterable_data['count'])
+            iterable_item = iterable_data['old_item']
+            
+            if iterable_data['data']['status'] == 'remove':
+                RemoveItemFromUser(userid, iterable_item['item_id'], 1,
+                                   iterable_item['abilities'])
+            elif iterable_data['data']['status'] == 'edit':
+                EditItemFromUser(userid, iterable_item, iterable_data['data']['item'])
 
-    await end_craft(transmitted_data)
+        await end_craft(transmitted_data)
 
 async def adapter(return_data: dict, transmitted_data: dict):
     del return_data['confirm']
@@ -402,7 +394,7 @@ async def data_for_use_item(item: dict, userid: int, chatid: int, lang: str):
     elif type(base_item) is dict:
         
         if 'abilities' in item.keys() and 'uses' in item['abilities']:
-            max_count = CalculateAbilitie(base_item['items_data'], base_item['count'], 'uses')
+            max_count = base_item['count'] * base_item['items_data']['abilities']['uses']
         else: max_count = base_item['count']
 
         if max_count > limiter: max_count = limiter
@@ -467,8 +459,8 @@ async def delete_action(return_data: dict, transmitted_data: dict):
     preabil = {}
     
     if 'abilities' in item: preabil = item['abilities']
-    
     res = RemoveItemFromUser(userid, item['item_id'], count, preabil)
+    
     if res:
         await bot.send_message(chatid, t('delete_action.delete', lang,  
                                          name=item_name, count=count), 
@@ -482,20 +474,21 @@ async def delete_action(return_data: dict, transmitted_data: dict):
 
 async def delete_item_action(userid: int, chatid:int, item: dict, lang: str):
     steps = []
-    base_item = items.find_one({'owner_id': userid, 'items_data': item})
+    find_items = items.find({'owner_id': userid, 'items_data': item})
     transmitted_data = {'items_data': item, 'item_name': ''}
+    max_count = 0
+    item_id = item['item_id']
     
-    if base_item:
-        item_id = item['item_id']
-        max_count = base_item['count']
-        
+    for base_item in find_items: max_count += base_item['count']
+    
+    if max_count:
         item_name = get_name(item_id, lang)
         transmitted_data['item_name'] = item_name
         
         steps.append({"type": 'int', "name": 'count', 
-                      "data": {"max_int": max_count}, 
-                      'message': {'text': t('css.wait_count', lang), 
-                                  'reply_markup': count_markup(max_count)}}
+                        "data": {"max_int": max_count}, 
+                        'message': {'text': t('css.wait_count', lang), 
+                                    'reply_markup': count_markup(max_count)}}
         )
         steps.insert(0, {
                 "type": 'bool', "name": 'confirm', 
@@ -504,9 +497,8 @@ async def delete_item_action(userid: int, chatid:int, item: dict, lang: str):
                     'text': t('css.delete', lang, name=item_name), 'reply_markup': confirm_markup(lang)
                     }
                 })
-    
         await ChooseStepState(delete_action, userid, chatid, lang, steps, 
-                                transmitted_data=transmitted_data)
+                            transmitted_data=transmitted_data)
     else:
         await bot.send_message(chatid, t('delete_action.error', lang), 
                                reply_markup=
