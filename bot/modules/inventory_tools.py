@@ -4,12 +4,11 @@ from bot.config import mongo_client
 from bot.exec import bot
 from bot.modules.data_format import chunks, list_to_inline
 from bot.modules.inline import item_info_markup
-from bot.modules.item import (decode_item, get_data, get_name, is_standart,
+from bot.modules.item import (get_data, get_name, is_standart,
                               item_code, item_info)
 from bot.modules.localization import get_data as get_loc_data
 from bot.modules.localization import t
 from bot.modules.markup import list_to_keyboard
-from bot.modules.markup import markups_menu as m
 from bot.modules.user import get_inventory
 from bot.modules.logs import log
 
@@ -41,6 +40,7 @@ def inventory_pages(items: list, lang: str = 'en',
     items_data, items_names = {}, []
     horizontal, vertical = view
 
+    code_items = {}
     for base_item in items:
         item = base_item['item'] # Сам предмет
         data = get_data(item['item_id']) # Дата из json
@@ -60,15 +60,26 @@ def inventory_pages(items: list, lang: str = 'en',
                 
             # Если предмет показывается на страницах
             if add_item:
-                name = get_name(item['item_id'], lang)
                 count = base_item['count']
-                standart = is_standart(item)
-
-                if standart: end_name = f"{name} x{count}"
+                code = item_code(item)
+                
+                if code in code_items:
+                     code_items[code]['count'] += count
                 else:
-                    code = item_code(item, False)
-                    end_name = f"{name} ({code}) x{count}"
-                items_data[end_name] = item
+                    code_items[code] = {'item': item, 'count': count}
+
+    for code, data_item in code_items.items():
+        item = data_item['item']
+        count = data_item['count']
+        name = get_name(item['item_id'], lang)
+        standart = is_standart(item)
+        
+        if standart: 
+            end_name = f"{name} x{count}"
+        else:
+            code = item_code(item, False)
+            end_name = f"{name} ({code}) x{count}"
+        items_data[end_name] = item
 
     items_names = list(items_data.keys())
     items_names.sort()
