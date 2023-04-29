@@ -117,7 +117,7 @@ class Egg:
         self.egg_id = 0
         self.owner_id = 0
         self.quality = 'random'
-        self.egg_id = 0
+        self.dino_id = 0
 
         self.UpdateData(incubations.find_one({"_id": self._id}))
 
