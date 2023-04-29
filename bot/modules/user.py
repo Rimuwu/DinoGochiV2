@@ -20,7 +20,7 @@ class User:
         """
         self.userid = userid
 
-        self.last_message = 0
+        self.last_message_time = 0
         self.last_markup = 'main_menu'
 
         self.notifications = {}
