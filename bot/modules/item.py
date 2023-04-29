@@ -144,61 +144,63 @@ def AddItemToUser(userid: int, itemid: str, count: int = 1, preabil: dict = {}):
 
     item = get_item_dict(itemid, preabil)
     find_res = items.find_one({'owner_id': userid, 'items_data': item}, {'_id': 1})
+    
+    if find_res: action = 'plus_count'
+    if 'abilities' in item: action = 'new_edited_item'
+    else: action = 'new_item'
 
-    if find_res:
-        res = items.update_one({'_id': find_res['_id']}, {'$inc': {'count': count}})
-        return 'plus_count', find_res
+    if action == 'plus_count' and find_res:
+        items.update_one({'_id': find_res['_id']}, {'$inc': {'count': count}})
+    elif action == 'new_edited_item':
+        for _ in range(count):
+            item_dict = {
+                'owner_id': userid,
+                'items_data': item,
+                'count': 1
+            }
+            items.insert_one(item_dict, True)
     else:
         item_dict = {
             'owner_id': userid,
             'items_data': item,
             'count': count
         }
-        res = items.insert_one(item_dict)
-        return 'new_item', res
+        items.insert_one(item_dict)
+
+    return action
 
 def RemoveItemFromUser(userid: int, itemid: str, 
             count: int = 1, preabil: dict = {}):
     """Удаление предмета из инвентаря
        return
        True - всё нормально, удалил
+       
        False - предмета нет или количесвто слишком большое
     """
     assert count >= 0, f'RemoveItemFromUser, count == {count}'
 
     item = get_item_dict(itemid, preabil)
-    find_res = items.find_one({'owner_id': userid, 'items_data': item}, {'_id': 1, 'count': 1})
-
-    if find_res:
-        if find_res['count'] - count > 0:
-            items.update_one({'_id': find_res['_id']}, 
-                            {'$inc': {'count': count * -1}})
-            return True
-        
-        if find_res['count'] - count == 0:
-            items.delete_one({'_id': find_res['_id']})
-            return True
-
-        if find_res['count'] - count < 0:
-            return False
-    else:
-        return False
-
-def CalculateAbilitie(item: dict, count: int, characteristic: str) -> int:
-    """Рассчитать максимальное число харрактеристики 
-       (то, сколько единиц например прочности можно потратить)
-       
-       Return 
-        0 - несоответсвие требованиям функции
-    """
-    itemid = item['item_id']
+    max_count = 0
+    find_items = items.find({'owner_id': userid, 'items_data': item}, 
+                            {'_id': 1, 'count': 1})
+    find_list = list(find_items)
     
-    if 'abilities' in item: preabil = item['abilities']
-    else: return 0 # Нет харрактеристик
-    if characteristic not in preabil: return 0 # Нет харрактеристики
-
-    item_data = get_data(itemid)
-    return ((count - 1) * item_data['abilities'][characteristic]) + preabil[characteristic]
+    for iterable_item in find_list:  max_count += iterable_item['count']
+    if count > max_count: return False
+    else:
+        for iterable_item in find_list:
+            if count > 0:
+                if count >= iterable_item['count']:
+                    items.delete_one({'_id': iterable_item['_id']})
+                    
+                elif count < iterable_item['count']:
+                    items.update_one({'_id': iterable_item['_id']}, 
+                                {'$inc': 
+                                    {'count': count * -1}})
+                
+                count -= iterable_item['count']
+            else: break
+        return True
 
 def ReverseCalculateAbilitie(itemid: str, unit: int, characteristic: str):
     """Обратное CalculateAbilitie функция, получает количество 
@@ -225,61 +227,57 @@ def ReverseCalculateAbilitie(itemid: str, unit: int, characteristic: str):
         count += 1 
     return count, remains
 
-def DowngradeItem(userid: int, item: dict, count: int, 
-                  characteristic: str, unit: int, edit: bool=True):
-    """Удаляет / Рассчитывает предмет методом понижения харрактеристики.
-    
-       Логика уменьшения:
-       Есть предмет с количеством 2, макс прочность - 100, 
-       прочность в данный момент 30
-       
-       Если characteristic < 30 - понизит прочность
-       Если characteristic == 30 - уменьшит количество на 1 (Вызов RemoveItemFromUser)
-       Если characteristic > 30 - высчитает возможно ли уменьшить на столько харрактеристику, а после вызовит RemoveItemFromUser для удаления нужного количества
-       
-       ОБЯЗАТЕЛЬНО у предмета должны быть собственные харрактеристики 
-       (abilities)
-       
-       Args:
-         edit - Можно ли функции изменять или удалять предмет из базы
-         count - сколько есть в инвентаре
+def CalculateDowngradeitem(item: dict, characteristic: str, unit: int):
+    """Объясняет что надо сделать с 1-им предметом
+       Удалить / изменить или данные действия сделать нельзя
     """
-    max_characteristic = CalculateAbilitie(item, count, characteristic)
-    if not max_characteristic: return {'status': False, 'action': 'max_characteristic_error', 'item': item} #У предмета нет такой характериситики 
-    if unit > max_characteristic: return {'status': False, 'action': 'unit_>_max_characteristic', 'item': item} #У предмета нельзя отнять столько характеристики
-    
-    itemid = item['item_id']
-    preabil = item['abilities']
-    
-    if unit == max_characteristic:
-        if edit:
-            #Удалён ли предмет
-            status = RemoveItemFromUser(userid, itemid, count, preabil)
-            return {'status': status, 'action': 'remove_item'}
-        else: 
-            #У предмета можно отнять столько характеристики и его надо удалить
-            return {'status': True, 'action': 'need_remove_item'} 
-    elif unit < max_characteristic:
-        end_count, char_unit = ReverseCalculateAbilitie(itemid, 
-                                 max_characteristic - unit, 
-                                 characteristic)
-        
+    if item['abilities'][characteristic] > unit:
         new_item = get_item_dict(item['item_id'], item['abilities'])
-        new_item['abilities'][characteristic] = char_unit
+        new_item['abilities'][characteristic] -= unit
         
-        if edit:
-            items.update_one({'owner_id': userid, 
-                              'items_data': item}, 
-                             {'$set': {
-                                'items_data': new_item,
-                                'count': end_count
-                            }})
-            return {'status': True, 'action': 'update_item'}
-        else:
-            # Предмет и количество изменились, отправляем их обратно
-            return {'status': True, 'action': 'edit_item', 
-                    'item': new_item, 'count': end_count}
-    return {'status': False, 'action': 'error'}
+        return {'status': 'edit', 'item': new_item}
+
+    elif item['abilities'][characteristic] == unit:
+        return {'status': 'remove'}
+
+    else:
+        return {'status': 'cannot', 
+                'difference': unit - item['abilities'][characteristic]}
+
+
+def DowngradeItem(userid: int, item: dict, characteristic: str, unit: int):
+    """
+        Понижает харрактеристику для предметов с одинаковыми данными из базы
+        unit - число понижения харрактеристики для всех предметов
+    """
+
+    max_count, max_char = 0, 0
+    find_items = items.find({'owner_id': userid, 'items_data': item})
+    find_list = list(find_items)
+    
+    for iterable_item in find_list:
+        max_count += iterable_item['count']
+        max_char += iterable_item['items_data']['abilities'][characteristic]
+
+    if unit > max_char: return {'status': False, 'action': 'unit', 
+                                        'difference': unit - max_char}
+    
+    for iterable_item in find_list:
+        item_char = iterable_item['items_data']['abilities'][characteristic]
+        if unit > 0:
+            if unit >= item_char:
+                items.delete_one({'_id': iterable_item['_id']})
+                
+            elif unit < item_char:
+                items.update_one({'_id': iterable_item['_id']}, 
+                            {'$inc': 
+                                {f'items_data.abilities.{characteristic}': 
+                                    unit * -1}
+                                })
+            unit -= item_char
+        else: break
+        
+    return {'status': True, 'action': 'deleted_edited'}
 
 def CheckItemFromUser(userid: int, item_data: dict, count: int = 1) -> dict:
     """Проверяет есть ли count предметов у человека
@@ -288,7 +286,6 @@ def CheckItemFromUser(userid: int, item_data: dict, count: int = 1) -> dict:
                                'items_data': item_data,
                                'count': {'$gte': count}
                                })
-    
     if find_res: 
         return {"status": True, 'item': find_res}
     else:
@@ -300,7 +297,7 @@ def CheckItemFromUser(userid: int, item_data: dict, count: int = 1) -> dict:
         else: difference = count
         return {"status": False, "item": find_res, 'difference': difference}
 
-def EditItemFromUser(userid: int, now_item: dict, new_data: dict, new_count: int):
+def EditItemFromUser(userid: int, now_item: dict, new_data: dict):
     """Функция ищет предмет по now_item и в случае успеха изменяет его данные на new_data.
     
         now_item - 
@@ -320,56 +317,35 @@ def EditItemFromUser(userid: int, now_item: dict, new_data: dict, new_count: int
                                'items_data': now_item,
                                }, {'_id': 1})
     if find_res:
-        new_data['owner_id'] = userid
-        new_data['count'] = new_count
-        
         items.update_one({'_id': find_res['_id']}, 
                          {'$set': {'items_data': new_data}})
         return True
     else:
         return False
 
-def combine_items(userid: int, itemid: str, preabil: dict = {}):
-    """Объединяет документы базы для правильной работы бота
+def UseAutoRemove(userid: int, item: dict, count: int):
+    """Автомаатически определяет что делать с предметом, 
+       удалить или понизить количество использований
     """
-    
-    item = get_item_dict(itemid, preabil)
-    find_res = items.find({'owner_id': userid, 'items_data': item})
-    if find_res:
 
-        list_items = list(find_res)
-        if len(list_items) > 1:
-            
-            new_item = list_items[0]
-            count = 0
-            if is_standart(item):
-                for base_item in list_items:
-                    count += base_item['count']
-                new_item['count'] = count
-        
-            else:
-                new_item = list_items[0]
-                new_item['items_data']['abilities'] = {}
-                count = 0
-                
-                for base_item in list_items:
-                    count += base_item['count']
-                    for key, value in base_item['items_data']['abilities'].items():
-                        if key not in new_item['items_data']['abilities']:
-                            new_item['items_data']['abilities'][key] = value
-                        else:
-                            new_item['items_data']['abilities'][key] += value
-                
-                for key, value in new_item['items_data']['abilities'].items():
-                    add_count, new_item['items_data']['abilities'][key] = ReverseCalculateAbilitie(itemid, value, key)
-                    count += add_count
-
-                new_item['count'] = count
-                
-                # Добавить сюда удаление и изменение предмета
-    
-    return False
-        
+    if 'abilities' in item and 'uses' in item['abilities']:
+        # Если предмет имеет свои харрактеристики, а в частности количество использований, то снимаем их, при том мы знаем что предмета в инвентаре и так count
+        if item['abilities']['uses'] != -666: # Бесконечный предмет
+            res = DowngradeItem(userid, item, 'uses', count)
+            if not res['status']: 
+                log(f'Item downgrade error - {res} {userid} {item}', 3)
+                return False
+    else:
+        # В остальных случаях просто снимаем нужное количество
+        if 'abilities' in item:
+            res = RemoveItemFromUser(userid, item['item_id'], count)
+        else:
+            res = RemoveItemFromUser(userid, item['item_id'], 
+                                        count, item['abilities'])
+        if not res: 
+            log(f'Item remove error {userid} {item}', 3)
+            return False
+    return True
 
 def item_code(item: dict, v_id: bool = True) -> str:
     """Создаёт код-строку предмета, основываясь на его
