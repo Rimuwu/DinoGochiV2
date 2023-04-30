@@ -19,7 +19,6 @@ def inline_menu(markup_data, lang: str = 'en', **kwargs):
     if type(markup_data) == str: markup_data = [markup_data]
     
     for markup_key in markup_data:
-        print(markup_key)
         if markup_key in standart_keys:
             text = t(f'inline_menu.{markup_key}.text', lang, **kwargs)
             callback = t(f'inline_menu.{markup_key}.callback', lang, **kwargs)
