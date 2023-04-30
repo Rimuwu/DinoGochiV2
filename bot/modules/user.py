@@ -395,7 +395,7 @@ def user_info(data_user, lang: str):
                          dino_status=dino_status,
                          dino_rare=dino_rare,
                          owner=dino_owner,
-                         age=seconds_to_str(get_age(dino._id).seconds, lang, True)
+                         age=seconds_to_str((dino.age.seconds // 3600) * 3600, lang, True)
                      )
         return_text += '\n\n'
 
