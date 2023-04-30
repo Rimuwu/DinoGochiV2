@@ -8,3 +8,4 @@ from . import actions
 from . import transition
 from . import inventory
 from . import about_menu
+from . import profile_menu
