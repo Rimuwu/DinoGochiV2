@@ -1,8 +1,11 @@
 from time import time
 
 from bot.config import mongo_client
-from bot.modules.dinosaur import Dino, Egg
-from bot.modules.localization import log
+from bot.modules.dinosaur import Dino, Egg, get_age
+from bot.modules.logs import log
+from bot.modules.localization import t, get_data
+from bot.modules.data_format import user_name, seconds_to_str
+
 
 users = mongo_client.bot.users
 items = mongo_client.bot.items
@@ -197,6 +200,14 @@ def get_dinos(userid: int) -> list:
 
     return dino_list
 
+def get_dinos_and_owners(userid: int) -> list:
+    """Возвращает список с объектами динозавров и их владельцами, а так же правами на динозавра"""
+    data = []
+    for dino_obj in dino_owners.find({'owner_id': userid}):
+        data.append({'dino': Dino(dino_obj['dino_id']), 'owner_type': dino_obj['type']})
+
+    return data
+
 def col_dinos(userid: int) -> int:
     return len(list(dino_owners.find({'owner_id': userid}, {'_id': 1})))
     
@@ -217,6 +228,9 @@ def get_inventory(userid: int) -> list:
             }
         inv.append(item)
     return inv
+
+def items_count(userid: int):
+    return len(list(items.find({'owner_id': userid}, {'_id': 1})))
 
 def get_frineds(userid: int) -> dict:
     friends_dict = {
@@ -321,7 +335,77 @@ def max_dino_col(lvl: int, user_id: int=0, premium: bool=False):
 
     return col
 
+def max_lvl_xp(lvl: int): return 5 * lvl * lvl + 50 * lvl + 100
+
 async def experience_enhancement(userid: int, xp: int):
     """Повышает количество опыта, если выполнены условия то повышает уровень и отпарвляет уведомление
     """
     ...
+
+def user_info(data_user, lang: str):
+    user = User(data_user.id)
+    return_text = ''
+    
+    premium = t('user_profile.no_premium', lang)
+    if user.settings['premium_status']:
+        find = subscriptions.find_one({'userid': data_user.id})
+        if find:
+            if find['sub_end'] == 'inf':
+                premium = '♾'
+            else:
+                premium = seconds_to_str(
+                    find['sub_end'] - find['sub_start'], lang)
+
+    friends = get_frineds(data_user.id)
+    friends_count = len(friends['friends'])
+    request_count = len(friends['requests'])
+    
+    dinos = get_dinos_and_owners(data_user.id)
+
+    return_text += t('user_profile.user', lang,
+                     name = user_name(data_user),
+                     userid = data_user.id,
+                     premium_status = premium
+                     )
+    return_text += '\n\n'
+    return_text += t('user_profile.level', lang,
+                     lvl=user.lvl, xp_now=user.xp,
+                     max_xp=max_lvl_xp(user.lvl),
+                     coins=user.coins
+                     )
+    return_text += '\n\n'
+    return_text += t(f'user_profile.dinosaurs', lang,
+                    dead=user.dead_dinos, dino_col = len(dinos)
+                    )
+    
+    return_text += '\n\n'
+    for iter_data in dinos:
+        dino = iter_data['dino']
+        dino_status = t(f'user_profile.stats.{dino.status}', lang)
+        dino_rare_dict = get_data(f'rare.{dino.quality}', lang)
+        dino_rare = f'{dino_rare_dict[2]} {dino_rare_dict[1]}'
+        
+        if iter_data['owner_type'] == 'owner': 
+            dino_owner = t(f'user_profile.dino_owner.owner', lang)
+        else:
+            dino_owner = t(f'user_profile.dino_owner.noowner', lang)
+        
+        return_text += t('user_profile.dino', lang,
+                         dino_name=dino.name, 
+                         dino_status=dino_status,
+                         dino_rare=dino_rare,
+                         owner=dino_owner,
+                         age=seconds_to_str(get_age(dino._id).seconds, lang, True)
+                     )
+        return_text += '\n\n'
+
+    return_text += t('user_profile.friends', lang,
+                     friends_col=friends_count,
+                     requests_col=request_count
+                     )
+    return_text += '\n\n'
+    return_text += t('user_profile.inventory', lang,
+                    items_col=items_count(data_user.id)
+                     )
+
+    return return_text
