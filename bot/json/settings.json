@@ -28,8 +28,8 @@
         "leg": 1
     },
 
-    "first_dino_time_incub": 1200, 
-    "first_egg_rarity": "random",
+    "first_dino_time_incub": 60, 
+    "first_egg_rarity": "leg",
 
     "max_eat_items": 300,
     "premium_max_eat_items": 500,
