@@ -9,24 +9,27 @@ from bot.modules.logs import log
 from bot.modules.data_format import list_to_inline
 
 
-def inline_menu(markup_key: str = 'delete_message', lang: str = 'en', **kwargs):
+def inline_menu(markup_data, lang: str = 'en', **kwargs):
     markup_inline = InlineKeyboardMarkup()
     text, callback = '-', '-'
     standart_keys = [
         'delete_message', 'send_request',
-        'requests', 'dino_profile'
+        'requests', 'dino_profile', 'dino_rename'
     ]
-
-    if markup_key in standart_keys:
-        text = t(f'inline_menu.{markup_key}.text', lang, **kwargs)
-        callback = t(f'inline_menu.{markup_key}.callback', lang, **kwargs)
-
-    else:
-        log(prefix='InlineMarkup', 
-            message=f'not_found_key Data: {markup_key}', lvl=2)
+    if type(markup_data) == str: markup_data = [markup_data]
     
-    markup_inline.add(
-        InlineKeyboardButton(text=text, callback_data=callback))
+    for markup_key in markup_data:
+        print(markup_key)
+        if markup_key in standart_keys:
+            text = t(f'inline_menu.{markup_key}.text', lang, **kwargs)
+            callback = t(f'inline_menu.{markup_key}.callback', lang, **kwargs)
+
+        else:
+            log(prefix='InlineMarkup', 
+                message=f'not_found_key Data: {markup_key}', lvl=2)
+        
+        markup_inline.add(
+            InlineKeyboardButton(text=text, callback_data=callback))
     return markup_inline
 
 def item_info_markup(item: dict, lang):
