@@ -32,7 +32,7 @@ async def links(message: Message):
 
     await bot.send_message(chatid, t('about_menu.links', lang), parse_mode='Markdown')
     
-async def main_support_menu(chatid: int, lang: str):
+def main_support_menu(lang: str):
     image = open('images/remain/support/placeholder.png', 'rb')
     text_data = get_data('support_command', lang)
     text = text_data['info']
@@ -60,7 +60,7 @@ async def support(message: Message):
     lang = message.from_user.language_code
     chatid = message.chat.id
     
-    image, text, markup_inline = await main_support_menu(chatid, lang)
+    image, text, markup_inline = main_support_menu(lang)
     
     await bot.send_photo(chatid, image, text, reply_markup=markup_inline, parse_mode='Markdown')
 
@@ -106,7 +106,7 @@ async def support_buttons(call: CallbackQuery):
     messageid = call.message.id
     
     if action == "main":
-        image, text, markup_inline = await main_support_menu(chatid, lang)
+        image, text, markup_inline = main_support_menu(lang)
         
         await bot.edit_message_media(
                 chat_id=chatid,
