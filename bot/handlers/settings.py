@@ -1,4 +1,4 @@
-from telebot.types import Message, User
+from telebot.types import Message, CallbackQuery
 
 from bot.config import mongo_client
 from bot.exec import bot
@@ -180,3 +180,19 @@ async def rename_dino(message: Message):
 
     await ChooseDinoState(transition, userid, message.chat.id, lang, False) 
 
+@bot.callback_query_handler(is_authorized=True, 
+                            func=lambda call: call.data.startswith('rename_dino'))
+async def rename_button(callback: CallbackQuery):
+    dino_data = callback.data.split()[1]
+    lang = callback.from_user.language_code
+    userid = callback.from_user.id
+    chatid = callback.message.chat.id
+    
+    trans_data = {
+        'userid': userid,
+        'chatid': chatid,
+        'lang': lang
+    }
+    dino = Dino(dino_data) #type: ignore
+    await transition(dino, trans_data)
+    
