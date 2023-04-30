@@ -3,7 +3,7 @@ from random import choice
 from telebot import types
 
 from bot.exec import bot
-from bot.modules.data_format import list_to_keyboard, user_name
+from bot.modules.data_format import list_to_keyboard, user_name, seconds_to_str
 from bot.modules.dinosaur import incubation_egg
 from bot.modules.images import create_eggs_image
 from bot.modules.localization import t, get_data
@@ -11,6 +11,7 @@ from bot.modules.markup import markups_menu as m
 from bot.modules.user import insert_user
 from bot.const import GAME_SETTINGS
 from bot.handlers.states import cancel
+from bot.const import GAME_SETTINGS
 
 stickers = bot.get_sticker_set('Stickers_by_DinoGochi_bot')
 
@@ -34,8 +35,9 @@ async def start_game_message(message: types.Message):
     text = t('start_command.first_message', langue_code, username=username)
     buttons_list = [get_data('commands_name.start_game', locale=langue_code)]
     markup = list_to_keyboard(buttons_list)
+    image = open('images/remain/start/placeholder.png', 'rb')
     
-    await bot.send_message(message.from_user.id, text, reply_markup=markup, parse_mode='HTML')
+    await bot.send_photo(message.chat.id, image, text, reply_markup=markup, parse_mode='HTML')
 
 @bot.message_handler(text='commands_name.start_game', is_authorized=False)
 async def start_game(message: types.Message):
@@ -71,7 +73,7 @@ async def egg_answer_callback(callback: types.CallbackQuery):
 
     # Сообщение
     edited_text = t('start_command.end_answer.edited_text', lang)
-    send_text = t('start_command.end_answer.send_text', lang)
+    send_text = t('start_command.end_answer.send_text', lang, inc_time=seconds_to_str(GAME_SETTINGS['first_dino_time_incub'], lang))
 
     await bot.edit_message_caption(edited_text, callback.message.chat.id, callback.message.message_id)
     await bot.send_message(callback.message.chat.id, send_text, parse_mode='Markdown', 
