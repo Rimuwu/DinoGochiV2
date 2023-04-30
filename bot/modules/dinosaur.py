@@ -90,7 +90,7 @@ class Dino:
     def image(self, profile_view: int=1):
         """Сгенерировать изображение объекта
         """
-        return create_dino_image(self.data_id, self.stats, self.quality, profile_view)
+        return create_dino_image(self.data_id, self.stats, self.quality, profile_view, self.age.days)
 
     def collecting(self, coll_type: str):
         return start_collecting(self._id, coll_type)
@@ -105,8 +105,10 @@ class Dino:
         return start_sleep(self._id, s_type, duration)
     
     @property
-    def data(self):
-        return get_dino_data(self.data_id)
+    def data(self): return get_dino_data(self.data_id)
+    
+    @property
+    def age(self): return get_age(self._id)
 
 
 class Egg:
