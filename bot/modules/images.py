@@ -86,12 +86,25 @@ def create_egg_image(egg_id: int, rare: str='random', seconds: int=0, lang: str=
     )
     return pil_image_to_file(img)
 
-def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_view: int=1):
+def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_view: int=1, age: int = 30):
     """Создание изображения динозавра
        Args:
        dino_id - id картинки динозавра
        stats - словарь с харрактеристиками динозавра ( {'heal': 0, 'eat': 0, 'sleep': 0, 'game': 0, 'mood': 0} )
     """
+    if age > 30: age = 30
+    def formul(age: int, max_size, max_x, max_y, days = 30):
+        f = age * ((max_size-150) // days) + 150
+        x = int(age * ((max_x) / days))
+        y = int(age * ((max_y-150) / days)+150)
+        return f, x, y
+
+    def formul2(age: int, max_size, max_x, max_y, days = 30):
+        f = age * ((max_size-150) // days) + 150
+        x = int(age * ((max_x-250) / days)+250)
+        y = int(age * ((max_y-100) / days)+100)
+        return f, x, y
+
     dino_data = DINOS['elements'][str(dino_id)]
 
     img = Image.open(f'images/remain/backgrounds/{dino_data["class"].lower()}.png')
@@ -100,6 +113,7 @@ def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_vie
         img = trans_paste(panel_i, img, 1.0)
 
     dino_image = Image.open(f'images/{dino_data["image"]}')
+    dino_image = dino_image.resize((1024, 1024), Image.Resampling.LANCZOS)
 
     heal, eat, energy = stats['heal'], stats['eat'], stats['energy']
     game, mood = stats['game'], stats['mood']
@@ -109,7 +123,7 @@ def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_vie
 
     if profile_view == 1:
         line1 = ImageFont.truetype('fonts/Aqum.otf', size=30)
-        sz, x, y = 400, 90, -80
+        sz, x, y = formul(age, 400, 75, -60)
 
         idraw.text((518, 93), f'{heal}%', font = line1)
         idraw.text((518, 170), f'{eat}%', font = line1)
@@ -120,8 +134,8 @@ def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_vie
 
     elif profile_view == 2:
         line1 = ImageFont.truetype('fonts/Aqum.otf', size=25)
-        sz, text_y = 450, 280
-        x, y = 385, -180
+        sz, x, y = formul2(age, 450, 385, -180)
+        text_y = 280
 
         idraw.text((157, text_y), f'{heal}%', font = line1)
         idraw.text((298, text_y), f'{eat}%', font = line1)
@@ -132,8 +146,8 @@ def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_vie
 
     elif profile_view == 3:
         line1 = ImageFont.truetype('fonts/Aqum.otf', size=25)
-        sz, text_y = 450, 50
-        x, y = 275, -80
+        sz, x, y = formul2(age, 450, 275, -80)
+        text_y = 50
 
         idraw.text((157, text_y), f'{heal}%', font = line1)
         idraw.text((298, text_y), f'{eat}%', font = line1)
@@ -143,13 +157,14 @@ def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_vie
         idraw.text((730, text_y), f'{mood}%', font = line1)
     
     elif profile_view == 4:
-        sz = 450
+        sz, x, y = formul2(age, 450, randint(170, 550), randint(-180, -100))
         if randint(0, 1):
             dino_image = dino_image.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
-        
-        x, y = randint(200, 550), randint(-180, -100)
-
+    
+    # Рисует квадрат границы динозавра
+    # idraw.rectangle((y + x, y, sz + y + x, sz + y), outline=(255, 0, 0))
+    
     dino_image = dino_image.resize((sz, sz), Image.Resampling.LANCZOS)
-    img = trans_paste(dino_image, img, 1.0, (y + x, y, sz + y + x, sz + y ))
+    img = trans_paste(dino_image, img, 1.0, (y + x, y, sz + y + x, sz + y))
 
     return pil_image_to_file(img)
