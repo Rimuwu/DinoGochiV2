@@ -79,7 +79,6 @@ async def end_craft(transmitted_data: dict):
     lang = transmitted_data['lang']
     
     # Удаление рецепта
-    print(delete_item, 'delete_item')
     UseAutoRemove(userid, delete_item, count)
     
     # Удаление материалов
