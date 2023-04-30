@@ -77,7 +77,7 @@ async def user_notification(user_id: int, not_type: str, lang: str='en', **kwarg
         "donation"
     ]
     unstandart_notification = [
-        'incubation_ready' # необходим dino_id 
+        'incubation_ready' # необходим dino_alt_id_markup 
     ]
     add_way = '.'+kwargs.get('add_way', '')
 
