@@ -1,3 +1,5 @@
+import datetime
+from datetime import datetime, timezone
 from random import choice, randint
 from time import time
 
@@ -346,3 +348,12 @@ def edited_stats(before: int, unit: int):
     else: after = before + unit
 
     return after
+
+def get_age(dinoid: ObjectId):
+    """.seconds .days
+    """
+    dino_create = dinoid.generation_time
+    now = datetime.now(timezone.utc)
+    delta = now - dino_create
+
+    return delta
