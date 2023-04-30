@@ -35,7 +35,7 @@ async def start_game_message(message: types.Message):
     text = t('start_command.first_message', langue_code, username=username)
     buttons_list = [get_data('commands_name.start_game', locale=langue_code)]
     markup = list_to_keyboard(buttons_list)
-    image = open('images/remain/start/lol.jpg', 'rb')
+    image = open('images/remain/start/placeholder.png', 'rb')
     
     await bot.send_photo(message.chat.id, image, text, reply_markup=markup, parse_mode='HTML')
 
