@@ -32,7 +32,6 @@ async def subscription_check():
 
     for sub in data:
         subscriptions.delete_one({'_id': sub['_id']})
-        users.update_one({'userid': sub['userid']}, {'$set': {'settings.premium_status': False}})
 
         try:
             chat_user = await bot.get_chat_member(sub['userid'], sub['userid'])
