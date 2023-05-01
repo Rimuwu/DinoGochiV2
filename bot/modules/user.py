@@ -26,13 +26,11 @@ class User:
         self.last_message_time = 0
         self.last_markup = 'main_menu'
 
-        self.notifications = {}
         self.settings = {
             'notifications': True,
             'last_dino': None, #храним ObjectId
             'profile_view': 1,
-            'inv_view': [2, 3],
-            'premium_status': False
+            'inv_view': [2, 3]
             }
             
         self.coins = 10
@@ -40,7 +38,7 @@ class User:
         self.xp = 0
         self.dead_dinos = 0
 
-        self.user_dungeon = { 
+        self.dungeon = { 
             'statistics': [],
             'quests': {
                 'activ_quests': [],
@@ -50,12 +48,9 @@ class User:
             }
         
         self.UpdateData(users.find_one({"userid": self.userid})) #Обновление данных
-        if 'premium_status' not in self.settings:
-            self.settings['premium_status'] = False
         
     def UpdateData(self, data):
-        if data:
-            self.__dict__ = data
+        if data: self.__dict__ = data
     
     @property
     def get_dinos(self) -> list:
@@ -93,7 +88,10 @@ class User:
         friends_dict = get_frineds(self.userid)
         self.friends = friends_dict
         return friends_dict
-    
+
+    @property
+    def premium(self) -> bool: return premium(self.userid)
+
     def view(self):
         """ Отображает все данные объекта."""
 
@@ -160,37 +158,13 @@ class User:
              'additional': {'now': 0, 'limit': 1}
             }
         """
-        return max_dino_col(self.lvl, self.userid, self.settings['premium_status'])
+        return max_dino_col(self.lvl, self.userid, self.premium)
 
 
 def insert_user(userid: int):
-    user_dict = {
-        'userid': userid,
-
-        'last_message_time': int(time()),
-        'last_markup': 'main_menu',
-
-        'settings': { 'notifications': True,
-                      'last_dino': None,
-                      'profile_view': 1,
-                      'inv_view': [2, 3], 
-                      'faq': True
-                    },
-        'coins': 10, 'lvl': 0, 'xp': 0,
-        'dead_dinos': 0,
-
-        'user_dungeon': { 
-            'statistics': [],
-            'quests': {
-                'activ_quests': [],
-                'max_quests': 5,
-                'ended': 0
-                }
-            }
-    }
 
     log(prefix='InsertUser', message=f'User: {userid}', lvl=0)
-    return users.insert_one(user_dict)
+    return users.insert_one(User(userid).__dict__)
 
 def get_dinos(userid: int) -> list:
     """Возвращает список с объектами динозавров."""
@@ -305,7 +279,6 @@ def award_premium(userid:int, end_time):
             'end_notif': False
         }
         subscriptions.insert_one(user_doc)
-        users.update_one({'userid': userid}, {'$set': {'settings.premium_status': True}})
 
 def max_dino_col(lvl: int, user_id: int=0, premium: bool=False):
     """Возвращает доступное количесвто динозавров, беря во внимание уровень и статус
@@ -347,7 +320,7 @@ def user_info(data_user, lang: str):
     return_text = ''
     
     premium = t('user_profile.no_premium', lang)
-    if user.settings['premium_status']:
+    if user.premium:
         find = subscriptions.find_one({'userid': data_user.id})
         if find:
             if find['sub_end'] == 'inf':
@@ -409,3 +382,7 @@ def user_info(data_user, lang: str):
                      )
 
     return return_text
+
+def premium(userid: int):
+    res = subscriptions.find_one({'userid': userid})
+    return bool(res)
