@@ -5,7 +5,7 @@ from bot.modules.data_format import chunks, crop_text, list_to_keyboard
 from bot.modules.dinosaur import Dino, Egg
 from bot.modules.localization import t, tranlate_data
 from bot.modules.logs import log
-from bot.modules.user import User, last_dino
+from bot.modules.user import User, last_dino, premium
 
 users = mongo_client.bot.users
 dinosaurs = mongo_client.bot.dinosaurs
@@ -87,7 +87,9 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
             ['dino_profile'],
             ['dino_name'],
         ]
-    
+
+        if premium(userid): buttons[1].append('custom_profile')
+
     elif markup_key == 'profile_menu':
         # Меню профиля
         prefix = 'commands_name.profile.'
@@ -96,7 +98,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
             ['information', 'inventory'],
             ['rayting', 'about', 'market'],
         ]
-    
+
     elif markup_key == 'about_menu':
         # Меню о боте
         prefix = 'commands_name.about.'
@@ -105,7 +107,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
             ['team', 'support'],
             ['faq', 'links'],
         ]
-    
+
     elif markup_key == 'friends_menu':
         # Меню друзей
         prefix = 'commands_name.friends.'
@@ -114,7 +116,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
             ['add_friend', 'friends_list', 'remove_friend'],
             ['requests', 'referal'],
         ]
-    
+
     elif markup_key == 'market_menu':
         # Меню рынка
         prefix = 'commands_name.market.'
@@ -123,7 +125,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
             ['random', 'find'],
             ['add_product', 'product_list', 'remove_product'],
         ]
-    
+
     elif markup_key == 'dino_tavern_menu':
         # Меню таверны
         prefix = 'commands_name.dino_tavern.'
@@ -132,7 +134,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
             ['dungeon', 'quests'],
             ['edit'],
         ]
-    
+
     elif markup_key == 'actions_menu':
 
         def get_buttons(dino: Dino) -> list:
@@ -255,6 +257,9 @@ def count_markup(max_count: int=1, lang: str='en') -> ReplyKeyboardMarkup:
     if max_count >= 4: counts.insert(1, f"x{max_count // 2}")
     
     return list_to_keyboard([counts, t('buttons_name.cancel', lang)])
+
+def feed_count_markup():
+    ...
 
 def confirm_markup(lang: str='en') -> ReplyKeyboardMarkup:
     """Создаёт клавиатуру для подтверждения
