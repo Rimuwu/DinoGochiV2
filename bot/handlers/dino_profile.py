@@ -1,19 +1,22 @@
 from telebot import types
 from telebot.types import Message
 
+from bot.config import mongo_client
 from bot.const import GAME_SETTINGS
 from bot.exec import bot
 from bot.modules.data_format import near_key_number, seconds_to_str
 from bot.modules.dinosaur import Dino, Egg
 from bot.modules.events import get_one_event
+from bot.modules.inline import dino_profile_markup
 from bot.modules.item import get_name
 from bot.modules.localization import get_data, t
 from bot.modules.markup import markups_menu as m
 from bot.modules.states_tools import ChooseDinoState
 from bot.modules.user import User
-from bot.modules.inline import dino_profile_markup
 
-async def dino_profile(userid: int, dino: Dino, lang: str):
+users = mongo_client.bot.users
+
+async def dino_profile(userid: int, dino: Dino, lang: str, custom_url: str):
     text = ''
 
     text_rare = get_data('rare', lang)
@@ -95,11 +98,12 @@ async def dino_profile(userid: int, dino: Dino, lang: str):
                 reply_markup=m(userid, 'last_menu', lang))
     
     # изменение сообщения с уже нужным изображением
+    image = dino.image(user.settings['profile_view'], custom_url)
     await bot.edit_message_media(
         chat_id=userid,
         message_id=msg.id,
         media=types.InputMedia(
-            type='photo', media=dino.image(user.settings['profile_view']), 
+            type='photo', media=image, 
             parse_mode='Markdown', caption=text),
         reply_markup=menu
         )
@@ -116,11 +120,16 @@ async def egg_profile(userid: int, egg: Egg, lang: str):
 async def transition(element, transmitted_data: dict):
     userid = transmitted_data['userid']
     lang = transmitted_data['lang']
-
+    user = User(userid)
+    custom_url = ''
+ 
+    if user and user.premium and 'custom_url' in user.settings:
+        custom_url = user.settings['custom_url']
+    
     if type(element) == Dino:
-        await dino_profile(userid, element, lang) #type: ignore
+        await dino_profile(userid, element, lang, custom_url)
     elif type(element) == Egg:
-        await egg_profile(userid, element, lang) #type: ignore
+        await egg_profile(userid, element, lang)
 
 @bot.message_handler(text='commands_name.dino_profile', is_authorized=True)
 async def dino_handler(message: Message):

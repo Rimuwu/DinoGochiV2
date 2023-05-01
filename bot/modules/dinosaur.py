@@ -87,10 +87,10 @@ class Dino:
             collection.delete_many({'dino_id': self._id})
 
 
-    def image(self, profile_view: int=1):
+    def image(self, profile_view: int=1, custom_url: str=''):
         """Сгенерировать изображение объекта
         """
-        return create_dino_image(self.data_id, self.stats, self.quality, profile_view, self.age.days)
+        return create_dino_image(self.data_id, self.stats, self.quality, profile_view, self.age.days, custom_url)
 
     def collecting(self, coll_type: str):
         return start_collecting(self._id, coll_type)
@@ -357,5 +357,4 @@ def get_age(dinoid: ObjectId):
     dino_create = dinoid.generation_time
     now = datetime.now(timezone.utc)
     delta = now - dino_create
-
     return delta

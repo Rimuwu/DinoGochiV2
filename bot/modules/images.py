@@ -1,5 +1,7 @@
+import io
 from random import choice, randint
 
+import requests
 from PIL import Image, ImageDraw, ImageFont
 from telebot.util import pil_image_to_file
 
@@ -86,7 +88,7 @@ def create_egg_image(egg_id: int, rare: str='random', seconds: int=0, lang: str=
     )
     return pil_image_to_file(img)
 
-def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_view: int=1, age: int = 30):
+def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_view: int=1, age: int = 30, custom_url: str=''):
     """Создание изображения динозавра
        Args:
        dino_id - id картинки динозавра
@@ -106,10 +108,19 @@ def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_vie
         return f, x, y
 
     dino_data = DINOS['elements'][str(dino_id)]
-
-    img = Image.open(f'images/remain/backgrounds/{dino_data["class"].lower()}.png')
+    img = Image.open(
+            f'images/remain/backgrounds/{dino_data["class"].lower()}.png')
+    if custom_url:
+        try:
+            response = requests.get(custom_url, stream = True)
+            response = Image.open(io.BytesIO(response.content))
+            response = response.convert("RGBA")
+            img = response.resize((900, 350), Image.Resampling.LANCZOS)
+        except: custom_url = ''
+        
     if profile_view != 4:
-        panel_i = Image.open(f'images/remain/panels/v{profile_view}_{quality}.png')
+        panel_i = Image.open(
+            f'images/remain/panels/v{profile_view}_{quality}.png')
         img = trans_paste(panel_i, img, 1.0)
 
     dino_image = Image.open(f'images/{dino_data["image"]}')
