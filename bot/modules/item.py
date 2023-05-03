@@ -338,10 +338,10 @@ def UseAutoRemove(userid: int, item: dict, count: int):
     else:
         # В остальных случаях просто снимаем нужное количество
         if 'abilities' in item:
-            res = RemoveItemFromUser(userid, item['item_id'], count)
+            res = RemoveItemFromUser(userid, item['item_id'], count, 
+                                     item['abilities'])
         else:
-            res = RemoveItemFromUser(userid, item['item_id'], 
-                                        count, item['abilities'])
+            res = RemoveItemFromUser(userid, item['item_id'], count)
         if not res: 
             log(f'Item remove error {userid} {item}', 3)
             return False
