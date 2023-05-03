@@ -9,6 +9,8 @@ from bot.modules.user import User, last_dino, premium
 
 users = mongo_client.bot.users
 dinosaurs = mongo_client.bot.dinosaurs
+management = mongo_client.bot.management
+
 
 def back_menu(userid) -> str:
     """Возвращает предыдущее меню
@@ -50,6 +52,10 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
     add_back_button = False
     kwargs = {}
     old_last_menu = None
+    
+    user_dict = users.find_one(
+           {'userid': userid}, {'last_markup': 1}
+        )
 
     if markup_key == 'last_menu':
        """Возращает к последнему меню
@@ -258,8 +264,40 @@ def count_markup(max_count: int=1, lang: str='en') -> ReplyKeyboardMarkup:
     
     return list_to_keyboard([counts, t('buttons_name.cancel', lang)])
 
-def feed_count_markup():
-    ...
+def feed_count_markup(dino_eat: int, item_act: int, 
+                      max_col: int, item_name: str, lang):
+    buttons, return_list = [], []
+    
+    col_to_full = (100 - dino_eat) // item_act
+    full_percent = dino_eat + item_act * col_to_full
+    if col_to_full > max_col: col_to_full = max_col
+    if full_percent > 100: full_percent = 100
+    
+    buttons.append(
+        f"{dino_eat + item_act}% = {item_name[:1]} x1"
+        ) # 1 раз
+    
+    if dino_eat + item_act * col_to_full < 100:
+        buttons.append(
+            f"100% = {item_name[:1]} x{col_to_full + 1}"
+        ) # до 100%, но с переплатой
+    buttons.append(
+        f"{full_percent}% = {item_name[:1]} x{col_to_full}"
+        ) # До 100%
+    
+    if col_to_full == 1:
+        if len(buttons) > 2:
+            return_list += [buttons[0], buttons[1]]
+        else: return_list += [buttons[0]]
+
+    elif col_to_full != 1 and col_to_full != 0:
+        if len(buttons) > 2:
+            return_list += [buttons[0], buttons[1], buttons[2]]
+        else: return_list += [buttons[0], buttons[1]]
+    else:
+        return_list += [buttons[0]]
+
+    return list_to_keyboard([return_list, [t('buttons_name.cancel', lang)]])
 
 def confirm_markup(lang: str='en') -> ReplyKeyboardMarkup:
     """Создаёт клавиатуру для подтверждения
