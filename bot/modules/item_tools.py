@@ -12,8 +12,7 @@ from bot.modules.item import (AddItemToUser, CalculateDowngradeitem,
                               get_data, get_item_dict, get_name, is_standart,
                               item_code)
 from bot.modules.localization import t
-from bot.modules.logs import log
-from bot.modules.markup import confirm_markup, count_markup, markups_menu
+from bot.modules.markup import confirm_markup, count_markup, markups_menu, feed_count_markup
 from bot.modules.notifications import dino_notification
 from bot.modules.states_tools import ChooseStepState
 from bot.modules.user import User, experience_enhancement
@@ -375,12 +374,40 @@ async def adapter(return_data: dict, transmitted_data: dict):
     
     if send_status:
         await bot.send_message(chatid, return_text, parse_mode='Markdown', reply_markup=markups_menu(userid, 'last_menu', lang))
+        
+async def pre_adapter(return_data: dict, transmitted_data: dict):
+    return_data['confirm'] = True
+    return_data['dino'] = transmitted_data['dino']
+    
+    await adapter(return_data, transmitted_data)
+        
+async def eat_adapter(return_data: dict, transmitted_data: dict):
+    dino = return_data['dino']
+    transmitted_data['dino'] = dino
+    lang = transmitted_data['lang']
+    userid = transmitted_data['userid']
+    chatid = transmitted_data['chatid']
+    max_count = transmitted_data['max_count']
+    
+    item = transmitted_data['items_data']
+    item_data = get_data(item['item_id'])
+    item_name = get_name(item['item_id'], lang)
+    
+    steps = [
+        {"type": 'int', "name": 'count', "data": {"max_int": max_count}, 
+            'message': {'text': t('css.wait_count', lang), 
+                        'reply_markup': feed_count_markup(
+                            dino.stats['eat'], item_data['act'], max_count, item_name, lang)}}
+            ]
+    await ChooseStepState(pre_adapter, userid, chatid, lang, steps, 
+                                transmitted_data=transmitted_data)
 
 async def data_for_use_item(item: dict, userid: int, chatid: int, lang: str):
     item_id = item['item_id']
     data_item = get_data(item_id)
     type_item = data_item['type']
     limiter = 100 # Ограничение по количеству использований за раз
+    adapter_function = adapter
     
     base_item = items.find_one({'owner_id': userid, 'items_data': item})
     transmitted_data = {'items_data': item}
@@ -399,12 +426,12 @@ async def data_for_use_item(item: dict, userid: int, chatid: int, lang: str):
         if max_count > limiter: max_count = limiter
 
         if type_item == 'eat':
+            adapter_function = eat_adapter
+            transmitted_data['max_count'] = max_count # type: ignore
+            
             steps = [
                 {"type": 'dino', "name": 'dino', "data": {"add_egg": False}, 
-                    'message': None},
-                {"type": 'int', "name": 'count', "data": {"max_int": max_count}, 
-                    'message': {'text': t('css.wait_count', lang), 
-                                'reply_markup': count_markup(max_count)}}
+                    'message': None}
             ]
         elif type_item in ['game_ac', 'sleep_ac', 
                            'journey_ac', 'collecting_ac', 
@@ -445,7 +472,8 @@ async def data_for_use_item(item: dict, userid: int, chatid: int, lang: str):
                     'text': t('css.confirm', lang, name=item_name), 'reply_markup': confirm_markup(lang)
                     }
                 })
-            await ChooseStepState(adapter, userid, chatid, lang, steps, 
+            await ChooseStepState(adapter_function, userid, chatid, 
+                                  lang, steps, 
                                 transmitted_data=transmitted_data)
 
 async def delete_action(return_data: dict, transmitted_data: dict):
