@@ -1,17 +1,13 @@
 {   
     "collections": {
-        "bot": ["users", "dinosaurs", "items", "products", "management"],
+        "bot": ["users", "dinosaurs", "items", "products", "management", "dead_dinos"],
         "tasks": ["game", "incubation", "journey", "sleep", "collecting", "subscriptions"],
-        "connections": ["referals", "friends", "dino_owners"]
+        "connections": ["referals", "friends", "dino_owners", "dino_mood"]
     },
 
     "please_create_this": {
         "bot": {
             "management": [
-                {
-                    "_id": "promo_codes",
-                    "codes": {}
-                },
                 {
                     "_id": "in_tavern",
                     "users": []
