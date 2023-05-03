@@ -19,14 +19,8 @@ async def back_buttom(message: Message):
     userid = message.from_user.id
     lang = message.from_user.language_code
     back_m = back_menu(userid)
-
-    user_dict = users.find_one(
-           {'userid': userid}, {'last_markup': 1}
-        )
     
-    if user_dict:
-        if user_dict.get('last_markup') == 'dino_tavern_menu':
-            management.update_one({'_id': 'in_tavern' }, {'$pull': {'users': userid}})
+    # Переделать таверну полностью
 
     text = t(f'back_text.{back_m}', lang)
     await bot.send_message(message.chat.id, text, 
