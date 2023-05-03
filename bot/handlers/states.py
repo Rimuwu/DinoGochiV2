@@ -72,18 +72,19 @@ async def ChooseInt(message: Message):
         func = data['function']
         transmitted_data = data['transmitted_data']
 
-    if str(message.text).isdigit():
-        number = int(message.text) #type: ignore
+    for iter_word in str(message.text).split():
+        if iter_word.isdigit():
+            number = int(iter_word)
 
-    elif str(message.text).startswith('x') and \
-        str(message.text)[1:].isdigit():
-        number = int(message.text[1:]) #type: ignore
-    
-    else:
+        elif iter_word.startswith('x') and \
+            iter_word[1:].isdigit():
+            number = int(iter_word[1:])
+
+    if not number:
         await bot.send_message(message.chat.id, 
                 t('states.ChooseInt.error_not_int', lang))
         return
-    
+
     if number > max_int:
         await bot.send_message(message.chat.id, 
                 t('states.ChooseInt.error_max_int', lang,
@@ -95,7 +96,7 @@ async def ChooseInt(message: Message):
                 t('states.ChooseInt.error_min_int', lang,
                 number = number, min = min_int))
         return
-    
+
     await bot.delete_state(userid, message.chat.id)
     await bot.reset_data(message.from_user.id,  message.chat.id)
     await func(number, transmitted_data=transmitted_data)
