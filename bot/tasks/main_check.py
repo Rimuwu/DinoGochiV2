@@ -90,7 +90,7 @@ async def main_checks():
         if dino['stats']['eat'] > HIGH_EAT and dino['stats']['energy'] > CRITICAL_ENERGY and dino['stats']['mood'] > HIGH_MOOD:
             if random.uniform(0, 1) <= P_HEAL_EAT:
                 mutate_dino_stat(dino, 'heal', randint(1, 4))
-                mutate_dino_stat(dino, 'eat', randint(0, 1))
+                mutate_dino_stat(dino, 'eat', randint(0, 1)*-1)
 
         # if dino['stats']['eat'] <= LOW_EAT and dino['stats']['eat'] != 0:
         #     if dino['stats']['mood'] > 0 and random.uniform(0, 1) <= P_MOOD3:
