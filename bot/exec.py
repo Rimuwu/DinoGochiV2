@@ -23,6 +23,7 @@ def run():
     log('Спасибо, но я все равно перепишу все с нуля...')
     log('У вас логи не логятся :/')
     log('Не вижу ошибок == нет ошибок!')
+    log('Кстати, в создании бота поучаствовал ChatGPT')
 
     add_task(bot.infinity_polling, skip_pending=True, timeout=666)
     log('Все готово! Взлетаем!', prefix='Start')
