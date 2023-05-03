@@ -402,7 +402,7 @@ async def eat_adapter(return_data: dict, transmitted_data: dict):
     await ChooseStepState(pre_adapter, userid, chatid, lang, steps, 
                                 transmitted_data=transmitted_data)
 
-async def data_for_use_item(item: dict, userid: int, chatid: int, lang: str):
+async def data_for_use_item(item: dict, userid: int, chatid: int, lang: str, confirm: bool = True):
     item_id = item['item_id']
     data_item = get_data(item_id)
     type_item = data_item['type']
@@ -465,13 +465,14 @@ async def data_for_use_item(item: dict, userid: int, chatid: int, lang: str):
             await bot.send_message(chatid, t('item_use.cannot_be_used', lang))
 
         if ok:
-            steps.insert(0, {
-                "type": 'bool', "name": 'confirm', 
-                "data": {'cancel': True}, 
-                'message': {
-                    'text': t('css.confirm', lang, name=item_name), 'reply_markup': confirm_markup(lang)
-                    }
-                })
+            if confirm:
+                steps.insert(0, {
+                    "type": 'bool', "name": 'confirm', 
+                    "data": {'cancel': True}, 
+                    'message': {
+                        'text': t('css.confirm', lang, name=item_name), 'reply_markup': confirm_markup(lang)
+                        }
+                    })
             await ChooseStepState(adapter_function, userid, chatid, 
                                   lang, steps, 
                                 transmitted_data=transmitted_data)
