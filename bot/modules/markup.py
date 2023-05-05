@@ -90,11 +90,11 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
         add_back_button = True
         buttons = [
             ['notification', 'inventory'],
-            ['dino_profile'],
+            ['dino_profile', 'delete_me'],
             ['dino_name'],
         ]
 
-        if premium(userid): buttons[1].append('custom_profile')
+        if premium(userid): buttons[2].append('custom_profile')
 
     elif markup_key == 'profile_menu':
         # Меню профиля
@@ -144,13 +144,15 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
     elif markup_key == 'actions_menu':
 
         def get_buttons(dino: Dino) -> list:
-            data = ['journey', 'put_to_bed', 'collecting']
+            data = ['journey', 'put_to_bed', 'collecting', 'entertainments']
             if dino.status == 'journey':
                 data[0] = 'return'
             elif dino.status == 'sleep':
                 data[1] = 'awaken'
             elif dino.status == 'collecting':
                 data[2] = 'progress'
+            elif dino.status == 'game':
+                data[3] = 'stop_game'
             return data
 
         # Меню действий
@@ -166,10 +168,10 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
         if col_dinos == 1:
             dino = user.get_dinos[0]
             dp_buttons = get_buttons(dino)
-
+            
             buttons = [
                 ["feed"],
-                ["entertainments", dp_buttons[0]],
+                [dp_buttons[3], dp_buttons[0]],
                 [dp_buttons[1], dp_buttons[2]]
             ]
 
@@ -182,7 +184,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
                 dp_buttons = get_buttons(dino)
                 buttons = [
                     ["feed"],
-                    ["entertainments", dp_buttons[0]],
+                    [dp_buttons[3], dp_buttons[0]],
                     [dp_buttons[1], dp_buttons[2]],
                     [dino_button, "noprefix.buttons_name.back"]
                 ]
@@ -272,7 +274,7 @@ def feed_count_markup(dino_eat: int, item_act: int,
     full_percent = dino_eat + item_act * col_to_full
     if col_to_full > max_col: col_to_full = max_col
     if full_percent > 100: full_percent = 100
-    
+
     buttons.append(
         f"{dino_eat + item_act}% = {item_name[:1]} x1"
         ) # 1 раз
