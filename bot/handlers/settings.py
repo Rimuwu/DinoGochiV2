@@ -1,13 +1,17 @@
-from telebot.types import Message, CallbackQuery
+from telebot.types import CallbackQuery, Message, ReplyKeyboardMarkup
 
 from bot.config import mongo_client
 from bot.exec import bot
-from bot.modules.data_format import list_to_keyboard, chunks
-from bot.modules.localization import t, get_data
-from bot.modules.markup import tranlate_data, markups_menu as m
-from bot.modules.states_tools import ChooseDinoState, ChooseOptionState, ChooseStringState, ChooseConfirmState
+from bot.modules.data_format import chunks, list_to_keyboard
 from bot.modules.dinosaur import Dino
-from bot.modules.user import premium
+from bot.modules.localization import get_data, t
+from bot.modules.markup import confirm_markup
+from bot.modules.markup import markups_menu as m
+from bot.modules.markup import tranlate_data
+from bot.modules.states_tools import (ChooseConfirmState, ChooseDinoState,
+                                      ChooseOptionState, ChooseStringState, ChooseStepState)
+from bot.modules.user import premium, User
+from random import randint
 
 users = mongo_client.bot.users
 
@@ -40,37 +44,6 @@ async def notification_set(message: Message):
     await ChooseConfirmState(notification, userid, chatid, lang)
     await bot.send_message(userid, t('not_set.info', lang), 
                            reply_markup=keyboard)
-
-
-async def faq(result: bool, transmitted_data: dict):
-    userid = transmitted_data['userid']
-    lang = transmitted_data['lang']
-    chatid = transmitted_data['chatid']
-
-    text = t(f'settings_faq.{result}', lang)
-    await bot.send_message(chatid, text, 
-                    reply_markup=m(userid, 'last_menu', lang))
-    users.update_one({'userid': userid}, {"$set": {'settings.faq': result}})
-
-@bot.message_handler(text='commands_name.settings.faq', 
-                     is_authorized=True)
-async def faq_set(message: Message):
-    userid = message.from_user.id
-    lang = message.from_user.language_code
-    chatid = message.chat.id
-
-    prefix = 'buttons_name.'
-    buttons = [
-        ['enable', 'disable'],
-        ['cancel']
-    ]
-    translated = tranlate_data(buttons, lang, prefix)
-    keyboard = list_to_keyboard(translated, 2)
-
-    await ChooseConfirmState(faq, userid, chatid, lang)
-    await bot.send_message(userid, t('settings_faq.info', lang), 
-                           reply_markup=keyboard)
-
 
 async def dino_profile(result: bool, transmitted_data: dict):
     userid = transmitted_data['userid']
@@ -227,4 +200,70 @@ async def rename_button(callback: CallbackQuery):
     dino = Dino(dino_data) #type: ignore
     await transition(dino, trans_data)
 
+async def adapter_delete(return_data, transmitted_data):
+    chatid = transmitted_data['chatid']
+    userid = transmitted_data['userid']
+    lang = transmitted_data['lang']
     
+    if return_data['code'] != transmitted_data['code']:
+        await bot.send_message(chatid, t('delete_me.incorrect_code', lang),     
+                               parse_mode='Markdown', 
+                               reply_markup=m(userid, 'last_menu', lang))
+    
+    else:
+        user = User(userid)
+        user.full_delete()
+        r = list_to_keyboard([t('commands_name.start_game', lang)])
+        
+        await bot.send_message(chatid, t('delete_me.delete', lang),     
+                               parse_mode='Markdown', 
+                               reply_markup=r)
+
+    
+@bot.message_handler(text='commands_name.settings.delete_me', 
+                     is_authorized=True)
+async def delete_me(message: Message):
+    userid = message.from_user.id
+    lang = message.from_user.language_code
+    chatid = message.chat.id
+    
+    code = str(randint(1, 1000))
+    transmitted_data = {'code': code}
+    
+    conf3 = confirm_markup(lang)
+    conf3.one_time_keyboard = True
+
+    steps = [
+        {
+        "type": 'bool', "name": 'confirm', 
+        "data": {'cancel': True}, 
+        'message': {
+            'text': t('delete_me.confirm', lang), 
+            'reply_markup': confirm_markup(lang)
+            }
+        },
+        {
+        "type": 'bool', "name": 'confirm2', 
+        "data": {'cancel': True}, 
+        'message': {
+            'text': t('delete_me.dead_dino', lang), 
+            'reply_markup': confirm_markup(lang)
+            }
+        },
+        {
+        "type": 'bool', "name": 'confirm3', 
+        "data": {'cancel': True}, 
+        'message': {
+            'text': t('delete_me.rex_boss', lang), 
+            'reply_markup': conf3
+            }
+        },
+        {"type": 'str', "name": 'code', "data": {}, 
+            'message': {
+                'text': t('delete_me.code', lang, code=code)}
+        }
+    ]
+    
+    await ChooseStepState(adapter_delete, userid, chatid, 
+                                  lang, steps, 
+                                transmitted_data=transmitted_data)
