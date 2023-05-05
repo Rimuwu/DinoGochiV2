@@ -26,6 +26,6 @@ def run():
     log('Кстати, в создании бота поучаствовал ChatGPT')
 
     add_task(bot.infinity_polling, skip_pending=True, 
-             timeout=666, request_timeout=1000)
+             timeout=666)
     log('Все готово! Взлетаем!', prefix='Start')
     run_taskmanager()
