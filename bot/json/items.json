@@ -411,7 +411,7 @@
     },
     "23": {
       "image": "item23",
-      "inc_type": "myt",
+      "inc_type": "mys",
       "incub_time": 259200,
       "ns_craft": {
         "1": {

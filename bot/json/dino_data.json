@@ -38,7 +38,7 @@
       },
       "8": {
         "type": "dino",
-        "image": "dino-myt/dino_8.png",
+        "image": "dino-mys/dino_8.png",
         "name": "Xuwulong",
         "class": "Herbivore"
       },
@@ -168,7 +168,7 @@
       },
       "32": {
         "type": "dino",
-        "image": "dino-myt/dino_32.png",
+        "image": "dino-mys/dino_32.png",
         "name": "Ambopteryx",
         "class": "Flying"
       },
@@ -720,7 +720,7 @@
       },
       "134": {
         "type": "dino",
-        "image": "dino-myt/dino_134.png",
+        "image": "dino-mys/dino_134.png",
         "name": "Plateosaurus",
         "class": "Herbivore"
       },
@@ -3080,7 +3080,7 @@
       },
       "578": {
         "type": "dino",
-        "image": "dino-myt/dino_578.png",
+        "image": "dino-mys/dino_578.png",
         "name": "Tsintaosaurus",
         "class": "Herbivore"
       },
@@ -3206,7 +3206,7 @@
       },
       "606": {
         "type": "dino",
-        "image": "dino-myt/dino_606.png",
+        "image": "dino-mys/dino_606.png",
         "name": "Piveteausaurus",
         "class": "Carnivore"
       },
@@ -3256,7 +3256,7 @@
       },
       "617": {
         "type": "dino",
-        "image": "dino-myt/dino_617.png",
+        "image": "dino-mys/dino_617.png",
         "name": "Ganzhousaurus",
         "class": "Flying"
       },
@@ -3290,7 +3290,7 @@
       },
       "630": {
         "type": "dino",
-        "image": "dino-myt/dino_630.png",
+        "image": "dino-mys/dino_630.png",
         "name": "Camelotia",
         "class": "Herbivore"
       },
@@ -3398,7 +3398,7 @@
       },
       "662": {
         "type": "dino",
-        "image": "dino-myt/dino_662.png",
+        "image": "dino-mys/dino_662.png",
         "name": "Stygimoloch",
         "class": "Herbivore"
       },
@@ -3492,7 +3492,7 @@
       },
       "686": {
         "type": "dino",
-        "image": "dino-myt/dino_686.png",
+        "image": "dino-mys/dino_686.png",
         "name": "Borealopelta",
         "class": "Carnivore"
       },
@@ -3964,7 +3964,7 @@
       },
       "839": {
         "type": "dino",
-        "image": "dino-myt/dino_839.png",
+        "image": "dino-mys/dino_839.png",
         "name": "Aoniraptor",
         "class": "Carnivore"
       },
@@ -4366,7 +4366,7 @@
       },
       "1252": {
         "type": "dino",
-        "image": "dino-myt/dino_1252.png",
+        "image": "dino-mys/dino_1252.png",
         "name": "Adratiklit",
         "class": "Herbivore"
       },
@@ -4462,7 +4462,7 @@
       },
       "1370": {
         "type": "dino",
-        "image": "dino-myt/dino_1370.png",
+        "image": "dino-mys/dino_1370.png",
         "name": "Allosaurus",
         "class": "Carnivore"
       },
@@ -4588,7 +4588,7 @@
       },
       "1546": {
         "type": "dino",
-        "image": "dino-myt/dino_1546.png",
+        "image": "dino-mys/dino_1546.png",
         "name": "Hypsirhophu",
         "class": "Herbivore"
       },
@@ -4672,7 +4672,7 @@
       },
       "1669": {
         "type": "dino",
-        "image": "dino-myt/dino_1669.png",
+        "image": "dino-mys/dino_1669.png",
         "name": "Hypsirhophu",
         "class": "Herbivore"
       },
@@ -4864,7 +4864,7 @@
       },
       "2333": {
         "type": "dino",
-        "image": "dino-myt/dino_2333.png",
+        "image": "dino-mys/dino_2333.png",
         "name": "Hulsanpes",
         "class": "Flying"
       },
@@ -4894,7 +4894,7 @@
       },
       "2533": {
         "type": "dino",
-        "image": "dino-myt/dino_2533.png",
+        "image": "dino-mys/dino_2533.png",
         "name": "Abrictosaurus",
         "class": "Herbivore"
       },
@@ -4942,19 +4942,19 @@
       },
       "3100": {
         "type": "dino",
-        "image": "dino-myt/dino_3100.png",
+        "image": "dino-mys/dino_3100.png",
         "name": "Huayangosaurus",
         "class": "Herbivore"
       },
       "3147": {
         "type": "dino",
-        "image": "dino-myt/dino_3147.png",
+        "image": "dino-mys/dino_3147.png",
         "name": "Jintasurus",
         "class": "Herbivore"
       },
       "3340": {
         "type": "dino",
-        "image": "dino-myt/dino_3340.png",
+        "image": "dino-mys/dino_3340.png",
         "name": "Tsintaosaurus",
         "class": "Herbivore"
       },
@@ -4972,13 +4972,13 @@
       },
       "3569": {
         "type": "dino",
-        "image": "dino-myt/dino_3569.png",
+        "image": "dino-mys/dino_3569.png",
         "name": "Tyrannosaurus",
         "class": "Carnivore"
       },
       "3576": {
         "type": "dino",
-        "image": "dino-myt/dino_3576.png",
+        "image": "dino-mys/dino_3576.png",
         "name": "Borogovia",
         "class": "Flying"
       },
@@ -5002,7 +5002,7 @@
       },
       "3702": {
         "type": "dino",
-        "image": "dino-myt/dino_3702.png",
+        "image": "dino-mys/dino_3702.png",
         "name": "Piveteausaurus",
         "class": "Carnivore"
       },
@@ -5038,7 +5038,7 @@
       },
       "4080": {
         "type": "dino",
-        "image": "dino-myt/dino_4080.png",
+        "image": "dino-mys/dino_4080.png",
         "name": "Abrictosaurus",
         "class": "Herbivore"
       },
@@ -5062,7 +5062,7 @@
       },
       "4255": {
         "type": "dino",
-        "image": "dino-myt/dino_4255.png",
+        "image": "dino-mys/dino_4255.png",
         "name": "Jintasurus",
         "class": "Herbivore"
       },
@@ -5074,13 +5074,13 @@
       },
       "4335": {
         "type": "dino",
-        "image": "dino-myt/dino_4335.png",
+        "image": "dino-mys/dino_4335.png",
         "name": "Stegosaurus",
         "class": "Herbivore"
       },
       "4340": {
         "type": "dino",
-        "image": "dino-myt/dino_4340.png",
+        "image": "dino-mys/dino_4340.png",
         "name": "Compsognathus",
         "class": "Carnivore"
       },
@@ -5098,7 +5098,7 @@
       },
       "4481": {
         "type": "dino",
-        "image": "dino-myt/dino_4481.png",
+        "image": "dino-mys/dino_4481.png",
         "name": "Carnotaurus",
         "class": "Carnivore"
       },
@@ -5146,7 +5146,7 @@
       },
       "4680": {
         "type": "dino",
-        "image": "dino-myt/dino_4680.png",
+        "image": "dino-mys/dino_4680.png",
         "name": "Protoceratops",
         "class": "Herbivore"
       },
@@ -5218,7 +5218,7 @@
       },
       "5236": {
         "type": "dino",
-        "image": "dino-myt/dino_5236.png",
+        "image": "dino-mys/dino_5236.png",
         "name": "Brasilotitan",
         "class": "Herbivore"
       },
@@ -5242,7 +5242,7 @@
       },
       "5522": {
         "type": "dino",
-        "image": "dino-myt/dino_5522.png",
+        "image": "dino-mys/dino_5522.png",
         "name": "Huayangosaurus",
         "class": "Herbivore"
       },
@@ -5284,13 +5284,13 @@
       },
       "6003": {
         "type": "dino",
-        "image": "dino-myt/dino_6003.png",
+        "image": "dino-mys/dino_6003.png",
         "name": "Amargastegos",
         "class": "Carnivore"
       },
       "6067": {
         "type": "dino",
-        "image": "dino-myt/dino_6067.png",
+        "image": "dino-mys/dino_6067.png",
         "name": "Xuwulong",
         "class": "Herbivore"
       },
@@ -5356,7 +5356,7 @@
       },
       "6716": {
         "type": "dino",
-        "image": "dino-myt/dino_6716.png",
+        "image": "dino-mys/dino_6716.png",
         "name": "Chilesaurus",
         "class": "Herbivore"
       },
@@ -5374,25 +5374,25 @@
       },
       "6908": {
         "type": "dino",
-        "image": "dino-myt/dino_6908.png",
+        "image": "dino-mys/dino_6908.png",
         "name": "Proceratosaurus",
         "class": "Carnivore"
       },
       "7068": {
         "type": "dino",
-        "image": "dino-myt/dino_7068.png",
+        "image": "dino-mys/dino_7068.png",
         "name": "Alcovasaurus",
         "class": "Herbivore"
       },
       "7106": {
         "type": "dino",
-        "image": "dino-myt/dino_7106.png",
+        "image": "dino-mys/dino_7106.png",
         "name": "Borogovia",
         "class": "Flying"
       },
       "7110": {
         "type": "dino",
-        "image": "dino-myt/dino_7110.png",
+        "image": "dino-mys/dino_7110.png",
         "name": "Saurolophus",
         "class": "Herbivore"
       },
@@ -5428,25 +5428,25 @@
       },
       "7574": {
         "type": "dino",
-        "image": "dino-myt/dino_7574.png",
+        "image": "dino-mys/dino_7574.png",
         "name": "Rugops",
         "class": "Carnivore"
       },
       "7617": {
         "type": "dino",
-        "image": "dino-myt/dino_7617.png",
+        "image": "dino-mys/dino_7617.png",
         "name": "Tyrannosaurus",
         "class": "Carnivore"
       },
       "7620": {
         "type": "dino",
-        "image": "dino-myt/dino_7620.png",
+        "image": "dino-mys/dino_7620.png",
         "name": "Carnotaurus",
         "class": "Carnivore"
       },
       "7628": {
         "type": "dino",
-        "image": "dino-myt/dino_7628.png",
+        "image": "dino-mys/dino_7628.png",
         "name": "Chungkingosaurus",
         "class": "Herbivore"
       },
@@ -5458,7 +5458,7 @@
       },
       "7702": {
         "type": "dino",
-        "image": "dino-myt/dino_7702.png",
+        "image": "dino-mys/dino_7702.png",
         "name": "Jintasurus",
         "class": "Herbivore"
       },
@@ -5482,7 +5482,7 @@
       },
       "7860": {
         "type": "dino",
-        "image": "dino-myt/dino_7860.png",
+        "image": "dino-mys/dino_7860.png",
         "name": "Shuangbaisaurus",
         "class": "Carnivore"
       },
@@ -5506,7 +5506,7 @@
       },
       "8150": {
         "type": "dino",
-        "image": "dino-myt/dino_8150.png",
+        "image": "dino-mys/dino_8150.png",
         "name": "Quaesitosaurus",
         "class": "Herbivore"
       },
@@ -5524,13 +5524,13 @@
       },
       "8251": {
         "type": "dino",
-        "image": "dino-myt/dino_8251.png",
+        "image": "dino-mys/dino_8251.png",
         "name": "Hexinlusaurus",
         "class": "Herbivore"
       },
       "8252": {
         "type": "dino",
-        "image": "dino-myt/dino_8252.png",
+        "image": "dino-mys/dino_8252.png",
         "name": "Ambopteryx",
         "class": "Flying"
       },
@@ -5668,7 +5668,7 @@
       },
       "10090": {
         "type": "dino",
-        "image": "dino-myt/dino_10090.png",
+        "image": "dino-mys/dino_10090.png",
         "name": "Vitakrisaurus",
         "class": "Herbivore"
       },
@@ -5698,7 +5698,7 @@
       },
       "10362": {
         "type": "dino",
-        "image": "dino-myt/dino_10362.png",
+        "image": "dino-mys/dino_10362.png",
         "name": "Aepyornithomimus",
         "class": "Flying"
       },
@@ -5710,13 +5710,13 @@
       },
       "10567": {
         "type": "dino",
-        "image": "dino-myt/dino_10567.png",
+        "image": "dino-mys/dino_10567.png",
         "name": "Shantungosaurus",
         "class": "Herbivore"
       },
       "10570": {
         "type": "dino",
-        "image": "dino-myt/dino_10570.png",
+        "image": "dino-mys/dino_10570.png",
         "name": "Luoyanggia",
         "class": "Flying"
       },
@@ -5728,13 +5728,13 @@
       },
       "10732": {
         "type": "dino",
-        "image": "dino-myt/dino_10732.png",
+        "image": "dino-mys/dino_10732.png",
         "name": "Pararhabdodon",
         "class": "Herbivore"
       },
       "10879": {
         "type": "dino",
-        "image": "dino-myt/dino_10879.png",
+        "image": "dino-mys/dino_10879.png",
         "name": "Caenagnathus",
         "class": "Herbivore"
       },
@@ -5776,7 +5776,7 @@
       },
       "11340": {
         "type": "dino",
-        "image": "dino-myt/dino_11340.png",
+        "image": "dino-mys/dino_11340.png",
         "name": "Anzu",
         "class": "Flying"
       },
@@ -5848,7 +5848,7 @@
       },
       "12067": {
         "type": "dino",
-        "image": "dino-myt/dino_12067.png",
+        "image": "dino-mys/dino_12067.png",
         "name": "Banji",
         "class": "Carnivore"
       },
@@ -5902,7 +5902,7 @@
       },
       "12524": {
         "type": "dino",
-        "image": "dino-myt/dino_12524.png",
+        "image": "dino-mys/dino_12524.png",
         "name": "Vagaceratops",
         "class": "Herbivore"
       },
@@ -5926,7 +5926,7 @@
       },
       "12813": {
         "type": "dino",
-        "image": "dino-myt/dino_12813.png",
+        "image": "dino-mys/dino_12813.png",
         "name": "Quilmesaurus",
         "class": "Carnivore"
       },
@@ -6034,13 +6034,13 @@
       },
       "13501": {
         "type": "dino",
-        "image": "dino-myt/dino_13501.png",
+        "image": "dino-mys/dino_13501.png",
         "name": "Regaliceratops",
         "class": "Herbivore"
       },
       "13509": {
         "type": "dino",
-        "image": "dino-myt/dino_13509.png",
+        "image": "dino-mys/dino_13509.png",
         "name": "Alwalkeria",
         "class": "Herbivore"
       },
@@ -6052,13 +6052,13 @@
       },
       "13580": {
         "type": "dino",
-        "image": "dino-myt/dino_13580.png",
+        "image": "dino-mys/dino_13580.png",
         "name": "Ajkaceratops",
         "class": "Herbivore"
       },
       "13631": {
         "type": "dino",
-        "image": "dino-myt/dino_13631.png",
+        "image": "dino-mys/dino_13631.png",
         "name": "Podokesaurus",
         "class": "Carnivore"
       },
@@ -6070,7 +6070,7 @@
       },
       "13747": {
         "type": "dino",
-        "image": "dino-myt/dino_13747.png",
+        "image": "dino-mys/dino_13747.png",
         "name": "Yimenosaurus",
         "class": "Carnivore"
       },
@@ -6088,109 +6088,109 @@
       },
       "13892": {
         "type": "dino",
-        "image": "dino-myt/dino_13892.png",
+        "image": "dino-mys/dino_13892.png",
         "name": "Brachyceratops",
         "class": "Herbivore"
       },
       "14147": {
         "type": "dino",
-        "image": "dino-myt/dino_14147.png",
+        "image": "dino-mys/dino_14147.png",
         "name": "Xiongguanlong",
         "class": "Carnivore"
       },
       "14343": {
         "type": "dino",
-        "image": "dino-myt/dino_14343.png",
+        "image": "dino-mys/dino_14343.png",
         "name": "Achillesaurus",
         "class": "Flying"
       },
       "14551": {
         "type": "dino",
-        "image": "dino-myt/dino_14551.png",
+        "image": "dino-mys/dino_14551.png",
         "name": "Angaturama",
         "class": "Carnivore"
       },
       "14644": {
         "type": "dino",
-        "image": "dino-myt/dino_14644.png",
+        "image": "dino-mys/dino_14644.png",
         "name": "Wiehenvenator",
         "class": "Carnivore"
       },
       "15215": {
         "type": "dino",
-        "image": "dino-myt/dino_15215.png",
+        "image": "dino-mys/dino_15215.png",
         "name": "Triceratops",
         "class": "Herbivore"
       },
       "15590": {
         "type": "dino",
-        "image": "dino-myt/dino_15590.png",
+        "image": "dino-mys/dino_15590.png",
         "name": "Dilophosaurus",
         "class": "Carnivore"
       },
       "16050": {
         "type": "dino",
-        "image": "dino-myt/dino_16050.png",
+        "image": "dino-mys/dino_16050.png",
         "name": "Tralkasaurus",
         "class": "Carnivore"
       },
       "16661": {
         "type": "dino",
-        "image": "dino-myt/dino_16661.png",
+        "image": "dino-mys/dino_16661.png",
         "name": "Dracovenator",
         "class": "Carnivore"
       },
       "16857": {
         "type": "dino",
-        "image": "dino-myt/dino_16857.png",
+        "image": "dino-mys/dino_16857.png",
         "name": "Amurosaurus",
         "class": "Herbivore"
       },
       "16948": {
         "type": "dino",
-        "image": "dino-myt/dino_16948.png",
+        "image": "dino-mys/dino_16948.png",
         "name": "Bonitasaura",
         "class": "Herbivore"
       },
       "17372": {
         "type": "dino",
-        "image": "dino-myt/dino_17372.png",
+        "image": "dino-mys/dino_17372.png",
         "name": "Zuolong",
         "class": "Herbivore"
       },
       "17621": {
         "type": "dino",
-        "image": "dino-myt/dino_17621.png",
+        "image": "dino-mys/dino_17621.png",
         "name": "Anabisetia",
         "class": "Herbivore"
       },
       "18060": {
         "type": "dino",
-        "image": "dino-myt/dino_18060.png",
+        "image": "dino-mys/dino_18060.png",
         "name": "Wulagasaurus",
         "class": "Herbivore"
       },
       "18436": {
         "type": "dino",
-        "image": "dino-myt/dino_18436.png",
+        "image": "dino-mys/dino_18436.png",
         "name": "Archaeopteryx",
         "class": "Flying"
       },
       "18771": {
         "type": "dino",
-        "image": "dino-myt/dino_18771.png",
+        "image": "dino-mys/dino_18771.png",
         "name": "Erectopus",
         "class": "Carnivore"
       },
       "19093": {
         "type": "dino",
-        "image": "dino-myt/dino_19093.png",
+        "image": "dino-mys/dino_19093.png",
         "name": "Triceratops",
         "class": "Herbivore"
       },
       "19811": {
         "type": "dino",
-        "image": "dino-myt/dino_19811.png",
+        "image": "dino-mys/dino_19811.png",
         "name": "Kaijiangosaurus",
         "class": "Carnivore"
       }
@@ -7919,7 +7919,7 @@
       1901,
       1908
     ],
-    "myt": [
+    "mys": [
       8,
       32,
       134,
