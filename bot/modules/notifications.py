@@ -13,7 +13,7 @@ dino_owners = mongo_client.connections.dino_owners
 users = mongo_client.bot.users
 
 def dino_notification_delete(dino_id: ObjectId, not_type: str):
-    ...
+    print('dino_notification_delete', dino_id, not_type)
 
 async def dino_notification(dino_id: ObjectId, not_type: str, **kwargs):
     """ Те уведомления, которые нужно отслеживать и отсылать 1 раз
@@ -69,7 +69,8 @@ async def dino_notification(dino_id: ObjectId, not_type: str, **kwargs):
         else:
             await send_not(text, markup_inline)
 
-async def user_notification(user_id: int, not_type: str, lang: str='en', **kwargs):
+async def user_notification(user_id: int, not_type: str, 
+                            lang: str='en', **kwargs):
     """ Те которые в любом случае отправятся 1 раз
     """
     text, markup_inline = not_type, InlineKeyboardMarkup()
@@ -77,7 +78,7 @@ async def user_notification(user_id: int, not_type: str, lang: str='en', **kwarg
         "donation"
     ]
     unstandart_notification = [
-        'incubation_ready' # необходим dino_alt_id_markup 
+        'incubation_ready', 'game_end' # необходим dino_alt_id_markup 
     ]
     add_way = '.'+kwargs.get('add_way', '')
 
@@ -93,7 +94,6 @@ async def user_notification(user_id: int, not_type: str, lang: str='en', **kwarg
         log(prefix='Notification not_type', 
             message=f'User: {user_id}, Data: {not_type}', 
             lvl=2)
-
 
     log(prefix='Notification', 
         message=f'User: {user_id}, Data: {not_type} Kwargs: {kwargs}', lvl=0)
