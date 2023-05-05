@@ -248,7 +248,7 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
         if func_answer:
             # Отправка сообщения из message: dict, если None - ничего
             if ret_data['message']:
-                await bot.send_message(userid, **ret_data['message'])
+                await bot.send_message(userid, parse_mode='Markdown', **ret_data['message'])
         # Обновление данных состояния
         if not start and func_answer:
             async with bot.retrieve_data(userid, chatid) as data:
@@ -264,10 +264,3 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
         del transmitted_data['return_data']
 
         await return_function(return_data, transmitted_data)
-
-async def back_to_state():
-    """ Функция возвращает к прошлому состоянию. 
-    
-        То есть по идеи мы после ChooseStepState вызываем эту функцию и говорим что хотим вернутся к инвентарю, он проверяет это и возвращает обратно.
-    """
-    ...
