@@ -18,8 +18,7 @@ async def subscription_notification():
         try:
             chat_user = await bot.get_chat_member(sub['userid'], sub['userid'])
             lang = chat_user.user.language_code
-        except:
-            lang = 'en'
+        except: lang = 'en'
 
         await user_notification(sub['userid'], 'donation', lang, 
                                 end_text=seconds_to_str(time() - sub['sub_end'], lang),
@@ -36,14 +35,13 @@ async def subscription_check():
         try:
             chat_user = await bot.get_chat_member(sub['userid'], sub['userid'])
             lang = chat_user.user.language_code
-        except:
-            lang = 'en'
+        except: lang = 'en'
         await user_notification(sub['userid'], 'donation', lang, 
                                 add_way='subscription_end'
                                 )
 
 if __name__ != '__main__':
     if conf.active_tasks:
-        add_task(subscription_notification, 3600, 1.0)
-        add_task(subscription_check, 300, 1.0)
-        add_task(check_donations, 120, 1.0)
+        add_task(subscription_notification, 3600.0, 1.0)
+        add_task(subscription_check, 300.0, 1.0)
+        add_task(check_donations, 120.0, 1.0)
