@@ -12,7 +12,7 @@ incubations = mongo_client.tasks.incubation
 async def incubation():
     """Проверка инкубируемых яиц
     """
-    data = list(incubations.find({'incubation_time': {'$lte': int(time())}})).copy() #$lte - (<=)
+    data = list(incubations.find({'incubation_time': {'$lte': int(time())}})).copy() #$lte - incubation_time <= time()
 
     for egg in data:
         #создаём динозавра
@@ -25,8 +25,7 @@ async def incubation():
         try:
             chat_user = await bot.get_chat_member(egg['owner_id'], egg['owner_id'])
             user = chat_user.user
-        except:
-            user = None
+        except: user = None
 
         if user:
             name = user_name(user)
@@ -36,4 +35,4 @@ async def incubation():
     
 if __name__ != '__main__':
     if conf.active_tasks:
-        add_task(incubation, 10.0, 1.0)
+        add_task(incubation, 5.0, 1.0)
