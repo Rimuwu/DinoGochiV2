@@ -1,11 +1,11 @@
-import pymongo
-import threading
-
-import time
-from pprint import pprint
+import json
 import random
 import string
+import threading
+import time
+from pprint import pprint
 
+import pymongo
 
 client = pymongo.MongoClient('localhost', 27017)
 
@@ -15,6 +15,117 @@ incubation = client.tasks.incubation
 dino_owners = client.connections.dino_owners
 referals = client.connections.referals
 
+
+with open('bot/json/items.json', encoding='utf-8') as f: 
+    ITEMS = json.load(f)
+
+
+def random_dict(data: dict):
+    """Предоставляет общий формат данных, подерживающий 
+       случайные и статичные элементы.
+    
+    Типы словаря:
+    { "min": 1, "max": 2, "type": "random" }
+    >>> Случайное число от 1 до 2
+    { "act": [12, 42, 1] "type": "choice" } 
+    >>> Случайный элемент
+    { "act": 1, "type": "static" }
+    >>> Статичное число 1
+    """
+    if data["type"] == "static": return data['act']
+
+    elif data["type"] == "random":
+        if data['min'] < data['max']:
+            return random.randint(data['min'], data['max'])
+        else: return data['min']
+    
+    elif data["type"] == "choice":
+        if data['act']: return random.choice(data['act']) #type: int
+        else: return 0
+    return 0
+
+def get_data(itemid: str) -> dict:
+    """Получение данных из json"""
+
+    # Проверяем еть ли предмет с таким ключём в items.json
+    if itemid in ITEMS.keys():
+        return ITEMS[itemid]
+    else:
+        return {}
+
+def get_item_dict(itemid: str, preabil: dict = {}) -> dict:
+    ''' Создание словаря, хранящийся в инвентаре пользователя.\n
+
+        Примеры: 
+            Просто предмет
+                >>> f(12)
+                >>> {'item_id': "12"}
+
+            Предмет с предустоновленными данными
+                >>> f(30, {'uses': 10})
+                >>> {'item_id': "30", 'abilities': {'uses': 10}}
+    '''
+    d_it = {'item_id': itemid}
+    data = get_data(itemid)
+
+    if 'abilities' in data.keys():
+        abl = {}
+        for k in data['abilities'].keys():
+
+            if type(data['abilities'][k]) == int:
+                abl[k] = data['abilities'][k]
+
+            elif type(data['abilities'][k]) == dict:
+                abl[k] = random_dict(data['abilities'][k])
+
+        d_it['abilities'] = abl #type: ignore
+
+    if preabil != {}:
+        if 'abilities' in d_it.keys():
+            for ak in d_it['abilities']:
+                if ak in preabil.keys():
+
+                    if type(preabil[ak]) == int:
+                        if preabil[ak] <= d_it['abilities'][ak]: #type: ignore
+                            d_it['abilities'][ak] = preabil[ak] #type: ignore
+
+                    elif type(preabil[ak]) == dict:
+                        d_it['abilities'][ak] = random_dict(preabil[ak]) #type: ignore
+
+    return d_it
+
+
+def AddItemToUser(userid: int, itemid: str, count: int = 1, preabil: dict = {}):
+    """Добавление стандартного предмета в инвентарь
+    """
+    assert count >= 0, f'AddItemToUser, count == {count}'
+
+    item = get_item_dict(itemid, preabil)
+    find_res = items.find_one({'owner_id': userid, 'items_data': item}, {'_id': 1})
+    
+    if find_res: action = 'plus_count'
+    if 'abilities' in item: action = 'new_edited_item'
+    else: action = 'new_item'
+
+    if action == 'plus_count' and find_res:
+        items.update_one({'_id': find_res['_id']}, {'$inc': {'count': count}})
+    elif action == 'new_edited_item':
+        for _ in range(count):
+            item_dict = {
+                'owner_id': userid,
+                'items_data': item,
+                'count': 1
+            }
+            items.insert_one(item_dict, True)
+    else:
+        item_dict = {
+            'owner_id': userid,
+            'items_data': item,
+            'count': count
+        }
+        items.insert_one(item_dict)
+
+    return action
 def random_code(length: int=10):
     """Генерирует случайный код из букв и цыфр
     """
@@ -24,48 +135,18 @@ def random_code(length: int=10):
 
     return code
 
-
 def qr_item_code(item: dict, v_id: bool = True):
-        if v_id == True:
-            text = f"i{item['item_id']}"
-        else:
-            text = ''
+    text = ''
 
-        if 'abilities' in item.keys():
+    if v_id: text = f"id{item['item_id']}"
 
-            if 'uses' in item['abilities'].keys():
-                # u - ключ код для des_qr
-
-                if v_id == True:
-                    text += f".u{item['abilities']['uses']}"
-                else:
-                    text += f"{item['abilities']['uses']}"
-
-            if 'endurance' in item['abilities'].keys():
-                # e - ключ код для des_qr
-
-                if v_id == True:
-                    text += f".e{item['abilities']['endurance']}"
-                else:
-                    text += f"{item['abilities']['endurance']}"
-
-            if 'mana' in item['abilities'].keys():
-                # m - ключ код для des_qr
-
-                if v_id == True:
-                    text += f".m{item['abilities']['mana']}"
-                else:
-                    text += f"{item['abilities']['mana']}"
-
-            if 'stack' in item['abilities'].keys():
-                # s - ключ код для des_qr
-
-                if v_id == True:
-                    text += f".s{item['abilities']['stack']}"
-                else:
-                    text += f"{item['abilities']['stack']}"
-
-        return text
+    if 'abilities' in item.keys():
+        for key, item in item['abilities'].items():
+            if v_id:
+                text += f".{key[:2]}{item}"
+            else:
+                text += str(item)
+    return text
 
 
 def new_referal(user_id, code, frined_code):
@@ -84,22 +165,17 @@ def new_user(userid, last_markup,
         coins, lvl, xp, dead_dinos, dung_stats, quests, referal_system
         ):
     
-    if last_markup == 1:
-        last_markup = 'main_menu'
-    
     user = {
         'userid': userid,
 
-        'last_markup': last_markup,
+        'last_markup': 'main_menu',
         'last_message_time': last_message_time,
 
         'settings': {
             'notifications': notifications,
-            'faq': faq,
             'last_dino': None,
             'profile_view': profile_view, # 1
             'inv_view': inv_view, # [2, 3]
-            'premium_status': 0
         },
 
         'dungeon': {
@@ -145,6 +221,8 @@ def new_dino(owner_id, dino_id, status,
              name, quality, heal, eat, 
              game, mood, energy, acs):
 
+    if quality == 'myt': quality = 'mys'
+    
     dino = {
         'data_id': dino_id,
         'alt_id': f'{owner_id}_{random_code(8)}',
@@ -204,7 +282,6 @@ def work(users_list):
     n = 0
     for u in users_list:
         n += 1
-        #юзер
         new_user(u['userid'], u['settings'].get('last_markup', 'main_menu'),
                 u['last_m'], 
                 u['settings']['notifications'], u['settings'].get('vis.faq', True),
@@ -243,10 +320,10 @@ def work(users_list):
         
         for ikey in items_dict:
             item = items_dict[ikey]
-            try:
-                items.insert_one(item)
-            except Exception as error:
-                print(error, 'item', item)
+            preabil = {}
+            if 'abilities' in item['items_data']:
+                preabil = item['items_data']['abilities']
+            AddItemToUser(u['userid'], item['items_data']['item_id'], item['count'], preabil)
         
         for key, d in u['dinos'].items():
 
@@ -256,41 +333,41 @@ def work(users_list):
             elif d.get('status') == 'dino':
 
                 s = d['stats']
-                a = u['activ_items'][key]
-
                 acs = {'game': None, 'collecting': None,
                     'journey': None, 'sleep': None
                     }
+                if key in u['activ_items']:
+                    a = u['activ_items'][key]
 
-                for i in ['game', 'journey']:
+                    for i in ['game', 'journey']:
+                        try:
+                            acs[i] = a[i]
+                        except: pass
+
                     try:
-                        acs[i] = a[i]
+                        acs['collecting'] = a['hunt']
                     except: pass
 
-                try:
-                    acs['collecting'] = a['hunt']
-                except: pass
+                    try:
+                        acs['sleep'] = a['unv']
+                    except: pass
 
-                try:
-                    acs['sleep'] = a['unv']
-                except: pass
-
-                if 'dungeon' in d.keys():
-                    for key, i in d['dungeon']['equipment'].items():
-                        acs[key] = i
+                    if 'dungeon' in d.keys():
+                        for key, i in d['dungeon']['equipment'].items():
+                            acs[key] = i
+                        
+                    else:
+                        acs['armor'] = None
+                        acs['weapon'] = None
                     
-                else:
-                    acs['armor'] = None
-                    acs['weapon'] = None
-                
-                if 'user_dungeon' in u.keys():
-                    if u['user_dungeon']['equipment'] is not None:
-                        acs['backpack'] = u['user_dungeon']['equipment']['backpack']
-                        u['user_dungeon']['equipment']['backpack'] = None
+                    if 'user_dungeon' in u.keys():
+                        if u['user_dungeon']['equipment'] is not None:
+                            acs['backpack'] = u['user_dungeon']['equipment']['backpack']
+                            u['user_dungeon']['equipment']['backpack'] = None
+                        else:
+                            acs['backpack'] = None
                     else:
                         acs['backpack'] = None
-                else:
-                    acs['backpack'] = None
 
                 new_dino(u['userid'], d['dino_id'], 'pass', d['name'], d['quality'], s['heal'], s['eat'], s['game'], s['mood'], s['unv'], acs)
     
@@ -300,39 +377,39 @@ work(users_list)
 print('enddddddddddddddddddddddddddddddddddddddddddd')
 
 
-management = client.bot.management
-products_b = client.bot.products
+# management = client.bot.management
+# products_b = client.bot.products
 
-def new_product(owner_id, item, price, col):
+# def new_product(owner_id, item, price, col):
 
-    pr = {
-        'owner_id': owner_id,
-        'type': 'item_to_money',
-        'item': item,
-        'price': price,
-        'col': col
-    }
+#     pr = {
+#         'owner_id': owner_id,
+#         'type': 'item_to_money',
+#         'item': item,
+#         'price': price,
+#         'col': col
+#     }
 
-    return products_b.insert_one(pr)
+#     return products_b.insert_one(pr)
 
-print('products')
+# print('products')
 
-pr = management.find_one({'_id': 'products'})
-pr_dict = pr['products'] #type: ignore
+# pr = management.find_one({'_id': 'products'})
+# pr_dict = pr['products'] #type: ignore
 
-trg = len(pr_dict)
-a = 0
+# trg = len(pr_dict)
+# a = 0
 
-for user_key in pr_dict.keys():
-    print(f'{a} / {trg}')
-    a += 1
+# for user_key in pr_dict.keys():
+#     print(f'{a} / {trg}')
+#     a += 1
     
-    products = pr_dict[user_key]['products']
+#     products = pr_dict[user_key]['products']
 
-    for key, item in products.items():
-        new_product(int(user_key), item['item'], item['price'], item['col'])
+#     for key, item in products.items():
+#         new_product(int(user_key), item['item'], item['price'], item['col'])
     
-print('wendfg end')
+# print('wendfg end')
 
-ref = management.find_one({'_id': 'referal_system'})
-print(len(ref['codes'])) #type: ignore
+# ref = management.find_one({'_id': 'referal_system'})
+# print(len(ref['codes'])) #type: ignore
