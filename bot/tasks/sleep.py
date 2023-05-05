@@ -1,4 +1,4 @@
-from time import time
+import time
 
 from bson.objectid import ObjectId
 
@@ -26,7 +26,7 @@ async def one_time(data, one_time_unit):
         dino = dinosaurs.find_one({'_id': sleeper['dino_id']})
 
         if sleeper['sleep_type'] == 'long':
-            sec_time = int(time()) - sleeper['sleep_start']
+            sec_time = int(time.time()) - sleeper['sleep_start']
         elif sleeper['sleep_type'] == 'short':
             sec_time = sleeper['sleep_end'] - sleeper['sleep_start']
 
@@ -49,7 +49,7 @@ async def short_check_notification():
 
     """
     data = list(sleepers.find({'sleep_type': 'short', 
-                               'sleep_end': {'$lte': int(time())}
+                               'sleep_end': {'$lte': int(time.time())}
                              })).copy()
 
     for sleeper in data:
@@ -68,6 +68,6 @@ async def long_check():
 
 if __name__ != '__main__':
     if conf.active_tasks:
-        add_task(long_check, LONG_SLEEP_COLDOWN_MIN * 60, 1.0)
-        add_task(short_check, SHORT_SLEEP_COLDOWN_MIN * 60, 1.0)
-        add_task(short_check_notification, 30, 1.0)
+        add_task(long_check, LONG_SLEEP_COLDOWN_MIN * 60.0, 1.0)
+        add_task(short_check, SHORT_SLEEP_COLDOWN_MIN * 60.0, 1.0)
+        add_task(short_check_notification, 30.0, 1.0)
