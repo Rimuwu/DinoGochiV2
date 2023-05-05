@@ -9,6 +9,14 @@ from bot.const import DINOS, GAME_SETTINGS
 from bot.modules.data_format import seconds_to_str
 from bot.modules.localization import get_data
 
+def age_size(age, max_size, days): 
+    return age * ((max_size-150) // days) + 150
+
+def random_position(age: int, max_size, max_x, max_y, days = 30):
+    f = age_size(age, max_size, days)
+    x = int(age * ((max_x-250) / days)+250)
+    y = int(age * ((max_y-100) / days)+100)
+    return f, x, y
 
 def trans_paste(fg_img, bg_img, alpha=10.0, box=(0, 0)):
     """Накладывает одно изображение на другое.
@@ -96,15 +104,9 @@ def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_vie
     """
     if age > 30: age = 30
     def formul(age: int, max_size, max_x, max_y, days = 30):
-        f = age * ((max_size-150) // days) + 150
+        f = age_size(age, max_size, days)
         x = int(age * ((max_x) / days))
         y = int(age * ((max_y-150) / days)+150)
-        return f, x, y
-
-    def formul2(age: int, max_size, max_x, max_y, days = 30):
-        f = age * ((max_size-150) // days) + 150
-        x = int(age * ((max_x-250) / days)+250)
-        y = int(age * ((max_y-100) / days)+100)
         return f, x, y
 
     dino_data = DINOS['elements'][str(dino_id)]
@@ -145,7 +147,7 @@ def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_vie
 
     elif profile_view == 2:
         line1 = ImageFont.truetype('fonts/Aqum.otf', size=25)
-        sz, x, y = formul2(age, 450, 385, -180)
+        sz, x, y = random_position(age, 450, 385, -180)
         text_y = 280
 
         idraw.text((157, text_y), f'{heal}%', font = line1)
@@ -157,7 +159,7 @@ def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_vie
 
     elif profile_view == 3:
         line1 = ImageFont.truetype('fonts/Aqum.otf', size=25)
-        sz, x, y = formul2(age, 450, 275, -80)
+        sz, x, y = random_position(age, 450, 275, -80)
         text_y = 50
 
         idraw.text((157, text_y), f'{heal}%', font = line1)
@@ -168,7 +170,7 @@ def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_vie
         idraw.text((730, text_y), f'{mood}%', font = line1)
     
     elif profile_view == 4:
-        sz, x, y = formul2(age, 450, randint(170, 550), randint(-180, -100))
+        sz, x, y = random_position(age, 450, randint(170, 550), randint(-180, -100))
         if randint(0, 1):
             dino_image = dino_image.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
     
@@ -178,4 +180,22 @@ def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_vie
     dino_image = dino_image.resize((sz, sz), Image.Resampling.LANCZOS)
     img = trans_paste(dino_image, img, 1.0, (y + x, y, sz + y + x, sz + y))
 
+    return pil_image_to_file(img)
+
+def dino_game(dino_id: int):
+
+    n_img = randint(1, 2)
+    img = Image.open(f"images/game/{n_img}.png")
+
+    dino_data = DINOS['elements'][str(dino_id)]
+    dino_image = Image.open(f'images/{dino_data["image"]}')
+    
+    sz, x, y = 412, randint(-65, -35), randint(220, 340)
+
+    dino_image = dino_image.resize((sz, sz), Image.Resampling.LANCZOS)
+    dino_image = dino_image.transpose(Image.FLIP_LEFT_RIGHT)
+
+    img = trans_paste(dino_image, img, 1.0, 
+                      (y + x, x, sz + y + x, sz + x))
+    
     return pil_image_to_file(img)
