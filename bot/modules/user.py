@@ -10,6 +10,8 @@ from bot.modules.data_format import user_name, seconds_to_str
 users = mongo_client.bot.users
 items = mongo_client.bot.items
 dinosaurs = mongo_client.bot.dinosaurs
+products = mongo_client.bot.products
+dead_dinos = mongo_client.bot.dead_dinos
 
 incubations = mongo_client.tasks.incubation
 dino_owners = mongo_client.connections.dino_owners
@@ -110,7 +112,7 @@ class User:
         """Удаление юзера и всё с ним связанное из базы.
         """
 
-        for collection in [items]:
+        for collection in [items, products, dead_dinos, incubations]:
             collection.delete_many({'owner_id': self.userid})
 
         """ При полном удалении есть возможность, что у динозавра
@@ -122,9 +124,6 @@ class User:
         for conn in dinos_conn:
             #Если он главный
             if conn['type'] == 'owner':
-                #Удаляем его связь
-                dino_owners.delete_one({'_id': conn['_id']})
-
                 #Запрашиваем всех владельцев динозавра (тут уже не будет главного)
                 alt_conn_fo_dino = list(dino_owners.find(
                     {'dino_id': conn['dino_id'], 'type': 'add_owner'}))
@@ -136,6 +135,16 @@ class User:
                 else:
                     # Если пустой, то удаляем динозавра (связи уже нет)
                     Dino(conn['dino_id']).delete()
+            
+            #Удаляем его связь
+            dino_owners.delete_one({'_id': conn['_id']})
+        
+        # Удаление связи с друзьями
+        friends_conn = list(friends.find({'userid': self.userid}))
+        friends_conn2 = list(friends.find({'friendid': self.userid}))
+        
+        for conn in [friends_conn, friends_conn2]:
+            for obj in conn: friends.delete_one({'_id': obj['_id']})
 
         # Удаляем юзера
         self.delete()
