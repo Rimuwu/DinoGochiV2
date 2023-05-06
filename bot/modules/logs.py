@@ -6,11 +6,14 @@ from colorama import Fore, Style
 from bot.config import conf
 
 logging.basicConfig(
-    level=logging.INFO,
-    filename=f"{conf.logs_dir}/{strftime('%Y %m-%d %H.%M.%S')}.log",
-    filemode="w", 
-    format="%(asctime)s %(levelname)s %(message)s"
-)
+    handlers=[logging.FileHandler(
+        filename=f"{conf.logs_dir}/{strftime('%Y %m-%d %H.%M.%S')}.log", 
+        encoding='utf-8', mode='a+')
+              ],
+        format="%(asctime)s %(levelname)s %(message)s", 
+        datefmt="%F %A %T", 
+        level=logging.INFO
+        )
 
 def log(message: str, lvl: int = 1, prefix: str = 'Бот') -> None:
     """
