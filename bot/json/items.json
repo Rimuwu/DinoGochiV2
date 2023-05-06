@@ -2778,5 +2778,13 @@
       "image": "case",
       "rank": "mythical",
       "type": "case"
+    },
+    "113": {
+      "abilities": {
+        "endurance": 100
+      },
+      "image": "item113",
+      "rank": "rare",
+      "type": "journey_ac"
     }
   }
