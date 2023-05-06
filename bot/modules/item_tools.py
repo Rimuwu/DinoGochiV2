@@ -132,10 +132,13 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
             if data_item['class'] == 'ALL' or (
                 data_item['class'] == dino.data['class']):
                 # Получаем конечную характеристику
+                percent, repeat = dino.memory_percent('eat', item_id)
                 dino.stats['eat'] = edited_stats(dino.stats['eat'], 
-                                   data_item['act'] * count)
+                                   int((data_item['act'] * count)*percent))
 
-                return_text = t('item_use.eat.great', lang, 
+                return_text = t(f'item_use.eat.repeat.m{repeat}', lang, 
+                         percent=percent*100) + '\n'
+                return_text += t('item_use.eat.great', lang, 
                          item_name=item_name, eat_stat=dino.stats['eat'])
             
             else:
@@ -295,7 +298,7 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
             return_text = t('item_use.egg.egg_limit', lang, 
                             limit=dino_limit['limit'])
     
-    if data_item.get('buffs', []) and use_status and use_status and dino:
+    if data_item.get('buffs', []) and use_status and use_baff_status and dino:
         # Применяем бонусы от предметов
         return_text += '\n\n'
         
