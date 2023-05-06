@@ -104,6 +104,28 @@ class Dino:
     def sleep(self, s_type: str='long', duration: int=1):
         return start_sleep(self._id, s_type, duration)
     
+    def memory_percent(self, memory_type: str, obj: str, update: bool = True):
+        """memory_type - games / eat
+        
+           Сохраняет в памяти объект и выдаёт процент.
+           Сохраняет только при update = True
+        """
+        repeat = self.memory[memory_type].count(obj)
+        percent = GAME_SETTINGS['penalties'][memory_type][str(repeat)]
+        
+        if update:
+            max_repeat = {'games': 3, 'eat': 5}
+            
+            if len(self.memory['games']) < max_repeat[memory_type]:
+                self.update({'$push': {f'memory.{memory_type}': obj}})
+            else:
+                self.memory[memory_type].pop()
+                self.memory[memory_type].insert(0, obj)
+                self.update({'$set': 
+                    {f'memory.{memory_type}': self.memory[memory_type]}}
+                            )
+        return percent, repeat
+    
     @property
     def data(self): return get_dino_data(self.data_id)
     
