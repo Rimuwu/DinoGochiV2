@@ -41,7 +41,6 @@
             "4": 0.7,
             "5": 0.6
         }
-
     },
 
     "first_dino_time_incub": 60, 
@@ -49,6 +48,9 @@
 
     "max_eat_items": 300,
     "premium_max_eat_items": 500,
+
+    "max_collecting": 100,
+    "premium_max_collecting": 200,
 
     "new_year_item": "112",
 
