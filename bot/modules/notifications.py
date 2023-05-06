@@ -18,9 +18,9 @@ def dino_notification_delete(dino_id: ObjectId, not_type: str):
 async def dino_notification(dino_id: ObjectId, not_type: str, **kwargs):
     """ Те уведомления, которые нужно отслеживать и отсылать 1 раз
         В аргументы автоматически добавляется имя динозавра.
+        Так же это те уведомления, которые привязаны к динозавру и отправляются всем владельцам.
 
-        Если передать add_time_end=True то в аргументы дополнительно будет добавлен ключ
-        time_end в формате времени, секудны берутся из ключа secs
+        Если передать add_time_end=True то в аргументы дополнительно будет добавлен ключ time_end в формате времени, секудны берутся из ключа secs.
     """
     dino = dinosaurs.find_one({"_id": dino_id})
     owners = list(dino_owners.find({'dino_id': dino_id}))
@@ -34,24 +34,26 @@ async def dino_notification(dino_id: ObjectId, not_type: str, **kwargs):
             try:
                 chat_user = await bot.get_chat_member(owner["owner_id"], owner["owner_id"])
                 lang = chat_user.user.language_code
-            except:
-                lang = 'en'
-            if kwargs.get('add_time_end', False):
-                kwargs['time_end'] = seconds_to_str(
-                    kwargs.get('secs', 0), lang)
-                
-            data = get_data(f'notifications.{not_type}', lang)
-            text = data['text'].format(**kwargs)
-            markup_inline = inline_menu(data['inline_menu'], lang, **kwargs)
+            except: lang = 'en'
+            
+            user = users.find_one({'userid': owner['owner_id']})
+            if user and user['settings']['notifications']:
+                if kwargs.get('add_time_end', False):
+                    kwargs['time_end'] = seconds_to_str(
+                        kwargs.get('secs', 0), lang)
+                    
+                data = get_data(f'notifications.{not_type}', lang)
+                text = data['text'].format(**kwargs)
+                markup_inline = inline_menu(data['inline_menu'], lang, **kwargs)
 
-            log(prefix='DinoNotification', 
-                message=f'User: {owner["owner_id"]} DinoId: {dino_id}, Data: {not_type} Kwargs: {kwargs}', lvl=0)
-            try:
-                await bot.send_message(owner['owner_id'], text, reply_markup=markup_inline)
-            except Exception as error: 
-                log(prefix='DinoNotification Error', 
-                    message=f'User: {owner["owner_id"]} DinoId: {dino_id}, Data: {not_type} Error: {error}', 
-                    lvl=3)
+                log(prefix='DinoNotification', 
+                    message=f'User: {owner["owner_id"]} DinoId: {dino_id}, Data: {not_type} Kwargs: {kwargs}', lvl=0)
+                try:
+                    await bot.send_message(owner['owner_id'], text, reply_markup=markup_inline)
+                except Exception as error: 
+                    log(prefix='DinoNotification Error', 
+                        message=f'User: {owner["owner_id"]} DinoId: {dino_id}, Data: {not_type} Error: {error}', 
+                        lvl=3)
 
     if dino:
         kwargs['dino_name'] = dino['name']
@@ -71,14 +73,14 @@ async def dino_notification(dino_id: ObjectId, not_type: str, **kwargs):
 
 async def user_notification(user_id: int, not_type: str, 
                             lang: str='en', **kwargs):
-    """ Те которые в любом случае отправятся 1 раз
+    """ Те уведомления которые в любом случае отправятся 1 раз
     """
     text, markup_inline = not_type, InlineKeyboardMarkup()
     standart_notification = [
         "donation"
     ]
     unstandart_notification = [
-        'incubation_ready', 'game_end' # необходим dino_alt_id_markup 
+        'incubation_ready', # необходим dino_alt_id_markup, user_name
     ]
     add_way = '.'+kwargs.get('add_way', '')
 
