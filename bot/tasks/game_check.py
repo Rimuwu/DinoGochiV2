@@ -15,6 +15,7 @@ dino_owners = mongo_client.connections.dino_owners
 random.seed(1)
 REPEAT_MINUTS = 2
 ENERGY_DOWN = 0.03 * REPEAT_MINUTS
+ENERGY_DOWN2 = 0.5 * REPEAT_MINUTS
 LVL_CHANCE = 0.125 * REPEAT_MINUTS
 GAME_CHANCE = 0.17 * REPEAT_MINUTS
 
@@ -52,7 +53,7 @@ async def game_process():
         
         if dino:
             if random.uniform(0, 1) <= ENERGY_DOWN:
-                if randint(-1, 0):
+                if random.uniform(0, 1) <= ENERGY_DOWN2: 
                     mutate_dino_stat(dino, 'energy', -1)
     
             if dino['stats']['game'] < 100:
