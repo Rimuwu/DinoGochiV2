@@ -322,7 +322,7 @@ def max_lvl_xp(lvl: int): return 5 * lvl * lvl + 50 * lvl + 100
 async def experience_enhancement(userid: int, xp: int):
     """Повышает количество опыта, если выполнены условия то повышает уровень и отпарвляет уведомление
     """
-    ...
+    print(experience_enhancement, userid, xp)
 
 def user_info(data_user, lang: str):
     user = User(data_user.id)
@@ -343,6 +343,7 @@ def user_info(data_user, lang: str):
     request_count = len(friends['requests'])
     
     dinos = get_dinos_and_owners(data_user.id)
+    eggs = get_eggs(data_user.id)
 
     return_text += t('user_profile.user', lang,
                      name = user_name(data_user),
@@ -379,7 +380,17 @@ def user_info(data_user, lang: str):
                          owner=dino_owner,
                          age=seconds_to_str((dino.age.seconds // 3600) * 3600, lang, True)
                      )
-        return_text += '\n\n'
+    
+    for egg in eggs:
+        egg_rare_dict = get_data(f'rare.{egg.quality}', lang)
+        egg_rare = f'{egg_rare_dict[3]}'
+        return_text += t('user_profile.egg', lang,
+                         egg_quality=egg_rare, 
+                         remained=
+                         seconds_to_str(egg.incubation_time - int(time()), lang, True)
+                     )
+    
+    return_text += '\n\n'
 
     return_text += t('user_profile.friends', lang,
                      friends_col=friends_count,
