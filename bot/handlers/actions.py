@@ -4,24 +4,23 @@ from time import time
 from telebot.types import CallbackQuery, Message
 
 from bot.config import mongo_client
+from bot.const import GAME_SETTINGS
 from bot.exec import bot
 from bot.modules.data_format import (list_to_inline, list_to_keyboard,
                                      seconds_to_str)
 from bot.modules.dinosaur import Dino, edited_stats, end_sleep, start_sleep
+from bot.modules.images import dino_game
 from bot.modules.inventory_tools import start_inv
 from bot.modules.item import get_data as get_item_data
 from bot.modules.item import get_name
 from bot.modules.item_tools import check_accessory, use_item
 from bot.modules.localization import get_data, t
-from bot.modules.markup import feed_count_markup
-from bot.modules.data_format import list_to_inline
+from bot.modules.markup import count_markup, feed_count_markup
 from bot.modules.markup import markups_menu as m
+from bot.modules.mood import add_mood
 from bot.modules.states_tools import (ChooseIntState, ChooseOptionState,
                                       ChooseStepState)
 from bot.modules.user import User
-from bot.const import GAME_SETTINGS
-from bot.modules.images import dino_game
-from bot.modules.mood import add_mood
 
 users = mongo_client.bot.users
 items = mongo_client.bot.items
@@ -392,3 +391,34 @@ async def stop_game(message: Message):
         else:
             if last_dino.status == 'game':
                 last_dino.update({'$set': {'status': 'pass'}})
+                
+                
+async def collecting_adapter(return_data, transmissed_data):
+    ...
+
+@bot.message_handler(textstart='commands_name.actions.collecting')
+async def collecting(message: Message):
+    userid = message.from_user.id
+    lang = message.from_user.language_code
+    chatid = message.chat.id
+    user = User(userid)
+    last_dino = user.get_last_dino()
+    
+    data_options = get_data('collecting.buttons', lang)
+    options = dict(zip(data_options.values(), data_options.keys()))
+    markup = list_to_keyboard([list(data_options.values()), 
+                              [t('buttons_name.cancel', lang)]], 2)
+    
+    steps = [
+        {"type": 'option', "name": 'option', "data": {"options": options}, 
+            'message': {'text': t('collecting.way', lang), 
+            'reply_markup': markup}
+            },
+        {"type": 'int', "name": 'count', "data": {"max_int": 100}, 
+            'message': {'text': t('css.wait_count', lang), 
+            'reply_markup': count_markup(100)}
+            }
+                 ]
+    await ChooseStepState(collecting_adapter, userid, chatid, 
+                                  lang, steps, 
+                              transmitted_data={'dino': last_dino})
