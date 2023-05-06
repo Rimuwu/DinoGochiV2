@@ -1,16 +1,12 @@
+import random
+from random import randint
 from time import time
 
 from bot.config import conf, mongo_client
-from bot.exec import bot
-from bot.modules.data_format import user_name
-from bot.modules.dinosaur import insert_dino
-from bot.modules.notifications import dino_notification
-from bot.taskmanager import add_task
 from bot.modules.mood import add_mood
-from bot.modules.dinosaur import Dino, edited_stats
-from random import randint
-import random
+from bot.modules.notifications import dino_notification
 from bot.modules.user import experience_enhancement
+from bot.taskmanager import add_task
 
 game_task = mongo_client.tasks.game
 dinosaurs = mongo_client.bot.dinosaurs
