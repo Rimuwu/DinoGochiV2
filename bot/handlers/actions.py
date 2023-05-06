@@ -329,15 +329,7 @@ async def game_button(callback: CallbackQuery):
     userid = callback.from_user.id
     dino = Dino(dino_data) #type: ignore
     
-    repeat = dino.memory['games'].count(game)
-    percent = GAME_SETTINGS['penalties']["game"][str(repeat)]
-    
-    if len(dino.memory['games']) < 3:
-        dino.update({'$push': {'memory.games': game}})
-    else:
-        dino.memory['games'].pop()
-        dino.memory['games'].insert(0, game)
-        dino.update({'$set': {'memory.games': dino.memory['games']}})
+    percent, repeat = dino.memory_percent('games', game)
     
     r_t = get_data('entertainments', lang)['time'][code]['data']
     game_time = randint(*r_t) * 60
