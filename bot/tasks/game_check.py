@@ -4,9 +4,9 @@ from bot.config import conf, mongo_client
 from bot.exec import bot
 from bot.modules.data_format import user_name
 from bot.modules.dinosaur import insert_dino
-from bot.modules.notifications import user_notification
+from bot.modules.notifications import dino_notification
 from bot.taskmanager import add_task
-from bot.modules.mood import mood_while_if
+from bot.modules.mood import add_mood
 from bot.modules.dinosaur import Dino, edited_stats
 from random import randint
 import random
@@ -18,9 +18,17 @@ dino_owners = mongo_client.connections.dino_owners
 
 random.seed(1)
 REPEAT_MINUTS = 2
-ENERGY_DOWN = 0.007 * REPEAT_MINUTS
+ENERGY_DOWN = 0.03 * REPEAT_MINUTS
 LVL_CHANCE = 0.125 * REPEAT_MINUTS
 GAME_CHANCE = 0.17 * REPEAT_MINUTS
+
+def mutate_dino_stat(dino, key, value):
+    st = dino['stats'][key]
+    if st + value > 100: value = 100 - st
+    elif st + value < 0: value = -st
+    
+    dinosaurs.update_one({'_id': dino['_id']}, 
+                         {'$inc': {f'stats.{key}': value}})
 
 async def game_end():
     data = list(game_task.find({'game_end': 
@@ -32,20 +40,10 @@ async def game_end():
             dinosaurs.update_one({'_id': i['dino_id']}, 
                                  {'$set': {'status': 'pass'}})
 
-            #отправляем уведомление
-            try:
-                chat_user = await bot.get_chat_member(dino['owner_id'], dino['owner_id'])
-                user = chat_user.user
-            except: user = None
-
-            if user:
-                name = user_name(user)
-                await user_notification(dino['owner_id'], 
-                            'game_end', user.language_code, 
-                            user_name=name, 
-                            dino_alt_id_markup=dino['owner_id']['alt_id'])
-
-            mood_while_if(i['dino_id'], 'end_game', 'game', 40, 101)
+            await dino_notification(i['dino_id'], 'game_end')
+            add_mood(i['dino_id'], 'end_game', 
+                     randint(1, 2), int(10800 * i['game_percent'])
+                     )
 
         game_task.delete_one({'_id': i['_id']}) 
 
@@ -58,20 +56,20 @@ async def game_process():
         
         if dino:
             if random.uniform(0, 1) <= ENERGY_DOWN:
-                energy_stat = randint(-1, 0)
+                if randint(-1, 0):
+                    mutate_dino_stat(dino, 'energy', -1)
     
-            if dino.stats['game'] < 100:
+            if dino['stats']['game'] < 100:
                 if random.uniform(0, 1) <= LVL_CHANCE: 
                     
-                    dino_con = dino_owners.find_one({'dino_id': dino._id})
+                    dino_con = dino_owners.find_one({'dino_id': dino['_id']})
                     if dino_con:
                         userid = dino_con['owner_id']
                         await experience_enhancement(userid, randint(0, 20))
                 
-                if dino.stats['game'] < 100:
+                if dino['stats']['game'] < 100:
                     if random.uniform(0, 1) <= GAME_CHANCE:
-                        game_stat = edited_stats(dino.stats['game'], 
-                                            int(randint(2, 10) * percent))
+                        mutate_dino_stat(dino, 'game', int(randint(2, 10) * percent))
 
 if __name__ != '__main__':
     if conf.active_tasks:
