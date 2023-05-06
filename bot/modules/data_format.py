@@ -61,10 +61,13 @@ def list_to_keyboard(buttons: list, row_width: int = 3, resize_keyboard: bool = 
                                  one_time_keyboard=one_time_keyboard)
     
     for line in buttons:
-        if type(line) == list:
-            markup.add(*[i for i in line])
-        else:
-            markup.add(line)
+        try:
+            if type(line) == list:
+                markup.add(*[i for i in line])
+            else:
+                markup.add(line)
+        except Exception as e:
+            print(line, type(line), e)
 
     return markup
 
