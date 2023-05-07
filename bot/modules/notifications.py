@@ -77,7 +77,7 @@ async def user_notification(user_id: int, not_type: str,
     """
     text, markup_inline = not_type, InlineKeyboardMarkup()
     standart_notification = [
-        "donation"
+        'donation', 'lvl_up'
     ]
     unstandart_notification = [
         'incubation_ready', # необходим dino_alt_id_markup, user_name
