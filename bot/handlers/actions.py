@@ -21,6 +21,7 @@ from bot.modules.mood import add_mood
 from bot.modules.states_tools import (ChooseIntState, ChooseOptionState,
                                       ChooseStepState)
 from bot.modules.user import User
+from bot.modules.inline import inline_menu
 
 users = mongo_client.bot.users
 items = mongo_client.bot.items
@@ -113,7 +114,7 @@ async def end_choice(option: str, transmitted_data: dict):
     elif option == 'long':
         await long_sleep(last_dino, userid, lang)
 
-@bot.message_handler(textstart='commands_name.actions.put_to_bed')
+@bot.message_handler(text='commands_name.actions.put_to_bed')
 async def put_to_bed(message: Message):
     """Уложить спать динозавра
     """
@@ -161,7 +162,7 @@ async def put_to_bed(message: Message):
         await bot.send_message(userid, t('edit_dino_button.notfouned', lang),
                 reply_markup=m(userid, 'last_menu', lang))
 
-@bot.message_handler(textstart='commands_name.actions.awaken')
+@bot.message_handler(text='commands_name.actions.awaken')
 async def awaken(message: Message):
     """Пробуждение динозавра
     """
@@ -255,7 +256,7 @@ async def inventory_adapter(item, transmitted_data):
                                   lang, steps, 
                               transmitted_data=transmitted_data)
 
-@bot.message_handler(textstart='commands_name.actions.feed')
+@bot.message_handler(text='commands_name.actions.feed')
 async def feed(message: Message):
     userid = message.from_user.id
     lang = message.from_user.language_code
@@ -269,7 +270,8 @@ async def feed(message: Message):
     }
     
     await start_inv(inventory_adapter, userid, chatid, lang, ['eat'], changing_filters=False, transmitted_data=transmitted_data)
-    
+
+
 async def entertainments_adapter(game, transmitted_data):
     userid = transmitted_data['userid']
     chatid = transmitted_data['chatid']
@@ -283,9 +285,8 @@ async def entertainments_adapter(game, transmitted_data):
     markup = list_to_inline([buttons])
     await bot.send_message(chatid, t('entertainments.answer_text', lang), reply_markup=markup)
     await bot.send_message(chatid, t('entertainments.adapter', lang), reply_markup=m(userid, 'last_menu', lang))
-
     
-@bot.message_handler(textstart='commands_name.actions.entertainments')
+@bot.message_handler(text='commands_name.actions.entertainments')
 async def entertainments(message: Message):
     userid = message.from_user.id
     lang = message.from_user.language_code
@@ -315,7 +316,11 @@ async def entertainments(message: Message):
             await bot.send_message(chatid, game_data['answer_game'],reply_markup=markup) #type: ignore
         
         else:
-            await bot.send_message(chatid, t('entertainments.alredy_busy', lang))
+            await bot.send_message(chatid, t('entertainments.alredy_busy', lang,
+                                reply_markup=
+                                inline_menu('dino_profile', lang, 
+                                            dino_alt_id_markup=last_dino.alt_id
+                                                            )))
 
 @bot.callback_query_handler(is_authorized=True, 
                             func=lambda call: call.data.startswith('game_start'))
@@ -339,11 +344,11 @@ async def game_button(callback: CallbackQuery):
     text = t(f'entertainments.game_text.m{str(repeat)}', lang, 
              game=t(f'entertainments.game.{game}', lang)) + '\n'
     if percent < 1.0:
-        text += t(f'entertainments.game_text.penalty', lang, percent=percent)
+        text += t(f'entertainments.game_text.penalty', lang, percent=int(percent*100))
 
     await bot.send_photo(chatid, image, text, reply_markup=m(userid, 'last_menu', lang, True))
 
-@bot.message_handler(textstart='commands_name.actions.stop_game')
+@bot.message_handler(text='commands_name.actions.stop_game')
 async def stop_game(message: Message):
     userid = message.from_user.id
     lang = message.from_user.language_code
@@ -352,7 +357,7 @@ async def stop_game(message: Message):
     user = User(userid)
     last_dino = user.get_last_dino()
     if last_dino:
-        penalties = GAME_SETTINGS['penalties']["game"]
+        penalties = GAME_SETTINGS['penalties']["games"]
         game_data = game_task.find_one({'dino_id': last_dino._id})
         random_tear = 1
         text = ''
@@ -391,34 +396,58 @@ async def stop_game(message: Message):
         else:
             if last_dino.status == 'game':
                 last_dino.update({'$set': {'status': 'pass'}})
-                
-                
-async def collecting_adapter(return_data, transmissed_data):
+
+
+async def collecting_adapter(return_data, transmitted_data):
+    dino = transmitted_data['dino'] # type: Dino
+    count = transmitted_data['count']
+    option = transmitted_data['option']
+    userid = transmitted_data['userid']
+    chatid = transmitted_data['chatid']
+    lang = transmitted_data['lang']
+    
+    dino.collecting(option, count)
+    
+    print(return_data, transmitted_data)
     ...
 
-@bot.message_handler(textstart='commands_name.actions.collecting')
-async def collecting(message: Message):
+@bot.message_handler(text='commands_name.actions.collecting')
+async def collecting_button(message: Message):
     userid = message.from_user.id
     lang = message.from_user.language_code
     chatid = message.chat.id
     user = User(userid)
     last_dino = user.get_last_dino()
     
-    data_options = get_data('collecting.buttons', lang)
-    options = dict(zip(data_options.values(), data_options.keys()))
-    markup = list_to_keyboard([list(data_options.values()), 
-                              [t('buttons_name.cancel', lang)]], 2)
+    if last_dino:
+        if last_dino.status == 'pass':
+            if user.premium:
+                max_count = GAME_SETTINGS['premium_max_collecting']
+            else: max_count = GAME_SETTINGS['max_collecting']
+            
+            data_options = get_data('collecting.buttons', lang)
+            options = dict(zip(data_options.values(), data_options.keys()))
+            markup = list_to_keyboard([list(data_options.values()), 
+                                    [t('buttons_name.cancel', lang)]], 2)
+            
+            steps = [
+                {"type": 'option', "name": 'option', "data": {"options": options}, 
+                    'message': {'text': t('collecting.way', lang), 
+                    'reply_markup': markup}
+                    },
+                {"type": 'int', "name": 'count', "data": {"max_int": max_count}, 
+                    'message': {'text': t('css.wait_count', lang), 
+                    'reply_markup': count_markup(max_count)}
+                    }
+                        ]
+            await ChooseStepState(collecting_adapter, userid, chatid, 
+                                        lang, steps, 
+                                    transmitted_data={'dino': last_dino})
     
-    steps = [
-        {"type": 'option', "name": 'option', "data": {"options": options}, 
-            'message': {'text': t('collecting.way', lang), 
-            'reply_markup': markup}
-            },
-        {"type": 'int', "name": 'count', "data": {"max_int": 100}, 
-            'message': {'text': t('css.wait_count', lang), 
-            'reply_markup': count_markup(100)}
-            }
-                 ]
-    await ChooseStepState(collecting_adapter, userid, chatid, 
-                                  lang, steps, 
-                              transmitted_data={'dino': last_dino})
+        else:
+            await bot.send_message(chatid, t('collecting.alredy_busy', lang),
+                                reply_markup=
+                                inline_menu('dino_profile', lang, 
+                                            dino_alt_id_markup=last_dino.alt_id
+                                                            )
+                                )
