@@ -32,7 +32,7 @@ def create_eggs_image():
     """
     id_l = [] #Хранит id яиц
     bg_p = Image.open(
-        f'images/remain/backs/{choice(GAME_SETTINGS["egg_ask_backs"])}.png'
+        f'images/remain/egg_ask/{choice(GAME_SETTINGS["egg_ask_backs"])}.png'
         ) #Случайный фон
 
     for i in range(3):
@@ -183,9 +183,8 @@ def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_vie
     return pil_image_to_file(img)
 
 def dino_game(dino_id: int):
-
     n_img = randint(1, 2)
-    img = Image.open(f"images/game/{n_img}.png")
+    img = Image.open(f"images/actions/game/{n_img}.png")
 
     dino_data = DINOS['elements'][str(dino_id)]
     dino_image = Image.open(f'images/{dino_data["image"]}')
