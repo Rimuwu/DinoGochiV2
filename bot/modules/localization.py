@@ -51,10 +51,10 @@ def get_data(key: str, locale: str = "en") -> Any:
     localed_data = languages[locale]
 
     for way_key in key.split('.'):
-        if way_key.isdigit():
+        if way_key.isdigit() and type(localed_data) == list:
             way_key = int(way_key)
 
-        if way_key in localed_data.keys():
+        if way_key in localed_data:
             localed_data = localed_data[way_key]
         else:
             log(f'Ключ {key} ({locale}) не найден!', 4)
