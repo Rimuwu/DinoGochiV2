@@ -11,7 +11,7 @@ logging.basicConfig(
         encoding='utf-8', mode='a+')
               ],
         format="%(asctime)s %(levelname)s %(message)s", 
-        datefmt="%F %A %T", 
+        datefmt="%F %T", 
         level=logging.INFO
         )
 
