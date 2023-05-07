@@ -131,6 +131,27 @@ def random_code(length: int=10):
 
     return code
 
+def seconds_to_time(seconds: int) -> dict:
+    """Преобразует число в словарь
+    """
+    time_calculation = {
+        'day': 86400, 'hour': 3600, 
+        'minute': 60, 'second': 1
+    }
+    time_dict = {
+        'day': 0, 'hour': 0, 
+        'minute': 0, 'second': 0
+    }
+
+    for tp, unit in time_calculation.items():
+        tt = seconds // unit
+
+        if tt:
+            seconds -= tt * unit
+            time_dict[tp] = tt
+    
+    return time_dict 
+
 def seconds_to_str(seconds: int, lang: str='en', mini: bool=False):
     """Преобразует число секунд в строку
        Example:
@@ -162,27 +183,6 @@ def seconds_to_str(seconds: int, lang: str='en', mini: bool=False):
                 result = time_format[time_type][2]
         
         return result
-    
-    def seconds_to_time(seconds: int) -> dict:
-        """Преобразует число в словарь
-        """
-        time_calculation = {
-            'day': 86400, 'hour': 3600, 
-            'minute': 60, 'second': 1
-        }
-        time_dict = {
-            'day': 0, 'hour': 0, 
-            'minute': 0, 'second': 0
-        }
-
-        for tp, unit in time_calculation.items():
-            tt = seconds // unit
-
-            if tt:
-                seconds -= tt * unit
-                time_dict[tp] = tt
-        
-        return time_dict 
 
     data = seconds_to_time(seconds=seconds)
     for tp, unit in data.items():
