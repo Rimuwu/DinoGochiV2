@@ -60,8 +60,6 @@ class Dino:
             find_result = dinosaurs.find_one({"alt_id": self._id})
         if find_result:
             self.UpdateData(find_result)
-        else:
-            log('Динозавр не найден', 3)
 
     def UpdateData(self, data):
         if data:
@@ -92,8 +90,8 @@ class Dino:
         """
         return create_dino_image(self.data_id, self.stats, self.quality, profile_view, self.age.days, custom_url)
 
-    def collecting(self, coll_type: str):
-        return start_collecting(self._id, coll_type)
+    def collecting(self, coll_type: str, max_count: int):
+        return start_collecting(self._id, coll_type, max_count)
     
     def game(self, duration: int=1800, percent: int=1):
         return start_game(self._id, duration, percent)
@@ -116,7 +114,7 @@ class Dino:
         if update:
             max_repeat = {'games': 3, 'eat': 5}
             
-            if len(self.memory['games']) < max_repeat[memory_type]:
+            if len(self.memory[memory_type]) < max_repeat[memory_type]:
                 self.update({'$push': {f'memory.{memory_type}': obj}})
             else:
                 self.memory[memory_type].pop()
@@ -192,20 +190,19 @@ def random_dino(quality: str='com') -> int:
 def incubation_egg(egg_id: int, owner_id: int, inc_time: int=0, quality: str='random', dino_id: int=0):
     """Создание инкубируемого динозавра
     """
+    egg = Egg(ObjectId())
+    
+    egg.incubation_time = inc_time + int(time())
+    egg.egg_id = egg_id
+    egg.owner_id = owner_id
+    egg.quality = quality
+    egg.dino_id = dino_id
 
-    dino = {
-        'incubation_time': inc_time + int(time()), 
-        'egg_id': egg_id,
-        'owner_id': owner_id,
-        'quality': quality,
-        'dino_id': dino_id
-    }
-    
     if inc_time == 0: #Стандартное время инкцбации 
-        dino['incubation_time'] = int(time()) + GAME_SETTINGS['first_dino_time_incub']
+        egg.incubation_time = int(time()) + GAME_SETTINGS['first_dino_time_incub']
     
-    log(prefix='InsertEgg', message=f'owner_id: {owner_id} data: {dino}', lvl=0)
-    return incubations.insert_one(dino)
+    log(prefix='InsertEgg', message=f'owner_id: {owner_id} data: {egg.__dict__}', lvl=0)
+    return incubations.insert_one(egg.__dict__)
 
 def create_dino_connection(dino_baseid: ObjectId, owner_id: int, con_type: str='owner'):
     """ Создаёт связь в базе между пользователем и динозавром
@@ -233,48 +230,28 @@ def insert_dino(owner_id: int=0, dino_id: int=0, quality: str='random'):
     if not dino_id: dino_id = random_dino(quality)
 
     dino_data = get_dino_data(dino_id)
-    dino = {
-       'data_id': dino_id,
-       'alt_id': f'{owner_id}_{random_code(8)}',
-
-       'status': 'pass',
-       'name': dino_data['name'],
-       'quality': None,
-
-       'notifications': {},
-
-       'stats': {
-            'heal': 100, 'eat': randint(70, 100),
-            'game': randint(30, 90), 'mood': randint(20, 100),
-            'energy': randint(80, 100)
-        },
-
-       'activ_items': {
-            'game': None, 'collecting': None,
-            'journey': None, 'sleep': None,
-            
-            'armor': None,  'weapon': None,
-            'backpack': None
-       },
-
-       "memory": {
-            'games': [],
-            'eat': []
-        },
-    }
-
-    dino['quality'] = quality or dino_data['quality']
-
+    dino = Dino(ObjectId())
+    
+    dino.data_id = dino_id
+    dino.alt_id = f'{owner_id}_{random_code(8)}'
+    dino.name = dino_data['name']
+    dino.quality = quality or dino_data['quality']
+    dino.stats = {
+        'heal': 100, 'eat': randint(70, 100),
+        'game': randint(30, 90), 'mood': randint(30, 100),
+        'energy': randint(80, 100)
+        }
+    
     log(prefix='InsertDino', 
-        message=f'owner_id: {owner_id} dino_id: {dino_id} name: {dino["name"]} quality: {dino["quality"]}', 
+        message=f'owner_id: {owner_id} dino_id: {dino_id} name: {dino.name} quality: {dino.quality}', 
         lvl=0)
 
-    result = dinosaurs.insert_one(dino)
+    result = dinosaurs.insert_one(dino.__dict__)
     if owner_id != 0:
         # Создание связи, если передан id владельца
         create_dino_connection(result.inserted_id, owner_id)
 
-    return result, dino['alt_id']
+    return result, dino.alt_id
 
 def start_game(dino_baseid: ObjectId, duration: int=1800, 
                percent: int=1):
@@ -346,7 +323,7 @@ def start_journey(dino_baseid: ObjectId, duration: int=1800):
                          {'$set': {'status': 'journey'}})
     return result
 
-def start_collecting(dino_baseid: ObjectId, coll_type: str):
+def start_collecting(dino_baseid: ObjectId, coll_type: str, max_count: int):
     """Запуск активности "сбор пищи". 
        + Изменение статуса динозавра 
     """
@@ -355,7 +332,9 @@ def start_collecting(dino_baseid: ObjectId, coll_type: str):
 
     game = {
         'dino_id': dino_baseid,
-        'collecting_type': coll_type
+        'collecting_type': coll_type,
+        'max_count': max_count,
+        'items': {}
     }
     result = collecting_task.insert_one(game)
     dinosaurs.update_one({"_id": dino_baseid}, 
