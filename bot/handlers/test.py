@@ -1,6 +1,6 @@
 # Тестовые команды
 
-from telebot.types import Message
+from telebot.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultContact
 from bot.exec import bot
 from bot.modules.item import get_name, get_item_dict, get_data, AddItemToUser, DowngradeItem
 from bot.config import mongo_client, conf
@@ -57,11 +57,11 @@ async def command(message):
         print(user.id, 'not in devs')
 
 
-@bot.message_handler(commands=['img_test'])
-async def img(message):
-    user = User( message.from_user.id)
+# @bot.message_handler(commands=['img_test'])
+# async def img(message):
+#     user = User( message.from_user.id)
     
-    dino = user.get_last_dino()
-    if dino:
-        img = dino_game(dino.data_id, dino.age.days)
-        await bot.send_photo(message.chat.id, img, '13')
+#     dino = user.get_last_dino()
+#     if dino:
+#         img = dino_game(dino.data_id, dino.age.days)
+#         await bot.send_photo(message.chat.id, img, '13')
