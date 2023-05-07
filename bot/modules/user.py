@@ -1,11 +1,12 @@
 from time import time
 
 from bot.config import mongo_client
-from bot.modules.dinosaur import Dino, Egg, get_age
+from bot.exec import bot
+from bot.modules.data_format import seconds_to_str, user_name
+from bot.modules.dinosaur import Dino, Egg
+from bot.modules.localization import get_data, t
 from bot.modules.logs import log
-from bot.modules.localization import t, get_data
-from bot.modules.data_format import user_name, seconds_to_str
-
+from bot.modules.notifications import user_notification
 
 users = mongo_client.bot.users
 items = mongo_client.bot.items
@@ -171,7 +172,7 @@ class User:
 
 
 def insert_user(userid: int):
-
+    """Создание пользователя"""
     log(prefix='InsertUser', message=f'User: {userid}', lvl=0)
     return users.insert_one(User(userid).__dict__)
 
@@ -322,7 +323,41 @@ def max_lvl_xp(lvl: int): return 5 * lvl * lvl + 50 * lvl + 100
 async def experience_enhancement(userid: int, xp: int):
     """Повышает количество опыта, если выполнены условия то повышает уровень и отпарвляет уведомление
     """
-    print(experience_enhancement, userid, xp)
+    user = users.find_one({'userid': userid})
+    if user:
+        lvl = 0
+        xp = user['xp'] + xp
+        
+        try:
+            chat_user = await bot.get_chat_member(userid, userid)
+            lang = chat_user.user.language_code
+            name = user_name(chat_user.user)
+        except: 
+            lang = 'en'
+            name = 'name'
+        
+        lvl_messages = get_data('notifications.lvl_up', lang)
+        
+        while xp > 0:
+            max_xp = max_lvl_xp(user['lvl'])
+            if max_xp <= xp:
+                xp -= max_xp
+                lvl += 1
+                if lvl >= 100: break
+
+                if str(user['lvl'] + lvl) in lvl_messages: 
+                    add_way = str(user['lvl'] + lvl)
+                else: add_way = 'standart'
+
+                await user_notification(userid, 'lvl_up', lang, 
+                                        user_name=name,
+                                        lvl=str(user['lvl'] + lvl), add_way=add_way)
+            else: break
+        
+        if lvl: users.update_one({'userid': userid}, {'$inc': {'lvl': lvl}})
+        users.update_one({'userid': userid}, {'$set': {'xp': xp}})
+        
+        print('experience_enhancement', userid, xp)
 
 def user_info(data_user, lang: str):
     user = User(data_user.id)
@@ -389,8 +424,6 @@ def user_info(data_user, lang: str):
                          remained=
                          seconds_to_str(egg.incubation_time - int(time()), lang, True)
                      )
-    
-    return_text += '\n\n'
 
     return_text += t('user_profile.friends', lang,
                      friends_col=friends_count,
