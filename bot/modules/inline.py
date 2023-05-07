@@ -14,7 +14,8 @@ def inline_menu(markup_data, lang: str = 'en', **kwargs):
     text, callback = '-', '-'
     standart_keys = [
         'delete_message', 'send_request',
-        'requests', 'dino_profile', 'dino_rename'
+        'requests', 
+        'dino_profile', 'dino_rename' # dino_alt_id_markup
     ]
     if type(markup_data) == str: markup_data = [markup_data]
     
