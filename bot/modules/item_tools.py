@@ -137,7 +137,7 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
                                    int((data_item['act'] * count)*percent))
 
                 return_text = t(f'item_use.eat.repeat.m{repeat}', lang, 
-                         percent=percent*100) + '\n'
+                         percent=int(percent*100)) + '\n'
                 return_text += t('item_use.eat.great', lang, 
                          item_name=item_name, eat_stat=dino.stats['eat'])
             
