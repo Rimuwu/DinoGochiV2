@@ -258,12 +258,14 @@ def new_dino(owner_id, dino_id, status,
     }
     dino_owners.insert_one(con)
 
-def new_egg(incubation_time, egg_id, owner_id,):
+def new_egg(incubation_time, egg_id, owner_id, quality):
+    
+    if quality == 'myt': quality = 'mys'
     egg = {
         "incubation_time": int(incubation_time),
         "egg_id": egg_id,
         "owner_id": owner_id,
-        "quality": "random",
+        "quality": quality,
         "dino_id": 0
     }
 
@@ -328,7 +330,7 @@ def work(users_list):
         for key, d in u['dinos'].items():
 
             if d.get('status') == 'incubation':
-                new_egg(d['incubation_time'], d['egg_id'], u['userid'])
+                new_egg(d['incubation_time'], d['egg_id'], u['userid'], d['quality'])
             
             elif d.get('status') == 'dino':
 
