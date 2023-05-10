@@ -282,48 +282,48 @@ def work(users_list):
     n = 0
     for u in users_list:
         n += 1
-        new_user(u['userid'], u['settings'].get('last_markup', 'main_menu'),
-                u['last_m'], 
-                u['settings']['notifications'], u['settings'].get('vis.faq', True),
-                u['settings'].get('profile_view', 1),
-                [2, 3], u['coins'], u['lvl'][0],
-                u['lvl'][1], u.get('dead_dinos', 0), u.get('user_dungeon', {'statistics': []})['statistics'],
-                u.get('user_dungeon', {}).get('quests', {
-                                        "activ_quests": [],
-                                        "max_quests": 5,
-                                        "ended": 0
-                                        }),
+        # new_user(u['userid'], u['settings'].get('last_markup', 'main_menu'),
+        #         u['last_m'], 
+        #         u['settings']['notifications'], u['settings'].get('vis.faq', True),
+        #         u['settings'].get('profile_view', 1),
+        #         [2, 3], u['coins'], u['lvl'][0],
+        #         u['lvl'][1], u.get('dead_dinos', 0), u.get('user_dungeon', {'statistics': []})['statistics'],
+        #         u.get('user_dungeon', {}).get('quests', {
+        #                                 "activ_quests": [],
+        #                                 "max_quests": 5,
+        #                                 "ended": 0
+        #                                 }),
                 
-                u.get('referal_system', None)
-        )
+        #         u.get('referal_system', None)
+        # )
 
-        for friend in u['friends']['friends_list']:
-            new_friends(u['userid'], friend, 'friends')
+        # for friend in u['friends']['friends_list']:
+        #     new_friends(u['userid'], friend, 'friends')
         
-        for friend in u['friends']['requests']:
-            new_friends(u['userid'], friend, 'request')
+        # for friend in u['friends']['requests']:
+        #     new_friends(u['userid'], friend, 'request')
 
-        # предметы
-        items_dict = {}
-        for item in u['inventory']:
-            i_qr = qr_item_code(item)
+        # # предметы
+        # items_dict = {}
+        # for item in u['inventory']:
+        #     i_qr = qr_item_code(item)
 
-            if i_qr in items_dict.keys():
-                items_dict[i_qr]['count'] += 1
+        #     if i_qr in items_dict.keys():
+        #         items_dict[i_qr]['count'] += 1
             
-            else:
-                items_dict[i_qr] = {
-                    'owner_id': u['userid'], 
-                    'items_data': item, 
-                    'count': 1
-                    }
+        #     else:
+        #         items_dict[i_qr] = {
+        #             'owner_id': u['userid'], 
+        #             'items_data': item, 
+        #             'count': 1
+        #             }
         
-        for ikey in items_dict:
-            item = items_dict[ikey]
-            preabil = {}
-            if 'abilities' in item['items_data']:
-                preabil = item['items_data']['abilities']
-            AddItemToUser(u['userid'], item['items_data']['item_id'], item['count'], preabil)
+        # for ikey in items_dict:
+        #     item = items_dict[ikey]
+        #     preabil = {}
+        #     if 'abilities' in item['items_data']:
+        #         preabil = item['items_data']['abilities']
+        #     AddItemToUser(u['userid'], item['items_data']['item_id'], item['count'], preabil)
         
         for key, d in u['dinos'].items():
 
