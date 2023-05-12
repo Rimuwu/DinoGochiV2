@@ -356,8 +356,6 @@ async def experience_enhancement(userid: int, xp: int):
         
         if lvl: users.update_one({'userid': userid}, {'$inc': {'lvl': lvl}})
         users.update_one({'userid': userid}, {'$set': {'xp': xp}})
-        
-        print('experience_enhancement', userid, xp)
 
 def user_info(data_user, lang: str):
     user = User(data_user.id)
