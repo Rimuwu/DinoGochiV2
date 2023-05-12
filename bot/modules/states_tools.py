@@ -16,6 +16,7 @@ class GeneralStates(StatesGroup):
     ChooseString = State() # Состояние для ввода текста
     ChooseConfirm = State() # Состояние для подтверждения (да / нет)
     ChooseOption = State() # Состояние для выбора среди вариантов
+    ChooseCustom = State() # Состояние для кастомного обработчика
 
 def add_if_not(data: dict, userid: int, chatid: int, lang: str):
     """Добавляет минимальные данные для работы"""
@@ -73,6 +74,8 @@ async def ChooseIntState(function, userid: int,
 
         В function передаёт 
         >>> number: int, transmitted_data: dict
+        
+        Если max_int == 0, значит нет ограничения.
         
         Return:
          Возвращает True если был создано состояние, False если завершилось автоматически (минимальный и максимальный вариант совпадают)
@@ -163,6 +166,31 @@ async def ChooseOptionState(function, userid: int,
         element = options[list(options.keys())[0]]
         await function(element, transmitted_data)
         return False, 'option'
+    
+async def ChooseCustomState(function, custom_handler, 
+                         userid: int, 
+                         chatid: int, lang: str,
+                         transmitted_data=None):
+    """ Устанавливает состояние ожидания чего либо, все проверки идут через custom_handler
+    
+        custom_handler -> bool, Any !
+        в custom_handler передаётся (Message, transmitted_data)
+
+        В function передаёт 
+        >>> answer: ???, transmitted_data: dict
+        
+        Return:
+         result - второе возвращаемое из custom_handler
+    """
+    if not transmitted_data: transmitted_data = {}
+    transmitted_data = add_if_not(transmitted_data, userid, chatid, lang)
+
+    await bot.set_state(userid, GeneralStates.ChooseCustom, chatid)
+    async with bot.retrieve_data(userid, chatid) as data:
+        data['function'] = function
+        data['transmitted_data'] = transmitted_data
+        data['custom_handler'] = custom_handler
+    return True, 'custom'
 
 async def ChooseStepState(function, userid: int, 
                          chatid: int, lang: str,
