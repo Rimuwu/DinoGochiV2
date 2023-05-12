@@ -9,3 +9,6 @@ from . import transition
 from . import inventory
 from . import about_menu
 from . import profile_menu
+from . import friends
+
+from . import post_handler # Должен загружаться последний!
