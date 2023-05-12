@@ -24,6 +24,7 @@ def run():
     log('У вас логи не логятся :/')
     log('Не вижу ошибок == нет ошибок!')
     log('Кстати, в создании бота поучаствовал ChatGPT')
+    log('Ой, да что там ваш ChatGPT?! *Stable Diffusion подключился*')
 
     add_task(bot.infinity_polling, skip_pending=True, 
              timeout=666)
