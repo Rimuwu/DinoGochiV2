@@ -85,7 +85,7 @@ async def ChooseInt(message: Message):
                 t('states.ChooseInt.error_not_int', lang))
         return
 
-    if number > max_int:
+    if max_int != 0 and number > max_int:
         await bot.send_message(message.chat.id, 
                 t('states.ChooseInt.error_max_int', lang,
                 number = number, max = max_int))
@@ -185,3 +185,23 @@ async def ChooseOption(message: Message):
     else:
         await bot.send_message(message.chat.id, 
                 t('states.ChooseOption.error_not_option', lang))
+
+@bot.message_handler(state=GeneralStates.ChooseCustom, is_authorized=True)
+async def ChooseCustom(message: Message):
+    """Кастомный обработчик, принимает данные и отправляет в обработчик
+    """
+    userid = message.from_user.id
+    lang = message.from_user.language_code
+
+    async with bot.retrieve_data(userid, message.chat.id) as data:
+        custom_handler = data['custom_handler']
+        func = data['function']
+        transmitted_data = data['transmitted_data']
+
+    answer, result = custom_handler(message, transmitted_data) # Обязан возвращать bool, Any
+    
+    if answer:
+        await bot.delete_state(userid, message.chat.id)
+        await bot.reset_data(message.from_user.id,  message.chat.id)
+        await func(result, transmitted_data=transmitted_data)
+    
