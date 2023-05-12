@@ -8,7 +8,7 @@ from bot.const import GAME_SETTINGS
 from bot.exec import bot
 from bot.modules.data_format import (list_to_inline, list_to_keyboard,
                                      seconds_to_str)
-from bot.modules.dinosaur import (Dino, edited_stats, end_collecting, end_game,
+from bot.modules.dinosaur import (Dino, end_collecting, end_game,
                                   end_sleep, start_sleep)
 from bot.modules.images import dino_collecting, dino_game
 from bot.modules.inline import inline_menu
@@ -102,19 +102,24 @@ async def end_choice(option: str, transmitted_data: dict):
     chatid = transmitted_data['chatid']
     last_dino = transmitted_data['last_dino']
     
-    if option == 'short':
-        # Если короткий, то спрашиваем сколько дино должен спать
-        cancel_button = t('buttons_name.cancel', lang)
-        buttons = list_to_keyboard([cancel_button])
-        await ChooseIntState(short_sleep, userid, 
-                             chatid, lang, min_int=5, max_int=480)
+    if last_dino.status == 'pass':
+        if option == 'short':
+            # Если короткий, то спрашиваем сколько дино должен спать
+            cancel_button = t('buttons_name.cancel', lang)
+            buttons = list_to_keyboard([cancel_button])
+            await ChooseIntState(short_sleep, userid, 
+                                chatid, lang, min_int=5, max_int=480)
 
-        await bot.send_message(userid, 
-                            t('put_to_bed.choice_time', lang), 
-                            reply_markup=buttons)
+            await bot.send_message(userid, 
+                                t('put_to_bed.choice_time', lang), 
+                                reply_markup=buttons)
+        
+        elif option == 'long':
+            await long_sleep(last_dino, userid, lang)
     
-    elif option == 'long':
-        await long_sleep(last_dino, userid, lang)
+    else:
+        await bot.send_message(userid, t('put_to_bed.alredy_busy', lang),
+            reply_markup=m(userid, 'last_menu', lang))
 
 @bot.message_handler(text='commands_name.actions.put_to_bed')
 async def put_to_bed(message: Message):
@@ -187,15 +192,11 @@ async def awaken(message: Message):
                         await end_sleep(last_dino._id, sleeper['_id'], sleep_time)
                     else:
                         # Если динозавр в долгом сне проспал меньше 8-ми часов, то штраф
-                        down_mood = randint(-20, 0)
-                        mood = edited_stats(last_dino.stats['mood'], down_mood)
-
-                        last_dino.update({"$set": {'stats.mood': mood}})
+                        add_mood(last_dino._id, 'bad_dream', -1, 43200)
                         await end_sleep(last_dino._id, sleeper['_id'], send_notif=False)
                         
                         await bot.send_message(chatid, 
                                                t('awaken.down_mood', lang, 
-                                                 down_mood=down_mood,
                                                  time_end=seconds_to_str(sleep_time, lang)
                                                 ),
                                                reply_markup=m(userid, 'last_menu', lang))
@@ -273,7 +274,6 @@ async def feed(message: Message):
     
     await start_inv(inventory_adapter, userid, chatid, lang, ['eat'], changing_filters=False, transmitted_data=transmitted_data)
 
-
 async def entertainments_adapter(game, transmitted_data):
     userid = transmitted_data['userid']
     chatid = transmitted_data['chatid']
@@ -335,20 +335,21 @@ async def game_button(callback: CallbackQuery):
     userid = callback.from_user.id
     dino = Dino(dino_data) #type: ignore
     
-    percent, repeat = dino.memory_percent('games', game)
-    
-    r_t = get_data('entertainments', lang)['time'][code]['data']
-    game_time = randint(*r_t) * 60
+    if dino.status == 'pass':
+        percent, repeat = dino.memory_percent('games', game)
         
-    dino.game(game_time, percent)
-    image = dino_game(dino.data_id)
-    
-    text = t(f'entertainments.game_text.m{str(repeat)}', lang, 
-             game=t(f'entertainments.game.{game}', lang)) + '\n'
-    if percent < 1.0:
-        text += t(f'entertainments.game_text.penalty', lang, percent=int(percent*100))
+        r_t = get_data('entertainments', lang)['time'][code]['data']
+        game_time = randint(*r_t) * 60
+            
+        dino.game(game_time, percent)
+        image = dino_game(dino.data_id)
+        
+        text = t(f'entertainments.game_text.m{str(repeat)}', lang, 
+                game=t(f'entertainments.game.{game}', lang)) + '\n'
+        if percent < 1.0:
+            text += t(f'entertainments.game_text.penalty', lang, percent=int(percent*100))
 
-    await bot.send_photo(chatid, image, text, reply_markup=m(userid, 'last_menu', lang, True))
+        await bot.send_photo(chatid, image, text, reply_markup=m(userid, 'last_menu', lang, True))
 
 @bot.message_handler(text='commands_name.actions.stop_game')
 async def stop_game(message: Message):
