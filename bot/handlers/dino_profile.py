@@ -36,7 +36,7 @@ async def dino_profile(userid: int, dino: Dino, lang: str, custom_url: str):
     kwargs = {
         'em_name': tem['name'], 'dino_name': dino.name,
         'em_status': tem['status'], 'status': status_rep,
-        'em_rare': tem['rare'], 'qual': text_rare[dino.quality][0],
+        'em_rare': tem['rare'], 'qual': text_rare[dino.quality][1],
 
         'stats': stats_text
     }
