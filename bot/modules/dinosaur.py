@@ -11,6 +11,8 @@ from bot.modules.data_format import random_code, random_quality
 from bot.modules.images import create_dino_image, create_egg_image
 from bot.modules.localization import log
 from bot.modules.notifications import dino_notification
+from bot.modules.mood import add_mood
+from bot.modules.item import AddItemToUser
 
 dinosaurs = mongo_client.bot.dinosaurs
 incubations = mongo_client.tasks.incubation
@@ -90,14 +92,14 @@ class Dino:
         """
         return create_dino_image(self.data_id, self.stats, self.quality, profile_view, self.age.days, custom_url)
 
-    def collecting(self, coll_type: str, max_count: int):
-        return start_collecting(self._id, coll_type, max_count)
+    def collecting(self, owner_id: int, coll_type: str, max_count: int):
+        return start_collecting(self._id, owner_id, coll_type, max_count)
     
     def game(self, duration: int=1800, percent: int=1):
         return start_game(self._id, duration, percent)
     
-    def journey(self, duration: int=1800):
-        return start_journey(self._id, duration)
+    def journey(self, owner_id: int, duration: int=1800):
+        return start_journey(self._id, owner_id, duration)
     
     def sleep(self, s_type: str='long', duration: int=1):
         return start_sleep(self._id, s_type, duration)
@@ -253,6 +255,7 @@ def insert_dino(owner_id: int=0, dino_id: int=0, quality: str='random'):
 
     return result, dino.alt_id
 
+
 def start_game(dino_baseid: ObjectId, duration: int=1800, 
                percent: int=1):
     """Запуск активности "игра". 
@@ -269,6 +272,24 @@ def start_game(dino_baseid: ObjectId, duration: int=1800,
     dinosaurs.update_one({"_id": dino_baseid}, 
                          {'$set': {'status': 'game'}})
     return result
+
+async def end_game(dino_id: ObjectId, game_time: int, 
+                   game_percent: float, 
+                   send_notif: bool=True):
+    """Заканчивает игру и отсылает уведомление.
+    """
+    
+    dinosaurs.update_one({'_id': dino_id}, 
+                            {'$set': {'status': 'pass'}})
+    game_task.delete_one({'dino_id': dino_id}) 
+    
+    # Добавление настроения
+    add_mood(dino_id, 'end_game', 
+             randint(1, 2), int((game_time // 2) * game_percent)
+                     )
+    
+    if send_notif: await dino_notification(dino_id, 'game_end')
+
 
 def start_sleep(dino_baseid: ObjectId, s_type: str='long', 
                 duration: int=1):
@@ -291,12 +312,12 @@ def start_sleep(dino_baseid: ObjectId, s_type: str='long',
                          {'$set': {'status': 'sleep'}})
     return result
 
-async def end_sleep(dino_id: ObjectId, sleeperid: ObjectId, 
+async def end_sleep(dino_id: ObjectId,
                     sec_time: int=0, send_notif: bool=True):
     """Заканчивает сон и отсылает уведомление.
        sec_time - время в секундах, сколько спал дино.
     """
-    sleep_task.delete_one({'_id': sleeperid})
+    sleep_task.delete_one({'dino_id': dino_id})
 
     dinosaurs.update_one({'_id': dino_id}, 
                          {'$set': {'status': 'pass'}})
@@ -305,12 +326,14 @@ async def end_sleep(dino_id: ObjectId, sleeperid: ObjectId,
                             add_time_end=True,
                             secs=sec_time)
 
-def start_journey(dino_baseid: ObjectId, duration: int=1800):
+
+def start_journey(dino_baseid: ObjectId, owner_id: int, duration: int=1800):
     """Запуск активности "путешествие". 
        + Изменение статуса динозавра 
     """
 
     game = {
+        'sended': owner_id, # Так как у нас может быть несколько владельцев
         'dino_id': dino_baseid,
         'journey_start': int(time()),
         'journey_end': int(time()) + duration,
@@ -323,7 +346,8 @@ def start_journey(dino_baseid: ObjectId, duration: int=1800):
                          {'$set': {'status': 'journey'}})
     return result
 
-def start_collecting(dino_baseid: ObjectId, coll_type: str, max_count: int):
+
+def start_collecting(dino_baseid: ObjectId, owner_id: int, coll_type: str, max_count: int):
     """Запуск активности "сбор пищи". 
        + Изменение статуса динозавра 
     """
@@ -331,15 +355,37 @@ def start_collecting(dino_baseid: ObjectId, coll_type: str, max_count: int):
     assert coll_type in ['collecting', 'hunt', 'fishing', 'all'], f'Неподходящий аргумент {coll_type}'
 
     game = {
+        'sended': owner_id, # Так как у нас может быть несколько владельцев
         'dino_id': dino_baseid,
         'collecting_type': coll_type,
         'max_count': max_count,
+        'now_count': 0,
         'items': {}
     }
     result = collecting_task.insert_one(game)
     dinosaurs.update_one({"_id": dino_baseid}, 
                          {'$set': {'status': 'collecting'}})
     return result
+
+async def end_collecting(dino_id: ObjectId, items: dict, recipient: int,
+                         items_names: str,
+                         send_notif: bool = True):
+    """Конец сбора пищи,
+       items_name - сгенерированное сообщение для уведолмения
+       items - словарь типа {'id': count: int} с предметами для добавления
+       recipient - тот кто получит собранные предметы
+    """
+
+    collecting_task.delete_one({'dino_id': dino_id})
+    dinosaurs.update_one({'_id': dino_id}, 
+                        {'$set': {'status': 'pass'}})
+
+    for key_id, count in items.items():
+        AddItemToUser(recipient, key_id, count)
+
+    if send_notif:
+        await dino_notification(dino_id, 'end_collecting', items_names=items_names)
+
 
 def edited_stats(before: int, unit: int):
     """ Лёгкая функция проверки на 
