@@ -8,11 +8,13 @@ from bot.const import GAME_SETTINGS
 from bot.exec import bot
 from bot.modules.data_format import (list_to_inline, list_to_keyboard,
                                      seconds_to_str)
-from bot.modules.dinosaur import Dino, edited_stats, end_sleep, start_sleep
-from bot.modules.images import dino_game
+from bot.modules.dinosaur import (Dino, edited_stats, end_collecting, end_game,
+                                  end_sleep, start_sleep)
+from bot.modules.images import dino_collecting, dino_game
+from bot.modules.inline import inline_menu
 from bot.modules.inventory_tools import start_inv
 from bot.modules.item import get_data as get_item_data
-from bot.modules.item import get_name
+from bot.modules.item import get_name, counts_items
 from bot.modules.item_tools import check_accessory, use_item
 from bot.modules.localization import get_data, t
 from bot.modules.markup import count_markup, feed_count_markup
@@ -21,13 +23,13 @@ from bot.modules.mood import add_mood
 from bot.modules.states_tools import (ChooseIntState, ChooseOptionState,
                                       ChooseStepState)
 from bot.modules.user import User
-from bot.modules.inline import inline_menu
 
 users = mongo_client.bot.users
 items = mongo_client.bot.items
 dinosaurs = mongo_client.bot.dinosaurs
 sleep_task = mongo_client.tasks.sleep
 game_task = mongo_client.tasks.game
+collecting_task = mongo_client.tasks.collecting
 
 
 @bot.message_handler(textstart='commands_name.actions.dino_button')
@@ -284,7 +286,7 @@ async def entertainments_adapter(game, transmitted_data):
         
     markup = list_to_inline([buttons])
     await bot.send_message(chatid, t('entertainments.answer_text', lang), reply_markup=markup)
-    await bot.send_message(chatid, t('entertainments.adapter', lang), reply_markup=m(userid, 'last_menu', lang))
+    await bot.send_message(chatid, t('back_text.actions_menu', lang), reply_markup=m(userid, 'last_menu', lang))
     
 @bot.message_handler(text='commands_name.actions.entertainments')
 async def entertainments(message: Message):
@@ -386,8 +388,8 @@ async def stop_game(message: Message):
                     # Завершение без дебаффа
                     text = t('stop_game.whatever', lang)
 
-                game_task.delete_one({'_id': game_data['_id']})
-                last_dino.update({'$set': {'status': 'pass'}})
+                await end_game(last_dino._id, 
+                               game_data['game_end'] - game_data['game_start'], game_data['game_percent'])
             else:
                 # Невозможно оторвать от игры
                 text = t('stop_game.dont_tear', lang)
@@ -400,16 +402,26 @@ async def stop_game(message: Message):
 
 async def collecting_adapter(return_data, transmitted_data):
     dino = transmitted_data['dino'] # type: Dino
-    count = transmitted_data['count']
-    option = transmitted_data['option']
-    userid = transmitted_data['userid']
+    count = return_data['count']
+    option = return_data['option']
     chatid = transmitted_data['chatid']
+    userid = transmitted_data['userid']
     lang = transmitted_data['lang']
     
-    dino.collecting(option, count)
+    dino.collecting(userid, option, count)
     
-    print(return_data, transmitted_data)
-    ...
+    image = dino_collecting(dino.data_id, option)
+    text = t(f'collecting.result.{option}', lang,
+             dino_name=dino.name, count=count)
+    stop_button = t(f'collecting.stop_button.{option}', lang)
+    markup = list_to_inline([
+        {stop_button: f'collecting stop {dino.alt_id}'}])
+    
+    await bot.send_photo(chatid, image, text, reply_markup=markup)
+    await bot.send_message(chatid, t('back_text.actions_menu', lang),
+                                reply_markup=m(userid, 'last_menu', lang)
+                                )
+    
 
 @bot.message_handler(text='commands_name.actions.collecting')
 async def collecting_button(message: Message):
@@ -436,7 +448,7 @@ async def collecting_button(message: Message):
                     'reply_markup': markup}
                     },
                 {"type": 'int', "name": 'count', "data": {"max_int": max_count}, 
-                    'message': {'text': t('css.wait_count', lang), 
+                    'message': {'text': t('collecting.wait_count', lang), 
                     'reply_markup': count_markup(max_count)}
                     }
                         ]
@@ -448,6 +460,60 @@ async def collecting_button(message: Message):
             await bot.send_message(chatid, t('collecting.alredy_busy', lang),
                                 reply_markup=
                                 inline_menu('dino_profile', lang, 
-                                            dino_alt_id_markup=last_dino.alt_id
-                                                            )
+                                            dino_alt_id_markup=last_dino.alt_id)
                                 )
+            
+@bot.message_handler(text='commands_name.actions.progress')
+async def collecting_progress(message: Message):
+    userid = message.from_user.id
+    lang = message.from_user.language_code
+    chatid = message.chat.id
+    
+    user = User(userid)
+    last_dino = user.get_last_dino()
+    if last_dino:
+        
+        data = collecting_task.find_one({'dino_id': last_dino._id})
+        if data:
+            stop_button = t(
+                f'collecting.stop_button.{data["collecting_type"]}', lang)
+
+            image = open(f'images/actions/collecting/{data["collecting_type"]}.png', 'rb')
+            text = t(f'collecting.progress.{data["collecting_type"]}', lang,
+                    now = data['now_count'], max_count=data['max_count']
+                    )
+            
+            await bot.send_photo(chatid, image, text, 
+                                 reply_markup=list_to_inline(
+                                  [{stop_button: f'collecting stop {last_dino.alt_id}'}]
+                                     ))
+        else:
+            await bot.send_message(chatid, '❌',
+                                    reply_markup=m(userid, 'last_menu', lang)
+                                    )
+    
+
+@bot.callback_query_handler(is_authorized=True, 
+                            func=
+                            lambda call: call.data.startswith('collecting'))
+async def collecting_callback(callback: CallbackQuery):
+    dino_data = callback.data.split()[2]
+    action = callback.data.split()[1]
+    
+    lang = callback.from_user.language_code
+    chatid = callback.message.chat.id
+    userid = callback.from_user.id
+    
+    dino = Dino(dino_data) #type: ignore
+    data = collecting_task.find_one({'dino_id': dino._id})
+    if data:
+        items_list = []
+        for key, count in data['items'].items():
+            items_list += [key] * count
+            
+        items_names = counts_items(items_list, lang)
+            
+        if action == 'stop':
+            await end_collecting(dino._id, 
+                                 data['items'], data['sended'], 
+                                 items_names)
