@@ -198,3 +198,40 @@ def dino_game(dino_id: int):
                       (y + x, x, sz + y + x, sz + x))
     
     return pil_image_to_file(img)
+
+# def dino_journey(bd_user, user, dino_user_id):
+
+#     dino_id = str(bd_user['dinos'][dino_user_id]['dino_id'])
+#     n_img = random.randint(1, 5)
+#     bg_p = Image.open(f"images/journey/{n_img}.png")
+
+#     dino_image = Image.open("images/" + str(json_f['elements'][dino_id]['image']))
+#     sz = 412
+#     dino_image = dino_image.resize((sz, sz), Image.Resampling.LANCZOS)
+#     dino_image = dino_image.transpose(Image.FLIP_LEFT_RIGHT)
+
+#     xy = -35
+#     x2 = random.randint(80, 120)
+#     img = Functions.trans_paste(dino_image, bg_p, 1.0, (xy + x2, xy, sz + xy + x2, sz + xy))
+
+#     n_rand = random.randint(1,3) #Создано чтобы не смешивались фотки
+
+#     img.save(f'{config.TEMP_DIRECTION}/journey_{n_rand}.png')
+#     profile = open(f"{config.TEMP_DIRECTION}/journey_{n_rand}.png", 'rb')
+
+#     return profile
+
+def dino_collecting(dino_id: int, col_type: str):
+    img = Image.open(f"images/actions/collecting/{col_type}.png")
+
+    dino_data = DINOS['elements'][str(dino_id)]
+    dino_image = Image.open(f'images/{dino_data["image"]}')
+    
+    sz, x, y = 350, 10, 50
+
+    dino_image = dino_image.resize((sz, sz), Image.Resampling.BILINEAR)
+    dino_image = dino_image.transpose(Image.FLIP_LEFT_RIGHT)
+
+    img = trans_paste(dino_image, img, 1.0, 
+                      (y + x, x, sz + y + x, sz + x))
+    return pil_image_to_file(img)
