@@ -7,6 +7,7 @@ from bot.modules.mood import add_mood
 from bot.modules.notifications import dino_notification
 from bot.modules.user import experience_enhancement
 from bot.taskmanager import add_task
+from bot.modules.dinosaur import end_game
 
 game_task = mongo_client.tasks.game
 dinosaurs = mongo_client.bot.dinosaurs
@@ -32,17 +33,8 @@ async def game_end():
         {'$lte': int(time())}})).copy()
 
     for i in data:
-        dino = dinosaurs.find_one({'_id': i['dino_id']})
-        if dino:
-            dinosaurs.update_one({'_id': i['dino_id']}, 
-                                 {'$set': {'status': 'pass'}})
-
-            await dino_notification(i['dino_id'], 'game_end')
-            add_mood(i['dino_id'], 'end_game', 
-                     randint(1, 2), int(10800 * i['game_percent'])
-                     )
-
-        game_task.delete_one({'_id': i['_id']}) 
+        await end_game(i['dino_id'], 
+                       i['game_end'] - i['game_start'], i['game_percent'])
 
 async def game_process():
     data = list(game_task.find({'game_end': {'$gte': int(time())}})).copy()
@@ -62,7 +54,7 @@ async def game_process():
                     dino_con = dino_owners.find_one({'dino_id': dino['_id']})
                     if dino_con:
                         userid = dino_con['owner_id']
-                        await experience_enhancement(userid, randint(0, 20))
+                        await experience_enhancement(userid, randint(1, 19))
                 
                 if dino['stats']['game'] < 100:
                     if random.uniform(0, 1) <= GAME_CHANCE:
