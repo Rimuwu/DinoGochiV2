@@ -462,8 +462,10 @@ def counts_items(id_list: list, lang: str, separator: str = ','):
         if col > 1: name += f" x{col}"
         
         items_list.append(name)
-
-    return f"{separator} ".join(items_list)
+    
+    if items_list:
+        return f"{separator} ".join(items_list)
+    else: return '-'
 
 def item_info(item: dict, lang: str):
     """Собирает информацию и предмете, пригодную для чтения
