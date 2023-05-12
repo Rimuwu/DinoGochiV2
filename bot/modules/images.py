@@ -9,8 +9,51 @@ from bot.const import DINOS, GAME_SETTINGS
 from bot.modules.data_format import seconds_to_str
 from bot.modules.localization import get_data
 
+
+FONTS = {
+    'line30': ImageFont.truetype('fonts/Aqum.otf', size=30),
+    'line25': ImageFont.truetype('fonts/Aqum.otf', size=25),
+}
+
+positions = {
+    1: {
+        'heal': (518, 93),
+        'eat': (518, 170),
+        'game': (718, 93),
+        'mood': (718, 170),
+        'energy': (718, 247),
+        'formul': (400, 75, -60),
+        'line': 'line30'
+    },
+    2: {
+        'heal': (157, 280),
+        'eat': (298, 280),
+        'game': (440, 280),
+        'mood': (585, 280),
+        'energy': (730, 280),
+        'formul': (450, 385, -180),
+        'line': 'line25'
+    },
+    2: {
+        'heal': (157, 50),
+        'eat': (298, 50),
+        'game': (440, 50),
+        'mood': (585, 50),
+        'energy': (730, 50),
+        'formul': (450, 275, -80),
+        'line': 'line25'
+    }
+}
+
 def age_size(age, max_size, days): 
     return age * ((max_size-150) // days) + 150
+
+def formul(age: int, max_size, max_x, max_y, days = 30):
+    if days > 30: days = 30
+    f = age_size(age, max_size, days)
+    x = int(age * ((max_x) / days))
+    y = int(age * ((max_y-150) / days)+150)
+    return f, x, y
 
 def random_position(age: int, max_size, max_x, max_y, days = 30):
     f = age_size(age, max_size, days)
@@ -102,12 +145,6 @@ def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_vie
        dino_id - id картинки динозавра
        stats - словарь с харрактеристиками динозавра ( {'heal': 0, 'eat': 0, 'sleep': 0, 'game': 0, 'mood': 0} )
     """
-    if age > 30: age = 30
-    def formul(age: int, max_size, max_x, max_y, days = 30):
-        f = age_size(age, max_size, days)
-        x = int(age * ((max_x) / days))
-        y = int(age * ((max_y-150) / days)+150)
-        return f, x, y
 
     dino_data = DINOS['elements'][str(dino_id)]
     img = Image.open(
@@ -115,8 +152,7 @@ def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_vie
     if custom_url:
         try:
             response = requests.get(custom_url, stream = True)
-            response = Image.open(io.BytesIO(response.content))
-            response = response.convert("RGBA")
+            response = Image.open(io.BytesIO(response.content)).convert("RGBA")
             img = response.resize((900, 350), Image.Resampling.LANCZOS)
         except: custom_url = ''
         
@@ -127,47 +163,15 @@ def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_vie
 
     dino_image = Image.open(f'images/{dino_data["image"]}')
     dino_image = dino_image.resize((1024, 1024), Image.Resampling.LANCZOS)
-
-    heal, eat, energy = stats['heal'], stats['eat'], stats['energy']
-    game, mood = stats['game'], stats['mood']
-    sz, x, y = 450, 0, 0
-
     idraw = ImageDraw.Draw(img)
-
-    if profile_view == 1:
-        line1 = ImageFont.truetype('fonts/Aqum.otf', size=30)
-        sz, x, y = formul(age, 400, 75, -60)
-
-        idraw.text((518, 93), f'{heal}%', font = line1)
-        idraw.text((518, 170), f'{eat}%', font = line1)
-
-        idraw.text((718, 93), f'{game}%', font = line1)
-        idraw.text((718, 170), f'{mood}%', font = line1)
-        idraw.text((718, 247), f'{energy}%', font = line1)
-
-    elif profile_view == 2:
-        line1 = ImageFont.truetype('fonts/Aqum.otf', size=25)
-        sz, x, y = random_position(age, 450, 385, -180)
-        text_y = 280
-
-        idraw.text((157, text_y), f'{heal}%', font = line1)
-        idraw.text((298, text_y), f'{eat}%', font = line1)
-        idraw.text((440, text_y), f'{energy}%', font = line1)
-
-        idraw.text((585, text_y), f'{game}%', font = line1)
-        idraw.text((730, text_y), f'{mood}%', font = line1)
-
-    elif profile_view == 3:
-        line1 = ImageFont.truetype('fonts/Aqum.otf', size=25)
-        sz, x, y = random_position(age, 450, 275, -80)
-        text_y = 50
-
-        idraw.text((157, text_y), f'{heal}%', font = line1)
-        idraw.text((298, text_y), f'{eat}%', font = line1)
-        idraw.text((440, text_y), f'{energy}%', font = line1)
-
-        idraw.text((585, text_y), f'{game}%', font = line1)
-        idraw.text((730, text_y), f'{mood}%', font = line1)
+    
+    if profile_view != 4:
+        p_data = positions[profile_view]
+        line = FONTS[p_data['line']]
+        sz, x, y = formul(age, *p_data['formul'])
+        
+        for char in ['heal', 'eat', 'game', 'mood', 'energy']:
+             idraw.text(p_data[char], f'{stats[char]}%', font = line)
     
     elif profile_view == 4:
         sz, x, y = random_position(age, 450, randint(170, 550), randint(-180, -100))
