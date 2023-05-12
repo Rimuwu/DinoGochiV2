@@ -9,10 +9,12 @@ from bot.const import DINOS, GAME_SETTINGS
 from bot.modules.data_format import seconds_to_str
 from bot.modules.localization import get_data
 
-
 FONTS = {
     'line30': ImageFont.truetype('fonts/Aqum.otf', size=30),
     'line25': ImageFont.truetype('fonts/Aqum.otf', size=25),
+    'line35': ImageFont.truetype('fonts/Aqum.otf', size=35),
+    'line45': ImageFont.truetype('fonts/Aqum.otf', size=45),
+    'line55': ImageFont.truetype('fonts/Aqum.otf', size=55),
 }
 
 positions = {
@@ -22,7 +24,7 @@ positions = {
         'game': (718, 93),
         'mood': (718, 170),
         'energy': (718, 247),
-        'formul': (400, 75, -60),
+        'age_resizing': (400, 75, -60),
         'line': 'line30'
     },
     2: {
@@ -31,7 +33,7 @@ positions = {
         'game': (440, 280),
         'mood': (585, 280),
         'energy': (730, 280),
-        'formul': (450, 385, -180),
+        'age_resizing': (450, 385, -180),
         'line': 'line25'
     },
     2: {
@@ -40,15 +42,23 @@ positions = {
         'game': (440, 50),
         'mood': (585, 50),
         'energy': (730, 50),
-        'formul': (450, 275, -80),
+        'age_resizing': (450, 275, -80),
         'line': 'line25'
     }
 }
 
-def age_size(age, max_size, days): 
-    return age * ((max_size-150) // days) + 150
+img_dates = {
+    'random': (207, 70, 204),
+    'com': (108, 139, 150),
+    'unc': (68, 235, 90),
+    'rar': (68, 143, 235),
+    'myt': (230, 103, 175),
+    'leg': (255, 212, 59)
+}
 
-def formul(age: int, max_size, max_x, max_y, days = 30):
+def age_size(age, max_size, days): return age * ((max_size-150) // days) + 150
+
+def age_resizing(age: int, max_size, max_x, max_y, days = 30):
     if age > days: age = days
     f = age_size(age, max_size, days)
     x = int(age * ((max_x) / days))
@@ -94,15 +104,6 @@ def create_egg_image(egg_id: int, rare: str='random', seconds: int=0, lang: str=
        seconds - секунды до конца инкубации
        lang - язык текста
     """
-    img_dates = {
-        'random': (207, 70, 204),
-        'com': (108, 139, 150),
-        'unc': (68, 235, 90),
-        'rar': (68, 143, 235),
-        'myt': (230, 103, 175),
-        'leg': (255, 212, 59)
-    }
-
     rares = get_data('rare', lang)
     time_end = seconds_to_str(seconds, lang, mini=True)
     text_dict = get_data('p_profile', lang)
@@ -114,29 +115,20 @@ def create_egg_image(egg_id: int, rare: str='random', seconds: int=0, lang: str=
     egg = Image.open(f'images/{DINOS["elements"][str(egg_id)]["image"]}')
     egg = egg.resize((290, 290), Image.Resampling.LANCZOS)
     img = trans_paste(egg, bg_p, 1.0, (-50, 40))
-
     idraw = ImageDraw.Draw(img)
-    line1 = ImageFont.truetype('fonts/Comic Sans MS.ttf', size=35)
-    line2 = ImageFont.truetype('fonts/Comic Sans MS.ttf', size=45)
-    line3 = ImageFont.truetype('fonts/Comic Sans MS.ttf', size=55)
 
-    idraw.text((310, 110), text_dict['text_info'], 
-            font=line3,
-            stroke_width=1
-    )
+    idraw.text((310, 120), text_dict['text_info'], 
+            font=FONTS['line55'],
+            stroke_width=1)
     idraw.text((210, 210), text_dict['text_ost'], 
-            font=line2
-    )
+            font=FONTS['line45'])
     idraw.text(text_dict['time_position'], time_end, 
-            font=line1, 
-    )
+            font=FONTS['line35'], )
     idraw.text((210, 270), text_dict['rare_name'],
-            font=line2
-    )
+            font=FONTS['line45'])
     idraw.text(text_dict['rare_position'], quality_text, 
-            font=line1, 
-            fill=fill
-    )
+            font=FONTS['line35'], fill=fill)
+    
     return pil_image_to_file(img)
 
 def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_view: int=1, age: int = 30, custom_url: str=''):
@@ -168,7 +160,7 @@ def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_vie
     if profile_view != 4:
         p_data = positions[profile_view]
         line = FONTS[p_data['line']]
-        sz, x, y = formul(age, *p_data['formul'])
+        sz, x, y = age_resizing(age, *p_data['age_resizing'])
         
         for char in ['heal', 'eat', 'game', 'mood', 'energy']:
              idraw.text(p_data[char], f'{stats[char]}%', font = line)
