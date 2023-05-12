@@ -49,7 +49,7 @@ def age_size(age, max_size, days):
     return age * ((max_size-150) // days) + 150
 
 def formul(age: int, max_size, max_x, max_y, days = 30):
-    if days > 30: days = 30
+    if age > days: age = days
     f = age_size(age, max_size, days)
     x = int(age * ((max_x) / days))
     y = int(age * ((max_y-150) / days)+150)
