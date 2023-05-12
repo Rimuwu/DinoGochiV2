@@ -228,6 +228,13 @@ def insert_dino(owner_id: int=0, dino_id: int=0, quality: str='random'):
     """Создания динозавра в базе
        + связь с владельцем если передан owner_id 
     """
+    
+    def generation_code(owner_id):
+        code = f'{owner_id}_{random_code(8)}'
+        if dinosaurs.find_one({'alt_id': code}):
+            code = generation_code(owner_id)
+        return code
+    
     if quality in ['random', 'rar']: quality = random_quality()
     if not dino_id: dino_id = random_dino(quality)
 
@@ -235,7 +242,7 @@ def insert_dino(owner_id: int=0, dino_id: int=0, quality: str='random'):
     dino = Dino(ObjectId())
     
     dino.data_id = dino_id
-    dino.alt_id = f'{owner_id}_{random_code(8)}'
+    dino.alt_id = generation_code(owner_id)
     dino.name = dino_data['name']
     dino.quality = quality or dino_data['quality']
     dino.stats = {
