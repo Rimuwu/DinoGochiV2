@@ -19,6 +19,12 @@ async def infouser(message: Message):
     photos = await bot.get_user_profile_photos(userid, limit=1)
     if photos.photos:
         photo_id = photos.photos[0][0].file_id #type: ignore
-        await bot.send_photo(chatid, photo_id, text, parse_mode='Markdown')
+        try:
+            await bot.send_photo(chatid, photo_id, text, parse_mode='Markdown')
+        except:
+            await bot.send_photo(chatid, photo_id, text)
     else:
-        await bot.send_message(message.chat.id, text, parse_mode='Markdown')
+        try:
+            await bot.send_message(message.chat.id, text, parse_mode='Markdown')
+        except:
+            await bot.send_message(message.chat.id, text)
