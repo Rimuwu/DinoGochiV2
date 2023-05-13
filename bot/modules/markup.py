@@ -311,3 +311,11 @@ def confirm_markup(lang: str='en') -> ReplyKeyboardMarkup:
         [t('buttons_name.confirm', lang)], 
         [t('buttons_name.cancel', lang)]]
     )
+    
+def cancel_markup(lang: str='en') -> ReplyKeyboardMarkup:
+    """Создаёт клавиатуру для отмены
+
+    Args:
+        lang (str, optional):  Язык кнопки
+    """
+    return list_to_keyboard([t('buttons_name.cancel', lang)])
