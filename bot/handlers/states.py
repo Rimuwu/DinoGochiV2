@@ -198,7 +198,7 @@ async def ChooseCustom(message: Message):
         func = data['function']
         transmitted_data = data['transmitted_data']
 
-    answer, result = custom_handler(message, transmitted_data) # Обязан возвращать bool, Any
+    answer, result = await custom_handler(message, transmitted_data) # Обязан возвращать bool, Any
     
     if answer:
         await bot.delete_state(userid, message.chat.id)
