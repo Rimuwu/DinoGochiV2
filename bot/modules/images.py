@@ -36,7 +36,7 @@ positions = {
         'age_resizing': (450, 385, -180),
         'line': 'line25'
     },
-    2: {
+    3: {
         'heal': (157, 50),
         'eat': (298, 50),
         'game': (440, 50),
@@ -58,14 +58,14 @@ img_dates = {
 
 def age_size(age, max_size, days): return age * ((max_size-150) // days) + 150
 
-def age_resizing(age: int, max_size, max_x, max_y, days = 30):
+def vertical_resizing(age: int, max_size, max_x, max_y, days = 30):
     if age > days: age = days
     f = age_size(age, max_size, days)
     x = int(age * ((max_x) / days))
     y = int(age * ((max_y-150) / days)+150)
     return f, x, y
 
-def random_position(age: int, max_size, max_x, max_y, days = 30):
+def horizontal_resizing(age: int, max_size, max_x, max_y, days = 30):
     f = age_size(age, max_size, days)
     x = int(age * ((max_x-250) / days)+250)
     y = int(age * ((max_y-100) / days)+100)
@@ -160,13 +160,16 @@ def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_vie
     if profile_view != 4:
         p_data = positions[profile_view]
         line = FONTS[p_data['line']]
-        sz, x, y = age_resizing(age, *p_data['age_resizing'])
+        if profile_view == 1:
+            sz, x, y = vertical_resizing(age, *p_data['age_resizing'])
+        else:
+            sz, x, y = horizontal_resizing(age, *p_data['age_resizing'])
         
         for char in ['heal', 'eat', 'game', 'mood', 'energy']:
              idraw.text(p_data[char], f'{stats[char]}%', font = line)
     
     elif profile_view == 4:
-        sz, x, y = random_position(age, 450, randint(170, 550), randint(-180, -100))
+        sz, x, y = horizontal_resizing(age, 450, randint(170, 550), randint(-180, -100))
         if randint(0, 1):
             dino_image = dino_image.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
     
