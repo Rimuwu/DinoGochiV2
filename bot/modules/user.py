@@ -1,4 +1,5 @@
 from time import time
+from telebot.formatting import escape_markdown
 
 from bot.config import mongo_client
 from bot.exec import bot
@@ -234,8 +235,20 @@ def get_frineds(userid: int) -> dict:
             data_list = friends.find({st: userid, 'type': 'requests'})
             for conn_data in data_list:
                 friends_dict['requests'].append(conn_data[alt[st]])
-
     return friends_dict
+
+def insert_friend_connect(userid: int, friendid: int, action: str):
+    """ Создаёт связь между пользователями
+    """
+    assert action in ['friends', 'request'], f'Неподходящий аргумент {action}'
+    
+    data = {
+        'userid': userid,
+        'friendid': friendid,
+        'type': action
+    }
+    
+    return friends.insert_one(data)
 
 def last_dino(user: User):
     """Возвращает последнего выбранного динозавра.
@@ -377,9 +390,11 @@ def user_info(data_user, lang: str):
     
     dinos = get_dinos_and_owners(data_user.id)
     eggs = get_eggs(data_user.id)
+    
+    m_name = escape_markdown(user_name(data_user))
 
     return_text += t('user_profile.user', lang,
-                     name = user_name(data_user),
+                     name = m_name,
                      userid = data_user.id,
                      premium_status = premium
                      )
@@ -407,7 +422,7 @@ def user_info(data_user, lang: str):
             dino_owner = t(f'user_profile.dino_owner.noowner', lang)
         
         return_text += t('user_profile.dino', lang,
-                         dino_name=dino.name, 
+                         dino_name=escape_markdown(dino.name), 
                          dino_status=dino_status,
                          dino_rare=dino_rare,
                          owner=dino_owner,
