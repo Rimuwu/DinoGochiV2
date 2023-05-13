@@ -1,11 +1,11 @@
-from telebot.types import CallbackQuery, Message, ReplyKeyboardMarkup
+from telebot.types import CallbackQuery, Message
 
 from bot.config import mongo_client
 from bot.exec import bot
 from bot.modules.data_format import chunks, list_to_keyboard
 from bot.modules.dinosaur import Dino
 from bot.modules.localization import get_data, t
-from bot.modules.markup import confirm_markup
+from bot.modules.markup import confirm_markup, cancel_markup
 from bot.modules.markup import markups_menu as m
 from bot.modules.markup import tranlate_data
 from bot.modules.states_tools import (ChooseConfirmState, ChooseDinoState,
@@ -260,7 +260,8 @@ async def delete_me(message: Message):
         },
         {"type": 'str', "name": 'code', "data": {}, 
             'message': {
-                'text': t('delete_me.code', lang, code=code)}
+                'text': t('delete_me.code', lang, code=code),
+                'markup': cancel_markup(lang)}
         }
     ]
     
