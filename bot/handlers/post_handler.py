@@ -6,5 +6,5 @@ from bot.modules.logs import log
 
 @bot.callback_query_handler(func=lambda call: True)
 async def not_found(call: types.CallbackQuery):
-    userid = call.message.from_user.id
+    userid = call.from_user.id
     log(f'Ключ {call.data} не был обработан! Пользователь: {userid}', 2, "CallbackQuery")
