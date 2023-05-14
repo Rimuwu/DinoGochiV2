@@ -1,28 +1,30 @@
 # Тестовые команды
 
+import statistics
 from asyncio import sleep
 from pprint import pprint
 from time import time
+from random import choice
 
 from telebot.types import (InlineKeyboardButton, InlineKeyboardMarkup,
                            InlineQueryResultContact, Message)
 
 from bot.config import conf, mongo_client
-from bot.const import ITEMS, GAME_SETTINGS
+from bot.const import GAME_SETTINGS, ITEMS
 from bot.exec import bot
+from bot.handlers.dino_profile import transition
 from bot.modules.currency import convert
 from bot.modules.data_format import seconds_to_str
 from bot.modules.donation import check_donations, get_donations
-from bot.modules.images import dino_game, dino_collecting
+from bot.modules.images import create_egg_image, dino_collecting, dino_game
 from bot.modules.inventory_tools import inventory_pages
 from bot.modules.item import (AddItemToUser, DowngradeItem, get_data,
                               get_item_dict, get_name)
-from bot.modules.markup import count_markup, list_to_keyboard
+from bot.modules.localization import get_data, t
+from bot.modules.markup import count_markup, down_menu, list_to_keyboard
 from bot.modules.notifications import user_notification
-from bot.modules.states_tools import ChooseStepState
+from bot.modules.states_tools import ChoosePagesState, ChooseStepState
 from bot.modules.user import User, max_dino_col
-
-from bot.handlers.dino_profile import transition
 
 dinosaurs = mongo_client.bot.dinosaurs
 
@@ -87,13 +89,68 @@ async def stress(message):
         'lang': 'ru'
     }
     
-    for i in range(100):
+    data = []
+    
+    for i in range(10):
         print(i)
         try:
+            t = time()
             await transition(dino, transmitted_data)
+            data.append(time()-t)
         except:
             print('except ', i)
+            
+    print(statistics.mean(data))
     
+    
+@bot.message_handler(commands=['egg'])
+async def egg(message):
+    user = User( message.from_user.id)
+    dino = user.get_last_dino()
+    
+    img = create_egg_image(5, seconds=3000000, lang='ru', rare='leg')
+    await bot.send_photo(message.from_user.id, img, '', 
+                         )
+    
+names = ['Артемий', 'Андрей', "Иван", "Тимофей", "Вика", "Саша", "Фёдор", "Юрий"]
+
+general_dict = {
+    "➕ Добавить": 'add',
+    "🕳 Очистить": 'reset'
+}
+
+async def adp(res, transmitted_data):
+    """ Функция обработки выбранного элемента
+    """
+    key = transmitted_data['key']
+    options = transmitted_data['options']
+    userid = transmitted_data['userid']
+
+    await bot.send_message(userid, f'Ты выбрал {key}, по моим данным эта кнопка отвечает за {res}')
+
+    if res == 'add':
+        r_name = choice(names)
+        if r_name in options:
+            r_name = r_name + str(list(options.keys()).count(r_name)+1)
+        add = {r_name: 'user'}
+        return {'status': 'edit', 'elements': {'add': add}}
+    
+    elif res == 'user':
+        return {'status': 'edit', 'elements': {'delete': [key]}}
+    
+    elif res == 'reset':
+        return {'status': 'update', 'options': general_dict}
+    
+@bot.message_handler(commands=['pages'])
+async def test_options_pages(message):
+    userid = message.from_user.id
+    chatid = message.chat.id
+    lang = message.from_user.language_code
+    
+    await ChoosePagesState(
+        adp, userid, chatid, lang, general_dict, 
+        horizontal=2, vertical=3,
+        autoanswer=False, one_element=False)
     
 # @bot.message_handler(commands=['names'])
 # async def names(message):
