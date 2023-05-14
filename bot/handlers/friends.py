@@ -6,11 +6,13 @@ from bot.modules.data_format import list_to_inline
 from bot.modules.localization import get_data, t
 from bot.modules.markup import cancel_markup
 from bot.modules.user import get_frineds, insert_friend_connect, user_name
-from bot.modules.states_tools import ChooseCustomState
+from bot.modules.states_tools import ChooseCustomState, ChoosePagesState
 from bot.modules.notifications import user_notification
 from bot.modules.markup import markups_menu as m
+from bot.modules.friend_tools import start_friend_menu
 
 users = mongo_client.bot.users
+friends = mongo_client.connections.friends
 
 @bot.message_handler(text='commands_name.friends.add_friend')
 async def add_friend(message: Message):
@@ -25,7 +27,7 @@ async def add_friend(message: Message):
     
     await bot.send_message(chatid, text, parse_mode='Markdown', reply_markup=markup)
 
-async def friend_handler(message: Message, transmitted_data: dict):
+async def friend_add_handler(message: Message, transmitted_data: dict):
     code = transmitted_data['code']
     lang = transmitted_data['lang']
     chatid = transmitted_data['chatid']
@@ -90,8 +92,88 @@ async def add_friend_callback(call: CallbackQuery):
     text = t(f'add_friend.var_messages.{code}', lang)
     await bot.send_message(chatid, text, reply_markup=cancel_markup(lang))
     
-    await ChooseCustomState(add_friend_end, friend_handler, 
+    await ChooseCustomState(add_friend_end, friend_add_handler, 
                             user_id, chatid, lang, 
                             transmitted_data)
 
+@bot.message_handler(text='commands_name.friends.friends_list')
+async def friend_list(message: Message):
+    chatid = message.chat.id
+    userid = message.from_user.id
+    lang = message.from_user.language_code
     
+    friends = get_frineds(userid)['friends']
+    options = {}
+    
+    await bot.send_message(chatid, t('friend_list.wait'))
+    await start_friend_menu(None, userid, chatid, lang, False)
+
+
+async def adp_requests(data: dict, transmitted_data: dict):
+    lang = transmitted_data['lang']
+    chatid = transmitted_data['chatid']
+    userid = transmitted_data['userid']
+
+    if data['action'] == 'delete': 
+        friends.delete_one(
+            {'userid': data['friend'],
+             'friendid': userid,
+             'type': 'request'
+             }
+            )
+
+        await bot.send_message(userid, t('requests.decline', lang, user_name=data['name']))
+        return {'status': 'edit', 'elements': {'delete': [
+            f'✅ {data["key"]}', f'❌ {data["key"]}', data['name']
+            ]}}
+
+    elif data['action'] == 'add':
+        res = friends.find_one(
+            {'userid': data['friend'],
+             'friendid': userid,
+             'type': 'request'
+             }
+            )
+
+        if res:
+            friends.update_one({'_id': res['_id']}, 
+                               {'$set': {'type': 'friends'}})
+
+        await bot.send_message(userid, t('requests.accept', lang, user_name=data['name']))
+        return {'status': 'edit', 'elements': {'delete': [
+            f'✅ {data["key"]}', f'❌ {data["key"]}', data['name']
+            ]}}
+
+
+@bot.message_handler(text='commands_name.friends.requests')
+async def requests_list(message: Message):
+    chatid = message.chat.id
+    userid = message.from_user.id
+    lang = message.from_user.language_code
+    
+    requests = get_frineds(userid)['requests']
+    options = {}
+    a = 0
+    
+    await bot.send_message(chatid, t('requests.wait'))
+    
+    for friend_id in requests:
+        try:
+            chat_user = await bot.get_chat_member(friend_id, friend_id)
+            friend = chat_user.user
+        except: friend = None
+        if friend:
+            a += 1
+            name = user_name(friend)
+            if name in options: name = name + str(a)
+
+            options[f"✅ {a}"] = {'action': 'add', 'friend': friend_id, 'key': a, 'name': name}
+            
+            options[name] = {'action': 'pass'}
+            
+            options[f"❌ {a}"] = {'action': 'delete', 'friend': friend_id, 'key': a, 'name': name}
+    
+    await ChoosePagesState(
+        adp_requests, userid, chatid, lang, options, 
+        horizontal=3, vertical=3,
+        autoanswer=False, one_element=False)
