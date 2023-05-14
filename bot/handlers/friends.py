@@ -143,19 +143,12 @@ async def adp_requests(data: dict, transmitted_data: dict):
         return {'status': 'edit', 'elements': {'delete': [
             f'✅ {data["key"]}', f'❌ {data["key"]}', data['name']
             ]}}
+        
 
-
-@bot.message_handler(text='commands_name.friends.requests')
-async def requests_list(message: Message):
-    chatid = message.chat.id
-    userid = message.from_user.id
-    lang = message.from_user.language_code
-    
+async def request_open(userid: int, chatid: int, lang: str):
     requests = get_frineds(userid)['requests']
     options = {}
     a = 0
-    
-    await bot.send_message(chatid, t('requests.wait'))
     
     for friend_id in requests:
         try:
@@ -177,3 +170,22 @@ async def requests_list(message: Message):
         adp_requests, userid, chatid, lang, options, 
         horizontal=3, vertical=3,
         autoanswer=False, one_element=False)
+
+@bot.message_handler(text='commands_name.friends.requests')
+async def requests_list(message: Message):
+    chatid = message.chat.id
+    userid = message.from_user.id
+    lang = message.from_user.language_code
+
+    await bot.send_message(chatid, t('requests.wait'))
+    await request_open(userid, chatid, lang)
+    
+@bot.callback_query_handler(func=lambda call: 
+    call.data.startswith('requests'))
+async def requests_callback(call: CallbackQuery):
+    chatid = call.message.chat.id
+    user_id = call.from_user.id
+    lang = call.from_user.language_code
+    
+    await bot.send_message(chatid, t('requests.wait'))
+    await request_open(user_id, chatid, lang)
