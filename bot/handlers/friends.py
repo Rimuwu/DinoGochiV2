@@ -76,7 +76,6 @@ async def add_friend_end(friendid: int, transmitted_data: dict):
                                reply_markup=m(userid, 'last_menu', lang))
         
         await user_notification(friendid, 'send_request', lang, user_name=user_name)
-    
 
 @bot.callback_query_handler(func=lambda call: 
     call.data.startswith('add_friend'))

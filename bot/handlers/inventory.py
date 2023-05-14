@@ -148,7 +148,6 @@ async def item_callback(call: CallbackQuery):
                 await bot.send_message(chatid, 
                         t('item_use.cannot_be_used', lang),  
                           reply_markup=m(userid, 'last_menu', lang))
-                
         else:
             print('item_callback')
 
