@@ -194,7 +194,6 @@ async def ChooseCustom(message: Message):
     """Кастомный обработчик, принимает данные и отправляет в обработчик
     """
     userid = message.from_user.id
-    lang = message.from_user.language_code
 
     async with bot.retrieve_data(userid, message.chat.id) as data:
         custom_handler = data['custom_handler']
@@ -284,14 +283,14 @@ async def ChooseOptionPlus(message: Message):
         if page == 0: page = len(pages) - 1
         else: page -= 1
 
-        async with bot.retrieve_data(userid, chatid) as data: data['page']=page
+        async with bot.retrieve_data(userid, chatid) as data: data['page'] = page
         await update_page(pages, page, chatid, lang)
 
     elif message.text == gs['forward_button'] and len(pages) > 1:
         if page >= len(pages) - 1: page = 0
         else: page += 1
 
-        async with bot.retrieve_data(userid, chatid) as data: data['page']=page
+        async with bot.retrieve_data(userid, chatid) as data: data['page'] = page
         await update_page(pages, page, chatid, lang)
     else:
         await bot.send_message(message.chat.id, 
