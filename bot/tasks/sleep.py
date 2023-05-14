@@ -33,11 +33,11 @@ async def one_time(data, one_time_unit):
         if dino:
             energy = dino['stats']['energy']
             if energy >= 100:
-                await end_sleep(sleeper['dino_id'], sleeper['_id'], sec_time)
+                await end_sleep(sleeper['dino_id'], sec_time)
             else:
                 if energy + one_time_unit >= 100:
                     add_energy = 100 - energy
-                    await end_sleep(sleeper['dino_id'], sleeper['_id'], sec_time)
+                    await end_sleep(sleeper['dino_id'], sec_time)
                 else:
                     add_energy = one_time_unit
                 dinosaurs.update_one({'_id': dino['_id']}, {'$inc': {'stats.energy': add_energy}})
