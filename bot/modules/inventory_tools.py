@@ -1,19 +1,21 @@
 from telebot.asyncio_handler_backends import State, StatesGroup
 
 from bot.config import mongo_client
+from bot.const import GAME_SETTINGS as gs
 from bot.exec import bot
-from bot.modules.data_format import chunks, list_to_inline
+from bot.modules.data_format import (chunks, filling_with_emptiness,
+                                     list_to_inline)
 from bot.modules.inline import item_info_markup
-from bot.modules.item import (get_data, get_name, is_standart,
-                              item_code, item_info)
+from bot.modules.item import (get_data, get_name, is_standart, item_code,
+                              item_info)
 from bot.modules.localization import get_data as get_loc_data
 from bot.modules.localization import t
-from bot.modules.markup import list_to_keyboard
-from bot.modules.user import get_inventory
 from bot.modules.logs import log
+from bot.modules.markup import list_to_keyboard, down_menu
+from bot.modules.user import get_inventory
 
 users = mongo_client.bot.users
-back_button, forward_button = '◀', '▶'
+back_button, forward_button = gs['back_button'], gs['forward_button']
 
 class InventoryStates(StatesGroup):
     Inventory = State() # Состояние открытого инвентаря
@@ -45,7 +47,7 @@ def inventory_pages(items: list, lang: str = 'en',
         item = base_item['item'] # Сам предмет
         data = get_data(item['item_id']) # Дата из json
         add_item = False
-        
+
         # Если предмет найден в базе
         if data:
             # Проверка на соответсвие фильтров
@@ -57,12 +59,12 @@ def inventory_pages(items: list, lang: str = 'en',
                     if data['type'] in type_filter: add_item = True
                     if item['item_id'] in item_filter: add_item = True
                 except: log(str(data), 2)
-                
+
             # Если предмет показывается на страницах
             if add_item:
                 count = base_item['count']
                 code = item_code(item)
-                
+
                 if code in code_items:
                      code_items[code]['count'] += count
                 else:
@@ -73,7 +75,7 @@ def inventory_pages(items: list, lang: str = 'en',
         count = data_item['count']
         name = get_name(item['item_id'], lang)
         standart = is_standart(item)
-        
+
         if standart: 
             end_name = f"{name} x{count}"
         else:
@@ -88,11 +90,8 @@ def inventory_pages(items: list, lang: str = 'en',
     pages = chunks(chunks(items_names, horizontal), vertical)
 
     # Добавляет пустые панели для поддержания структуры
-    for i in pages:
-        if len(i) != vertical:
-            for _ in range(vertical - len(i)):
-                i.append([' ' for _ in range(horizontal)])
-    
+    pages = filling_with_emptiness(pages, horizontal, vertical)
+
     # Нужно, чтобы стрелки корректно отображались
     if horizontal < 3 and len(pages) > 1: horizontal = 3
     return pages, horizontal, items_data, items_names
@@ -100,12 +99,12 @@ def inventory_pages(items: list, lang: str = 'en',
 async def send_item_info(item: dict, transmitted_data: dict, mark: bool=True):
     lang = transmitted_data['lang']
     chatid = transmitted_data['chatid']
-    
+
     text, image = item_info(item, lang)
-    
+
     if mark: markup = item_info_markup(item, lang)
     else: markup = None
-    
+
     if image is None:
         await bot.send_message(chatid, text, 'Markdown',
                             reply_markup=markup)
@@ -125,10 +124,7 @@ async def swipe_page(userid: int, chatid: int):
     keyboard = list_to_keyboard(pages[settings['page']], settings['row'])
 
     # Добавляем стрелочки
-    if len(pages) > 1:
-        keyboard.add(*[back_button, t('buttons_name.cancel', settings['lang']), forward_button])
-    else:
-        keyboard.add(t('buttons_name.cancel', settings['lang']))
+    keyboard = down_menu(keyboard, len(pages) > 1, settings['lang'])
 
     # Генерация текста и меню
     menu_text = t('inventory.menu', settings['lang'], 
@@ -212,6 +208,11 @@ async def start_inv(function, userid: int, chatid: int, lang: str,
                     start_page: int = 0, changing_filters: bool = True,
                     transmitted_data = None):
     """ Функция запуска инвентаря
+        type_filter - фильтр типов предметов
+        item_filter - фильтр по id предметам
+        start_page - стартовая страница
+        changing_filters - разрешено ли изменять фильтры
+        one_time_pages - сколько генерировать страниц за раз, все если 0
     """
     if not transmitted_data: transmitted_data = {}
     
@@ -222,7 +223,7 @@ async def start_inv(function, userid: int, chatid: int, lang: str,
     user_settings = users.find_one({'userid': userid}, {'settings': 1})
     if user_settings: inv_view = user_settings['settings']['inv_view']
     else: inv_view = [2, 3]
-
+    
     invetory = get_inventory(userid)
     pages, row, items_data, names = inventory_pages(invetory, lang, inv_view, type_filter, item_filter)
 
@@ -244,6 +245,7 @@ async def start_inv(function, userid: int, chatid: int, lang: str,
         await bot.set_state(userid, InventoryStates.Inventory, chatid)
         async with bot.retrieve_data(userid, chatid) as data:
             data['pages'] = pages
+            data['len_pages'] = len(pages)
             data['items_data'] = items_data
             data['names'] = names
             data['filters'] = type_filter
