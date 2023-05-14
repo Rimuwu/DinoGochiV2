@@ -9,7 +9,7 @@ from bot.modules.localization import get_data
 
 def chunks(lst: list, n: int) -> list:
     """Делит список lst, на списки по n элементов
-       Возвращает генератор
+       Возвращает список
     """
     def work():
         for i in range(0, len(lst), n):
@@ -40,7 +40,6 @@ def random_dict(data: dict):
         else: return 0
     return 0
 
-
 def list_to_keyboard(buttons: list, row_width: int = 3, resize_keyboard: bool = True, one_time_keyboard = None) -> ReplyKeyboardMarkup:
     '''Превращает список со списками в объект клавиатуры.
         Example:
@@ -67,7 +66,7 @@ def list_to_keyboard(buttons: list, row_width: int = 3, resize_keyboard: bool = 
             else:
                 markup.add(line)
         except Exception as e:
-            print(line, type(line), e)
+            print('list_to_keyboard', line, type(line), e)
 
     return markup
 
@@ -149,7 +148,7 @@ def seconds_to_time(seconds: int) -> dict:
         if tt:
             seconds -= tt * unit
             time_dict[tp] = tt
-    
+
     return time_dict 
 
 def seconds_to_str(seconds: int, lang: str='en', mini: bool=False):
@@ -181,7 +180,7 @@ def seconds_to_str(seconds: int, lang: str='en', mini: bool=False):
                 result = time_format[time_type][1]
             elif unit > 4 or unit == 0:
                 result = time_format[time_type][2]
-        
+
         return result
 
     data = seconds_to_time(seconds=seconds)
@@ -217,3 +216,19 @@ def crop_text(text: str, unit: int=10, postfix: str='...'):
         return text[:unit] + postfix
     else:
         return text
+
+def filling_with_emptiness(lst: list, horizontal: int, vertical: int):
+    for i in lst:
+        if len(i) != vertical:
+            for _ in range(vertical - len(i)):
+                i.append([' ' for _ in range(horizontal)])
+    return lst
+
+def chunk_pages(options: dict, horizontal: int=2, vertical: int=3):
+    """Чанкует страницы и добавляем пустые элементы для сохранения структуры
+    """
+    if options:
+        pages = chunks(chunks(list(options.keys()), horizontal), vertical)
+    else: pages = [[]]
+    pages = filling_with_emptiness(pages, horizontal, vertical)
+    return pages
