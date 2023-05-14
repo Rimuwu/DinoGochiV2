@@ -261,7 +261,7 @@ async def delete_me(message: Message):
         {"type": 'str', "name": 'code', "data": {}, 
             'message': {
                 'text': t('delete_me.code', lang, code=code),
-                'markup': cancel_markup(lang)}
+                'reply_markup': cancel_markup(lang)}
         }
     ]
     
