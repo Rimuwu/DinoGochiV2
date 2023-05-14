@@ -218,6 +218,12 @@ def items_count(userid: int):
     return len(list(items.find({'owner_id': userid}, {'_id': 1})))
 
 def get_frineds(userid: int) -> dict:
+    """ Получает друзей (id) и запросы к пользователю
+    
+        Return\n
+        { 'friends': [],
+          'requests': [] }
+    """
     friends_dict = {
         'friends': [],
         'requests': []
@@ -227,12 +233,14 @@ def get_frineds(userid: int) -> dict:
            }
 
     for st in ['userid', 'friendid']:
-        data_list = friends.find({st: userid, 'type': 'friends'})
+        data_list = list(friends.find({st: userid, 'type': 'friends'}))
+        
         for conn_data in data_list:
             friends_dict['friends'].append(conn_data[alt[st]])
 
-        if st == 'userid':
-            data_list = friends.find({st: userid, 'type': 'requests'})
+        if st == 'friendid':
+            data_list = list(friends.find({st: userid, 'type': 'request'}))
+
             for conn_data in data_list:
                 friends_dict['requests'].append(conn_data[alt[st]])
     return friends_dict
@@ -242,13 +250,26 @@ def insert_friend_connect(userid: int, friendid: int, action: str):
     """
     assert action in ['friends', 'request'], f'Неподходящий аргумент {action}'
     
-    data = {
+    res = friends.find_one({
         'userid': userid,
         'friendid': friendid,
         'type': action
-    }
-    
-    return friends.insert_one(data)
+    })
+
+    res2 = friends.find_one({
+        'userid': friendid,
+        'friendid': userid,
+        'type': action
+    })
+
+    if not res and not res2:
+        data = {
+            'userid': userid,
+            'friendid': friendid,
+            'type': action
+        }
+        return friends.insert_one(data)
+    return False
 
 def last_dino(user: User):
     """Возвращает последнего выбранного динозавра.
