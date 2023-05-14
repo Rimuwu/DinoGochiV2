@@ -8,6 +8,7 @@ from bot.modules.user import user_info
 
 users = mongo_client.bot.users
 
+
 @bot.message_handler(text='commands_name.profile.information', 
                      is_authorized=True)
 async def infouser(message: Message):
@@ -19,12 +20,7 @@ async def infouser(message: Message):
     photos = await bot.get_user_profile_photos(userid, limit=1)
     if photos.photos:
         photo_id = photos.photos[0][0].file_id #type: ignore
-        try:
-            await bot.send_photo(chatid, photo_id, text, parse_mode='Markdown')
-        except:
-            await bot.send_photo(chatid, photo_id, text)
+        await bot.send_photo(chatid, photo_id, text, parse_mode='Markdown')
+
     else:
-        try:
-            await bot.send_message(message.chat.id, text, parse_mode='Markdown')
-        except:
-            await bot.send_message(message.chat.id, text)
+        await bot.send_message(message.chat.id, text, parse_mode='Markdown')
