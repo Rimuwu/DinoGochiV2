@@ -2,9 +2,11 @@ from telebot.asyncio_handler_backends import State, StatesGroup
 
 from bot.config import mongo_client
 from bot.exec import bot
+from bot.modules.data_format import (chunks, filling_with_emptiness,
+                                     list_to_keyboard, chunk_pages)
 from bot.modules.inventory_tools import start_inv
 from bot.modules.localization import t
-from bot.modules.markup import get_answer_keyboard
+from bot.modules.markup import down_menu, get_answer_keyboard
 from bot.modules.markup import markups_menu as m
 from bot.modules.user import User
 
@@ -16,6 +18,7 @@ class GeneralStates(StatesGroup):
     ChooseString = State() # Состояние для ввода текста
     ChooseConfirm = State() # Состояние для подтверждения (да / нет)
     ChooseOption = State() # Состояние для выбора среди вариантов
+    ChoosePagesState = State() # Состояние для выбора среди вариантов, а так же поддерживает страницы
     ChooseCustom = State() # Состояние для кастомного обработчика
 
 def add_if_not(data: dict, userid: int, chatid: int, lang: str):
@@ -192,6 +195,76 @@ async def ChooseCustomState(function, custom_handler,
         data['custom_handler'] = custom_handler
     return True, 'custom'
 
+async def update_page(pages: list, page: int, chat_id: int, lang: str):
+    keyboard = list_to_keyboard(pages[page])
+    keyboard = down_menu(keyboard, len(pages) > 1, lang)
+    
+    await bot.send_message(chat_id, t('optionplus.update_page', lang), reply_markup=keyboard)
+
+async def ChoosePagesState(function, userid: int, 
+                         chatid: int, lang: str,
+                         options: dict = {}, 
+                         horizontal: int=2, vertical: int=3,
+                         transmitted_data=None, 
+                         autoanswer: bool = True, one_element: bool = True,
+                         update_page_function = update_page):
+    """ Устанавливает состояние ожидания выбора опции
+    
+        options = {
+            'button_name': data
+        }
+        
+        autoanswer - надо ли делать авто ответ, при 1-ом варианте
+        horizontal, vertical - размер страницы
+        one_element - будет ли завершаться работа после выбора одного элемента
+
+        В function передаёт 
+        >>> answer: ???, transmitted_data: dict
+            return 
+               - если не требуется ничего обновлять, можно ничего не возвращать.
+               - если требуется после какого то элемента удалить состояние - {'status': 'reset'}
+               - если требуется обновить страницу с переданнами данными - {'status': 'update', 'options': {}} (по желанию ключ 'page')
+               - если требуется удалить или добавить элемент, при этом обновив страницу 
+               {'status': 'edit', 'elements': {'add' | 'delete': data}}
+                 - 'add' - в data требуется передать словарь с ключами, данные объединяются
+                 - 'delete' - в data требуется передать список с ключами, ключи будут удалены
+        
+        В update_page_function передаёт 
+        >>> pages: list, page: int, chat_id: int, lang: str
+        
+        Return:
+         Возвращает True если был создано состояние, False если завершилось автоматически (1 вариант выбора)
+    """
+    if not transmitted_data: transmitted_data = {}
+    transmitted_data = add_if_not(transmitted_data, userid, chatid, lang)
+    
+    # Чанкует страницы и добавляем пустые элементы для сохранения структуры
+    pages = chunk_pages(options, horizontal, vertical)
+    
+    if len(options) > 1 or not autoanswer:
+        await bot.set_state(userid, GeneralStates.ChoosePagesState, chatid)
+        async with bot.retrieve_data(userid, chatid) as data:
+            data['function'] = function
+            data['update_page'] = update_page_function
+            
+            data['transmitted_data'] = transmitted_data
+            data['options'] = options
+            data['pages'] = pages
+            
+            data['page'] = 0
+            data['one_element'] = one_element
+            
+            data['settings'] = {'horizontal': horizontal, "vertical": vertical}
+
+        await update_page_function(pages, 0, chatid, lang)
+        return True, 'optionplus', pages
+    else:
+        if len(options) == 0: element = None
+        else: element = options[list(options.keys())[0]]
+
+        await function(element, transmitted_data)
+        return False, 'optionplus', pages
+
 async def ChooseStepState(function, userid: int, 
                          chatid: int, lang: str,
                          steps: list = [],
@@ -219,6 +292,7 @@ async def ChooseStepState(function, userid: int,
         'str': ChooseStringState,
         'bool': ChooseConfirmState,
         'option': ChooseOptionState,
+        'custom': ChooseCustomState,
         'inv': start_inv,
     }
     for step in steps:
