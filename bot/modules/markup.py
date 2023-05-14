@@ -6,6 +6,7 @@ from bot.modules.dinosaur import Dino, Egg
 from bot.modules.localization import t, tranlate_data
 from bot.modules.logs import log
 from bot.modules.user import User, last_dino, premium
+from bot.const import GAME_SETTINGS as gs
 
 users = mongo_client.bot.users
 dinosaurs = mongo_client.bot.dinosaurs
@@ -319,3 +320,13 @@ def cancel_markup(lang: str='en') -> ReplyKeyboardMarkup:
         lang (str, optional):  Язык кнопки
     """
     return list_to_keyboard([t('buttons_name.cancel', lang)])
+
+def down_menu(markup: ReplyKeyboardMarkup, 
+              arrows: bool = True, lang: str = 'en'): 
+    """Добавления нижнего меню для страничных клавиатур
+    """
+    if arrows:
+        markup.add(*[gs['back_button'], t('buttons_name.cancel', lang), gs['forward_button']])
+    else: markup.add(t('buttons_name.cancel', lang))
+    
+    return markup
