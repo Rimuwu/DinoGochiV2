@@ -1,11 +1,14 @@
 
 from telebot.types import Message
 
+from bot.const import GAME_SETTINGS as gs
 from bot.exec import bot
+from bot.modules.data_format import list_to_keyboard, chunk_pages
+from bot.modules.localization import get_data, t
 from bot.modules.logs import log
 from bot.modules.markup import markups_menu as m
 from bot.modules.states_tools import GeneralStates
-from bot.modules.localization import t, get_data
+
 
 async def cancel(message, text:str = "❌"):
     if text:
@@ -205,3 +208,91 @@ async def ChooseCustom(message: Message):
         await bot.reset_data(message.from_user.id,  message.chat.id)
         await func(result, transmitted_data=transmitted_data)
     
+@bot.message_handler(state=GeneralStates.ChoosePagesState, is_authorized=True)
+async def ChooseOptionPlus(message: Message):
+    """Кастомный обработчик, принимает данные и отправляет в обработчик
+    """
+    userid = message.from_user.id
+    chatid = message.chat.id
+    lang = message.from_user.language_code
+
+    async with bot.retrieve_data(userid, message.chat.id) as data:
+        func = data['function']
+        update_page = data['update_page']
+
+        options: dict = data['options']
+        transmitted_data: dict = data['transmitted_data']
+
+        pages: list = data['pages']
+        page: int = data['page']
+        one_element: bool = data['one_element']
+        
+        settings: dict = data['settings']
+
+    if message.text in options.keys():
+        if one_element:
+            await bot.delete_state(userid, message.chat.id)
+            await bot.reset_data(message.from_user.id,  message.chat.id)
+
+        transmitted_data['options'] = options
+        transmitted_data['key'] = message.text
+        res = await func(
+            options[message.text], transmitted_data=transmitted_data)
+
+        if not one_element and res and type(res) == dict and 'status' in res:
+            # Удаляем состояние
+            if res['status'] == 'reset':
+                await bot.delete_state(userid, message.chat.id)
+                await bot.reset_data(message.from_user.id,  message.chat.id)
+
+            # Обновить все данные
+            elif res['status'] == 'update' and 'options' in res:
+                pages = chunk_pages(res['options'], settings['horizontal'], settings['vertical'])
+                
+                if 'page' in res: page = res['page']
+                if page >= len(pages) - 1: page = 0
+
+                async with bot.retrieve_data(userid, message.chat.id) as data:
+                    data['options'] = res['options']
+                    data['pages'] = pages
+                    data['page'] = page
+
+                await update_page(pages, page, chatid, lang)
+
+            # Добавить или удалить элемент
+            elif res['status'] == 'edit' and 'elements' in res:
+                
+                for key, value in res['elements'].items():
+                    if key == 'add':
+                        for iter_key, iter_value in value.items():
+                            options[iter_key] = iter_value
+                    elif key == 'delete':
+                        for i in value: del options[i]
+
+                pages = chunk_pages(options, settings['horizontal'], settings['vertical'])
+
+                if page >= len(pages) - 1: page = 0
+
+                async with bot.retrieve_data(userid, message.chat.id) as data:
+                    data['options'] = options
+                    data['pages'] = pages
+                    data['page'] = page
+
+                await update_page(pages, page, chatid, lang)
+
+    elif message.text == gs['back_button'] and len(pages) > 1:
+        if page == 0: page = len(pages) - 1
+        else: page -= 1
+
+        async with bot.retrieve_data(userid, chatid) as data: data['page']=page
+        await update_page(pages, page, chatid, lang)
+
+    elif message.text == gs['forward_button'] and len(pages) > 1:
+        if page >= len(pages) - 1: page = 0
+        else: page += 1
+
+        async with bot.retrieve_data(userid, chatid) as data: data['page']=page
+        await update_page(pages, page, chatid, lang)
+    else:
+        await bot.send_message(message.chat.id, 
+                t('states.ChooseOption.error_not_option', lang))
