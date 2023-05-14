@@ -43,7 +43,7 @@
         }
     },
 
-    "first_dino_time_incub": 1, 
+    "first_dino_time_incub": 60, 
     "first_egg_rarity": "leg",
 
     "max_eat_items": 300,
@@ -248,5 +248,8 @@
             "leg": ["18", "81", "6", "76", "82", "5", "7", "80"]
         }
 
-    }
+    },
+
+    "back_button": "◀",
+    "forward_button": "▶"
 } 
