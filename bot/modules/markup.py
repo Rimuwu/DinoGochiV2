@@ -11,6 +11,7 @@ from bot.const import GAME_SETTINGS as gs
 users = mongo_client.bot.users
 dinosaurs = mongo_client.bot.dinosaurs
 management = mongo_client.bot.management
+referals = mongo_client.connections.referals
 
 
 def back_menu(userid) -> str:
@@ -30,9 +31,11 @@ def back_menu(userid) -> str:
     if user_dict:
         markup_key = user_dict.get('last_markup', 'main_menu')
 
-    menu_ind = menus_list.index(markup_key)
-    result = menus_list[menu_ind - 1]
-    return result
+    if markup_key != 'main_menu':
+        menu_ind = menus_list.index(markup_key)
+        result = menus_list[menu_ind - 1]
+        return result
+    else: return 'main_menu'
 
 def markups_menu(userid: int, markup_key: str = 'main_menu', 
                  language_code: str = 'en', last_menu: bool = False):
@@ -140,6 +143,14 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
         buttons = [
             ['dungeon', 'quests'],
             ['edit'],
+        ]
+    
+    elif markup_key == 'referal_menu':
+        # Меню рефералов
+        prefix = 'commands_name.referal.'
+        add_back_button = True
+        buttons = [
+            ['code', 'enter_code'],
         ]
 
     elif markup_key == 'actions_menu':
