@@ -2,19 +2,19 @@ from random import choice
 
 from telebot import types
 
+from bot.config import mongo_client
+from bot.const import GAME_SETTINGS
 from bot.exec import bot
-from bot.modules.data_format import list_to_keyboard, user_name, seconds_to_str
+from bot.handlers.states import cancel
+from bot.modules.data_format import list_to_keyboard, seconds_to_str, user_name
 from bot.modules.dinosaur import incubation_egg
 from bot.modules.images import create_eggs_image
-from bot.modules.localization import t, get_data
+from bot.modules.localization import get_data, t
 from bot.modules.markup import markups_menu as m
 from bot.modules.user import insert_user
-from bot.const import GAME_SETTINGS
-from bot.handlers.states import cancel
-from bot.const import GAME_SETTINGS
 
 stickers = bot.get_sticker_set('Stickers_by_DinoGochi_bot')
-
+referals = mongo_client.connections.referals
 
 @bot.message_handler(commands=['start'], is_authorized=True)
 async def start_command_auth(message: types.Message):
@@ -24,23 +24,11 @@ async def start_command_auth(message: types.Message):
     langue_code = message.from_user.language_code
     await bot.send_sticker(message.chat.id, sticker, 
                            reply_markup=m(message.from_user.id, language_code=langue_code))
-    
+
     await cancel(message, '')
-
-@bot.message_handler(commands=['start'], is_authorized=False)
-async def start_game_message(message: types.Message):
-    langue_code = message.from_user.language_code
-    username = user_name(message.from_user)
-
-    text = t('start_command.first_message', langue_code, username=username)
-    buttons_list = [get_data('commands_name.start_game', locale=langue_code)]
-    markup = list_to_keyboard(buttons_list)
-    image = open('images/remain/start/placeholder.png', 'rb')
     
-    await bot.send_photo(message.chat.id, image, text, reply_markup=markup, parse_mode='HTML')
-
 @bot.message_handler(text='commands_name.start_game', is_authorized=False)
-async def start_game(message: types.Message):
+async def start_game(message: types.Message, referal: str = ''):
 
     #Сообщение-реклама
     text = t('start_command.request_subscribe.text', message.from_user.language_code)
@@ -61,8 +49,39 @@ async def start_game(message: types.Message):
             callback_data=f'start_egg {i}') for i in id_l]
     )
 
-    start_game = str(t('start_command.start_game', message.from_user.language_code))
+    start_game = t('start_command.start_game', message.from_user.language_code)
     await bot.send_photo(message.chat.id, img, start_game, reply_markup=markup_inline)
+
+@bot.message_handler(commands=['start'], is_authorized=False)
+async def start_game_message(message: types.Message):
+    langue_code = message.from_user.language_code
+    username = user_name(message.from_user)
+    
+    content = str(message.text).split()
+    print(content)
+    add_referal = False
+    markup = None
+    
+    if len(content) > 1: 
+        referal = str(content[1])
+        if referals.find_one({'code': referal}): add_referal = True
+
+    if not add_referal:
+        buttons_list = [get_data('commands_name.start_game', locale=langue_code)]
+        markup = list_to_keyboard(buttons_list)
+
+    image = open('images/remain/start/placeholder.png', 'rb')
+    text = t('start_command.first_message', langue_code, username=username)
+    
+    
+    await bot.send_photo(message.chat.id, image, text, reply_markup=markup, parse_mode='HTML')
+    
+    if add_referal:
+        text = t('start_command.referal', langue_code, username=username)
+        await bot.send_message(message.chat.id, text)
+
+        await start_game(message, referal=referal) # type: ignore
+    
 
 
 @bot.callback_query_handler(is_authorized=False, 
