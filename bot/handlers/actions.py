@@ -21,7 +21,7 @@ from bot.modules.markup import count_markup, feed_count_markup
 from bot.modules.markup import markups_menu as m
 from bot.modules.mood import add_mood
 from bot.modules.states_tools import (ChooseIntState, ChooseOptionState,
-                                      ChooseStepState)
+                                      ChooseStepState, ChoosePagesState)
 from bot.modules.user import User
 
 users = mongo_client.bot.users
@@ -293,30 +293,39 @@ async def entertainments(message: Message):
     userid = message.from_user.id
     lang = message.from_user.language_code
     chatid = message.chat.id
+
     user = User(userid)
     last_dino = user.get_last_dino()
+
     transmitted_data = {'dino': last_dino}
-    
+    last_game = '-'
+
     if last_dino:
         if last_dino.status == 'pass':
             game_data = get_data('entertainments', lang)
             game_buttons = []
             options = {}
             need = ['console', 'snake', 'pin-pong', 'ball']
-            
+
             if check_accessory(last_dino, '44'):
                 need += ["puzzles", "chess", "jenga", "dnd"]
-                
-            for key, value in game_data['game'].items(): #type: ignore
+
+            if user.premium:
+                need += ["monopolia", "bowling", "darts", "golf"]
+
+            for key, value in game_data['game'].items():
                 if key in need:
                     options[value] = key
                     game_buttons.append(value)
 
-            markup = list_to_keyboard([game_buttons, t('buttons_name.cancel', lang)])
-            
-            await ChooseOptionState(entertainments_adapter, userid, chatid, lang, options, transmitted_data=transmitted_data)
-            await bot.send_message(chatid, game_data['answer_game'],reply_markup=markup) #type: ignore
-        
+            if last_dino.memory['games']:
+                last = last_dino.memory['games'][-1]
+                last_game = t(f'entertainments.game.{last}', lang)
+
+            await ChoosePagesState(entertainments_adapter, userid, chatid, lang, options, transmitted_data=transmitted_data, horizontal=3)
+            await bot.send_message(chatid, 
+                                   t('entertainments.answer_game',lang, last_game=last_game))
+
         else:
             await bot.send_message(chatid, t('entertainments.alredy_busy', lang,
                                 reply_markup=
@@ -390,7 +399,7 @@ async def stop_game(message: Message):
                     text = t('stop_game.whatever', lang)
 
                 await end_game(last_dino._id, 
-                               game_data['game_end'] - game_data['game_start'], game_data['game_percent'])
+                               game_data['game_end'] - game_data['game_start'], game_data['game_percent'], False, False)
             else:
                 # Невозможно оторвать от игры
                 text = t('stop_game.dont_tear', lang)
@@ -502,8 +511,6 @@ async def collecting_callback(callback: CallbackQuery):
     action = callback.data.split()[1]
     
     lang = callback.from_user.language_code
-    chatid = callback.message.chat.id
-    userid = callback.from_user.id
     
     dino = Dino(dino_data) #type: ignore
     data = collecting_task.find_one({'dino_id': dino._id})
