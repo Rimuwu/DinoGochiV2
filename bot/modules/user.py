@@ -3,7 +3,7 @@ from telebot.formatting import escape_markdown
 
 from bot.config import mongo_client
 from bot.exec import bot
-from bot.modules.data_format import seconds_to_str, user_name
+from bot.modules.data_format import seconds_to_str, user_name, random_code
 from bot.modules.dinosaur import Dino, Egg
 from bot.modules.localization import get_data, t
 from bot.modules.logs import log
@@ -19,6 +19,7 @@ incubations = mongo_client.tasks.incubation
 dino_owners = mongo_client.connections.dino_owners
 friends = mongo_client.connections.friends
 subscriptions = mongo_client.tasks.subscriptions
+referals = mongo_client.connections.referals
 
 class User:
 
@@ -37,7 +38,7 @@ class User:
             'inv_view': [2, 3]
             }
             
-        self.coins = 10
+        self.coins = 100
         self.lvl = 0
         self.xp = 0
         self.dead_dinos = 0
@@ -114,7 +115,7 @@ class User:
         """Удаление юзера и всё с ним связанное из базы.
         """
 
-        for collection in [items, products, dead_dinos, incubations]:
+        for collection in [items, products, dead_dinos, incubations, referals]:
             collection.delete_many({'owner_id': self.userid})
 
         """ При полном удалении есть возможность, что у динозавра
@@ -391,7 +392,7 @@ async def experience_enhancement(userid: int, xp: int):
         if lvl: users.update_one({'userid': userid}, {'$inc': {'lvl': lvl}})
         users.update_one({'userid': userid}, {'$set': {'xp': xp}})
 
-def user_info(data_user, lang: str):
+def user_info(data_user, lang: str, secret: bool = False):
     user = User(data_user.id)
     return_text = ''
     
@@ -426,50 +427,106 @@ def user_info(data_user, lang: str):
                      coins=user.coins
                      )
     return_text += '\n\n'
-    return_text += t(f'user_profile.dinosaurs', lang,
-                    dead=user.dead_dinos, dino_col = len(dinos)
-                    )
-    
-    return_text += '\n\n'
-    for iter_data in dinos:
-        dino = iter_data['dino']
-        dino_status = t(f'user_profile.stats.{dino.status}', lang)
-        dino_rare_dict = get_data(f'rare.{dino.quality}', lang)
-        dino_rare = f'{dino_rare_dict[2]} {dino_rare_dict[1]}'
+    if not secret:
+        return_text += t(f'user_profile.dinosaurs', lang,
+                        dead=user.dead_dinos, dino_col = len(dinos)
+                        )
+        return_text += '\n\n'
+        for iter_data in dinos:
+            dino = iter_data['dino']
+            dino_status = t(f'user_profile.stats.{dino.status}', lang)
+            dino_rare_dict = get_data(f'rare.{dino.quality}', lang)
+            dino_rare = f'{dino_rare_dict[2]} {dino_rare_dict[1]}'
+            
+            if iter_data['owner_type'] == 'owner': 
+                dino_owner = t(f'user_profile.dino_owner.owner', lang)
+            else:
+                dino_owner = t(f'user_profile.dino_owner.noowner', lang)
+            
+            return_text += t('user_profile.dino', lang,
+                            dino_name=escape_markdown(dino.name), 
+                            dino_status=dino_status,
+                            dino_rare=dino_rare,
+                            owner=dino_owner,
+                            age=seconds_to_str(dino.age.days * 86400, lang, True)
+                        )
         
-        if iter_data['owner_type'] == 'owner': 
-            dino_owner = t(f'user_profile.dino_owner.owner', lang)
-        else:
-            dino_owner = t(f'user_profile.dino_owner.noowner', lang)
-        
-        return_text += t('user_profile.dino', lang,
-                         dino_name=escape_markdown(dino.name), 
-                         dino_status=dino_status,
-                         dino_rare=dino_rare,
-                         owner=dino_owner,
-                         age=seconds_to_str((dino.age.seconds // 3600) * 3600, lang, True)
-                     )
-    
-    for egg in eggs:
-        egg_rare_dict = get_data(f'rare.{egg.quality}', lang)
-        egg_rare = f'{egg_rare_dict[3]}'
-        return_text += t('user_profile.egg', lang,
-                         egg_quality=egg_rare, 
-                         remained=
-                         seconds_to_str(egg.incubation_time - int(time()), lang, True)
-                     )
+        for egg in eggs:
+            egg_rare_dict = get_data(f'rare.{egg.quality}', lang)
+            egg_rare = f'{egg_rare_dict[3]}'
+            return_text += t('user_profile.egg', lang,
+                            egg_quality=egg_rare, 
+                            remained=
+                            seconds_to_str(egg.incubation_time - int(time()), lang, True)
+                        )
 
     return_text += t('user_profile.friends', lang,
                      friends_col=friends_count,
                      requests_col=request_count
                      )
-    return_text += '\n\n'
-    return_text += t('user_profile.inventory', lang,
-                    items_col=items_count(data_user.id)
-                     )
+    
+    if not secret:
+        return_text += '\n\n'
+        return_text += t('user_profile.inventory', lang,
+                        items_col=items_count(data_user.id)
+                        )
 
     return return_text
 
 def premium(userid: int):
     res = subscriptions.find_one({'userid': userid})
     return bool(res)
+
+def create_referal(userid: int, code: str = ''):
+    """ Создаёт связь между кодом и владельцем, 
+        если не указан код, генерирует его
+    """
+
+    if not referals.find_one({'ownerid': userid}):
+        if not code: 
+            while not code:
+                c = random_code(10)
+                if not referals.find_one({'code': code}): code = c
+
+        data = {
+            'ownerid': userid,
+            'code': code,
+            'type': 'general'
+        }
+
+        referals.insert_one(data)
+        return True, code
+    return False, ''
+
+def connect_referal(code: str, userid: int):
+    """ Создаёт связь между пользователем и активированным кодом 
+    """
+    if not referals.find_one({'userid': userid}):
+        data = {
+            'code': code,
+            'userid': userid,
+            'type': 'sub'
+        }
+        referals.insert_one(data)
+        return True
+    return False
+
+def get_code_owner(code: str):
+    """ Получает создателя реферального кода
+    """
+    return referals.find_one({'code': code, 'type': 'general'})
+
+def take_coins(userid: int, col: int, update: int) -> bool:
+    """Функция проверяет, можно ли отнять / добавить col монет у / к пользователя[ю]
+       Если updatе - то обновляет данные
+    """
+    user = users.find_one({'userid': userid})
+    if user:
+        coins = user['coins']
+        if coins + col < 0: return False
+        else: 
+            if update:
+                users.update_one({'userid': userid}, 
+                                 {'$inc': {'coins': col}})
+            return True
+    return False
