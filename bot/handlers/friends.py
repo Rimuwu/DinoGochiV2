@@ -1,12 +1,12 @@
-from telebot.types import CallbackQuery, Message, ReplyKeyboardRemove
+from telebot.types import CallbackQuery, Message
 
 from bot.config import mongo_client
 from bot.exec import bot
 from bot.modules.data_format import list_to_inline
 from bot.modules.localization import get_data, t
-from bot.modules.markup import cancel_markup
+from bot.modules.markup import cancel_markup, confirm_markup
 from bot.modules.user import get_frineds, insert_friend_connect, user_name
-from bot.modules.states_tools import ChooseCustomState, ChoosePagesState
+from bot.modules.states_tools import ChooseCustomState, ChoosePagesState, ChooseConfirmState
 from bot.modules.notifications import user_notification
 from bot.modules.markup import markups_menu as m
 from bot.modules.friend_tools import start_friend_menu
@@ -102,9 +102,6 @@ async def friend_list(message: Message):
     userid = message.from_user.id
     lang = message.from_user.language_code
     
-    friends = get_frineds(userid)['friends']
-    options = {}
-    
     await bot.send_message(chatid, t('friend_list.wait'))
     await start_friend_menu(None, userid, chatid, lang, False)
 
@@ -139,7 +136,7 @@ async def adp_requests(data: dict, transmitted_data: dict):
             friends.update_one({'_id': res['_id']}, 
                                {'$set': {'type': 'friends'}})
 
-        await bot.send_message(userid, t('requests.accept', lang, user_name=data['name']))
+        await bot.send_message(chatid, t('requests.accept', lang, user_name=data['name']))
         return {'status': 'edit', 'elements': {'delete': [
             f'✅ {data["key"]}', f'❌ {data["key"]}', data['name']
             ]}}
@@ -189,3 +186,56 @@ async def requests_callback(call: CallbackQuery):
     
     await bot.send_message(chatid, t('requests.wait'))
     await request_open(user_id, chatid, lang)
+    
+    
+async def delete_friend(_: bool, transmitted_data: dict):
+    lang = transmitted_data['lang']
+    chatid = transmitted_data['chatid']
+    userid = transmitted_data['userid']
+    
+    friendid = transmitted_data['friendid']
+    
+    friends.delete_one({"userid": userid, 'friendid': friendid, 'type': 'friends'})
+    friends.delete_one({"friendid": userid, 'userid': friendid, 'type': 'friends'})
+
+    await bot.send_message(chatid, t('friend_delete.delete', lang), 
+                           reply_markup=m(userid, 'last_menu', lang))
+    
+async def adp_delte(friendid: int, transmitted_data: dict):
+    lang = transmitted_data['lang']
+    chatid = transmitted_data['chatid']
+    userid = transmitted_data['userid']
+    
+    transmitted_data['friendid'] = friendid
+    
+    await ChooseConfirmState(delete_friend, userid, chatid, lang, True, transmitted_data)
+    await bot.send_message(chatid, t('friend_delete.confirm', lang,     
+                                     name=transmitted_data['key']), 
+                           reply_markup=confirm_markup(lang))
+
+@bot.message_handler(text='commands_name.friends.remove_friend')
+async def remove_friend(message: Message):
+    chatid = message.chat.id
+    userid = message.from_user.id
+    lang = message.from_user.language_code
+
+    requests = get_frineds(userid)['friends']
+    options = {}
+    a = 0
+    
+    for friend_id in requests:
+        try:
+            chat_user = await bot.get_chat_member(friend_id, friend_id)
+            friend = chat_user.user
+        except: friend = None
+        if friend:
+            a += 1
+            name = user_name(friend)
+            if name in options: name = name + str(a)
+            
+            options[name] = friend_id
+
+    await bot.send_message(chatid, t('friend_delete.delete_info'))
+    await ChoosePagesState(
+        adp_delte, userid, chatid, lang, options, 
+        autoanswer=False, one_element=True)
