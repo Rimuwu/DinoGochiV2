@@ -251,5 +251,11 @@
     },
 
     "back_button": "◀",
-    "forward_button": "▶"
+    "forward_button": "▶",
+
+    "referal": {
+        "coins": 255,
+        "items": ["1", "1", "2", "2", "16", "12", "12", "11", "11", "13", "13", "90"],
+        "custom_price": 50
+    }
 } 
