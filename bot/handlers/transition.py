@@ -1,11 +1,12 @@
 from asyncio import sleep
 
 from telebot.types import Message
-from telebot.util import antiflood
 
 from bot.config import mongo_client
+from bot.const import GAME_SETTINGS as GS
 from bot.exec import bot
 from bot.modules.data_format import user_name
+from bot.modules.item import counts_items
 from bot.modules.localization import get_data, t
 from bot.modules.markup import back_menu
 from bot.modules.markup import markups_menu as m
@@ -128,3 +129,16 @@ async def about_menu(message: Message):
     await bot.send_message(message.chat.id, t(
         'menu_text.about', lang, bot_name=bot_name), 
                            reply_markup=m(userid, 'about_menu', lang))
+
+@bot.message_handler(text='commands_name.friends.referal', is_authorized=True)
+async def referal_menu(message: Message):
+    userid = message.from_user.id
+    lang = message.from_user.language_code
+    
+    coins = GS['referal']['coins']
+    items = GS['referal']['items']
+    names = counts_items(items, lang)
+    
+    await bot.send_message(message.chat.id, t(
+        'menu_text.referal', lang, coins=coins, items=names), 
+                           reply_markup=m(userid, 'referal_menu', lang))
