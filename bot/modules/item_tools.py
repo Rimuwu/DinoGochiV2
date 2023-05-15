@@ -111,7 +111,7 @@ async def end_craft(transmitted_data: dict):
 
 async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1, 
              dino=None, combine_item: dict = {}):
-    return_text = 'no_text'
+    return_text = ''
     dino_update_list = []
     use_status, send_status, use_baff_status = True, True, True
 
@@ -132,12 +132,14 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
             if data_item['class'] == 'ALL' or (
                 data_item['class'] == dino.data['class']):
                 # Получаем конечную характеристику
-                percent, repeat = dino.memory_percent('eat', item_id)
+                percent = 1
+                if dino.age.days >= 10:
+                    percent, repeat = dino.memory_percent('eat', item_id)
+                    return_text = t(f'item_use.eat.repeat.m{repeat}', lang, 
+                            percent=int(percent*100)) + '\n'
+                    
                 dino.stats['eat'] = edited_stats(dino.stats['eat'], 
-                                   int((data_item['act'] * count)*percent))
-
-                return_text = t(f'item_use.eat.repeat.m{repeat}', lang, 
-                         percent=int(percent*100)) + '\n'
+                                    int((data_item['act'] * count)*percent))
                 return_text += t('item_use.eat.great', lang, 
                          item_name=item_name, eat_stat=dino.stats['eat'])
             
