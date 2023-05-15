@@ -234,7 +234,7 @@ def insert_dino(owner_id: int=0, dino_id: int=0, quality: str='random'):
         if dinosaurs.find_one({'alt_id': code}):
             code = generation_code(owner_id)
         return code
-    
+
     if quality in ['random', 'rar']: quality = random_quality()
     if not dino_id: dino_id = random_dino(quality)
 
@@ -282,7 +282,7 @@ def start_game(dino_baseid: ObjectId, duration: int=1800,
 
 async def end_game(dino_id: ObjectId, game_time: int, 
                    game_percent: float, 
-                   send_notif: bool=True):
+                   send_notif: bool=True, mood: bool=True):
     """Заканчивает игру и отсылает уведомление.
     """
     
@@ -290,10 +290,11 @@ async def end_game(dino_id: ObjectId, game_time: int,
                             {'$set': {'status': 'pass'}})
     game_task.delete_one({'dino_id': dino_id}) 
     
-    # Добавление настроения
-    add_mood(dino_id, 'end_game', 
-             randint(1, 2), int((game_time // 2) * game_percent)
-                     )
+    if mood:
+        # Добавление настроения
+        add_mood(dino_id, 'end_game', 
+                randint(1, 2), int((game_time // 2) * game_percent)
+                        )
     
     if send_notif: await dino_notification(dino_id, 'game_end')
 
