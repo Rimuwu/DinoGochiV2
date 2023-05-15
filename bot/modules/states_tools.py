@@ -130,6 +130,8 @@ async def ChooseConfirmState(function, userid: int,
         В function передаёт 
         >>> answer: bool, transmitted_data: dict
         
+        cancel - если True, то при отказе вызывает возврат в меню
+        
         Return:
          Возвращает True если был создано состояние, не может завершится автоматически
     """
