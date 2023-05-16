@@ -86,23 +86,18 @@ async def ChooseInt(message: Message):
     if not number:
         await bot.send_message(message.chat.id, 
                 t('states.ChooseInt.error_not_int', lang))
-        return
-
-    if max_int != 0 and number > max_int:
+    elif max_int != 0 and number > max_int:
         await bot.send_message(message.chat.id, 
                 t('states.ChooseInt.error_max_int', lang,
                 number = number, max = max_int))
-        return
-
-    if number < min_int:
+    elif number < min_int:
         await bot.send_message(message.chat.id, 
                 t('states.ChooseInt.error_min_int', lang,
                 number = number, min = min_int))
-        return
-
-    await bot.delete_state(userid, message.chat.id)
-    await bot.reset_data(message.from_user.id,  message.chat.id)
-    await func(number, transmitted_data=transmitted_data)
+    else:
+        await bot.delete_state(userid, message.chat.id)
+        await bot.reset_data(message.from_user.id,  message.chat.id)
+        await func(number, transmitted_data=transmitted_data)
 
 @bot.message_handler(state=GeneralStates.ChooseString, is_authorized=True)
 async def ChooseString(message: Message):
@@ -124,17 +119,14 @@ async def ChooseString(message: Message):
         await bot.send_message(message.chat.id, 
                 t('states.ChooseString.error_max_len', lang,
                 number = content_len, max = max_len))
-        return
-
-    if content_len < min_len:
+    elif content_len < min_len:
         await bot.send_message(message.chat.id, 
                 t('states.ChooseString.error_min_len', lang,
                 number = content_len, min = min_len))
-        return
-
-    await bot.delete_state(userid, message.chat.id)
-    await bot.reset_data(message.from_user.id,  message.chat.id)
-    await func(content, transmitted_data=transmitted_data)
+    else:
+        await bot.delete_state(userid, message.chat.id)
+        await bot.reset_data(message.from_user.id,  message.chat.id)
+        await func(content, transmitted_data=transmitted_data)
 
 @bot.message_handler(state=GeneralStates.ChooseConfirm, is_authorized=True)
 async def ChooseConfirm(message: Message):
@@ -157,7 +149,6 @@ async def ChooseConfirm(message: Message):
     }
     
     if content in buttons_data:
-        
         if not(buttons_data[content]) and cancel_status:
             await cancel(message)
         else:
@@ -200,12 +191,12 @@ async def ChooseCustom(message: Message):
         func = data['function']
         transmitted_data = data['transmitted_data']
 
-    answer, result = await custom_handler(message, transmitted_data) # Обязан возвращать bool, Any
+    result, answer = await custom_handler(message, transmitted_data) # Обязан возвращать bool, Any
     
-    if answer:
+    if result:
         await bot.delete_state(userid, message.chat.id)
         await bot.reset_data(message.from_user.id,  message.chat.id)
-        await func(result, transmitted_data=transmitted_data)
+        await func(answer, transmitted_data=transmitted_data)
     
 @bot.message_handler(state=GeneralStates.ChoosePagesState, is_authorized=True)
 async def ChooseOptionPlus(message: Message):
