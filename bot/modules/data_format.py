@@ -218,6 +218,8 @@ def crop_text(text: str, unit: int=10, postfix: str='...'):
         return text
 
 def filling_with_emptiness(lst: list, horizontal: int, vertical: int):
+    """ Заполняет пустые элементы страницы для сохранения структуры
+    """
     for i in lst:
         if len(i) != vertical:
             for _ in range(vertical - len(i)):
