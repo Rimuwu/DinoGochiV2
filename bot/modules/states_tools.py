@@ -2,8 +2,7 @@ from telebot.asyncio_handler_backends import State, StatesGroup
 
 from bot.config import mongo_client
 from bot.exec import bot
-from bot.modules.data_format import (chunks, filling_with_emptiness,
-                                     list_to_keyboard, chunk_pages)
+from bot.modules.data_format import chunk_pages, list_to_keyboard
 from bot.modules.inventory_tools import start_inv
 from bot.modules.localization import t
 from bot.modules.markup import down_menu, get_answer_keyboard
