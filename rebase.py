@@ -231,7 +231,7 @@ def new_dino(owner_id, dino_id, status,
         'name': name,
         'quality': quality, 
 
-        'notifications': {},
+        'notifications': [],
 
         'stats': {
             'heal': heal,
