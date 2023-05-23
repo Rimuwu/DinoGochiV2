@@ -92,7 +92,7 @@ def load():
 
 
 if __name__ == '__main__':
-    with open(CONFIG_PATH, 'w') as f:
+    with open('../'+CONFIG_PATH, 'w') as f:
         f.write(conf.toJSON())
         sys.exit(f"{CONFIG_PATH} created! Please don't forget to set it up!")
 else:
