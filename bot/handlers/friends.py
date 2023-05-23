@@ -3,13 +3,15 @@ from telebot.types import CallbackQuery, Message
 from bot.config import mongo_client
 from bot.exec import bot
 from bot.modules.data_format import list_to_inline
+from bot.modules.friend_tools import start_friend_menu
+from bot.modules.friends import get_frineds, insert_friend_connect
 from bot.modules.localization import get_data, t
 from bot.modules.markup import cancel_markup, confirm_markup
-from bot.modules.user import get_frineds, insert_friend_connect, user_name
-from bot.modules.states_tools import ChooseCustomState, ChoosePagesState, ChooseConfirmState
-from bot.modules.notifications import user_notification
 from bot.modules.markup import markups_menu as m
-from bot.modules.friend_tools import start_friend_menu
+from bot.modules.notifications import user_notification
+from bot.modules.states_tools import (ChooseConfirmState, ChooseCustomState,
+                                      ChoosePagesState)
+from bot.modules.user import user_name
 
 users = mongo_client.bot.users
 friends = mongo_client.connections.friends
