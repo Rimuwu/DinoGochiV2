@@ -36,7 +36,7 @@ class Dino:
         self.name = 'name'
         self.quality = 'com'
         
-        self.notifications = {}
+        self.notifications = []
 
         self.stats = {
                 'heal': 10, 'eat': 10,
@@ -112,10 +112,10 @@ class Dino:
         """
         repeat = self.memory[memory_type].count(obj)
         percent = GAME_SETTINGS['penalties'][memory_type][str(repeat)]
-        
+
         if update:
             max_repeat = {'games': 3, 'eat': 5}
-            
+
             if len(self.memory[memory_type]) < max_repeat[memory_type]:
                 self.update({'$push': {f'memory.{memory_type}': obj}})
             else:
@@ -125,10 +125,10 @@ class Dino:
                     {f'memory.{memory_type}': self.memory[memory_type]}}
                             )
         return percent, repeat
-    
+
     @property
     def data(self): return get_dino_data(self.data_id)
-    
+
     @property
     def age(self): return get_age(self._id)
 
