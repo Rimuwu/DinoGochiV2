@@ -120,6 +120,9 @@
         "time_year": {
             "standart": {
                 "name": "🦖", "status": "👁‍🗨", "rare": "🧿",
+                "age": "🎂", 
+
+                "em_coll_act": "🏹", "em_game_act": "🧩",
 
                 "heal": "❤️", "eat": "🍕", "game": "🎮",
                 "mood": "🎈", "energy": "🌙",
@@ -132,6 +135,9 @@
             },
             "winter":  {
                 "name": "🧊", "status": "❄️", "rare": "☃️",
+                "age": "🧵",
+
+                "em_coll_act": "🏹", "em_game_act": "🧩",
 
                 "heal": "☁️", "eat": "🥂", "game": "🎄",
                 "mood": "❄️", "energy": "🕯",
@@ -144,6 +150,9 @@
             },
             "spring":  {
                 "name": "🌸", "status": "💮", "rare": "🌿",
+                "age": "🥭",
+
+                "em_coll_act": "🏹", "em_game_act": "🧩",
 
                 "heal": "🏵", "eat": "🥞", "game": "💐",
                 "mood": "🍯", "energy": "✨",
@@ -156,6 +165,9 @@
             },
             "summer":  {
                 "name": "🍹", "status": "💐", "rare": "🥀",
+                "age": "🥕",
+
+                "em_coll_act": "🏹", "em_game_act": "🧩",
 
                 "heal": "🌴", "eat": "🥜", "game": "🍨",
                 "mood": "⛺️", "energy": "🍯",
@@ -168,6 +180,9 @@
             },
             "autumn":  {
                 "name": "🏮", "status": "🍁", "rare": "🥧",
+                "age": "🍒",
+
+                "em_coll_act": "🏹", "em_game_act": "🧩",
 
                 "heal": "🍂", "eat": "🍷", "game": "🍁",
                 "mood": "🍃", "energy": "🥀",
@@ -256,6 +271,10 @@
     "referal": {
         "coins": 255,
         "items": ["1", "1", "2", "2", "16", "12", "12", "11", "11", "13", "13", "90"],
-        "custom_price": 50
+
+        "custom_price": 50,
+
+        "award_lvl": 5,
+        "award_items": ["22", "20"]
     }
 } 
