@@ -8,20 +8,21 @@ from bot.const import GAME_SETTINGS
 from bot.exec import bot
 from bot.modules.data_format import (list_to_inline, list_to_keyboard,
                                      seconds_to_str)
-from bot.modules.dinosaur import (Dino, end_collecting, end_game,
-                                  end_sleep, start_sleep)
+from bot.modules.dinosaur import (Dino, end_collecting, end_game, end_sleep,
+                                  start_sleep)
 from bot.modules.images import dino_collecting, dino_game
 from bot.modules.inline import inline_menu
 from bot.modules.inventory_tools import start_inv
+from bot.modules.item import counts_items
 from bot.modules.item import get_data as get_item_data
-from bot.modules.item import get_name, counts_items
+from bot.modules.item import get_name
 from bot.modules.item_tools import check_accessory, use_item
 from bot.modules.localization import get_data, t
 from bot.modules.markup import count_markup, feed_count_markup
 from bot.modules.markup import markups_menu as m
 from bot.modules.mood import add_mood
 from bot.modules.states_tools import (ChooseIntState, ChooseOptionState,
-                                      ChooseStepState, ChoosePagesState)
+                                      ChoosePagesState, ChooseStepState)
 from bot.modules.user import User
 
 users = mongo_client.bot.users
@@ -233,7 +234,7 @@ async def inventory_adapter(item, transmitted_data):
     userid = transmitted_data['userid']
     chatid = transmitted_data['chatid']
     lang = transmitted_data['lang']
-    dino = transmitted_data['dino']
+    dino: Dino = transmitted_data['dino']
 
     transmitted_data['item'] = item
     
@@ -249,11 +250,15 @@ async def inventory_adapter(item, transmitted_data):
 
         if max_count > limiter: max_count = limiter
         
+        percent = 1
+        if dino.age.days >= 10:
+            percent, repeat = dino.memory_percent('games', item['item_id'], False)
+
         steps = [
             {"type": 'int', "name": 'count', "data": {"max_int": max_count}, 
                 'message': {'text': t('css.wait_count', lang), 
                             'reply_markup': feed_count_markup(
-                                dino.stats['eat'], item_data['act'], max_count, item_name, lang)}}
+                                dino.stats['eat'], int(item_data['act'] * percent), max_count, item_name, lang)}}
                 ]
         await ChooseStepState(adapter_function, userid, chatid, 
                                   lang, steps, 
@@ -514,7 +519,7 @@ async def collecting_callback(callback: CallbackQuery):
     
     dino = Dino(dino_data) #type: ignore
     data = collecting_task.find_one({'dino_id': dino._id})
-    if data:
+    if data and dino:
         items_list = []
         for key, count in data['items'].items():
             items_list += [key] * count
