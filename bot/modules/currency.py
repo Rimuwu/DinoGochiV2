@@ -1,5 +1,4 @@
 from currency_converter import CurrencyConverter
-from time import time
 from bot.const import GAME_SETTINGS
 
 main_currency = 'USD'
