@@ -38,6 +38,8 @@ async def downgrade_accessory(dino: Dino, acc_type: str):
                 await dino_notification(dino._id, 'acc_broke')
             else:
                 dino.update({"$inc": {f'activ_items.{acc_type}': num}})
+                
+            await dino_notification(dino._id, 'broke_accessory', item_name=get_name(item['item_id']))
             return True
         else:
             return False
@@ -387,7 +389,7 @@ async def pre_adapter(return_data: dict, transmitted_data: dict):
     await adapter(return_data, transmitted_data)
         
 async def eat_adapter(return_data: dict, transmitted_data: dict):
-    dino = return_data['dino']
+    dino: Dino = return_data['dino']
     transmitted_data['dino'] = dino
     lang = transmitted_data['lang']
     userid = transmitted_data['userid']
@@ -398,11 +400,15 @@ async def eat_adapter(return_data: dict, transmitted_data: dict):
     item_data = get_data(item['item_id'])
     item_name = get_name(item['item_id'], lang)
     
+    percent = 1
+    if dino.age.days >= 10:
+        percent, repeat = dino.memory_percent('games', item['item_id'], False)
+
     steps = [
         {"type": 'int', "name": 'count', "data": {"max_int": max_count}, 
             'message': {'text': t('css.wait_count', lang), 
                         'reply_markup': feed_count_markup(
-                            dino.stats['eat'], item_data['act'], max_count, item_name, lang)}}
+                            dino.stats['eat'], int(item_data['act'] * percent), max_count, item_name, lang)}}
             ]
     await ChooseStepState(pre_adapter, userid, chatid, lang, steps, 
                                 transmitted_data=transmitted_data)
@@ -433,7 +439,7 @@ async def data_for_use_item(item: dict, userid: int, chatid: int, lang: str, con
         if type_item == 'eat':
             adapter_function = eat_adapter
             transmitted_data['max_count'] = max_count # type: ignore
-            
+
             steps = [
                 {"type": 'dino', "name": 'dino', "data": {"add_egg": False}, 
                     'message': None}
@@ -464,7 +470,7 @@ async def data_for_use_item(item: dict, userid: int, chatid: int, lang: str, con
             ]
         elif type_item == 'egg':
             steps = []
-            
+
         else:
             ok = False
             await bot.send_message(chatid, t('item_use.cannot_be_used', lang))
