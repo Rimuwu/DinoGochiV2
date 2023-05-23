@@ -1,13 +1,19 @@
+from random import choice
 from time import time
+
 from telebot.formatting import escape_markdown
 
 from bot.config import mongo_client
+from bot.const import GAME_SETTINGS as GS
 from bot.exec import bot
-from bot.modules.data_format import seconds_to_str, user_name, random_code
+from bot.modules.data_format import seconds_to_str, user_name
 from bot.modules.dinosaur import Dino, Egg
+from bot.modules.friends import get_frineds
+from bot.modules.item import AddItemToUser, get_name
 from bot.modules.localization import get_data, t
 from bot.modules.logs import log
 from bot.modules.notifications import user_notification
+from bot.modules.referals import get_code_owner, get_user_sub
 
 users = mongo_client.bot.users
 items = mongo_client.bot.items
@@ -218,60 +224,6 @@ def get_inventory(userid: int) -> list:
 def items_count(userid: int):
     return len(list(items.find({'owner_id': userid}, {'_id': 1})))
 
-def get_frineds(userid: int) -> dict:
-    """ Получает друзей (id) и запросы к пользователю
-    
-        Return\n
-        { 'friends': [],
-          'requests': [] }
-    """
-    friends_dict = {
-        'friends': [],
-        'requests': []
-        }
-    alt = {'friendid': 'userid', 
-           'userid': 'friendid'
-           }
-
-    for st in ['userid', 'friendid']:
-        data_list = list(friends.find({st: userid, 'type': 'friends'}))
-        
-        for conn_data in data_list:
-            friends_dict['friends'].append(conn_data[alt[st]])
-
-        if st == 'friendid':
-            data_list = list(friends.find({st: userid, 'type': 'request'}))
-
-            for conn_data in data_list:
-                friends_dict['requests'].append(conn_data[alt[st]])
-    return friends_dict
-
-def insert_friend_connect(userid: int, friendid: int, action: str):
-    """ Создаёт связь между пользователями
-    """
-    assert action in ['friends', 'request'], f'Неподходящий аргумент {action}'
-    
-    res = friends.find_one({
-        'userid': userid,
-        'friendid': friendid,
-        'type': action
-    })
-
-    res2 = friends.find_one({
-        'userid': friendid,
-        'friendid': userid,
-        'type': action
-    })
-
-    if not res and not res2:
-        data = {
-            'userid': userid,
-            'friendid': friendid,
-            'type': action
-        }
-        return friends.insert_one(data)
-    return False
-
 def last_dino(user: User):
     """Возвращает последнего выбранного динозавра.
        Если None - вернёт первого
@@ -362,7 +314,7 @@ async def experience_enhancement(userid: int, xp: int):
     if user:
         lvl = 0
         xp = user['xp'] + xp
-        
+
         try:
             chat_user = await bot.get_chat_member(userid, userid)
             lang = chat_user.user.language_code
@@ -370,9 +322,9 @@ async def experience_enhancement(userid: int, xp: int):
         except: 
             lang = 'en'
             name = 'name'
-        
+
         lvl_messages = get_data('notifications.lvl_up', lang)
-        
+
         while xp > 0:
             max_xp = max_lvl_xp(user['lvl'])
             if max_xp <= xp:
@@ -386,11 +338,28 @@ async def experience_enhancement(userid: int, xp: int):
 
                 await user_notification(userid, 'lvl_up', lang, 
                                         user_name=name,
-                                        lvl=str(user['lvl'] + lvl), add_way=add_way)
+                                        lvl=user['lvl'] + lvl, 
+                                        add_way=add_way)
             else: break
-        
+
         if lvl: users.update_one({'userid': userid}, {'$inc': {'lvl': lvl}})
         users.update_one({'userid': userid}, {'$set': {'xp': xp}})
+
+        # Выдача награда за реферал
+        if user['lvl'] < 5 and user['lvl'] + lvl >= GS['referal']['award_lvl']:
+            sub = get_user_sub(userid)
+            if sub:
+                code = sub['code']
+                referal = get_code_owner(code)
+                if referal:
+                    code_owner = referal['userid']
+                    random_item = choice(GS['referal']['award_items'])
+                    item_name = get_name(random_item, lang)
+
+                    AddItemToUser(userid, random_item)
+                    await user_notification(code_owner, 'referal_award', lang, 
+                                        user_name=name,
+                                        lvl=user['lvl'] + lvl, item_name=item_name)
 
 def user_info(data_user, lang: str, secret: bool = False):
     user = User(data_user.id)
@@ -476,45 +445,6 @@ def user_info(data_user, lang: str, secret: bool = False):
 def premium(userid: int):
     res = subscriptions.find_one({'userid': userid})
     return bool(res)
-
-def create_referal(userid: int, code: str = ''):
-    """ Создаёт связь между кодом и владельцем, 
-        если не указан код, генерирует его
-    """
-
-    if not referals.find_one({'ownerid': userid}):
-        if not code: 
-            while not code:
-                c = random_code(10)
-                if not referals.find_one({'code': code}): code = c
-
-        data = {
-            'ownerid': userid,
-            'code': code,
-            'type': 'general'
-        }
-
-        referals.insert_one(data)
-        return True, code
-    return False, ''
-
-def connect_referal(code: str, userid: int):
-    """ Создаёт связь между пользователем и активированным кодом 
-    """
-    if not referals.find_one({'userid': userid}):
-        data = {
-            'code': code,
-            'userid': userid,
-            'type': 'sub'
-        }
-        referals.insert_one(data)
-        return True
-    return False
-
-def get_code_owner(code: str):
-    """ Получает создателя реферального кода
-    """
-    return referals.find_one({'code': code, 'type': 'general'})
 
 def take_coins(userid: int, col: int, update: int) -> bool:
     """Функция проверяет, можно ли отнять / добавить col монет у / к пользователя[ю]
