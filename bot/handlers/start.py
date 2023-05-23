@@ -12,6 +12,7 @@ from bot.modules.images import create_eggs_image
 from bot.modules.localization import get_data, t
 from bot.modules.markup import markups_menu as m
 from bot.modules.user import insert_user
+from bot.modules.referals import connect_referal
 
 stickers = bot.get_sticker_set('Stickers_by_DinoGochi_bot')
 referals = mongo_client.connections.referals
@@ -46,7 +47,7 @@ async def start_game(message: types.Message, referal: str = ''):
     markup_inline = types.InlineKeyboardMarkup()
     markup_inline.add(*[types.InlineKeyboardButton(
             text=f'🥚 {id_l.index(i) + 1}', 
-            callback_data=f'start_egg {i}') for i in id_l]
+            callback_data=f'start_egg {i} {referal}') for i in id_l]
     )
 
     start_game = t('start_command.start_game', message.from_user.language_code)
@@ -58,7 +59,6 @@ async def start_game_message(message: types.Message):
     username = user_name(message.from_user)
     
     content = str(message.text).split()
-    print(content)
     add_referal = False
     markup = None
     
@@ -81,7 +81,6 @@ async def start_game_message(message: types.Message):
         await bot.send_message(message.chat.id, text)
 
         await start_game(message, referal=referal) # type: ignore
-    
 
 
 @bot.callback_query_handler(is_authorized=False, 
@@ -92,7 +91,8 @@ async def egg_answer_callback(callback: types.CallbackQuery):
 
     # Сообщение
     edited_text = t('start_command.end_answer.edited_text', lang)
-    send_text = t('start_command.end_answer.send_text', lang, inc_time=seconds_to_str(GAME_SETTINGS['first_dino_time_incub'], lang))
+    send_text = t('start_command.end_answer.send_text', lang, inc_time=
+                  seconds_to_str(GAME_SETTINGS['first_dino_time_incub'], lang))
 
     await bot.edit_message_caption(edited_text, callback.message.chat.id, callback.message.message_id)
     await bot.send_message(callback.message.chat.id, send_text, parse_mode='Markdown', 
@@ -101,3 +101,7 @@ async def egg_answer_callback(callback: types.CallbackQuery):
     # Создание юзера и добавляем динозавра в инкубацию
     insert_user(callback.from_user.id)
     incubation_egg(egg_id, callback.from_user.id, quality=GAME_SETTINGS['first_egg_rarity'])
+    
+    if len(callback.data.split()) > 2:
+        referal = callback.data.split()[2]
+        connect_referal(referal, callback.from_user.id)
