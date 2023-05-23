@@ -13,7 +13,7 @@ class TracebackHandler(ExceptionHandler):
     def handle(self, exception):
         log(traceback.format_exc(), 3)
 
-bot = AsyncTeleBot(conf.bot_token, state_storage=StateMemoryStorage(), exception_handler=TracebackHandler())
+bot = AsyncTeleBot(conf.bot_token, exception_handler=TracebackHandler())
 bot.enable_saving_states()
 
 def run():
