@@ -1,12 +1,13 @@
 from telebot.types import ReplyKeyboardMarkup
 
 from bot.config import mongo_client
+from bot.const import GAME_SETTINGS as gs
 from bot.modules.data_format import chunks, crop_text, list_to_keyboard
 from bot.modules.dinosaur import Dino, Egg
 from bot.modules.localization import t, tranlate_data
 from bot.modules.logs import log
+from bot.modules.referals import get_user_code, get_user_sub
 from bot.modules.user import User, last_dino, premium
-from bot.const import GAME_SETTINGS as gs
 
 users = mongo_client.bot.users
 dinosaurs = mongo_client.bot.dinosaurs
@@ -149,9 +150,19 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
         # Меню рефералов
         prefix = 'commands_name.referal.'
         add_back_button = True
+        
+        referal = get_user_code(userid)
+        friend_code = get_user_sub(userid)
         buttons = [
-            ['code', 'enter_code'],
-        ]
+                ['code', 'enter_code'],
+            ]
+        if referal:
+            my_code = referal['code']
+            
+            buttons[0][0] = f'notranslate.{t("commands_name.referal.my_code", language_code)} {my_code}'
+            
+        if friend_code:
+            buttons[0][1] = f'notranslate.{t("commands_name.referal.friend_code", language_code)} {friend_code["code"]}'
 
     elif markup_key == 'actions_menu':
 
@@ -287,8 +298,11 @@ def feed_count_markup(dino_eat: int, item_act: int,
     if col_to_full > max_col: col_to_full = max_col
     if full_percent > 100: full_percent = 100
 
+    dino_percent = dino_eat + item_act
+    if dino_percent > 100: dino_percent = 100
+    
     buttons.append(
-        f"{dino_eat + item_act}% = {item_name[:1]} x1"
+        f"{dino_percent}% = {item_name[:1]} x1"
         ) # 1 раз
     
     if dino_eat + item_act * col_to_full < 100:
