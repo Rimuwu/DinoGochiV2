@@ -1,3 +1,5 @@
+from time import time
+
 from telebot import types
 from telebot.types import Message
 
@@ -9,12 +11,15 @@ from bot.modules.dinosaur import Dino, Egg
 from bot.modules.events import get_one_event
 from bot.modules.inline import dino_profile_markup
 from bot.modules.item import get_name
+from bot.modules.item_tools import check_accessory
 from bot.modules.localization import get_data, t
 from bot.modules.markup import markups_menu as m
 from bot.modules.states_tools import ChooseDinoState
 from bot.modules.user import User
 
 users = mongo_client.bot.users
+collecting_task = mongo_client.tasks.collecting
+game_task = mongo_client.tasks.game
 
 async def dino_profile(userid: int, dino: Dino, lang: str, custom_url: str):
     text = ''
@@ -37,8 +42,8 @@ async def dino_profile(userid: int, dino: Dino, lang: str, custom_url: str):
         'em_name': tem['name'], 'dino_name': dino.name,
         'em_status': tem['status'], 'status': status_rep,
         'em_rare': tem['rare'], 'qual': text_rare[dino.quality][1],
-
-        'stats': stats_text
+        'em_age': tem['age'], 'age': 
+            seconds_to_str(dino.age.days * 86400, lang)
     }
     text = t('p_profile.profile_text', lang, formating=False).format(**kwargs)
 
@@ -51,23 +56,29 @@ async def dino_profile(userid: int, dino: Dino, lang: str, custom_url: str):
         pass
 
     if dino.status == 'game':
-        # if Functions.acc_check(bot, bd_user, '4', dino_user_id, True):
-        #     w_t = bd_dino['game_time'] - time.time()
-        #     gtime = Functions.time_end(w_t, text_dict['game_time']['set'])
+        data = game_task.find_one({'dino_id': dino._id})
+        text += t(
+                f'p_profile.game.text', lang, em_game_act=tem['em_game_act'])
+        if data:
+            if True or check_accessory(dino, '4', True):
+                end = seconds_to_str(data['game_end'] - int(time()), lang)
+                text += t(
+                    f'p_profile.game.game_end', lang, end=end)
 
-        #     text += "\n\n" + tem['activ_game']
-        #     text += text_dict['game_time']['text'].format(gtime=gtime)
-        pass
+            duration = seconds_to_str(int(time()) - data['game_start'], lang)
+            text += t(
+                f'p_profile.game.game_duration', lang, duration=duration)
     
-    if dino.status == 'hunting':
-        # targ = bd_dino['target']
-        # number, tnumber = targ[0], targ[1]
-        # prog = int(number / (tnumber / 100))
-
-        # text += "\n\n" + tem['activ_hunting']
-        # text += text_dict['collecting_progress'].format(progress=prog)
-        pass
-
+    if dino.status == 'collecting':
+        data = collecting_task.find_one({'dino_id': dino._id})
+        if data:
+            text += t(
+                f'p_profile.collecting.text', lang, em_coll_act=tem['em_coll_act'])
+            text += t(
+                f'p_profile.collecting.progress.{data["collecting_type"]}', lang,
+                now = data['now_count'], max_count=data['max_count'])
+            
+    text += '\n\n' + stats_text
     # Генерация блока с аксессуарами
     add_blok = False
     acsess = {
@@ -82,8 +93,7 @@ async def dino_profile(userid: int, dino: Dino, lang: str, custom_url: str):
             name = get_name(item['item_id'], lang)
             if 'abilities' in item.keys() and 'endurance' in item['abilities'].keys():
                acsess[key] = f'{name} \[ *{item["abilities"]["endurance"]}* ]'
-            else:
-                acsess[key] = f'{name}'
+            else: acsess[key] = f'{name}'
                 
     menu = dino_profile_markup(add_blok, lang)
     if add_blok:
