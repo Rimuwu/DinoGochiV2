@@ -137,8 +137,15 @@ async def referal_menu(message: Message):
     
     coins = GS['referal']['coins']
     items = GS['referal']['items']
+    award_items = GS['referal']['award_items']
+    lvl = GS['referal']['award_lvl']
+    
+    award_text = counts_items(award_items, lang, t('menu_text.referal_separator', lang))
     names = counts_items(items, lang)
     
     await bot.send_message(message.chat.id, t(
-        'menu_text.referal', lang, coins=coins, items=names), 
-                           reply_markup=m(userid, 'referal_menu', lang))
+                'menu_text.referal', lang, 
+                coins=coins, items=names, 
+                award_text=award_text, lvl=lvl), 
+                parse_mode='Markdown',
+                reply_markup=m(userid, 'referal_menu', lang))
