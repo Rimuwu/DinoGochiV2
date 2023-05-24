@@ -4,7 +4,7 @@ from bot.config import mongo_client
 from bot.const import GAME_SETTINGS
 from bot.exec import bot
 from bot.modules.data_format import list_to_inline, random_dict
-from bot.modules.dinosaur import Dino, edited_stats
+from bot.modules.dinosaur import Dino, edited_stats, mutate_dino_stat
 from bot.modules.images import create_eggs_image
 from bot.modules.item import (AddItemToUser, CalculateDowngradeitem,
                               CheckItemFromUser, EditItemFromUser,
@@ -12,7 +12,8 @@ from bot.modules.item import (AddItemToUser, CalculateDowngradeitem,
                               get_data, get_item_dict, get_name, is_standart,
                               item_code)
 from bot.modules.localization import t
-from bot.modules.markup import confirm_markup, count_markup, markups_menu, feed_count_markup
+from bot.modules.markup import (confirm_markup, count_markup,
+                                feed_count_markup, markups_menu)
 from bot.modules.notifications import dino_notification
 from bot.modules.states_tools import ChooseStepState
 from bot.modules.user import User, experience_enhancement
@@ -35,11 +36,10 @@ async def downgrade_accessory(dino: Dino, acc_type: str):
 
             if item['abilities']['endurance'] <= 0:
                 dino.update({"$set": {f'activ_items.{acc_type}': None}})
-                await dino_notification(dino._id, 'acc_broke')
             else:
                 dino.update({"$inc": {f'activ_items.{acc_type}': num}})
-                
-            await dino_notification(dino._id, 'broke_accessory', item_name=get_name(item['item_id']))
+            await dino_notification(dino._id, 'broke_accessory')
+
             return True
         else:
             return False
