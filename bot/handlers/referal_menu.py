@@ -9,7 +9,9 @@ from bot.modules.markup import cancel_markup, confirm_markup
 from bot.modules.markup import markups_menu as m
 from bot.modules.states_tools import (ChooseConfirmState, ChooseCustomState,
                                       ChoosePagesState)
-from bot.modules.user import get_frineds, insert_friend_connect, user_name, create_referal
+from bot.modules.friends import get_frineds, insert_friend_connect
+from bot.modules.user import user_name
+from bot.modules.referals import create_referal
 
 users = mongo_client.bot.users
 referals = mongo_client.connections.referals
@@ -58,4 +60,12 @@ async def generate_code(call: CallbackQuery):
     
     else:
         await bot.send_message(chatid, t('referals.have_code', lang))
+
+
+@bot.message_handler(textstart='commands_name.referal.my_code')
+async def my_code(message: Message):
+    """ Кнопка - мой код ...
+    """
+    user_id = message.from_user.id
     
+    print('23')

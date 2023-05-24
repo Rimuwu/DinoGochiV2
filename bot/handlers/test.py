@@ -22,7 +22,7 @@ from bot.modules.item import (AddItemToUser, DowngradeItem, get_data,
                               get_item_dict, get_name)
 from bot.modules.localization import get_data, t
 from bot.modules.markup import count_markup, down_menu, list_to_keyboard
-from bot.modules.notifications import user_notification
+from bot.modules.notifications import user_notification, notification_manager
 from bot.modules.states_tools import ChoosePagesState, ChooseStepState
 from bot.modules.user import User, max_dino_col
 
@@ -112,46 +112,17 @@ async def egg(message):
     await bot.send_photo(message.from_user.id, img, '', 
                          )
     
-names = ['Артемий', 'Андрей', "Иван", "Тимофей", "Вика", "Саша", "Фёдор", "Юрий"]
-
-general_dict = {
-    "➕ Добавить": 'add',
-    "🕳 Очистить": 'reset'
-}
-
-async def adp(res, transmitted_data):
-    """ Функция обработки выбранного элемента
-    """
-    key = transmitted_data['key']
-    options = transmitted_data['options']
-    userid = transmitted_data['userid']
-
-    await bot.send_message(userid, f'Ты выбрал {key}, по моим данным эта кнопка отвечает за {res}')
-
-    if res == 'add':
-        r_name = choice(names)
-        if r_name in options:
-            r_name = r_name + str(list(options.keys()).count(r_name)+1)
-        add = {r_name: 'user'}
-        return {'status': 'edit', 'elements': {'add': add}}
-    
-    elif res == 'user':
-        return {'status': 'edit', 'elements': {'delete': [key]}}
-    
-    elif res == 'reset':
-        return {'status': 'update', 'options': general_dict}
-    
-@bot.message_handler(commands=['pages'])
+@bot.message_handler(commands=['auto'])
 async def test_options_pages(message):
     userid = message.from_user.id
     chatid = message.chat.id
     lang = message.from_user.language_code
     
-    await ChoosePagesState(
-        adp, userid, chatid, lang, general_dict, 
-        horizontal=2, vertical=3,
-        autoanswer=False, one_element=False)
-    
+    user = User( message.from_user.id)
+    dino = user.get_last_dino()
+
+    await notification_manager(dino._id, 'heal', 50)
+
 # @bot.message_handler(commands=['names'])
 # async def names(message):
     
