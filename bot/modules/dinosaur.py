@@ -10,7 +10,7 @@ from bot.const import DINOS, GAME_SETTINGS
 from bot.modules.data_format import random_code, random_quality
 from bot.modules.images import create_dino_image, create_egg_image
 from bot.modules.localization import log
-from bot.modules.notifications import dino_notification
+from bot.modules.notifications import dino_notification, notification_manager
 from bot.modules.mood import add_mood
 from bot.modules.item import AddItemToUser
 
@@ -36,7 +36,7 @@ class Dino:
         self.name = 'name'
         self.quality = 'com'
         
-        self.notifications = []
+        self.notifications = {}
 
         self.stats = {
                 'heal': 10, 'eat': 10,
@@ -413,3 +413,13 @@ def get_age(dinoid: ObjectId):
     now = datetime.now(timezone.utc)
     delta = now - dino_create
     return delta
+
+async def mutate_dino_stat(dino: dict, key: str, value: int):
+    st = dino['stats'][key]
+    now = st + value
+    if now > 100: value = 100 - st
+    elif now < 0: value = -st
+
+    await notification_manager(dino['_id'], key, now)
+    dinosaurs.update_one({'_id': dino['_id']}, 
+                         {'$inc': {f'stats.{key}': value}})
