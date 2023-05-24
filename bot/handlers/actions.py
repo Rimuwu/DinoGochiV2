@@ -324,7 +324,7 @@ async def entertainments(message: Message):
                     game_buttons.append(value)
 
             if last_dino.memory['games']:
-                last = last_dino.memory['games'][-1]
+                last = last_dino.memory['games'][0]
                 last_game = t(f'entertainments.game.{last}', lang)
 
             await ChoosePagesState(entertainments_adapter, userid, chatid, lang, options, transmitted_data=transmitted_data, horizontal=3)
@@ -410,9 +410,12 @@ async def stop_game(message: Message):
                 text = t('stop_game.dont_tear', lang)
 
             await bot.send_message(chatid, text, reply_markup=m(userid, 'last_menu', lang, True))
+            
         else:
             if last_dino.status == 'game':
                 last_dino.update({'$set': {'status': 'pass'}})
+            
+            await bot.send_message(chatid, '❌', reply_markup=m(userid, 'last_menu', lang, True))
 
 
 async def collecting_adapter(return_data, transmitted_data):
