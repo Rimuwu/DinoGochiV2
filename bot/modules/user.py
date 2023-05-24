@@ -41,7 +41,8 @@ class User:
             'notifications': True,
             'last_dino': None, #храним ObjectId
             'profile_view': 1,
-            'inv_view': [2, 3]
+            'inv_view': [2, 3],
+            'my_name': '' # Как вас называет динозавр
             }
             
         self.coins = 100
