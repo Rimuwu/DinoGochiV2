@@ -9,7 +9,7 @@ from bot.const import GAME_SETTINGS
 from bot.modules.dinosaur import end_collecting
 from bot.modules.item import counts_items
 from bot.modules.item_tools import check_accessory
-from bot.modules.dinosaur import Dino
+from bot.modules.dinosaur import Dino, mutate_dino_stat
 
 collecting_task = mongo_client.tasks.collecting
 dinosaurs = mongo_client.bot.dinosaurs
@@ -21,14 +21,6 @@ ENERGY_DOWN = 0.03 * REPEAT_MINUTS
 ENERGY_DOWN2 = 0.5 * REPEAT_MINUTS
 LVL_CHANCE = 0.125 * REPEAT_MINUTS
 COLLECTING_CHANCE = 0.2 * REPEAT_MINUTS
-
-def mutate_dino_stat(dino, key, value):
-    st = dino['stats'][key]
-    if st + value > 100: value = 100 - st
-    elif st + value < 0: value = -st
-    
-    dinosaurs.update_one({'_id': dino['_id']}, 
-                         {'$inc': {f'stats.{key}': value}})
 
 async def stop_collect(coll_data):
     try:
@@ -55,7 +47,7 @@ async def collecting_process():
             if random.uniform(0, 1) <= ENERGY_DOWN:
                 if random.uniform(0, 1) <= ENERGY_DOWN2: 
                     dino = dinosaurs.find_one({'_id': coll_data['dino_id']})
-                    mutate_dino_stat(dino, 'energy', -1)
+                    if dino: await mutate_dino_stat(dino, 'energy', -1)
             
             dino = Dino(coll_data['dino_id'])
             if check_accessory(dino, '15', True): chance = 0.25

@@ -7,7 +7,7 @@ from bot.modules.mood import add_mood
 from bot.modules.notifications import dino_notification
 from bot.modules.user import experience_enhancement
 from bot.taskmanager import add_task
-from bot.modules.dinosaur import end_game
+from bot.modules.dinosaur import end_game, mutate_dino_stat
 
 game_task = mongo_client.tasks.game
 dinosaurs = mongo_client.bot.dinosaurs
@@ -19,14 +19,6 @@ ENERGY_DOWN = 0.03 * REPEAT_MINUTS
 ENERGY_DOWN2 = 0.5 * REPEAT_MINUTS
 LVL_CHANCE = 0.125 * REPEAT_MINUTS
 GAME_CHANCE = 0.17 * REPEAT_MINUTS
-
-def mutate_dino_stat(dino, key, value):
-    st = dino['stats'][key]
-    if st + value > 100: value = 100 - st
-    elif st + value < 0: value = -st
-    
-    dinosaurs.update_one({'_id': dino['_id']}, 
-                         {'$inc': {f'stats.{key}': value}})
 
 async def game_end():
     data = list(game_task.find({'game_end': 
@@ -46,7 +38,7 @@ async def game_process():
         if dino:
             if random.uniform(0, 1) <= ENERGY_DOWN:
                 if random.uniform(0, 1) <= ENERGY_DOWN2: 
-                    mutate_dino_stat(dino, 'energy', -1)
+                    await mutate_dino_stat(dino, 'energy', -1)
     
             if dino['stats']['game'] < 100:
                 if random.uniform(0, 1) <= LVL_CHANCE: 
@@ -58,7 +50,7 @@ async def game_process():
                 
                 if dino['stats']['game'] < 100:
                     if random.uniform(0, 1) <= GAME_CHANCE:
-                        mutate_dino_stat(dino, 'game', int(randint(2, 10) * percent))
+                       await mutate_dino_stat(dino, 'game', int(randint(2, 10) * percent))
 
 if __name__ != '__main__':
     if conf.active_tasks:
