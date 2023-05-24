@@ -7,13 +7,63 @@ from bot.modules.logs import log
 from bson.objectid import ObjectId
 from bot.config import mongo_client
 from bot.modules.data_format import seconds_to_str
+from random import choice
+from time import time
 
 dinosaurs = mongo_client.bot.dinosaurs
 dino_owners = mongo_client.connections.dino_owners
 users = mongo_client.bot.users
 
+tracked_notifications = [
+    'need_heal', 'need_eat',
+    'need_mood', 'need_game',
+    'need_energy'
+] # Уведомления отслыющиеся в потоках и требующие проверки перед отправкой
+
+replics_notifications = [
+    'need_heal', 'need_eat',
+    'need_mood', 'need_game',
+    'need_energy', 'game_end'
+] # Уведомления которые имею разные реплики
+
+critical_line = {
+    'heal': 30, 'eat': 40, 
+    'game': 50, 'mood': 50,
+    'energy': 30
+ }
+
+def save_notification(dino_id: ObjectId, not_type: str):
+    """ Сохраняет уведомление и его время отправки
+    """
+    dinosaurs.update_one({'_id': dino_id}, {'$set': 
+                            {f'notifications.{not_type}': int(time())}})
+
 def dino_notification_delete(dino_id: ObjectId, not_type: str):
-    print('dino_notification_delete', dino_id, not_type)
+    """ Обнуляет уведомление
+    """
+    dino = dinosaurs.find_one({"_id": dino_id})
+    if dino:
+        if not_type in dino['notifications']:
+            dinosaurs.update_one({'_id': dino_id}, {'$unset': 
+                                    {f'notifications.{not_type}': 1}})
+
+def check_dino_notification(dino_id: ObjectId, not_type: str, save: bool = True):
+    """ Проверяет отслеживаемые уведомления, а так же удаляет его если 
+        
+        Return
+        True - уведомления нет или не отслеживается или время ожидания истекло
+        False - уведомление уже отослано или динозавр не найден
+    """
+    dino = dinosaurs.find_one({"_id": dino_id})
+    if not dino: return False
+    else:
+        if not_type not in tracked_notifications: return True
+        elif not_type in dino['notifications'].keys():
+            if dino['notifications'][not_type] + 1800 <= int(time()):
+                if save: save_notification(dino_id, not_type)
+                return True
+            else: return False
+        return True
 
 async def dino_notification(dino_id: ObjectId, not_type: str, **kwargs):
     """ Те уведомления, которые нужно отслеживать и отсылать 1 раз
@@ -24,9 +74,6 @@ async def dino_notification(dino_id: ObjectId, not_type: str, **kwargs):
     """
     dino = dinosaurs.find_one({"_id": dino_id})
     owners = list(dino_owners.find({'dino_id': dino_id}))
-    tracked_notifications = [
-        ''
-    ]
     text, markup_inline = not_type, InlineKeyboardMarkup()
 
     async def send_not(text, markup_inline):
@@ -42,29 +89,46 @@ async def dino_notification(dino_id: ObjectId, not_type: str, **kwargs):
                     kwargs['time_end'] = seconds_to_str(
                         kwargs.get('secs', 0), lang)
                     
-                data = get_data(f'notifications.{not_type}', lang)
-                text = data['text'].format(**kwargs)
-                markup_inline = inline_menu(data['inline_menu'], lang, **kwargs)
+                if user['settings'].get('my_name', False):
+                    kwargs['owner_name'] = user['settings']['my_name']
+                    if not kwargs['owner_name']:
+                        kwargs['owner_name'] = t('owner', lang)
+                else: kwargs['owner_name'] = t('owner', lang)
+
+                if not_type in replics_notifications:
+                    # Тут мы выбираем случайную реплику для динозавра
+                    replics = get_data(
+                        f'notifications.{not_type}.replics', lang)
+
+                    text = choice(replics).format(**kwargs)
+                    markup = get_data(
+                        f'notifications.{not_type}.inline_menu', lang)
+                    markup_inline = inline_menu(markup, lang, **kwargs)
+                else: 
+                    data = get_data(f'notifications.{not_type}', lang)
+
+                    text = data['text'].format(**kwargs)
+                    markup_inline = inline_menu(data['inline_menu'], lang, **kwargs)
 
                 log(prefix='DinoNotification', 
                     message=f'User: {owner["owner_id"]} DinoId: {dino_id}, Data: {not_type} Kwargs: {kwargs}', lvl=0)
                 try:
-                    await bot.send_message(owner['owner_id'], text, reply_markup=markup_inline)
+                    try:
+                        await bot.send_message(owner['owner_id'], text, reply_markup=markup_inline, parse_mode='Markdown')
+                    except Exception: 
+                        await bot.send_message(owner['owner_id'], text, reply_markup=markup_inline)
                 except Exception as error: 
                     log(prefix='DinoNotification Error', 
                         message=f'User: {owner["owner_id"]} DinoId: {dino_id}, Data: {not_type} Error: {error}', 
                         lvl=3)
-
-    if dino:
+    if dino: # type: dict
         kwargs['dino_name'] = dino['name']
         kwargs['dino_alt_id_markup'] = dino['alt_id']
 
         if not_type in tracked_notifications:
-            if not dino.notifications.get(not_type, False):
+            if check_dino_notification(dino_id, not_type):
                 await send_not(text, markup_inline)
-                dinosaurs.update_one({'_id': dino_id}, {'$set': 
-                                    {f'notifications.{not_type}': True}
-                                    })
+                save_notification(dino_id, not_type)
             else:
                 log(prefix='Notification Repeat', 
                     message=f'DinoId: {dino_id}, Data: {not_type} Kwargs: {kwargs}', lvl=0)
@@ -106,3 +170,17 @@ async def user_notification(user_id: int, not_type: str,
         log(prefix='Notification Error', 
             message=f'User: {user_id}, Data: {not_type} Error: {error}', 
             lvl=3)
+
+async def notification_manager(dino_id: ObjectId, stat: str, unit: int):
+    """ Автоматически отсылает / удаляет уведомления
+    """
+    notif = f'need_{stat}'
+
+    if critical_line[stat] >= unit:
+        if check_dino_notification(dino_id, notif, False):
+            # Отправка уведомления
+            await dino_notification(dino_id, notif, unit=unit)
+        
+    elif unit >= critical_line[stat] + 20:
+        # Удаляем уведомление 
+        dino_notification_delete(dino_id, notif)
