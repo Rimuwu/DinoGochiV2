@@ -4,6 +4,7 @@ from random import randint
 from bot.config import conf, mongo_client
 from bot.modules.dinosaur import mutate_dino_stat
 from bot.taskmanager import add_task
+from bot.modules.dinosaur import Dino
 
 dinosaurs = mongo_client.bot.dinosaurs
 random.seed(1)
@@ -42,6 +43,10 @@ async def main_checks():
     for dino in dinos:
         if dino['status'] == 'inactive': continue
         is_sleeping = dino['status'] == 'sleep'
+        
+        if dino['stats']['heal'] <= 0:
+            Dino(dino['_id']).dead()
+            continue
 
         # условие выполнения для понижения здоровья
         # если здоровье и еда находятся на критическом уровне
