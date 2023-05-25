@@ -338,8 +338,7 @@ async def entertainments(message: Message):
                                             dino_alt_id_markup=last_dino.alt_id
                                                             )))
 
-@bot.callback_query_handler(is_authorized=True, 
-                            func=lambda call: call.data.startswith('game_start'))
+@bot.callback_query_handler(func=lambda call: call.data.startswith('game_start'), is_authorized=True)
 async def game_button(callback: CallbackQuery):
     game = callback.data.split()[3]
     dino_data = callback.data.split()[2]
@@ -511,9 +510,8 @@ async def collecting_progress(message: Message):
                                     )
     
 
-@bot.callback_query_handler(is_authorized=True, 
-                            func=
-                            lambda call: call.data.startswith('collecting'))
+@bot.callback_query_handler(func=
+                            lambda call: call.data.startswith('collecting'), is_authorized=True)
 async def collecting_callback(callback: CallbackQuery):
     dino_data = callback.data.split()[2]
     action = callback.data.split()[1]
