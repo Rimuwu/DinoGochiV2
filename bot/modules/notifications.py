@@ -59,7 +59,7 @@ def check_dino_notification(dino_id: ObjectId, not_type: str, save: bool = True)
     else:
         if not_type not in tracked_notifications: return True
         elif not_type in dino['notifications'].keys():
-            if dino['notifications'][not_type] + 1800 <= int(time()):
+            if dino['notifications'][not_type] + 7200 <= int(time()):
                 if save: save_notification(dino_id, not_type)
                 return True
             else: return False
@@ -125,15 +125,17 @@ async def dino_notification(dino_id: ObjectId, not_type: str, **kwargs):
         kwargs['dino_name'] = dino['name']
         kwargs['dino_alt_id_markup'] = dino['alt_id']
 
-        if not_type in tracked_notifications:
-            if check_dino_notification(dino_id, not_type):
-                await send_not(text, markup_inline)
-                save_notification(dino_id, not_type)
-            else:
-                log(prefix='Notification Repeat', 
-                    message=f'DinoId: {dino_id}, Data: {not_type} Kwargs: {kwargs}', lvl=0)
+        # Отменя уведолмения если динозавр спит
+        if dino['status'] == 'sleep' and not_type in ['need_energy', 'need_game', 'need_mood']: pass
         else:
-            await send_not(text, markup_inline)
+            if not_type in tracked_notifications:
+                if check_dino_notification(dino_id, not_type):
+                    await send_not(text, markup_inline)
+                    save_notification(dino_id, not_type)
+                else:
+                    log(prefix='Notification Repeat', 
+                        message=f'DinoId: {dino_id}, Data: {not_type} Kwargs: {kwargs}', lvl=0)
+            else: await send_not(text, markup_inline)
 
 async def user_notification(user_id: int, not_type: str, 
                             lang: str='en', **kwargs):
