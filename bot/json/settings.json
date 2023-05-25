@@ -43,7 +43,7 @@
         }
     },
 
-    "first_dino_time_incub": 60, 
+    "first_dino_time_incub": 1, 
     "first_egg_rarity": "leg",
 
     "max_eat_items": 300,
@@ -276,5 +276,7 @@
 
         "award_lvl": 5,
         "award_items": ["22", "20"]
-    }
+    },
+
+    "dead_dino_item": "21"
 } 
