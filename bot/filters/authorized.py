@@ -6,7 +6,6 @@ from bot.exec import bot
 
 users = mongo_client.bot.users
 
-
 class IsAuthorizedUser(AdvancedCustomFilter):
     key = 'is_authorized'
 
@@ -15,12 +14,8 @@ class IsAuthorizedUser(AdvancedCustomFilter):
                 { 'userid': message.from_user.id
                 }) is not None
 
-        if status:
-            result = is_authorized
-        else:
-            result = not is_authorized
-
+        if status: result = is_authorized
+        else: result = not is_authorized
         return result
-
 
 bot.add_custom_filter(IsAuthorizedUser())
