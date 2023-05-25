@@ -1,22 +1,20 @@
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
+from bot.modules.data_format import list_to_inline
 from bot.modules.item import counts_items
 from bot.modules.item import get_data as get_item_data
 from bot.modules.item import get_item_dict, get_name, item_code
 from bot.modules.localization import get_data as get_loc_data
 from bot.modules.localization import t
 from bot.modules.logs import log
-from bot.modules.data_format import list_to_inline
 
 
 def inline_menu(markup_data, lang: str = 'en', **kwargs):
     markup_inline = InlineKeyboardMarkup()
     text, callback = '-', '-'
-    standart_keys = [
-        'delete_message', 'send_request',
-        'requests', 'rescue',
-        'dino_profile', 'dino_rename' # dino_alt_id_markup
-    ]
+    standart_keys = get_loc_data('inline_menu', lang)
+    # 'dino_profile', 'dino_rename' # dino_alt_id_markup
+    
     if type(markup_data) == str: markup_data = [markup_data]
     
     for markup_key in markup_data:
