@@ -2,6 +2,7 @@ import datetime
 from datetime import datetime, timezone
 from random import choice, randint
 from time import time
+import asyncio
 
 from bson.objectid import ObjectId
 
@@ -14,9 +15,11 @@ from bot.modules.notifications import dino_notification, notification_manager
 from bot.modules.mood import add_mood
 from bot.modules.item import AddItemToUser
 
+users = mongo_client.bot.users
 dinosaurs = mongo_client.bot.dinosaurs
 incubations = mongo_client.tasks.incubation
 dino_owners = mongo_client.connections.dino_owners
+dead_dinos = mongo_client.bot.dead_dinos
 
 game_task = mongo_client.tasks.game
 sleep_task = mongo_client.tasks.sleep
@@ -64,8 +67,7 @@ class Dino:
             self.UpdateData(find_result)
 
     def UpdateData(self, data):
-        if data:
-            self.__dict__ = data
+        if data: self.__dict__ = data
         
     def __str__(self) -> str:
         return self.name
@@ -77,15 +79,41 @@ class Dino:
         """
         data = dinosaurs.update_one({"_id": self._id}, update_data)
         # self.UpdateData(data) #Не получается конвертировать в словарь возвращаемый объект
-    
+        self.UpdateData(dinosaurs.find_one({"alt_id": self._id}))
+        if self.stats['heal'] <= 0: self.dead()
+
     def delete(self):
         """ Удаление всего, что связано с дино
         """
-        dinosaurs.delete_one({'dino_id': self._id})
+        dinosaurs.delete_one({'_id': self._id})
         for collection in [game_task, sleep_task, journey_task, 
-                           collecting_task]:
+                           collecting_task, dino_owners]:
             collection.delete_many({'dino_id': self._id})
 
+    def dead(self):
+        """ Это очень грустно, но необходимо...
+            Удаляем объект динозавра, отсылает уведомление и сохраняет динозавра в мёртвых
+        """
+        owner = self.get_owner
+        if owner:
+            user = users.find_one({"userid": owner['owner_id']})
+            save_data = {
+                'data_id': self.data_id,
+                'quality': self.quality,
+                'name': self.name,
+                'owner_id': owner['owner_id']
+            }
+            dead_dinos.insert_one(save_data)
+            
+            for key, item in self.activ_items.items():
+                if item: AddItemToUser(owner['owner_id'], item['item_id'])
+
+            if user:
+                way = 'independent_dead'
+                if user['lvl'] <= 5: way = 'not_independent_dead'
+                asyncio.run_coroutine_threadsafe(
+                    dino_notification(self._id, way), asyncio.get_event_loop())
+        self.delete()
 
     def image(self, profile_view: int=1, custom_url: str=''):
         """Сгенерировать изображение объекта
@@ -131,6 +159,9 @@ class Dino:
 
     @property
     def age(self): return get_age(self._id)
+    
+    @property
+    def get_owner(self): return get_owner(self._id)
 
 
 class Egg:
@@ -394,7 +425,6 @@ async def end_collecting(dino_id: ObjectId, items: dict, recipient: int,
     if send_notif:
         await dino_notification(dino_id, 'end_collecting', items_names=items_names)
 
-
 def edited_stats(before: int, unit: int):
     """ Лёгкая функция проверки на 
         0 <= unit <= 100 
@@ -420,6 +450,12 @@ async def mutate_dino_stat(dino: dict, key: str, value: int):
     if now > 100: value = 100 - st
     elif now < 0: value = -st
 
-    await notification_manager(dino['_id'], key, now)
-    dinosaurs.update_one({'_id': dino['_id']}, 
-                         {'$inc': {f'stats.{key}': value}})
+    if key == 'heal' and now <= 0: Dino(dino['_id']).dead()
+    else:
+        await notification_manager(dino['_id'], key, now)
+        dinosaurs.update_one({'_id': dino['_id']}, 
+                            {'$inc': {f'stats.{key}': value}})
+        
+def get_owner(dino_id):
+    return dino_owners.find_one({'dino_id': dino_id, 'type': 'owner'})
+    
