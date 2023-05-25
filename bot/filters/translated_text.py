@@ -19,6 +19,5 @@ class StartWith(AdvancedCustomFilter):
         text = t(key, message.from_user.language_code, False)
         return message.text.startswith(text) #type: ignore
 
-
 bot.add_custom_filter(IsEqual())
 bot.add_custom_filter(StartWith())
