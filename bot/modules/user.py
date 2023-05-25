@@ -48,7 +48,6 @@ class User:
         self.coins = 100
         self.lvl = 0
         self.xp = 0
-        self.dead_dinos = 0
 
         self.dungeon = { 
             'statistics': [],
@@ -398,8 +397,9 @@ def user_info(data_user, lang: str, secret: bool = False):
                      )
     return_text += '\n\n'
     if not secret:
+        dd = dead_dinos.find({'owner_id': user.userid})
         return_text += t(f'user_profile.dinosaurs', lang,
-                        dead=user.dead_dinos, dino_col = len(dinos)
+                        dead=len(list(dd)), dino_col = len(dinos)
                         )
         return_text += '\n\n'
         for iter_data in dinos:
