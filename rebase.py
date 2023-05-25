@@ -176,6 +176,7 @@ def new_user(userid, last_markup,
             'last_dino': None,
             'profile_view': profile_view, # 1
             'inv_view': inv_view, # [2, 3]
+            'my_name': ''
         },
 
         'dungeon': {
@@ -184,7 +185,7 @@ def new_user(userid, last_markup,
         },
 
         'coins': coins, 'lvl': lvl,
-        'xp': xp, 'dead_dinos': dead_dinos
+        'xp': xp
     }
 
     if referal_system:
