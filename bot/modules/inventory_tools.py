@@ -224,7 +224,7 @@ async def start_inv(function, userid: int, chatid: int, lang: str,
     if user_settings: inv_view = user_settings['settings']['inv_view']
     else: inv_view = [2, 3]
     
-    invetory = get_inventory(userid)
+    invetory, count = get_inventory(userid)
     pages, row, items_data, names = inventory_pages(invetory, lang, inv_view, type_filter, item_filter)
 
     if not pages:
