@@ -278,5 +278,8 @@
         "award_items": ["22", "20"]
     },
 
-    "dead_dino_item": "21"
+    "dead_dino_item": "21",
+
+    "dead_dialog_max_lvl": 10,
+    "dead_dialog_item": "3"
 } 
