@@ -1,15 +1,20 @@
 from bot.config import conf, mongo_client
 from bot.modules.notifications import notification_manager
 from bot.taskmanager import add_task
+from bot.modules.dinosaur import Dino
 
 dinosaurs = mongo_client.bot.dinosaurs
-REPEAT_MINUTS = 5
+REPEAT_MINUTS = 1
 
 async def dino_notifications():
     dinos = dinosaurs.find({})
     for dino in dinos:
         dino_id = dino['_id']
         for stat in dino['stats']:
+            
+            if dino['stats']['heal'] <= 0:
+                Dino(dino['_id']).dead()
+                continue
             
             unit = dino['stats'][stat]
             await notification_manager(dino_id, stat, unit)
