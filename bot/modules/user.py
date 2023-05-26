@@ -84,11 +84,11 @@ class User:
         return eggs_list
     
     @property
-    def get_inventory(self) -> list:
+    def get_inventory(self):
         """Возвращает список с предметами в инвентаре"""
-        inv = get_inventory(self.userid)
+        inv, count = get_inventory(self.userid)
         self.inventory = inv
-        return inv
+        return inv, count
 
     @property
     def get_friends(self) -> dict:
@@ -211,15 +211,19 @@ def get_eggs(userid: int) -> list:
 
     return eggs_list
 
-def get_inventory(userid: int) -> list:
-    inv = []
-    for item_dict in items.find({'owner_id': userid}, {'_id': 0, 'owner_id': 0}):
+def get_inventory(userid: int):
+    inv, count = [], 0
+
+    for item_dict in items.find({'owner_id': userid}, 
+                                {'_id': 0, 'owner_id': 0}):
         item = {
             'item': item_dict['items_data'], 
             "count": item_dict['count']
             }
         inv.append(item)
-    return inv
+        count += item_dict['count']
+
+    return inv, count
 
 def items_count(userid: int):
     return len(list(items.find({'owner_id': userid}, {'_id': 1})))
@@ -436,9 +440,11 @@ def user_info(data_user, lang: str, secret: bool = False):
                      )
     
     if not secret:
+        items, count = data_user.get_inventory()
+        
         return_text += '\n\n'
         return_text += t('user_profile.inventory', lang,
-                        items_col=items_count(data_user.id)
+                        items_col=count
                         )
 
     return return_text
