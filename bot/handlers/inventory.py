@@ -31,6 +31,14 @@ async def open_inventory(message: Message):
     chatid = message.chat.id
 
     await start_inv(None, userid, chatid, lang)
+    
+@bot.callback_query_handler(func=lambda call: call.data.startswith('inventory_start'))
+async def start_callback(call: CallbackQuery):
+    chatid = call.message.chat.id
+    userid = call.from_user.id
+    lang = call.from_user.language_code
+    
+    await start_inv(None, userid, chatid, lang)
 
 @bot.message_handler(state=InventoryStates.Inventory, is_authorized=True)
 async def inventory(message: Message):
@@ -149,7 +157,7 @@ async def item_callback(call: CallbackQuery):
                         t('item_use.cannot_be_used', lang),  
                           reply_markup=m(userid, 'last_menu', lang))
         else:
-            print('item_callback')
+            print('item_callback', call_data[1])
 
 # Поиск внутри инвентаря
 @bot.callback_query_handler(state=InventoryStates.InventorySearch, 
