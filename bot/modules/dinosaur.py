@@ -1,8 +1,8 @@
+import asyncio
 import datetime
 from datetime import datetime, timezone
 from random import choice, randint
 from time import time
-import asyncio
 
 from bson.objectid import ObjectId
 
@@ -10,10 +10,12 @@ from bot.config import mongo_client
 from bot.const import DINOS, GAME_SETTINGS
 from bot.modules.data_format import random_code, random_quality
 from bot.modules.images import create_dino_image, create_egg_image
-from bot.modules.localization import log
-from bot.modules.notifications import dino_notification, notification_manager
-from bot.modules.mood import add_mood
 from bot.modules.item import AddItemToUser
+from bot.modules.localization import log
+from bot.modules.mood import add_mood
+from bot.modules.notifications import (dino_notification, notification_manager,
+                                       user_notification)
+from bot.const import GAME_SETTINGS as GS
 
 users = mongo_client.bot.users
 dinosaurs = mongo_client.bot.dinosaurs
@@ -95,8 +97,10 @@ class Dino:
             Удаляем объект динозавра, отсылает уведомление и сохраняет динозавра в мёртвых
         """
         owner = self.get_owner
+
         if owner:
             user = users.find_one({"userid": owner['owner_id']})
+
             save_data = {
                 'data_id': self.data_id,
                 'quality': self.quality,
@@ -104,15 +108,27 @@ class Dino:
                 'owner_id': owner['owner_id']
             }
             dead_dinos.insert_one(save_data)
-            
+
             for key, item in self.activ_items.items():
                 if item: AddItemToUser(owner['owner_id'], item['item_id'])
 
             if user:
-                way = 'independent_dead'
-                if user['lvl'] <= 5: way = 'not_independent_dead'
+                
+                col_dinos = dino_owners.find_one(
+                    {'onwer_id': owner['owner_id']})
+                
+                col_eggs = incubations.find_one(
+                    {'onwer_id': owner['owner_id'], 'type': owner})
+
+                if user['lvl'] <= GS['dead_dialog_max_lvl'] and not col_dinos and not col_eggs:
+                    way = 'not_independent_dead'
+                else:
+                    way = 'independent_dead'
+                    AddItemToUser(user['userid'], GS['dead_dino_item'])
+
                 asyncio.run_coroutine_threadsafe(
-                    dino_notification(self._id, way), asyncio.get_event_loop())
+                    user_notification(owner['owner_id'], way, 
+                            dino_name=self.name), asyncio.get_event_loop())
         self.delete()
 
     def image(self, profile_view: int=1, custom_url: str=''):
@@ -450,7 +466,8 @@ async def mutate_dino_stat(dino: dict, key: str, value: int):
     if now > 100: value = 100 - st
     elif now < 0: value = -st
 
-    if key == 'heal' and now <= 0: Dino(dino['_id']).dead()
+    if key == 'heal' and now <= 0:
+        Dino(dino['_id']).dead()
     else:
         await notification_manager(dino['_id'], key, now)
         dinosaurs.update_one({'_id': dino['_id']}, 
