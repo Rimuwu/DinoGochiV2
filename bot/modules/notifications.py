@@ -138,7 +138,7 @@ async def dino_notification(dino_id: ObjectId, not_type: str, **kwargs):
             else: await send_not(text, markup_inline)
 
 async def user_notification(user_id: int, not_type: str, 
-                            lang: str='en', **kwargs):
+                            lang: str='', **kwargs):
     """ Те уведомления которые в любом случае отправятся 1 раз
     """
     text, markup_inline = not_type, InlineKeyboardMarkup()
@@ -147,9 +147,16 @@ async def user_notification(user_id: int, not_type: str,
     ]
     unstandart_notification = [
         'incubation_ready', # необходим dino_alt_id_markup, user_name
-        'send_request' #необходим user_name
+        'send_request', #необходим user_name
+        'not_independent_dead', 'independent_dead'
     ]
     add_way = '.'+kwargs.get('add_way', '')
+    
+    if not lang:
+        try:
+            chat_user = await bot.get_chat_member(user_id, user_id)
+            lang = chat_user.user.language_code
+        except: lang = 'en'
 
     if not_type in standart_notification:
         text = t(f'notifications.{not_type}{add_way}', lang, **kwargs)
@@ -167,7 +174,10 @@ async def user_notification(user_id: int, not_type: str,
     log(prefix='Notification', 
         message=f'User: {user_id}, Data: {not_type} Kwargs: {kwargs}', lvl=0)
     try:
-        await bot.send_message(user_id, text, reply_markup=markup_inline)
+        try:
+            await bot.send_message(user_id, text, reply_markup=markup_inline, parse_mode='Markdown')
+        except Exception:
+            await bot.send_message(user_id, text, reply_markup=markup_inline)
     except Exception as error: 
         log(prefix='Notification Error', 
             message=f'User: {user_id}, Data: {not_type} Error: {error}', 
