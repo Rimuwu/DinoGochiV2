@@ -184,8 +184,7 @@ async def custom_profile(message: Message):
         text = t('custom_profile.no_premium', lang)
         await bot.send_message(userid, text)
 
-@bot.callback_query_handler(is_authorized=True, 
-                            func=lambda call: call.data.startswith('rename_dino'))
+@bot.callback_query_handler(func=lambda call: call.data.startswith('rename_dino'), is_authorized=True)
 async def rename_button(callback: CallbackQuery):
     dino_data = callback.data.split()[1]
     lang = callback.from_user.language_code
@@ -227,7 +226,7 @@ async def delete_me(message: Message):
     lang = message.from_user.language_code
     chatid = message.chat.id
     
-    code = str(randint(1, 1000))
+    code = str(randint(100, 1000))
     transmitted_data = {'code': code}
     
     conf3 = confirm_markup(lang)
