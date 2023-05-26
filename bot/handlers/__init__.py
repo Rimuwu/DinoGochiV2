@@ -11,5 +11,6 @@ from . import about_menu
 from . import profile_menu
 from . import friends
 from . import referal_menu
+from . import dialogs
 
 from . import post_handler # Должен загружаться последний!
