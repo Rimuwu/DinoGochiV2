@@ -1,16 +1,17 @@
 from random import choice
 from time import time
 
-from telebot.formatting import escape_markdown
 from telebot.types import User as teleUser
 
 from bot.config import mongo_client
 from bot.const import GAME_SETTINGS as GS
 from bot.exec import bot
-from bot.modules.data_format import seconds_to_str, user_name
+from bot.modules.data_format import escape_markdown, seconds_to_str, user_name
 from bot.modules.dinosaur import Dino, Egg
 from bot.modules.friends import get_frineds
-from bot.modules.item import AddItemToUser, get_name
+from bot.modules.item import AddItemToUser
+from bot.modules.item import get_data as get_item_data
+from bot.modules.item import get_name
 from bot.modules.localization import get_data, t
 from bot.modules.logs import log
 from bot.modules.notifications import user_notification
@@ -454,7 +455,7 @@ def premium(userid: int):
     res = subscriptions.find_one({'userid': userid})
     return bool(res)
 
-def take_coins(userid: int, col: int, update: int) -> bool:
+def take_coins(userid: int, col: int, update: bool = False) -> bool:
     """Функция проверяет, можно ли отнять / добавить col монет у / к пользователя[ю]
        Если updatе - то обновляет данные
     """
@@ -471,3 +472,15 @@ def take_coins(userid: int, col: int, update: int) -> bool:
 
 def get_dead_dinos(userid: int):
     return list(dead_dinos.find({'owner_id': userid}))
+
+def count_inventory_items(userid: int, find_type: list):
+    """ Считает сколько предметов нужных типов в инвентаре
+    """
+    result = 0
+    for item in items.find({'owner_id': userid}, 
+                                {'_id': 0, 'owner_id': 0}):
+        item_data = get_item_data(item['items_data']['item_id'])
+        item_type = item_data['type']
+
+        if item_type in find_type: result += 1
+    return result
