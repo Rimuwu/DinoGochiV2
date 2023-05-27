@@ -19,7 +19,7 @@ def back_menu(userid) -> str:
     """Возвращает предыдущее меню
     """
     markup_key = 'main_menu'
-    menus_list = ['main_menu', 'settings_menu',
+    menus_list = ['main_menu', 'settings_menu', 'settings2_menu',
                   'main_menu', 'actions_menu', 
                   'main_menu', 'profile_menu', 'market_menu',
                   'main_menu', 'profile_menu', 'about_menu',
@@ -42,7 +42,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
                  language_code: str = 'en', last_markup: bool = False):
     """Главная функция создания меню для клавиатур
        >>> menus:
-       main_menu, settings_menu, profile_menu, about_menu, friends_menu, market_menu, dino_tavern_menu, referal_menu, actions_menu
+       main_menu, settings_menu, settings2_menu, profile_menu, about_menu, friends_menu, market_menu, dino_tavern_menu, referal_menu, actions_menu
        last_menu\n\n
 
        last_markup - Если True, то меню будет изменено только если,
@@ -92,14 +92,21 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
     elif markup_key == 'settings_menu':
         # Меню настроек
         prefix = 'commands_name.settings.'
-        add_back_button = True
         buttons = [
             ['notification', 'inventory'],
-            ['dino_profile', 'delete_me'],
             ['dino_name'],
+            ['dino_profile', 'delete_me'],
+            ['settings_page_2', "noprefix.buttons_name.back"]
         ]
 
-        if premium(userid): buttons[2].append('custom_profile')
+    elif markup_key == 'settings2_menu':
+        prefix = 'commands_name.settings2.'
+        add_back_button = True
+        buttons = [
+            ['my_name'],
+        ]
+        
+        if premium(userid): buttons[0].append('custom_profile')
 
     elif markup_key == 'profile_menu':
         # Меню профиля
