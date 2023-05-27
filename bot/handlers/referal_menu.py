@@ -4,6 +4,7 @@ from bot.config import mongo_client
 from bot.const import GAME_SETTINGS as GS
 from bot.exec import bot
 from bot.modules.data_format import escape_markdown, list_to_inline
+from bot.modules.item import counts_items
 from bot.modules.localization import get_data, t
 from bot.modules.markup import cancel_markup
 from bot.modules.markup import markups_menu as m
@@ -132,8 +133,12 @@ async def check_code(code: str, transmitted_data: dict):
     userid = transmitted_data['userid']
     chatid = transmitted_data['chatid']
     
+    coins = GS['referal']['coins']
+    items = GS['referal']['items']
+    names = counts_items(items, lang)
+    
     result = connect_referal(code, userid)
-    text = t(f'referals.enter_code.{result}', lang)
+    text = t(f'referals.enter_code.{result}', lang, coins=coins, items=names)
     await bot.send_message(chatid, text, parse_mode='Markdown', 
                         reply_markup=m(userid, 'last_menu', lang, True))
 
