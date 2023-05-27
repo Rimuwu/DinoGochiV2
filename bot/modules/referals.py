@@ -57,17 +57,18 @@ def get_user_sub(userid: int):
 def connect_referal(code: str, userid: int):
     """ Создаёт связь между пользователем и активированным кодом 
     """
-    if not referals.find_one({'userid': userid}):
+    if not referals.find_one({'userid': userid, 'type': 'sub'}):
         code_creator = get_code_owner(code)
         if code_creator:
-            data = {
-                'code': code,
-                'userid': userid,
-                'type': 'sub'
-            }
-            referals.insert_one(data)
+            if code_creator['userid'] != userid:
+                data = {
+                    'code': code,
+                    'userid': userid,
+                    'type': 'sub'
+                }
+                referals.insert_one(data)
 
-            insert_friend_connect(userid, code_creator['userid'], 'friends')
-            get_referal_award(userid)
-            return True
+                insert_friend_connect(userid, code_creator['userid'], 'friends')
+                get_referal_award(userid)
+                return True
     return False
