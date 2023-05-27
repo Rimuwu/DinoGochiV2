@@ -39,13 +39,13 @@ def back_menu(userid) -> str:
     else: return 'main_menu'
 
 def markups_menu(userid: int, markup_key: str = 'main_menu', 
-                 language_code: str = 'en', last_menu: bool = False):
+                 language_code: str = 'en', last_markup: bool = False):
     """Главная функция создания меню для клавиатур
-       menus:
-       main_menu, settings_menu, profile_menu
-       last_menu
+       >>> menus:
+       main_menu, settings_menu, profile_menu, about_menu, friends_menu, market_menu, dino_tavern_menu, referal_menu, actions_menu
+       last_menu\n\n
 
-       last_menu - Если True, то меню будет изменено только если,
+       last_markup - Если True, то меню будет изменено только если,
        последнее меню совпадает с тем, на которое будет изменено
        Пример:
 
@@ -72,7 +72,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
            markup_key = user_dict.get('last_markup')
 
     else: #Сохранение последнего markup
-        if last_menu:
+        if last_markup:
             user_dict = users.find_one(
                 {'userid': userid}, {'last_markup': 1}
                 )
@@ -227,7 +227,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
         buttons.append([t('buttons_name.back', language_code)])
     
     result = list_to_keyboard(buttons)
-    if last_menu:
+    if last_markup:
         user_dict = users.find_one(
            {'userid': userid}, {'last_markup': 1}
         )
