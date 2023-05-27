@@ -3,15 +3,13 @@ from telebot.types import CallbackQuery, Message
 from bot.config import mongo_client
 from bot.const import GAME_SETTINGS as GS
 from bot.exec import bot
-from bot.modules.data_format import list_to_inline
+from bot.modules.data_format import escape_markdown, list_to_inline
 from bot.modules.localization import get_data, t
-from bot.modules.markup import cancel_markup, confirm_markup
+from bot.modules.markup import cancel_markup
 from bot.modules.markup import markups_menu as m
-from bot.modules.states_tools import (ChooseConfirmState, ChooseCustomState,
-                                      ChoosePagesState)
-from bot.modules.friends import get_frineds, insert_friend_connect
-from bot.modules.user import user_name
-from bot.modules.referals import create_referal
+from bot.modules.referals import connect_referal, create_referal
+from bot.modules.states_tools import ChooseCustomState, ChooseStringState
+from bot.modules.user import take_coins
 
 users = mongo_client.bot.users
 referals = mongo_client.connections.referals
@@ -36,6 +34,48 @@ async def code(message: Message):
         await bot.send_message(message.chat.id, t('referals.have_code', lang))
 
 
+async def create_custom_code(code: str, transmitted_data: dict):
+    lang = transmitted_data['lang']
+    userid = transmitted_data['userid']
+    chatid = transmitted_data['chatid']
+    
+    if take_coins(userid, GS['referal']['custom_price'], True):
+        create_referal(userid, code)
+
+        iambot = await bot.get_me()
+        bot_name = iambot.username
+
+        url = f'https://t.me/{bot_name}/?start={code}'
+        text = t('referals.code', lang, code=code, url=url)
+    else:
+        text = t('referals.custom_code.no_coins', lang)
+
+    await bot.send_message(chatid, text, parse_mode='Markdown', 
+                        reply_markup=m(userid, 'last_menu', lang, True))
+
+async def custom_handler(message: Message, transmitted_data: dict):
+    lang = transmitted_data['lang']
+    userid = transmitted_data['userid']
+    chatid = transmitted_data['chatid']
+    
+    code = escape_markdown(str(message.text))
+    status = False
+    text = ''
+    
+    if len(code) > 10:
+        text = t('referals.custom_code.max_len', lang)
+    if len(code) == 0:
+        text = t('referals.custom_code.min_len', lang)
+    else:
+        res = referals.find_one({'code': code})
+        if res:
+            text = t('referals.custom_code.found_code', lang)
+        else: status = True
+
+    if not status:
+        await bot.send_message(chatid, text, parse_mode='Markdown')
+    return status, code
+
 @bot.callback_query_handler(func=lambda call: 
     call.data.startswith('generate_referal'))
 async def generate_code(call: CallbackQuery):
@@ -53,11 +93,13 @@ async def generate_code(call: CallbackQuery):
 
             url = f'https://t.me/{bot_name}/?start={code}'
             await bot.send_message(chatid, t('referals.code', lang, 
-                                             code=code, url=url), parse_mode='Markdown')
+                                    code=code, url=url), parse_mode='Markdown', reply_markup=m(userid, 'last_menu', lang, True))
             
         elif action == 'custom':
-            ...
-    
+            await bot.send_message(chatid, 
+                                   t('referals.custom_code.start', lang), parse_mode='Markdown', reply_markup=cancel_markup(lang))
+            await ChooseCustomState(create_custom_code, custom_handler, 
+                                    userid, chatid, lang)
     else:
         await bot.send_message(chatid, t('referals.have_code', lang))
 
@@ -66,6 +108,44 @@ async def generate_code(call: CallbackQuery):
 async def my_code(message: Message):
     """ Кнопка - мой код ...
     """
-    user_id = message.from_user.id
+    userid = message.from_user.id
+    lang = message.from_user.language_code
+    chatid = message.chat.id
     
-    print('23')
+    referal = referals.find_one({'userid': userid})
+    if referal:
+        code = referal['code']
+        referal_find = referals.find(
+            {'code': code, 'type': 'sub'})
+
+        uses = len(list(referal_find))
+
+        iambot = await bot.get_me()
+        bot_name = iambot.username
+        url = f'https://t.me/{bot_name}/?start={code}'
+        
+        await bot.send_message(chatid, t('referals.my_code', lang, 
+                                code=code, url=url, uses=uses), parse_mode='Markdown')
+
+async def check_code(code: str, transmitted_data: dict):
+    lang = transmitted_data['lang']
+    userid = transmitted_data['userid']
+    chatid = transmitted_data['chatid']
+    
+    result = connect_referal(code, userid)
+    text = t(f'referals.enter_code.{result}', lang)
+    await bot.send_message(chatid, text, parse_mode='Markdown', 
+                        reply_markup=m(userid, 'last_menu', lang, True))
+
+@bot.message_handler(text='commands_name.referal.enter_code', is_authorized=True)
+async def enter_code(message: Message):
+    userid = message.from_user.id
+    lang = message.from_user.language_code
+    chatid = message.chat.id
+    
+    ref = referals.find_one({'userid': userid, 'type': 'sub'})
+    if not ref:
+        await bot.send_message(chatid, t('referals.enter_code.start', lang), parse_mode='Markdown', reply_markup=cancel_markup(lang))
+        await ChooseStringState(check_code, userid, chatid, lang)
+    
+    await bot.send_message(chatid, t('referals.enter_code.have_code', lang), parse_mode='Markdown')
