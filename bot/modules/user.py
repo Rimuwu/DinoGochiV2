@@ -2,6 +2,7 @@ from random import choice
 from time import time
 
 from telebot.formatting import escape_markdown
+from telebot.types import User as teleUser
 
 from bot.config import mongo_client
 from bot.const import GAME_SETTINGS as GS
@@ -365,7 +366,7 @@ async def experience_enhancement(userid: int, xp: int):
                                         user_name=name,
                                         lvl=user['lvl'] + lvl, item_name=item_name)
 
-def user_info(data_user, lang: str, secret: bool = False):
+def user_info(data_user: teleUser, lang: str, secret: bool = False):
     user = User(data_user.id)
     return_text = ''
     
@@ -440,7 +441,7 @@ def user_info(data_user, lang: str, secret: bool = False):
                      )
     
     if not secret:
-        items, count = data_user.get_inventory()
+        items, count = user.get_inventory
         
         return_text += '\n\n'
         return_text += t('user_profile.inventory', lang,
@@ -467,3 +468,6 @@ def take_coins(userid: int, col: int, update: int) -> bool:
                                  {'$inc': {'coins': col}})
             return True
     return False
+
+def get_dead_dinos(userid: int):
+    return list(dead_dinos.find({'owner_id': userid}))
