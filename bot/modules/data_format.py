@@ -1,11 +1,23 @@
 import random
+import re
 import string
 
-from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, User
+
+from telebot.types import (InlineKeyboardButton, InlineKeyboardMarkup,
+                           ReplyKeyboardMarkup, User)
 
 from bot.const import GAME_SETTINGS
 from bot.modules.localization import get_data
 
+
+def escape_markdown(content: str) -> str:
+    """
+    Экранирует символы Markdown в строке Markdown.
+    """
+    
+    parse = re.sub(r"([_*\[\]()~`>\#\+\-=|\.!\{\}])", r"", content)
+    reparse = re.sub(r"\\\\([_*\[\]()~`>\#\+\-=|\.!\{\}])", r"", parse)
+    return reparse 
 
 def chunks(lst: list, n: int) -> list:
     """Делит список lst, на списки по n элементов
@@ -101,16 +113,16 @@ def list_to_inline(buttons: list, row_width: int = 3) -> InlineKeyboardMarkup:
 
     return inline
 
-def user_name(user: User) -> str:
+def user_name(user: User, username: bool = True) -> str:
     """Возвращает имя / ник, в зависимости от того, что есть
     """
-    if user.username is not None:
+    if user.username is not None and username:
         return f'@{user.username}'
     else:
         if user.last_name is not None and user.first_name:
-            return f'{user.first_name} {user.last_name}'
+            return escape_markdown(f'{user.first_name} {user.last_name}')
         else:
-            return user.first_name
+            return escape_markdown(user.first_name)
 
 def random_quality() -> str:
     """Случайная редкость
@@ -215,8 +227,7 @@ def crop_text(text: str, unit: int=10, postfix: str='...'):
     """
     if len(text) > unit + len(postfix):
         return text[:unit] + postfix
-    else:
-        return text
+    else: return text
 
 def filling_with_emptiness(lst: list, horizontal: int, vertical: int):
     """ Заполняет пустые элементы страницы для сохранения структуры
