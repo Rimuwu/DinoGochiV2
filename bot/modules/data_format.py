@@ -15,8 +15,8 @@ def escape_markdown(content: str) -> str:
     Экранирует символы Markdown в строке Markdown.
     """
     
-    parse = re.sub(r"([_*\[\]()~`>\#\+\-=|\.!\{\}])", r"", content)
-    reparse = re.sub(r"\\\\([_*\[\]()~`>\#\+\-=|\.!\{\}])", r"", parse)
+    parse = re.sub(r"([_*\[\]()~`>\#\+\-=|\!\{\}])", r"", content)
+    reparse = re.sub(r"\\\\([_*\[\]()~`>\#\+\-=|!\{\}])", r"", parse)
     return reparse 
 
 def chunks(lst: list, n: int) -> list:
