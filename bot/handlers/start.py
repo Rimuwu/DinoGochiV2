@@ -13,6 +13,7 @@ from bot.modules.localization import get_data, t
 from bot.modules.markup import markups_menu as m
 from bot.modules.user import insert_user
 from bot.modules.referals import connect_referal
+from bot.handlers.referal_menu import check_code
 
 stickers = bot.get_sticker_set('Stickers_by_DinoGochi_bot')
 referals = mongo_client.connections.referals
@@ -27,6 +28,14 @@ async def start_command_auth(message: types.Message):
                            reply_markup=m(message.from_user.id, language_code=langue_code))
 
     await cancel(message, '')
+    
+    content = str(message.text).split()
+    if len(content) > 1: 
+        referal = str(content[1])
+        await check_code(referal, 
+                         {'userid': message.from_user.id,
+                          'chatid': message.chat.id,
+                          'lang': message.from_user.language_code})
     
 @bot.message_handler(text='commands_name.start_game', is_authorized=False)
 async def start_game(message: types.Message, referal: str = ''):
@@ -72,7 +81,6 @@ async def start_game_message(message: types.Message):
 
     image = open('images/remain/start/placeholder.png', 'rb')
     text = t('start_command.first_message', langue_code, username=username)
-    
     
     await bot.send_photo(message.chat.id, image, text, reply_markup=markup, parse_mode='HTML')
     
