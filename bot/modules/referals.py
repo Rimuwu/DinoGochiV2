@@ -30,8 +30,8 @@ def create_referal(userid: int, code: str = ''):
                 if not referals.find_one({'code': code}): code = c
 
         data = {
-            'userid': userid,
             'code': code,
+            'userid': userid,
             'type': 'general'
         }
 
