@@ -46,6 +46,24 @@ async def settings_menu(message: Message):
         await bot.send_message(message.chat.id, text, 
                                reply_markup=m(userid, 'settings_menu', lang))
 
+@bot.message_handler(text='commands_name.settings.settings_page_2', is_authorized=True)
+async def settings2_menu(message: Message):
+    userid = message.from_user.id
+    lang = message.from_user.language_code
+
+    user = users.find_one({'userid': userid})
+    if user:
+        my_name = None
+        settings = user['settings']
+        
+        if 'my_name' in settings: my_name = settings['my_name']
+        if not my_name: my_name = t('owner', lang)
+        
+        text = t('menu_text.settings2', lang, my_name=my_name)
+
+        await bot.send_message(message.chat.id, text, 
+                               reply_markup=m(userid, 'settings2_menu', lang))
+
 @bot.message_handler(text='commands_name.profile_menu', is_authorized=True)
 async def profile_menu(message: Message):
     userid = message.from_user.id
