@@ -199,7 +199,7 @@ async def ChooseCustom(message: Message):
         await func(answer, transmitted_data=transmitted_data)
     
 @bot.message_handler(state=GeneralStates.ChoosePagesState, is_authorized=True)
-async def ChooseOptionPlus(message: Message):
+async def ChooseOptionPages(message: Message):
     """Кастомный обработчик, принимает данные и отправляет в обработчик
     """
     userid = message.from_user.id
