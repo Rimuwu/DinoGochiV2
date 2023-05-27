@@ -15,7 +15,6 @@ collecting_task = mongo_client.tasks.collecting
 dinosaurs = mongo_client.bot.dinosaurs
 dino_owners = mongo_client.connections.dino_owners
 
-random.seed(1)
 REPEAT_MINUTS = 2
 ENERGY_DOWN = 0.03 * REPEAT_MINUTS
 ENERGY_DOWN2 = 0.5 * REPEAT_MINUTS
