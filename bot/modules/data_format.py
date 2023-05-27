@@ -192,7 +192,7 @@ def seconds_to_str(seconds: int, lang: str='en', mini: bool=False):
                 result += f'{unit} {ending_w(tp, unit)} '
     
     if result[:-1]: return result[:-1]
-    else: return 0
+    else: return '0'
 
 def near_key_number(n: int, data: dict, alternative: int=1):
     """Находит ближайшее меньшее число среди ключей.
