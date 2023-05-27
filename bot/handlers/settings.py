@@ -2,7 +2,7 @@ from telebot.types import CallbackQuery, Message
 
 from bot.config import mongo_client
 from bot.exec import bot
-from bot.modules.data_format import chunks, list_to_keyboard
+from bot.modules.data_format import chunks, list_to_keyboard, escape_markdown
 from bot.modules.dinosaur import Dino
 from bot.modules.localization import get_data, t
 from bot.modules.markup import confirm_markup, cancel_markup
@@ -168,7 +168,7 @@ async def custom_profile_adapter(content: str, transmitted_data: dict):
                      {'$set': {'settings.custom_url': content}})
     
 
-@bot.message_handler(text='commands_name.settings.custom_profile', 
+@bot.message_handler(text='commands_name.settings2.custom_profile', 
                      is_authorized=True)
 async def custom_profile(message: Message):
     userid = message.from_user.id
@@ -267,3 +267,28 @@ async def delete_me(message: Message):
     await ChooseStepState(adapter_delete, userid, chatid, 
                                   lang, steps, 
                                 transmitted_data=transmitted_data)
+    
+async def my_name_end(content: str, transmitted_data: dict):
+    userid = transmitted_data['userid']
+    lang = transmitted_data['lang']
+    chatid = transmitted_data['chatid']
+    name = escape_markdown(content)
+    
+    await bot.send_message(chatid, t('my_name.end', lang,
+                                     owner_name=name),
+                               parse_mode='Markdown', 
+                               reply_markup=m(userid, 'last_menu', lang))
+    
+    users.update_one({'userid': userid}, {'$set': {'settings.my_name': name}})
+    
+@bot.message_handler(text='commands_name.settings2.my_name', is_authorized=True)
+async def my_name(message: Message):
+    userid = message.from_user.id
+    lang = message.from_user.language_code
+    chatid = message.chat.id
+    
+    await bot.send_message(chatid, t('my_name.info', lang),
+                               parse_mode='Markdown', 
+                               reply_markup=cancel_markup(lang))
+
+    await ChooseStringState(my_name_end, userid, chatid, lang, max_len=20)
