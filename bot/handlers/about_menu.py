@@ -38,7 +38,7 @@ def main_support_menu(lang: str):
     text = text_data['info']
     prd_text = text_data['products_bio']
     buttons = {}
-    
+
     a = 0
     for key, bio in prd_text.items():
         a += 1
