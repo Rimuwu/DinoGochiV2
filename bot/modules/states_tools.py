@@ -294,6 +294,7 @@ async def ChooseStepState(function, userid: int,
         'bool': ChooseConfirmState,
         'option': ChooseOptionState,
         'custom': ChooseCustomState,
+        'pages': ChoosePagesState,
         'inv': start_inv,
     }
     for step in steps:
