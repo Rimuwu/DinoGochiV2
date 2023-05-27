@@ -30,7 +30,7 @@ async def start_friend_menu(function,
             chat_user = await bot.get_chat_member(friend_id, friend_id)
             friend = chat_user.user
         except: friend = None
-        if friend: options[user_name(friend)] = friend
+        if friend: options[user_name(friend, False)] = friend
     
     await ChoosePagesState(
         function, userid, chatid, lang, options, 
