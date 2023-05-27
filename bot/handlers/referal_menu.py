@@ -147,10 +147,10 @@ async def enter_code(message: Message):
     userid = message.from_user.id
     lang = message.from_user.language_code
     chatid = message.chat.id
-    
+
     ref = referals.find_one({'userid': userid, 'type': 'sub'})
     if not ref:
         await bot.send_message(chatid, t('referals.enter_code.start', lang), parse_mode='Markdown', reply_markup=cancel_markup(lang))
         await ChooseStringState(check_code, userid, chatid, lang)
-    
-    await bot.send_message(chatid, t('referals.enter_code.have_code', lang), parse_mode='Markdown')
+    else:
+        await bot.send_message(chatid, t('referals.enter_code.have_code', lang), parse_mode='Markdown')
