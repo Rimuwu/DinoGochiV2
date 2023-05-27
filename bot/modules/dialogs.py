@@ -1,16 +1,14 @@
-from telebot.formatting import escape_markdown
 from telebot.types import InlineKeyboardMarkup
 
 from bot.config import mongo_client
 from bot.const import GAME_SETTINGS as GS
 from bot.exec import bot
-from bot.modules.data_format import list_to_inline
+from bot.modules.data_format import escape_markdown, list_to_inline
 from bot.modules.images import create_eggs_image
-from bot.modules.item import get_item_dict
-from bot.modules.item import item_code
+from bot.modules.item import get_item_dict, item_code
 from bot.modules.item_tools import AddItemToUser
 from bot.modules.localization import get_data, t
-from bot.modules.user import max_dino_col, get_eggs
+from bot.modules.user import get_eggs, max_dino_col
 
 users = mongo_client.bot.users
 items = mongo_client.bot.items
