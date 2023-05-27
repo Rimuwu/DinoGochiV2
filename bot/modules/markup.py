@@ -291,39 +291,29 @@ def count_markup(max_count: int=1, lang: str='en') -> ReplyKeyboardMarkup:
 
 def feed_count_markup(dino_eat: int, item_act: int, 
                       max_col: int, item_name: str, lang):
-    buttons, return_list = [], []
-    
     col_to_full = (100 - dino_eat) // item_act
-    full_percent = dino_eat + item_act * col_to_full
-    if col_to_full > max_col: col_to_full = max_col
-    if full_percent > 100: full_percent = 100
+    one_col = dino_eat + item_act
+    return_list = []
+    bt_3 = None
 
-    dino_percent = dino_eat + item_act
-    if dino_percent > 100: dino_percent = 100
-    
-    buttons.append(
-        f"{dino_percent}% = {item_name[:1]} x1"
-        ) # 1 раз
-    
+    if col_to_full > max_col: col_to_full = max_col
+    if one_col > 100: one_col = 100
+
+    bt_1 = f"{one_col}% = {item_name[:1]} x1"
+    bt_2 = f"{dino_eat + item_act * col_to_full}% = {item_name[:1]} x{col_to_full}"
+
     if dino_eat + item_act * col_to_full < 100:
-        buttons.append(
-            f"100% = {item_name[:1]} x{col_to_full + 1}"
-        ) # до 100%, но с переплатой
-    buttons.append(
-        f"{full_percent}% = {item_name[:1]} x{col_to_full}"
-        ) # До 100%
-    
+        bt_3 = f"100% = {item_name[:1]} x{col_to_full + 1}"
+
     if col_to_full == 1:
-        if len(buttons) > 2:
-            return_list += [buttons[0], buttons[1]]
-        else: return_list += [buttons[0]]
+        if bt_3: return_list += [bt_1, bt_3]
+        else: return_list += [bt_1]
 
     elif col_to_full != 1 and col_to_full != 0:
-        if len(buttons) > 2:
-            return_list += [buttons[0], buttons[1], buttons[2]]
-        else: return_list += [buttons[0], buttons[1]]
-    else:
-        return_list += [buttons[0]]
+        if bt_3: return_list += [bt_1, bt_2, bt_3]
+        else: return_list += [bt_1, bt_2]
+    
+    if not return_list: return_list += [bt_1]
 
     return list_to_keyboard([return_list, [t('buttons_name.cancel', lang)]])
 
