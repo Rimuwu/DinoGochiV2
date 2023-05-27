@@ -7,7 +7,6 @@ from bot.taskmanager import add_task
 from bot.modules.dinosaur import Dino
 
 dinosaurs = mongo_client.bot.dinosaurs
-random.seed(1)
 
 # Переменные изменения харрактеристик
 HEAL_CHANGE = 1, 2
