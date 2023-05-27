@@ -38,12 +38,15 @@ async def dino_profile(userid: int, dino: Dino, lang: str, custom_url: str):
         repl = near_key_number(dino.stats[i], replics[i])
         stats_text += f'{tem[i]} {repl} \[ *{dino.stats[i]}%* ]\n'
     
+    if dino.age.days == 0:
+        age = seconds_to_str(dino.age.seconds, lang)
+    else: age = seconds_to_str(dino.age.days * 86400, lang)
+    
     kwargs = {
         'em_name': tem['name'], 'dino_name': dino.name,
         'em_status': tem['status'], 'status': status_rep,
         'em_rare': tem['rare'], 'qual': text_rare[dino.quality][1],
-        'em_age': tem['age'], 'age': 
-            seconds_to_str(dino.age.days * 86400, lang)
+        'em_age': tem['age'], 'age': age
     }
     text = t('p_profile.profile_text', lang, formating=False).format(**kwargs)
 
