@@ -23,7 +23,7 @@ from bot.modules.markup import markups_menu as m
 from bot.modules.mood import add_mood
 from bot.modules.states_tools import (ChooseIntState, ChooseOptionState,
                                       ChoosePagesState, ChooseStepState)
-from bot.modules.user import User
+from bot.modules.user import User, count_inventory_items, premium
 
 users = mongo_client.bot.users
 items = mongo_client.bot.items
@@ -425,20 +425,31 @@ async def collecting_adapter(return_data, transmitted_data):
     userid = transmitted_data['userid']
     lang = transmitted_data['lang']
     
-    dino.collecting(userid, option, count)
+    eat_count = count_inventory_items(userid, ['eat'])
+    st_premium = premium(userid)
     
-    image = dino_collecting(dino.data_id, option)
-    text = t(f'collecting.result.{option}', lang,
-             dino_name=dino.name, count=count)
-    stop_button = t(f'collecting.stop_button.{option}', lang)
-    markup = list_to_inline([
-        {stop_button: f'collecting stop {dino.alt_id}'}])
-    
-    await bot.send_photo(chatid, image, text, reply_markup=markup)
-    await bot.send_message(chatid, t('back_text.actions_menu', lang),
-                                reply_markup=m(userid, 'last_menu', lang)
-                                )
-    
+    if st_premium and eat_count + count > GAME_SETTINGS['premium_max_eat_items'] \
+        or not st_premium and eat_count + count > GAME_SETTINGS['max_eat_items']:
+            
+        text = t(f'collecting.max_count', lang,
+                couneat_countt=eat_count)
+        await bot.send_message(chatid, text, reply_markup=m(
+            userid, 'last_menu', lang))
+    else:
+        dino.collecting(userid, option, count)
+        
+        image = dino_collecting(dino.data_id, option)
+        text = t(f'collecting.result.{option}', lang,
+                dino_name=dino.name, count=count)
+        stop_button = t(f'collecting.stop_button.{option}', lang)
+        markup = list_to_inline([
+            {stop_button: f'collecting stop {dino.alt_id}'}])
+        
+        await bot.send_photo(chatid, image, text, reply_markup=markup)
+        await bot.send_message(chatid, t('back_text.actions_menu', lang),
+                                    reply_markup=m(userid, 'last_menu', lang)
+                                    )
+
 
 @bot.message_handler(text='commands_name.actions.collecting')
 async def collecting_button(message: Message):
