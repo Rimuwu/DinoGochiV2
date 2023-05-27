@@ -1291,12 +1291,14 @@
       "image": "item66",
       "rank": "mythical",
       "time": "forever",
-      "type": "freezing"
+      "type": "special",
+      "class": "freezing"
     },
     "67": {
       "image": "item67",
       "rank": "mythical",
-      "type": "defrosting"
+      "type": "special",
+      "class": "defrosting"
     },
     "68": {
       "buffs": {
@@ -2786,5 +2788,11 @@
       "image": "item113",
       "rank": "rare",
       "type": "journey_ac"
+    },
+    "114": {
+      "image": "item113",
+      "rank": "legendary",
+      "type": "special",
+      "class": "reborn"
     }
   }
