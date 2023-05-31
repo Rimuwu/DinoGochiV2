@@ -8,7 +8,7 @@ from bot.taskmanager import add_task
 from bot.const import GAME_SETTINGS
 from bot.modules.dinosaur import end_collecting
 from bot.modules.item import counts_items
-from bot.modules.item_tools import check_accessory
+from bot.modules.accessory import check_accessory
 from bot.modules.dinosaur import Dino, mutate_dino_stat
 
 collecting_task = mongo_client.tasks.collecting
