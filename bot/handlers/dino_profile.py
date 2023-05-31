@@ -11,7 +11,7 @@ from bot.modules.dinosaur import Dino, Egg
 from bot.modules.events import get_one_event
 from bot.modules.inline import dino_profile_markup
 from bot.modules.item import get_name
-from bot.modules.item_tools import check_accessory
+from bot.modules.accessory import check_accessory
 from bot.modules.localization import get_data, t
 from bot.modules.markup import markups_menu as m
 from bot.modules.states_tools import ChooseDinoState
@@ -20,6 +20,8 @@ from bot.modules.user import User
 users = mongo_client.bot.users
 collecting_task = mongo_client.tasks.collecting
 game_task = mongo_client.tasks.game
+dino_mood = mongo_client.connections.dino_mood
+dinosaurs = mongo_client.bot.dinosaurs
 
 async def dino_profile(userid: int, dino: Dino, lang: str, custom_url: str):
     text = ''
@@ -98,7 +100,7 @@ async def dino_profile(userid: int, dino: Dino, lang: str, custom_url: str):
                acsess[key] = f'{name} \[ *{item["abilities"]["endurance"]}* ]'
             else: acsess[key] = f'{name}'
                 
-    menu = dino_profile_markup(add_blok, lang)
+    menu = dino_profile_markup(add_blok, lang, dino.alt_id)
     if add_blok:
         text += t('p_profile.accs', lang, formating=False).format(**acsess)
     
@@ -164,3 +166,44 @@ async def answer_edit(call: types.CallbackQuery):
     }
     dino = Dino(dino_data) #type: ignore
     await transition(dino, trans_data)
+    
+@bot.callback_query_handler(func=lambda call: call.data.startswith('dino_menu'))
+async def dino_menu(call: types.CallbackQuery):
+    split_d = call.data.split()
+    action = split_d[1]
+    alt_key = split_d[2]
+
+    userid = call.from_user.id
+    lang = call.from_user.language_code
+
+    dino = dinosaurs.find_one({'alt_id': alt_key})
+    if dino:
+
+        if action == 'reset_activ_item':
+            ...
+        elif action == 'mood_log':
+            mood_list = list(dino_mood.find({'dino_id': dino['_id']}))
+            mood_dict, text = {}, ''
+            res = 0
+            
+            for mood in mood_list:
+                key = mood['action']
+                if key not in mood_dict:
+                    mood_dict[key] = {'col': 1, 'unit': mood['unit']}
+                else:
+                    mood_dict[key]['col'] += 1
+                res += mood['unit']
+
+            text = t('mood_log.info', lang, result=res)
+            for key, data_m in mood_dict.items():
+                em = '💚'
+                if data_m['unit'] <= 0: em = '💔'
+                act = t(f'mood_log.{key}', lang)
+                
+                unit = data_m['unit'] * data_m['col']
+
+                text += f'{em} {act}: `{unit}` '
+                if data_m['col'] > 1: text += f'x{data_m["col"]}'
+                text += '\n'
+    
+            await bot.send_message(userid, text, parse_mode='Markdown')
