@@ -66,12 +66,16 @@ def item_info_markup(item: dict, lang):
     
     return markup_inline
 
-def dino_profile_markup(add_acs_button: bool, lang: str):
+def dino_profile_markup(add_acs_button: bool, lang: str, alt_id: str):
     # Инлайн меню с быстрыми действиями. Например как снять аксессуар
     buttons = {}
+    rai = get_loc_data('p_profile.inline_menu', lang)
 
     if add_acs_button:
-        rai = get_loc_data('p_profile.inline_menu.reset_activ_item', lang)
-        buttons[rai['text']] = rai['data']
-        
+        buttons[rai['reset_activ_item']['text']] = \
+        rai['reset_activ_item']['data']
+
+    buttons[rai['mood_log']['text']] = rai['mood_log']['data']
+    for but in buttons: 
+        buttons[but] = buttons[but].format(dino=alt_id)
     return list_to_inline([buttons], 2)
