@@ -12,7 +12,6 @@ from bot.modules.data_format import random_code, random_quality
 from bot.modules.images import create_dino_image, create_egg_image
 from bot.modules.item import AddItemToUser
 from bot.modules.localization import log
-from bot.modules.mood import add_mood
 from bot.modules.notifications import (dino_notification, notification_manager,
                                        user_notification)
 from bot.const import GAME_SETTINGS as GS
@@ -37,7 +36,7 @@ class Dino:
         self.data_id = 0
         self.alt_id = 'alt_id' #альтернативный id 
 
-        self.status = 'pass' # game, journey, sleep, collecting, dungeon
+        self.status = 'pass' # game, journey, sleep, collecting, dungeon...
         self.name = 'name'
         self.quality = 'com'
         
@@ -55,6 +54,11 @@ class Dino:
                 
                 'armor': None,  'weapon': None,
                 'backpack': None
+        }
+        
+        self.mood = {
+            'breakdown': 0, # очки срыва
+            'inspiration': 0 # очки воодушевления
         }
 
         self.memory = {
@@ -311,7 +315,7 @@ def insert_dino(owner_id: int=0, dino_id: int=0, quality: str='random'):
 
 
 def start_game(dino_baseid: ObjectId, duration: int=1800, 
-               percent: int=1):
+               percent: float=1):
     """Запуск активности "игра". 
        + Изменение статуса динозавра 
     """
@@ -327,21 +331,13 @@ def start_game(dino_baseid: ObjectId, duration: int=1800,
                          {'$set': {'status': 'game'}})
     return result
 
-async def end_game(dino_id: ObjectId, game_time: int, 
-                   game_percent: float, 
-                   send_notif: bool=True, mood: bool=True):
+async def end_game(dino_id: ObjectId, send_notif: bool=True):
     """Заканчивает игру и отсылает уведомление.
     """
     
     dinosaurs.update_one({'_id': dino_id}, 
                             {'$set': {'status': 'pass'}})
     game_task.delete_one({'dino_id': dino_id}) 
-    
-    if mood:
-        # Добавление настроения
-        add_mood(dino_id, 'end_game', 
-                randint(1, 2), int((game_time // 2) * game_percent)
-                        )
     
     if send_notif: await dino_notification(dino_id, 'game_end')
 
@@ -473,6 +469,13 @@ async def mutate_dino_stat(dino: dict, key: str, value: int):
         dinosaurs.update_one({'_id': dino['_id']}, 
                             {'$inc': {f'stats.{key}': value}})
         
-def get_owner(dino_id):
+def get_owner(dino_id: ObjectId):
     return dino_owners.find_one({'dino_id': dino_id, 'type': 'owner'})
-    
+
+def set_status(dino_id: ObjectId, new_status: str):
+    """ Устанавливает состояние динозавра.
+    """
+
+    assert new_status in ['pass', 'sleep', 'game', 'journey', 'collecting', 'dungeon', 'freezing', 'kindergarten', 'hysteria'], f'Состояние {new_status} не найдено!'
+
+    dinosaurs.update_one({'_id': dino_id}, {'$set': {'status': new_status}})
