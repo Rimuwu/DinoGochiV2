@@ -4,7 +4,7 @@ from bot.config import mongo_client
 from bot.const import GAME_SETTINGS
 from bot.exec import bot
 from bot.modules.data_format import list_to_inline, random_dict
-from bot.modules.dinosaur import Dino, edited_stats, mutate_dino_stat
+from bot.modules.dinosaur import Dino, edited_stats
 from bot.modules.images import create_eggs_image
 from bot.modules.item import (AddItemToUser, CalculateDowngradeitem,
                               CheckItemFromUser, EditItemFromUser,
@@ -14,55 +14,12 @@ from bot.modules.item import (AddItemToUser, CalculateDowngradeitem,
 from bot.modules.localization import t
 from bot.modules.markup import (confirm_markup, count_markup,
                                 feed_count_markup, markups_menu)
-from bot.modules.notifications import dino_notification
 from bot.modules.states_tools import ChooseStepState
-from bot.modules.user import User, experience_enhancement
+from bot.modules.user import User, experience_enhancement, get_dead_dinos
+from bot.modules.mood import add_mood
 
 users = mongo_client.bot.users
 items = mongo_client.bot.items
-
-async def downgrade_accessory(dino: Dino, acc_type: str):
-    """Понижает прочность аксесуара
-       Return
-       >>> True - прочность понижена
-       >>> False - неправильный предмет / нет предмета
-    """
-    item = dino.activ_items[acc_type]
-
-    if item:
-        if 'abilities' in item and 'endurance' in item['abilities']:
-            num = randint(0, 2)
-            item['abilities']['endurance'] -= num
-
-            if item['abilities']['endurance'] <= 0:
-                dino.update({"$set": {f'activ_items.{acc_type}': None}})
-            else:
-                dino.update({"$inc": {f'activ_items.{acc_type}': num}})
-            await dino_notification(dino._id, 'broke_accessory')
-
-            return True
-        else:
-            return False
-    else:
-        return False
-
-def check_accessory(dino: Dino, item_id: str, downgrade: bool=False):
-    """Проверяет, активирован ли аксессуар с id - item_id
-       downgrade - если активирован, то вызывает понижение прочности предмета
-    """
-    data_item = get_data(item_id) #Получаем данные из json
-    acces_item = dino.activ_items[data_item['type'][:-3]] #предмет / None
-
-    if acces_item:
-        if acces_item['item_id'] == item_id:
-            if downgrade:
-                return downgrade_accessory(dino, data_item['type'])
-            else:
-                return True
-        else:
-            return False
-    else:
-        return False
 
 def exchange_item(item: dict, from_user: int, to_user: int, 
                   count: int = 1):
@@ -128,7 +85,7 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
             # Если динозавр спит, отменяем использование и говорим что он спит.
             return_text = t('item_use.eat.sleep', lang)
             use_status = False
-        
+
         else:
             # Если динозавр не спит, то действует в соответсвии с класом предмета.
             if data_item['class'] == 'ALL' or (
@@ -139,24 +96,28 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
                     percent, repeat = dino.memory_percent('eat', item_id)
                     return_text = t(f'item_use.eat.repeat.m{repeat}', lang, 
                             percent=int(percent*100)) + '\n'
+
+                    if repeat >= 3:
+                        add_mood(dino._id, 'repeat_eat', -1, 900)
                     
                 dino.stats['eat'] = edited_stats(dino.stats['eat'], 
                                     int((data_item['act'] * count)*percent))
                 return_text += t('item_use.eat.great', lang, 
                          item_name=item_name, eat_stat=dino.stats['eat'])
-            
+                add_mood(dino._id, 'good_eat', 1, 900)
+
             else:
                 # Если еда не соответствует классу, то убираем дполнительные бафы.
                 use_baff_status = False
                 loses_eat = randint(0, (data_item['act'] * count) // 2) * -1
-                loses_mood = randint(1, 10) * -1
                 
                 # Получаем конечную характеристики
                 dino.stats['eat'] = edited_stats(dino.stats['eat'], loses_eat)
-                dino.stats['mood'] = edited_stats(dino.stats['mood'], loses_mood)
 
                 return_text = t('item_use.eat.bad', lang, item_name=item_name,
-                         loses_eat=loses_eat, loses_mood=loses_mood)
+                         loses_eat=loses_eat)
+
+                add_mood(dino._id, 'bad_eat', -1, 1200)
     
     elif type_item in ['game_ac', "journey_ac", "collecting_ac", "sleep_ac", 'weapon', 'armor', 'backpack'] and dino:
         action_to_type = {
@@ -470,6 +431,23 @@ async def data_for_use_item(item: dict, userid: int, chatid: int, lang: str, con
             ]
         elif type_item == 'egg':
             steps = []
+            
+        elif type_item == 'special':
+            
+            if data_item['class'] in ['freezing', 'defrosting']:
+                ...
+            elif  data_item['class'] in ['reborn']:
+                
+                dead = get_dead_dinos(userid)
+            #     dinos_dict = {}
+            #     for i_dino in dead:
+            #         crop_name = '🦕' + crop_text(i_dino['name'])
+            #         dinos_dict[crop_name] = i_dino['_id']
+                
+            # steps = [
+            #     {"type": 'pages', "name": 'dino', "data": {'options': dinos_dict}, 
+            #         'message': {'text': t('css.wait_count', lang)}}
+            # ]
 
         else:
             ok = False
