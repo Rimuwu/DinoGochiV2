@@ -1,18 +1,20 @@
+from random import choice
+from time import time
+
+from bson.objectid import ObjectId
 from telebot.types import InlineKeyboardMarkup
 
+from bot.config import mongo_client
 from bot.exec import bot
+from bot.modules.data_format import seconds_to_str
 from bot.modules.inline import inline_menu
 from bot.modules.localization import get_data, t
 from bot.modules.logs import log
-from bson.objectid import ObjectId
-from bot.config import mongo_client
-from bot.modules.data_format import seconds_to_str
-from random import choice
-from time import time
 
 dinosaurs = mongo_client.bot.dinosaurs
 dino_owners = mongo_client.connections.dino_owners
 users = mongo_client.bot.users
+dino_mood = mongo_client.connections.dino_mood
 
 tracked_notifications = [
     'need_heal', 'need_eat',
@@ -23,7 +25,8 @@ tracked_notifications = [
 replics_notifications = [
     'need_heal', 'need_eat',
     'need_mood', 'need_game',
-    'need_energy', 'game_end'
+    'need_energy', 'game_end', 
+    'breakdown', 'inspiration'
 ] # Уведомления которые имею разные реплики
 
 critical_line = {
@@ -71,6 +74,8 @@ async def dino_notification(dino_id: ObjectId, not_type: str, **kwargs):
         Так же это те уведомления, которые привязаны к динозавру и отправляются всем владельцам.
 
         Если передать add_time_end=True то в аргументы дополнительно будет добавлен ключ time_end в формате времени, секудны берутся из ключа secs.
+        
+        Если мы хотим добавить какое то сообщение в тексте, но мы не хотим запрашивать владельца и получать его язык, мы можем добавить ключ add_message c путём к тексту.
     """
     dino = dinosaurs.find_one({"_id": dino_id})
     owners = list(dino_owners.find({'dino_id': dino_id}))
@@ -94,6 +99,10 @@ async def dino_notification(dino_id: ObjectId, not_type: str, **kwargs):
                     if not kwargs['owner_name']:
                         kwargs['owner_name'] = t('owner', lang)
                 else: kwargs['owner_name'] = t('owner', lang)
+                
+                if 'add_message' in kwargs:
+                    # Если мы хотим добавить какое то сообщение в тексте, но мы не хотим запрашивать владельца и получать его язык, мы можем добавить ключ add_message c путём к тексту
+                    kwargs['add_message'] = t(kwargs['add_message'], lang)
 
                 if not_type in replics_notifications:
                     # Тут мы выбираем случайную реплику для динозавра
@@ -124,17 +133,22 @@ async def dino_notification(dino_id: ObjectId, not_type: str, **kwargs):
     if dino: # type: dict
         kwargs['dino_name'] = dino['name']
         kwargs['dino_alt_id_markup'] = dino['alt_id']
+        
+        res = dino_mood.find_one({'dino_id': dino_id, 
+                            'type': 'breakdown', 'action': 'seclusion'})
 
-        # Отменя уведолмения если динозавр спит
-        if dino['status'] == 'sleep' and not_type in ['need_energy', 'need_game', 'need_mood']: pass
-        else:
+        # Отменя уведолмения если динозавр спит или у него нервный срыв
+        if dino['status'] != 'sleep' and not res:
+
             if not_type in tracked_notifications:
+
                 if check_dino_notification(dino_id, not_type):
                     await send_not(text, markup_inline)
                     save_notification(dino_id, not_type)
                 else:
                     log(prefix='Notification Repeat', 
                         message=f'DinoId: {dino_id}, Data: {not_type} Kwargs: {kwargs}', lvl=0)
+
             else: await send_not(text, markup_inline)
 
 async def user_notification(user_id: int, not_type: str, 
