@@ -16,7 +16,8 @@ from bot.modules.inventory_tools import start_inv
 from bot.modules.item import counts_items
 from bot.modules.item import get_data as get_item_data
 from bot.modules.item import get_name
-from bot.modules.item_tools import check_accessory, use_item
+from bot.modules.item_tools import use_item
+from bot.modules.accessory import check_accessory
 from bot.modules.localization import get_data, t
 from bot.modules.markup import count_markup, feed_count_markup
 from bot.modules.markup import markups_menu as m
@@ -187,13 +188,15 @@ async def awaken(message: Message):
             if sleeper:
                 if sleeper['sleep_type'] == 'long':
                     sleep_time = int(time()) - sleeper['sleep_start']
-                    healthy_sleep = 8 * 3600 # Время здорового сна
+                    healthy_sleep = 6 * 3600 # Время здорового сна
 
-                    if sleep_time >= healthy_sleep:
+                    if sleep_time >= healthy_sleep \
+                        or last_dino.stats['energy'] == 100:
+
                         await end_sleep(last_dino._id, sleeper['_id'], sleep_time)
                     else:
-                        # Если динозавр в долгом сне проспал меньше 8-ми часов, то штраф
-                        add_mood(last_dino._id, 'bad_dream', -1, 43200)
+                        # Если динозавр в долгом сне проспал меньше 6-ми часов, то штраф
+                        add_mood(last_dino._id, 'bad_sleep', -1, 10800)
                         await end_sleep(last_dino._id, sleeper['_id'], send_notif=False)
                         
                         await bot.send_message(chatid, 
@@ -394,7 +397,7 @@ async def stop_game(message: Message):
                 if random_tear == 1:
                     # Дебафф к настроению
                     text = t('stop_game.like', lang)
-                    add_mood(last_dino._id, 'end_game', randint(-2, -1), 3600)
+                    add_mood(last_dino._id, 'stop_game', randint(-2, -1), 3600)
                 elif random_tear == 0:
                     # Не нравится динозавру играть, без дебаффа
                     text = t('stop_game.dislike', lang)
@@ -402,8 +405,7 @@ async def stop_game(message: Message):
                     # Завершение без дебаффа
                     text = t('stop_game.whatever', lang)
 
-                await end_game(last_dino._id, 
-                               game_data['game_end'] - game_data['game_start'], game_data['game_percent'], False, False)
+                await end_game(last_dino._id, False)
             else:
                 # Невозможно оторвать от игры
                 text = t('stop_game.dont_tear', lang)
