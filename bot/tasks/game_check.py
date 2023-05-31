@@ -3,11 +3,10 @@ from random import randint
 from time import time
 
 from bot.config import conf, mongo_client
+from bot.modules.dinosaur import end_game, mutate_dino_stat
 from bot.modules.mood import add_mood
-from bot.modules.notifications import dino_notification
 from bot.modules.user import experience_enhancement
 from bot.taskmanager import add_task
-from bot.modules.dinosaur import end_game, mutate_dino_stat
 
 game_task = mongo_client.tasks.game
 dinosaurs = mongo_client.bot.dinosaurs
@@ -24,8 +23,11 @@ async def game_end():
         {'$lte': int(time())}})).copy()
 
     for i in data:
-        await end_game(i['dino_id'], 
-                       i['game_end'] - i['game_start'], i['game_percent'])
+        await end_game(i['dino_id'])
+
+        game_time = i['game_end'] - i['game_start']
+        add_mood(i['dino_id'], 'end_game', 1, 
+                 int((game_time // 2) * i['game_percent']))
 
 async def game_process():
     data = list(game_task.find({'game_end': {'$gte': int(time())}})).copy()
