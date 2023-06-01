@@ -7,6 +7,7 @@ from bot.config import mongo_client
 from bot.modules.dinosaur import set_status, start_game, Dino
 from bot.modules.accessory import downgrade_accessory
 from bot.modules.notifications import dino_notification
+from bot.const import GAME_SETTINGS
 
 dino_mood = mongo_client.connections.dino_mood
 dinosaurs = mongo_client.bot.dinosaurs
@@ -34,7 +35,7 @@ breakdowns = {
         'duration_time': 0
     }, 
     
-    'break': {
+    'downgrade': {
         'duration_time': 0
     }
 }
@@ -58,7 +59,8 @@ inspiration = {
     }
 }
 
-event_points = 10
+EVENT_POINT = GAME_SETTINGS['event_points']
+BONUS = GAME_SETTINGS['inspiration_bonus']
 
 def add_mood(dino: ObjectId, key: str, unit: int, duration: int, 
              stacked: bool = False):
@@ -116,7 +118,7 @@ async def dino_breakdown(dino: ObjectId):
     
     >> seclusion - динозавр не присылает уведомления
     >> hysteria - динозавр отказывается что либо делать
-    >> unrestrained_play - динозавр начнёт играть на протяжении 4-ёх часов
+    >> unrestrained_play - динозавр начнёт играть на протяжении 3-ёх часов
     >> downgrade - немного ломает случайный активный предмет
     """
     
@@ -139,10 +141,16 @@ async def dino_breakdown(dino: ObjectId):
 
     if action == 'hysteria': set_status(dino, 'hysteria')
     elif action == 'unrestrained_play': 
-        start_game(dino, 14400, 0.4)
+        start_game(dino, 10800, 0.4)
     elif action == 'downgrade':
         dino_cl = Dino(dino)
-        await downgrade_accessory(dino_cl, choice(['game', 'collecting', 'journey', 'sleep']))
+        
+        allowed = []
+        for i in ['game', 'collecting', 'journey', 'sleep', 'armor', 'weapon', 'backpack']:
+            if dino_cl.activ_items[i]: allowed.append(i)
+            
+        if allowed:
+            await downgrade_accessory(dino_cl, choice(allowed))
 
     print('dino_nervous_breakdown', action, duration_s)
     return action
@@ -154,9 +162,9 @@ def dino_inspiration(dino: ObjectId):
     """
     action = choice(list(inspiration.keys()))
 
-    duration_s = breakdowns[action]['duration_time']
+    duration_s = inspiration[action]['duration_time']
     duration = randint(*duration_s)
-    cancel_mood = breakdowns[action]['cnacel_mood']
+    cancel_mood = inspiration[action]['cnacel_mood']
 
     data = {
         'dino_id': dino,
@@ -172,7 +180,8 @@ def dino_inspiration(dino: ObjectId):
     return action
 
 async def calculation_points(dino: dict, point_type: str):
-    """ Высчитывает очки вдохновение / срыва и запускает его + отправляет уведолмение
+    """ Высчитывает очки вдохновение / срыва и запускает его + отправляет уведолмение\n
+        'breakdown', 'inspiration'
     """
 
     assert point_type in ['breakdown', 'inspiration'], f'Неподходящий аргумент {point_type}'
@@ -186,7 +195,7 @@ async def calculation_points(dino: dict, point_type: str):
                              {'$inc': {f'mood.{alter}': -1}})
 
     else:
-        if mood_points[point_type] + 1 >= event_points:
+        if mood_points[point_type] + 1 >= EVENT_POINT:
             if point_type == 'breakdown':
                 action = await dino_breakdown(dino['_id'])
             else:
@@ -196,7 +205,7 @@ async def calculation_points(dino: dict, point_type: str):
                                 {'$set': {f'mood.{point_type}': 0}})
             
             add_message = f'{point_type}.{action}' # После получения языка, добавит текст с этого пути
-            await dino_notification(dino['_id'], point_type, add_message=add_message)
+            await dino_notification(dino['_id'], point_type, add_message=add_message, bonus=BONUS)
         
         else:
             res = dino_mood.find_one({'dino_id': dino['_id'], 
@@ -204,3 +213,22 @@ async def calculation_points(dino: dict, point_type: str):
             if not res:
                 dinosaurs.update_one({'_id': dino['_id']}, 
                                 {'$inc': {f'mood.{point_type}': 1}})
+                
+
+def check_inspiration(dino_id: ObjectId, action_type: str) -> bool:
+    """ Проверяет есть ли у динозавра вдохновение данного типа
+    """
+    assert action_type in list(inspiration.keys()), f'Тип {action_type} не существует!'
+
+    res = dino_mood.find_one({'dino_id': dino_id, 
+                              'type': 'inspiration', 'action': action_type})
+    return bool(res)
+
+def check_breakdown(dino_id: ObjectId, action_type: str) -> bool:
+    """ Проверяет есть ли у динозавра нервный срыв данного типа
+    """
+    assert action_type in list(breakdowns.keys()), f'Тип {action_type} не существует!'
+
+    res = dino_mood.find_one({'dino_id': dino_id, 
+                              'type': 'breakdown', 'action': action_type})
+    return bool(res)
