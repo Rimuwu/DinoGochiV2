@@ -183,16 +183,21 @@ async def dino_menu(call: types.CallbackQuery):
             ...
         elif action == 'mood_log':
             mood_list = list(dino_mood.find({'dino_id': dino['_id']}))
-            mood_dict, text = {}, ''
+            mood_dict, text, event_text = {}, '', ''
             res = 0
             
             for mood in mood_list:
-                key = mood['action']
-                if key not in mood_dict:
-                    mood_dict[key] = {'col': 1, 'unit': mood['unit']}
+                if mood['type'] not in ['breakdown', 'inspiration']:
+                
+                    key = mood['action']
+                    if key not in mood_dict:
+                        mood_dict[key] = {'col': 1, 'unit': mood['unit']}
+                    else:
+                        mood_dict[key]['col'] += 1
+                    res += mood['unit']
+
                 else:
-                    mood_dict[key]['col'] += 1
-                res += mood['unit']
+                    event_text = t(f'mood_log.{mood["type"]}', lang, result=res)
 
             text = t('mood_log.info', lang, result=res)
             for key, data_m in mood_dict.items():
