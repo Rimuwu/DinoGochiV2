@@ -121,7 +121,10 @@ async def end_choice(option: str, transmitted_data: dict):
     
     else:
         await bot.send_message(userid, t('put_to_bed.alredy_busy', lang),
-            reply_markup=m(userid, 'last_menu', lang))
+            reply_markup=
+                                inline_menu('dino_profile', lang, 
+                                            dino_alt_id_markup=last_dino.alt_id
+                                                            ))
 
 @bot.message_handler(text='commands_name.actions.put_to_bed')
 async def put_to_bed(message: Message):
@@ -166,7 +169,10 @@ async def put_to_bed(message: Message):
                             reply_markup=buttons)
         else:
             await bot.send_message(userid, t('put_to_bed.alredy_busy', lang),
-                reply_markup=m(userid, 'last_menu', lang))
+                reply_markup=
+                                inline_menu('dino_profile', lang, 
+                                            dino_alt_id_markup=last_dino.alt_id
+                                                            ))
     else:
         await bot.send_message(userid, t('edit_dino_button.notfouned', lang),
                 reply_markup=m(userid, 'last_menu', lang))
@@ -335,11 +341,12 @@ async def entertainments(message: Message):
                                    t('entertainments.answer_game',lang, last_game=last_game))
 
         else:
-            await bot.send_message(chatid, t('entertainments.alredy_busy', lang,
+            await bot.send_message(chatid, t('entertainments.alredy_busy', lang
+                                             ),
                                 reply_markup=
                                 inline_menu('dino_profile', lang, 
                                             dino_alt_id_markup=last_dino.alt_id
-                                                            )))
+                                                            ))
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('game_start'), is_authorized=True)
 async def game_button(callback: CallbackQuery):
