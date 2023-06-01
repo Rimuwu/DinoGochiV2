@@ -104,7 +104,7 @@ async def main_checks():
         # Если еды у динозавра больше 84 то получает бонус к настроению +1 пока настроение не будет меньше 60-ти
         elif dino['stats']['eat'] >= 85:
             if random.uniform(0, 1) <= P_MOOD:
-                mood_while_if(dino['_id'], 'little_eat', 'eat', 60, 101, 1)
+                mood_while_if(dino['_id'], 'multi_eat', 'eat', 60, 101, 1)
 
 
         # Если энергии меньше 21-ти, понижает настроение на -1
