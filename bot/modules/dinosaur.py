@@ -55,7 +55,7 @@ class Dino:
                 'armor': None,  'weapon': None,
                 'backpack': None
         }
-        
+
         self.mood = {
             'breakdown': 0, # очки срыва
             'inspiration': 0 # очки воодушевления
