@@ -184,7 +184,7 @@ async def dino_menu(call: types.CallbackQuery):
         elif action == 'mood_log':
             mood_list = list(dino_mood.find({'dino_id': dino['_id']}))
             mood_dict, text, event_text = {}, '', ''
-            res = 0
+            res, event_end = 0, 0
             
             for mood in mood_list:
                 if mood['type'] not in ['breakdown', 'inspiration']:
@@ -197,9 +197,16 @@ async def dino_menu(call: types.CallbackQuery):
                     res += mood['unit']
 
                 else:
-                    event_text = t(f'mood_log.{mood["type"]}', lang, result=res)
+                    event_text = t(f'mood_log.{mood["type"]}.{mood["action"]}', lang)
+                    event_end = mood['end_time'] -mood['start_time'] 
 
             text = t('mood_log.info', lang, result=res)
+            if event_text: 
+                event_time = seconds_to_str(event_end, lang, True)
+                text += t('mood_log.event_info', lang, action=event_text, event_time=event_time)
+
+            text += '\n'
+
             for key, data_m in mood_dict.items():
                 em = '💚'
                 if data_m['unit'] <= 0: em = '💔'
