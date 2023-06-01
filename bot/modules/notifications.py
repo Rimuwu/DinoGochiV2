@@ -102,7 +102,7 @@ async def dino_notification(dino_id: ObjectId, not_type: str, **kwargs):
                 
                 if 'add_message' in kwargs:
                     # Если мы хотим добавить какое то сообщение в тексте, но мы не хотим запрашивать владельца и получать его язык, мы можем добавить ключ add_message c путём к тексту
-                    kwargs['add_message'] = t(kwargs['add_message'], lang)
+                    kwargs['add_message'] = t(kwargs['add_message'], lang, **kwargs)
 
                 if not_type in replics_notifications:
                     # Тут мы выбираем случайную реплику для динозавра
