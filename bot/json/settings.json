@@ -291,5 +291,8 @@
     "dead_dino_item": "21",
 
     "dead_dialog_max_lvl": 10,
-    "dead_dialog_item": "3"
+    "dead_dialog_item": "3",
+
+    "inspiration_bonus": 2,
+    "event_points": 10
 } 
