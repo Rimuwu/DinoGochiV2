@@ -47,7 +47,8 @@ async def get_donations() -> list:
     async with aiohttp.ClientSession() as session:
         async with session.get('https://www.donationalerts.com/api/v1/alerts/donations', headers=headers) as response:
             data = dict(await response.json())
-            return data['data']
+            try: return data['data']
+            except: return {}
 
 def save_donation(userid, amount, status, product, 
             issued_reward, time_data, col):
@@ -87,10 +88,10 @@ async def send_donat_notification(userid:int, message_key:str, **kwargs):
 async def give_reward(userid:int, product_key:str, col:int):
     products = get_products()
     product = products[product_key]
-    
+
     if product['type'] == 'subscription':
         award_premium(userid, product['time'] * col)
-    
+
     for item_id in product['items']:
         AddItemToUser(userid, item_id)
 
