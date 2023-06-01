@@ -5,7 +5,7 @@ from bot.config import conf, mongo_client
 from bot.modules.dinosaur import mutate_dino_stat
 from bot.taskmanager import add_task
 from bot.modules.dinosaur import Dino
-from bot.modules.mood import mood_while_if
+from bot.modules.mood import mood_while_if, calculation_points
 
 dinosaurs = mongo_client.bot.dinosaurs
 
@@ -33,6 +33,7 @@ P_GAME = 0.1 * REPEAT_MINUTS
 P_ENERGY = 0.04 * REPEAT_MINUTS
 P_MOOD = 0.2 * REPEAT_MINUTS
 P_HEAL_EAT = 0.1 * REPEAT_MINUTS
+EVENT_CHANCE = 0.05 * REPEAT_MINUTS
 
 async def main_checks():
     """Главная проверка динозавров
@@ -76,7 +77,7 @@ async def main_checks():
                 if randint(1, 0): await mutate_dino_stat(dino, 'eat', -1)
                 
         # =================== Настроение ========================== #
-    
+
         # Если игры меньше 14, то накладывает условие на настроение
         # На настроение будет наложен эффект -1 пока настроение не поднимется до 35
         if dino['stats']['game'] <= 15:
@@ -85,7 +86,7 @@ async def main_checks():
         
         # Если игры больше 84, то накладывается положительный эффект +1
         # Действует пока настроение не упадёт до 45
-        if dino['stats']['game'] >= 85:
+        elif dino['stats']['game'] >= 85:
             if random.uniform(0, 1) <= P_MOOD:
                 mood_while_if(dino['_id'], 'multi_games', 'game', 45, 101, 1)
 
@@ -96,12 +97,12 @@ async def main_checks():
                 mood_while_if(dino['_id'], 'little_eat', 'eat', 5, 50, -1)
 
         # Если еды меньше чем 5, то накладывает эффект -2 к настроению
-        if dino['stats']['eat'] < 5:
+        elif dino['stats']['eat'] < 5:
             if random.uniform(0, 1) <= P_MOOD:
                 mood_while_if(dino['_id'], 'little_eat', 'eat', -1, 20, -2)
 
         # Если еды у динозавра больше 84 то получает бонус к настроению +1 пока настроение не будет меньше 60-ти
-        if dino['stats']['eat'] >= 85:
+        elif dino['stats']['eat'] >= 85:
             if random.uniform(0, 1) <= P_MOOD:
                 mood_while_if(dino['_id'], 'little_eat', 'eat', 60, 101, 1)
 
@@ -113,7 +114,7 @@ async def main_checks():
                               'energy', -1, 40, -1)
 
         # Если у динозавра много энергии то настроение +1
-        if dino['stats']['energy'] >= 85:
+        elif dino['stats']['energy'] >= 85:
             if random.uniform(0, 1) <= P_MOOD:
                 mood_while_if(dino['_id'], 'multi_energy', 
                               'energy', 60, 101, 1)
@@ -124,9 +125,16 @@ async def main_checks():
             if random.uniform(0, 1) <= P_MOOD:
                 mood_while_if(dino['_id'], 'little_heal', 'heal', -1, 40, -1)
         
-        if dino['stats']['heal'] >= 85:
+        elif dino['stats']['heal'] >= 85:
             if random.uniform(0, 1) <= P_MOOD:
                 mood_while_if(dino['_id'], 'multi_heal', 'heal', 60, 101, 1)
+        
+        if dino['stats']['mood'] >= 95:
+            # if random.uniform(0, 1) <= EVENT_CHANCE:
+                await calculation_points(dino, 'inspiration')
+        elif dino['stats']['mood'] <= 5:
+            # if random.uniform(0, 1) <= EVENT_CHANCE:
+                await calculation_points(dino, 'breakdown')
 
 if __name__ != '__main__':
     if conf.active_tasks:
