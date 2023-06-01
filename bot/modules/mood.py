@@ -142,6 +142,8 @@ async def dino_breakdown(dino: ObjectId):
     if action == 'hysteria': set_status(dino, 'hysteria')
     elif action == 'unrestrained_play': 
         start_game(dino, 10800, 0.4)
+        
+        Сделать в старт_гейм сет статус, а в сет статус окончане всех активностей при смене статуса
     elif action == 'downgrade':
         dino_cl = Dino(dino)
         
@@ -187,32 +189,37 @@ async def calculation_points(dino: dict, point_type: str):
     assert point_type in ['breakdown', 'inspiration'], f'Неподходящий аргумент {point_type}'
     alter = 'breakdown'
 
-    mood_points = dino['mood']
-    if point_type == 'breakdown': alter = 'inspiration'
+    res_break = dino_mood.find_one({'dino_id': dino['_id'], 'type': 'breakdown'})
+    res_insp = dino_mood.find_one({'dino_id': dino['_id'], 'type': 'inspiration'})
 
-    if mood_points[alter] != 0:
-        dinosaurs.update_one({'_id': dino['_id']}, 
-                             {'$inc': {f'mood.{alter}': -1}})
+    if not (res_break and res_insp):
 
-    else:
-        if mood_points[point_type] + 1 >= EVENT_POINT:
-            if point_type == 'breakdown':
-                action = await dino_breakdown(dino['_id'])
-            else:
-                action = dino_inspiration(dino['_id'])
+        mood_points = dino['mood']
+        if point_type == 'breakdown': alter = 'inspiration'
 
+        if mood_points[alter] != 0:
             dinosaurs.update_one({'_id': dino['_id']}, 
-                                {'$set': {f'mood.{point_type}': 0}})
-            
-            add_message = f'{point_type}.{action}' # После получения языка, добавит текст с этого пути
-            await dino_notification(dino['_id'], point_type, add_message=add_message, bonus=BONUS)
-        
+                                {'$inc': {f'mood.{alter}': -1}})
+
         else:
-            res = dino_mood.find_one({'dino_id': dino['_id'], 
-                                      'type': point_type})
-            if not res:
+            if mood_points[point_type] + 1 >= EVENT_POINT:
+                if point_type == 'breakdown':
+                    action = await dino_breakdown(dino['_id'])
+                else:
+                    action = dino_inspiration(dino['_id'])
+
                 dinosaurs.update_one({'_id': dino['_id']}, 
-                                {'$inc': {f'mood.{point_type}': 1}})
+                                    {'$set': {f'mood.{point_type}': 0}})
+
+                add_message = f'{point_type}.{action}' # После получения языка, добавит текст с этого пути
+                await dino_notification(dino['_id'], point_type, add_message=add_message, bonus=BONUS)
+
+            else:
+                res = dino_mood.find_one({'dino_id': dino['_id'], 
+                                        'type': point_type})
+                if not res:
+                    dinosaurs.update_one({'_id': dino['_id']}, 
+                                    {'$inc': {f'mood.{point_type}': 1}})
                 
 
 def check_inspiration(dino_id: ObjectId, action_type: str) -> bool:
