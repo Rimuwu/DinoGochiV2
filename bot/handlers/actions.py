@@ -6,6 +6,7 @@ from telebot.types import CallbackQuery, Message
 from bot.config import mongo_client
 from bot.const import GAME_SETTINGS
 from bot.exec import bot
+from bot.modules.accessory import check_accessory
 from bot.modules.data_format import (list_to_inline, list_to_keyboard,
                                      seconds_to_str)
 from bot.modules.dinosaur import (Dino, end_collecting, end_game, end_sleep,
@@ -17,11 +18,10 @@ from bot.modules.item import counts_items
 from bot.modules.item import get_data as get_item_data
 from bot.modules.item import get_name
 from bot.modules.item_tools import use_item
-from bot.modules.accessory import check_accessory
 from bot.modules.localization import get_data, t
 from bot.modules.markup import count_markup, feed_count_markup
 from bot.modules.markup import markups_menu as m
-from bot.modules.mood import add_mood
+from bot.modules.mood import add_mood, check_breakdown
 from bot.modules.states_tools import (ChooseIntState, ChooseOptionState,
                                       ChoosePagesState, ChooseStepState)
 from bot.modules.user import User, count_inventory_items, premium
@@ -378,45 +378,47 @@ async def stop_game(message: Message):
     if last_dino:
         penalties = GAME_SETTINGS['penalties']["games"]
         game_data = game_task.find_one({'dino_id': last_dino._id})
-        random_tear = 1
-        text = ''
+        random_tear, text = 1, ''
 
-        if game_data:
-            # Определение будет ли дебафф к настроению
-            if game_data['game_percent'] == penalties['0']:
-                random_tear = randint(1, 2)
-            elif game_data['game_percent'] == penalties['1']:
-                random_tear = randint(1, 3)
-            elif game_data['game_percent'] == penalties['2']:
-                random_tear = randint(0, 2)
-            elif game_data['game_percent'] == penalties['3']:
-                random_tear = 0
+        res = check_breakdown(last_dino._id, 'unrestrained_play')
 
-            if randint(1, 2) == 1 or not random_tear:
-                
-                if random_tear == 1:
-                    # Дебафф к настроению
-                    text = t('stop_game.like', lang)
-                    add_mood(last_dino._id, 'stop_game', randint(-2, -1), 3600)
-                elif random_tear == 0:
-                    # Не нравится динозавру играть, без дебаффа
-                    text = t('stop_game.dislike', lang)
+        if not res:
+            if game_data:
+                # Определение будет ли дебафф к настроению
+                if game_data['game_percent'] == penalties['0']:
+                    random_tear = randint(1, 2)
+                elif game_data['game_percent'] == penalties['1']:
+                    random_tear = randint(1, 3)
+                elif game_data['game_percent'] == penalties['2']:
+                    random_tear = randint(0, 2)
+                elif game_data['game_percent'] == penalties['3']:
+                    random_tear = 0
+
+                if randint(1, 2) == 1 or not random_tear:
+                    
+                    if random_tear == 1:
+                        # Дебафф к настроению
+                        text = t('stop_game.like', lang)
+                        add_mood(last_dino._id, 'stop_game', randint(-2, -1), 3600)
+                    elif random_tear == 0:
+                        # Не нравится динозавру играть, без дебаффа
+                        text = t('stop_game.dislike', lang)
+                    else:
+                        # Завершение без дебаффа
+                        text = t('stop_game.whatever', lang)
+
+                    await end_game(last_dino._id, False)
                 else:
-                    # Завершение без дебаффа
-                    text = t('stop_game.whatever', lang)
+                    # Невозможно оторвать от игры
+                    text = t('stop_game.dont_tear', lang)
 
-                await end_game(last_dino._id, False)
+                await bot.send_message(chatid, text, reply_markup=m(userid, 'last_menu', lang, True))
+                
             else:
-                # Невозможно оторвать от игры
-                text = t('stop_game.dont_tear', lang)
-
-            await bot.send_message(chatid, text, reply_markup=m(userid, 'last_menu', lang, True))
-            
-        else:
-            if last_dino.status == 'game':
-                last_dino.update({'$set': {'status': 'pass'}})
-            
-            await bot.send_message(chatid, '❌', reply_markup=m(userid, 'last_menu', lang, True))
+                if last_dino.status == 'game':
+                    last_dino.update({'$set': {'status': 'pass'}})
+                
+                await bot.send_message(chatid, '❌', reply_markup=m(userid, 'last_menu', lang, True))
 
 
 async def collecting_adapter(return_data, transmitted_data):
