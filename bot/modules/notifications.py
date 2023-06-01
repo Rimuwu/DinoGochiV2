@@ -133,7 +133,6 @@ async def dino_notification(dino_id: ObjectId, not_type: str, **kwargs):
     if dino: # type: dict
         kwargs['dino_name'] = dino['name']
         kwargs['dino_alt_id_markup'] = dino['alt_id']
-        
         res = dino_mood.find_one({'dino_id': dino_id, 
                             'type': 'breakdown', 'action': 'seclusion'})
 
