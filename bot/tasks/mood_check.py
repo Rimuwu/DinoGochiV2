@@ -25,7 +25,7 @@ async def mood_check():
                                        'while': [], 'events': []
                                        }
         
-        if mood_data['type'] in ['mood_edit', 'breakdown', 'inspiration']:
+        if mood_data['type'] == 'mood_edit':
             if int(time()) >= mood_data['end_time']:
                 # Закончилось время эффекта
                 dino_mood.delete_one({'_id': mood_data['_id']})
@@ -37,12 +37,21 @@ async def mood_check():
             upd_data[dino_id]['while'].append(while_data)
 
         if mood_data['type'] in ['breakdown', 'inspiration']:
-             upd_data[dino_id]['events'].append(
+            upd_data[dino_id]['events'].append(
                  {'_id': mood_data['_id'], 
                   'cancel_mood': mood_data['cancel_mood'],
                   'type': mood_data['type']
                   }
-             )
+            )
+            
+            if int(time()) >= mood_data['end_time']:
+                # Закончилось время эффекта
+                dino_mood.delete_one({'_id': mood_data['_id']})
+
+                if mood_data['action'] == 'hysteria':
+                    dinosaurs.update_one({'_id': dino_id}, 
+                                         {'$set': {'status': 'pass'}})
+           
 
     for dino_id, data in upd_data.items():
         dino = dinosaurs.find_one({'_id': dino_id})
@@ -61,12 +70,15 @@ async def mood_check():
                 if event_data['type'] == 'breakdown':
                     if dino['stats']['mood'] >= event_data['cancel_mood']:
                         dino_mood.delete_one({'_id': event_data['_id']})
+                        
+                        if upd_data['action'] == 'hysteria':
+                            dinosaurs.update_one({'_id': dino_id}, 
+                                                 {'$set': {'status': 'pass'}})
+                         
                 if event_data['type'] == 'inspiration':
                     if dino['stats']['mood'] <= event_data['cancel_mood']:
                         dino_mood.delete_one({'_id': event_data['_id']})
 
-    print(upd_data)
-
 if __name__ != '__main__':
     if conf.active_tasks:
-        add_task(mood_check, REPEAT_MINUTS, 5.0) # * 60.0
+        add_task(mood_check, REPEAT_MINUTS * 5, 5.0) # * 60.0
