@@ -2,7 +2,6 @@ import random
 import re
 import string
 
-
 from telebot.types import (InlineKeyboardButton, InlineKeyboardMarkup,
                            ReplyKeyboardMarkup, User)
 
