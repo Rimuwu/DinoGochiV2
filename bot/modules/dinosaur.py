@@ -472,10 +472,24 @@ async def mutate_dino_stat(dino: dict, key: str, value: int):
 def get_owner(dino_id: ObjectId):
     return dino_owners.find_one({'dino_id': dino_id, 'type': 'owner'})
 
-def set_status(dino_id: ObjectId, new_status: str):
+def set_status(dino_id: ObjectId, new_status: str, now_status: str = ''):
     """ Устанавливает состояние динозавра.
     """
 
     assert new_status in ['pass', 'sleep', 'game', 'journey', 'collecting', 'dungeon', 'freezing', 'kindergarten', 'hysteria'], f'Состояние {new_status} не найдено!'
+
+    if not now_status:
+        dino = dinosaurs.find_one({'_id': dino_id})
+        if dino: now_status = dino['status']
+    
+    if now_status == 'sleep':
+
+        sleeper = sleep_task.find_one({'dino_id': dino_id})
+        sleep_time = sleeper['sleep_end'] - sleeper['sleep_start']
+        
+        asyncio.run_coroutine_threadsafe(
+                    user_notification(end_sleep(dino_id, sleeper['_id'], sleep_time)), asyncio.get_event_loop())
+        
+    elif now_status == 'game':
 
     dinosaurs.update_one({'_id': dino_id}, {'$set': {'status': new_status}})
