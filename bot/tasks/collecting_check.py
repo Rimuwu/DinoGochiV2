@@ -10,6 +10,7 @@ from bot.modules.dinosaur import end_collecting
 from bot.modules.item import counts_items
 from bot.modules.accessory import check_accessory
 from bot.modules.dinosaur import Dino, mutate_dino_stat
+from bot.modules.mood import check_inspiration
 
 collecting_task = mongo_client.tasks.collecting
 dinosaurs = mongo_client.bot.dinosaurs
@@ -51,6 +52,9 @@ async def collecting_process():
             dino = Dino(coll_data['dino_id'])
             if check_accessory(dino, '15', True): chance = 0.25
             else: chance = 0.2
+            
+            res = check_inspiration(coll_data['dino_id'], 'collecting')
+            if res: chance *= 2
             
             if random.uniform(0, 1) <= chance: 
                 await experience_enhancement(coll_data['sended'], 
