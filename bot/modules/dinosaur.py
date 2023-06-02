@@ -7,14 +7,16 @@ from time import time
 from bson.objectid import ObjectId
 
 from bot.config import mongo_client
-from bot.const import DINOS, GAME_SETTINGS
+from bot.const import DINOS
+from bot.const import GAME_SETTINGS
+from bot.const import GAME_SETTINGS as GS
+from bot.exec import bot
 from bot.modules.data_format import random_code, random_quality
 from bot.modules.images import create_dino_image, create_egg_image
-from bot.modules.item import AddItemToUser
+from bot.modules.item import AddItemToUser, counts_items
 from bot.modules.localization import log
 from bot.modules.notifications import (dino_notification, notification_manager,
                                        user_notification)
-from bot.const import GAME_SETTINGS as GS
 
 users = mongo_client.bot.users
 dinosaurs = mongo_client.bot.dinosaurs
@@ -327,8 +329,10 @@ def start_game(dino_baseid: ObjectId, duration: int=1800,
         'game_percent': percent
     }
     result = game_task.insert_one(game)
-    dinosaurs.update_one({"_id": dino_baseid}, 
-                         {'$set': {'status': 'game'}})
+    
+    dino = dinosaurs.find_one({'_id': dino_baseid})
+    if dino: set_status(dino_baseid, 'game', dino['status'])
+
     return result
 
 async def end_game(dino_id: ObjectId, send_notif: bool=True):
@@ -472,6 +476,18 @@ async def mutate_dino_stat(dino: dict, key: str, value: int):
 def get_owner(dino_id: ObjectId):
     return dino_owners.find_one({'dino_id': dino_id, 'type': 'owner'})
 
+async def get_dino_language(dino_id: ObjectId) -> str:
+    lang = 'en'
+    
+    owner = dino_owners.find_one({'dino_id': dino_id})
+    if owner:
+        try:
+            chat_user = await bot.get_chat_member(owner['owner_id'], owner['owner_id'])
+            lang = chat_user.user.language_code
+        except: lang = 'en'
+
+    return lang
+
 def set_status(dino_id: ObjectId, new_status: str, now_status: str = ''):
     """ Устанавливает состояние динозавра.
     """
@@ -485,11 +501,25 @@ def set_status(dino_id: ObjectId, new_status: str, now_status: str = ''):
     if now_status == 'sleep':
 
         sleeper = sleep_task.find_one({'dino_id': dino_id})
-        sleep_time = sleeper['sleep_end'] - sleeper['sleep_start']
-        
-        asyncio.run_coroutine_threadsafe(
-                    user_notification(end_sleep(dino_id, sleeper['_id'], sleep_time)), asyncio.get_event_loop())
+        if sleeper:
+            sleep_time = sleeper['sleep_end'] - sleeper['sleep_start']
+            asyncio.run_coroutine_threadsafe(
+                end_sleep(dino_id, sleeper['_id'], sleep_time), asyncio.get_event_loop())
         
     elif now_status == 'game':
+        asyncio.run_coroutine_threadsafe(end_game(dino_id), asyncio.get_event_loop())
+    
+    elif now_status == 'collecting':
+        data = collecting_task.find_one({'dino_id': dino_id})
+        if data:
+            items_list = []
+            for key, count in data['items'].items():
+                items_list += [key] * count
 
-    dinosaurs.update_one({'_id': dino_id}, {'$set': {'status': new_status}})
+            asyncio.run_coroutine_threadsafe(end_collecting(dino_id, data['items'], 
+                                        data['sended'], '', False), asyncio.get_event_loop())
+
+    if now_status in ['sleep', 'game', 'journey', 'collecting'] and new_status != 'pass':
+        dinosaurs.update_one({'_id': dino_id}, {'$set': {'status': new_status}})
+    elif new_status != now_status:
+        dinosaurs.update_one({'_id': dino_id}, {'$set': {'status': new_status}})
