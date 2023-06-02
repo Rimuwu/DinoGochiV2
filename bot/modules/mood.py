@@ -140,10 +140,7 @@ async def dino_breakdown(dino: ObjectId):
         dino_mood.insert_one(data)
 
     if action == 'hysteria': set_status(dino, 'hysteria')
-    elif action == 'unrestrained_play': 
-        start_game(dino, 10800, 0.4)
-        
-        Сделать в старт_гейм сет статус, а в сет статус окончане всех активностей при смене статуса
+    elif action == 'unrestrained_play': start_game(dino, 10800, 0.4)
     elif action == 'downgrade':
         dino_cl = Dino(dino)
         
