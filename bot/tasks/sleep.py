@@ -4,7 +4,7 @@ from random import uniform, randint
 from bot.config import conf, mongo_client
 from bot.modules.dinosaur import end_sleep
 from bot.taskmanager import add_task
-from bot.modules.mood import add_mood
+from bot.modules.mood import add_mood, check_inspiration
 
 sleepers = mongo_client.tasks.sleep
 dinosaurs = mongo_client.bot.dinosaurs
@@ -25,6 +25,9 @@ async def one_time(data, one_time_unit):
     for sleeper in data:
         add_energy, sec_time = 0, 0
         dino = dinosaurs.find_one({'_id': sleeper['dino_id']})
+        
+        if check_inspiration(sleeper['dino_id'], 'sleep'): 
+            one_time_unit *= 2
 
         if sleeper['sleep_type'] == 'long':
             sec_time = int(time()) - sleeper['sleep_start']
@@ -39,11 +42,10 @@ async def one_time(data, one_time_unit):
                 if energy + one_time_unit >= 100:
                     add_energy = 100 - energy
                     await end_sleep(sleeper['dino_id'], sec_time)
-                else:
-                    add_energy = one_time_unit
+                else: add_energy = one_time_unit
                     
                 if uniform(0, 1) <= DREAM_CHANCE:
-                    if randint(1, 3) == 3:
+                    if randint(1, 3) == 2:
                         add_mood(dino['_id'], 'bad_dream', 1, 2700, True)
                     else:
                         add_mood(dino['_id'], 'dream', 1, 2700, True)
