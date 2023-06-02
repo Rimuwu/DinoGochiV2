@@ -81,4 +81,4 @@ async def mood_check():
 
 if __name__ != '__main__':
     if conf.active_tasks:
-        add_task(mood_check, REPEAT_MINUTS * 5, 5.0) # * 60.0
+        add_task(mood_check, REPEAT_MINUTS * 60.0, 5.0)
