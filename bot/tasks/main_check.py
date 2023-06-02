@@ -130,10 +130,10 @@ async def main_checks():
                 mood_while_if(dino['_id'], 'multi_heal', 'heal', 60, 101, 1)
         
         if dino['stats']['mood'] >= 95:
-            if random.uniform(0, 1) <= EVENT_CHANCE:
+            if random.randint(0, 5) == 3:
                 await calculation_points(dino, 'inspiration')
         elif dino['stats']['mood'] <= 5:
-            if random.uniform(0, 1) <= EVENT_CHANCE:
+            if random.randint(0, 5) == 3:
                 await calculation_points(dino, 'breakdown')
 
 if __name__ != '__main__':
