@@ -21,7 +21,7 @@ from bot.modules.item_tools import use_item
 from bot.modules.localization import get_data, t
 from bot.modules.markup import count_markup, feed_count_markup
 from bot.modules.markup import markups_menu as m
-from bot.modules.mood import add_mood, check_breakdown
+from bot.modules.mood import add_mood, check_breakdown, check_inspiration
 from bot.modules.states_tools import (ChooseIntState, ChooseOptionState,
                                       ChoosePagesState, ChooseStepState)
 from bot.modules.user import User, count_inventory_items, premium
@@ -44,7 +44,7 @@ async def edit_dino_buttom(message: Message):
     data_names = {}
 
     for element in dinos:
-        txt = f'🦕 {element.name}' #type: ignore
+        txt = f'🦕 {element.name}'
         data_names[txt] = f'edit_dino {element.alt_id}'
     
     inline = list_to_inline([data_names], 2)
@@ -363,10 +363,13 @@ async def game_button(callback: CallbackQuery):
         
         r_t = get_data('entertainments', lang)['time'][code]['data']
         game_time = randint(*r_t) * 60
-            
+        
+        res = check_inspiration(dino._id, 'game')
+        if res: percent += 1.0
+
         dino.game(game_time, percent)
         image = dino_game(dino.data_id)
-        
+
         text = t(f'entertainments.game_text.m{str(repeat)}', lang, 
                 game=t(f'entertainments.game.{game}', lang)) + '\n'
         if percent < 1.0:
