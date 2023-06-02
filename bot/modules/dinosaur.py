@@ -519,7 +519,5 @@ def set_status(dino_id: ObjectId, new_status: str, now_status: str = ''):
             asyncio.run_coroutine_threadsafe(end_collecting(dino_id, data['items'], 
                                         data['sended'], '', False), asyncio.get_event_loop())
 
-    if now_status in ['sleep', 'game', 'journey', 'collecting'] and new_status != 'pass':
-        dinosaurs.update_one({'_id': dino_id}, {'$set': {'status': new_status}})
-    elif new_status != now_status:
+    if now_status in ['sleep', 'game', 'journey', 'collecting'] and new_status != 'pass' or new_status != now_status:
         dinosaurs.update_one({'_id': dino_id}, {'$set': {'status': new_status}})
