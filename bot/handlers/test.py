@@ -25,6 +25,7 @@ from bot.modules.markup import count_markup, down_menu, list_to_keyboard
 from bot.modules.notifications import user_notification, notification_manager
 from bot.modules.states_tools import ChoosePagesState, ChooseStepState
 from bot.modules.user import User, max_dino_col
+from bot.modules.statistic import get_now_statistic
 
 dinosaurs = mongo_client.bot.dinosaurs
 
@@ -122,6 +123,11 @@ async def test_options_pages(message):
     dino = user.get_last_dino()
 
     await notification_manager(dino._id, 'heal', 50)
+
+@bot.message_handler(commands=['st'])
+async def st(message):
+    
+    get_now_statistic()
 
 # @bot.message_handler(commands=['names'])
 # async def names(message):

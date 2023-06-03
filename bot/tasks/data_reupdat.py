@@ -2,7 +2,7 @@
 # Дабы не собирать информацию каждый раз при запросе пользователя
 from bot.config import conf, mongo_client
 from bot.taskmanager import add_task
-from  datetime import datetime
+from datetime import datetime
 
 dinosaurs = mongo_client.bot.dinosaurs
 users = mongo_client.bot.users
