@@ -6,6 +6,8 @@ statistic = mongo_client.tasks.statistic
 
 
 def get_now_statistic():
+    """ {'items': 0, 'users': 0, 'dinosaurs': 0}
+    """
     now = datetime.now()
     res, repets = None, -1
 
