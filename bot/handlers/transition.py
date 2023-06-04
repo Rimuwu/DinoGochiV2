@@ -164,7 +164,7 @@ async def about_menu(message: Message):
         col_u=col_u, col_d=col_d, col_i=col_i, update_time=update_time
         ), 
                            reply_markup=m(userid, 'about_menu', lang),
-                           parse_mode='Markdown'
+                           parse_mode='HTML'
                            )
 
 @bot.message_handler(text='commands_name.friends.referal', is_authorized=True)
