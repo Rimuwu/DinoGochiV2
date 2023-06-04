@@ -5,12 +5,14 @@ from telebot.types import Message
 from bot.config import mongo_client
 from bot.const import GAME_SETTINGS as GS
 from bot.exec import bot
-from bot.modules.data_format import user_name
+from bot.modules.data_format import user_name, seconds_to_str
 from bot.modules.item import counts_items
 from bot.modules.localization import get_data, t
 from bot.modules.markup import back_menu
 from bot.modules.markup import markups_menu as m
 from bot.modules.user import User
+from bot.modules.statistic import get_now_statistic
+from datetime import datetime, timezone, timedelta
 
 users = mongo_client.bot.users
 management = mongo_client.bot.management
@@ -143,10 +145,27 @@ async def about_menu(message: Message):
 
     iambot = await bot.get_me()
     bot_name = iambot.username
+    col_u, col_d, col_i, update_time = '?', '?', '?', '?'
+    
+    statistic = get_now_statistic()
+    if statistic:
+        col_u = statistic['users']
+        col_d = statistic['dinosaurs']
+        col_i = statistic['items']
+        
+        create = statistic['_id'].generation_time
+        now = datetime.now(timezone.utc)
+        delta: timedelta = now - create
+        
+        update_time = seconds_to_str(delta.seconds, lang, True)
     
     await bot.send_message(message.chat.id, t(
-        'menu_text.about', lang, bot_name=bot_name), 
-                           reply_markup=m(userid, 'about_menu', lang))
+        'menu_text.about', lang, bot_name=bot_name,
+        col_u=col_u, col_d=col_d, col_i=col_i, update_time=update_time
+        ), 
+                           reply_markup=m(userid, 'about_menu', lang),
+                           parse_mode='Markdown'
+                           )
 
 @bot.message_handler(text='commands_name.friends.referal', is_authorized=True)
 async def referal_menu(message: Message):
