@@ -265,7 +265,8 @@ async def inventory_adapter(item, transmitted_data):
 
         steps = [
             {"type": 'int', "name": 'count', "data": {"max_int": max_count}, 
-                'message': {'text': t('css.wait_count', lang), 
+             "translate_message": True,
+                'message': {'text': 'css.wait_count', 
                             'reply_markup': feed_count_markup(
                                 dino.stats['eat'], int(item_data['act'] * percent), max_count, item_name, lang)}}
                 ]
@@ -485,18 +486,22 @@ async def collecting_button(message: Message):
                                     [t('buttons_name.cancel', lang)]], 2)
             
             steps = [
-                {"type": 'option', "name": 'option', "data": {"options": options}, 
-                    'message': {'text': t('collecting.way', lang), 
+                {"type": 'option', "name": 'option', 
+                 "data": {"options": options}, 
+                 "translate_message": True,
+                    'message': {'text': 'collecting.way', 
                     'reply_markup': markup}
                     },
-                {"type": 'int', "name": 'count', "data": {"max_int": max_count}, 
-                    'message': {'text': t('collecting.wait_count', lang), 
+                {"type": 'int', "name": 'count', 
+                 "data": {"max_int": max_count}, 
+                 "translate_message": True,
+                    'message': {'text': 'collecting.wait_count', 
                     'reply_markup': count_markup(max_count)}
                     }
                         ]
             await ChooseStepState(collecting_adapter, userid, chatid, 
                                         lang, steps, 
-                                    transmitted_data={'dino': last_dino})
+                                    transmitted_data={'dino': last_dino, 'delete_steps': True})
     
         else:
             await bot.send_message(chatid, t('collecting.alredy_busy', lang),
@@ -565,7 +570,6 @@ async def journey_start_adp(return_data: int, transmitted_data: dict):
     
     print(return_data)
 
-
 @bot.message_handler(text='commands_name.actions.journey')
 async def journey_start(message: Message):
     userid = message.from_user.id
@@ -616,7 +620,6 @@ async def journey_start(message: Message):
     steps = [
         {"type": 'inline', "name": 'location', 
          "data": {"auth_key": 'j_location'}, 
-         "edit_message": True,
          "image": 'images/actions/journey/preview.png',
          "message": {"caption": text, "reply_markup": m2_reply, 
                      }
@@ -627,7 +630,7 @@ async def journey_start(message: Message):
         }
     ]
     
-    await ChooseStepState(journey_start_adp, userid, chatid, lang, steps, {'last_dino': last_dino})
+    await ChooseStepState(journey_start_adp, userid, chatid, lang, steps, {'last_dino': last_dino, "edit_message": True})
 
 
 @bot.callback_query_handler(func=

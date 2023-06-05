@@ -227,7 +227,7 @@ async def delete_me(message: Message):
     chatid = message.chat.id
     
     code = str(randint(100, 1000))
-    transmitted_data = {'code': code}
+    transmitted_data = {'code': code, 'delete_steps': False}
     
     conf3 = confirm_markup(lang)
     conf3.one_time_keyboard = True
@@ -236,24 +236,27 @@ async def delete_me(message: Message):
         {
         "type": 'bool', "name": 'confirm', 
         "data": {'cancel': True}, 
+        "translate_message": True,
         'message': {
-            'text': t('delete_me.confirm', lang), 
+            'text': 'delete_me.confirm', 
             'reply_markup': confirm_markup(lang)
             }
         },
         {
         "type": 'bool', "name": 'confirm2', 
         "data": {'cancel': True}, 
+        "translate_message": True,
         'message': {
-            'text': t('delete_me.dead_dino', lang), 
+            'text': 'delete_me.dead_dino',
             'reply_markup': confirm_markup(lang)
             }
         },
         {
         "type": 'bool', "name": 'confirm3', 
         "data": {'cancel': True}, 
+        "translate_message": True,
         'message': {
-            'text': t('delete_me.rex_boss', lang), 
+            'text': 'delete_me.rex_boss', 
             'reply_markup': conf3
             }
         },
