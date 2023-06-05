@@ -17,6 +17,7 @@ class GeneralStates(StatesGroup):
     ChooseString = State() # Состояние для ввода текста
     ChooseConfirm = State() # Состояние для подтверждения (да / нет)
     ChooseOption = State() # Состояние для выбора среди вариантов
+    ChooseInline = State() # Состояние для выбора кнопки
     ChoosePagesState = State() # Состояние для выбора среди вариантов, а так же поддерживает страницы
     ChooseCustom = State() # Состояние для кастомного обработчика
 
@@ -170,7 +171,27 @@ async def ChooseOptionState(function, userid: int,
         element = options[list(options.keys())[0]]
         await function(element, transmitted_data)
         return False, 'option'
-    
+
+async def ChooseInlineState(function, userid: int, 
+                         chatid: int, lang: str,
+                         auth_key: str='handler',
+                         transmitted_data=None):
+    """ Устанавливает состояние ожидания нажатия кнопки
+        auth_key - ключ который должен стоят в начале callback
+
+        В function передаёт 
+        >>> answer: list transmitted_data: dict
+    """
+    if not transmitted_data: transmitted_data = {}
+    transmitted_data = add_if_not(transmitted_data, userid, chatid, lang)
+
+    await bot.set_state(userid, GeneralStates.ChooseInline, chatid)
+    async with bot.retrieve_data(userid, chatid) as data:
+        data['function'] = function
+        data['transmitted_data'] = transmitted_data
+        data['auth_key'] = auth_key
+    return True, 'inline'
+
 async def ChooseCustomState(function, custom_handler, 
                          userid: int, 
                          chatid: int, lang: str,
@@ -266,6 +287,18 @@ async def ChoosePagesState(function, userid: int,
         await function(element, transmitted_data)
         return False, 'optionplus', pages
 
+chooses = {
+    'dino': ChooseDinoState,
+    'int': ChooseIntState,
+    'str': ChooseStringState,
+    'bool': ChooseConfirmState,
+    'option': ChooseOptionState,
+    'inline': ChooseInlineState,
+    'custom': ChooseCustomState,
+    'pages': ChoosePagesState,
+    'inv': start_inv,
+}
+
 async def ChooseStepState(function, userid: int, 
                          chatid: int, lang: str,
                          steps: list = [],
@@ -286,17 +319,6 @@ async def ChooseStepState(function, userid: int,
         >>> answer: dict, transmitted_data: dict
     """
     if not transmitted_data: transmitted_data = {}
-    
-    chooses = {
-        'dino': ChooseDinoState,
-        'int': ChooseIntState,
-        'str': ChooseStringState,
-        'bool': ChooseConfirmState,
-        'option': ChooseOptionState,
-        'custom': ChooseCustomState,
-        'pages': ChoosePagesState,
-        'inv': start_inv,
-    }
     for step in steps:
         if step['type'] in chooses:
             step['function'] = chooses[step['type']]
@@ -324,6 +346,12 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
         answer (_type_): Ответ переданный из функции ожидания
         transmitted_data (dict): Переданная дата
         start (bool, optional): Является ли функция стартом КСС Defaults to False.
+        
+        Для фото, добавить в message ключ image с путём до фото
+
+        Для изменения предыдущего сообщения добавить edit_message: True в message у ПЕРВОГО элемента, будет работать на все следующие шаги.
+        Требуется добавление message_data в transmitted_data
+        (Использовать только для inline состояний, не подойдёт для MessageSteps)
     """
     userid = transmitted_data['userid']
     chatid = transmitted_data['chatid']
@@ -350,9 +378,33 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
             await bot.delete_state(userid, chatid)
             await bot.reset_data(userid, chatid)
         if func_answer:
-            # Отправка сообщения из message: dict, если None - ничего
+            # Отправка сообщения / фото из message: dict, если None - ничего
             if ret_data['message']:
-                await bot.send_message(userid, parse_mode='Markdown', **ret_data['message'])
+                edit_message = False
+                last_message = None
+
+                if 'edit_message' in steps[0]:
+                    edit_message = steps[0]['edit_message']
+                
+                if 'message_data' in transmitted_data:
+                    last_message = transmitted_data['message_data']
+
+                if edit_message and len(return_data) != 0 and last_message:
+                    if 'image' in steps[0]:
+                        await bot.edit_message_caption(
+                            chat_id=chatid, message_id=last_message.id,
+                            parse_mode='Markdown', **ret_data['message'])
+                    else:
+                        await bot.edit_message_text(
+                            chat_id=chatid, message_id=last_message.id, parse_mode='Markdown', **ret_data['message'])
+                else:
+                    if 'image' in ret_data:
+                        photo = open(ret_data['image'], 'rb')
+
+                        await bot.send_photo(chatid, photo=photo, parse_mode='Markdown', **ret_data['message'])
+                    else:
+                        await bot.send_message(chatid, parse_mode='Markdown', **ret_data['message'])
+
         # Обновление данных состояния
         if not start and func_answer:
             async with bot.retrieve_data(userid, chatid) as data:
