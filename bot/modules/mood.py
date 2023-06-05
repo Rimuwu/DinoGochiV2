@@ -22,17 +22,18 @@ keys = [
 
 breakdowns = {
     'seclusion': {
-        'cnacel_mood': 35,
+        'cancel_mood': 35,
         'duration_time': (3600, 14400),
     },
     
     'hysteria': {
-        'cnacel_mood': 30,
+        'cancel_mood': 30,
         'duration_time': (1800, 9000)
     },
     
     'unrestrained_play': {
-        'duration_time': 0
+        'cancel_mood': 30,
+        'duration_time': (8300, 10800)
     }, 
     
     'downgrade': {
@@ -42,19 +43,19 @@ breakdowns = {
 
 inspiration = {
     'game': {
-        'cnacel_mood': 75,
+        'cancel_mood': 75,
         'duration_time': (3600, 9000),
         },
     'collecting': {
-        'cnacel_mood': 75,
+        'cancel_mood': 75,
         'duration_time': (3600, 9000),
         },
     'journey': {
-        'cnacel_mood': 75,
+        'cancel_mood': 75,
         'duration_time': (3600, 9000),
         },
     'sleep': {
-        'cnacel_mood': 75,
+        'cancel_mood': 75,
         'duration_time': (3600, 9000),
     }
 }
@@ -127,7 +128,7 @@ async def dino_breakdown(dino: ObjectId):
     
     if duration_s:
         duration = randint(*duration_s)
-        cancel_mood = breakdowns[action]['cnacel_mood']
+        cancel_mood = breakdowns[action]['cancel_mood']
 
         data = {
             'dino_id': dino,
@@ -163,7 +164,7 @@ def dino_inspiration(dino: ObjectId):
 
     duration_s = inspiration[action]['duration_time']
     duration = randint(*duration_s)
-    cancel_mood = inspiration[action]['cnacel_mood']
+    cancel_mood = inspiration[action]['cancel_mood']
 
     data = {
         'dino_id': dino,
@@ -179,7 +180,7 @@ def dino_inspiration(dino: ObjectId):
     return action
 
 async def calculation_points(dino: dict, point_type: str):
-    """ Высчитывает очки вдохновение / срыва и запускает его + отправляет уведолмение\n
+    """ Высчитывает очки вдохновение / срыва и запускает его + отправляет уведомление\n
         'breakdown', 'inspiration'
     """
 
