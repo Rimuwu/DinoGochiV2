@@ -1,5 +1,5 @@
 
-from telebot.types import Message
+from telebot.types import Message, CallbackQuery
 
 from bot.const import GAME_SETTINGS as gs
 from bot.exec import bot
@@ -286,3 +286,21 @@ async def ChooseOptionPages(message: Message):
     else:
         await bot.send_message(message.chat.id, 
                 t('states.ChooseOption.error_not_option', lang))
+
+@bot.callback_query_handler(state=GeneralStates.ChooseInline, is_authorized=True, func=lambda call: True)
+async def journey_complexity(callback: CallbackQuery):
+    code = callback.data.split()
+    chatid = callback.message.chat.id
+    userid = callback.from_user.id
+    
+    async with bot.retrieve_data(userid, chatid) as data:
+        func = data['function']
+        auth_key = data['auth_key']
+        transmitted_data = data['transmitted_data']
+
+    if code[0] == auth_key:
+        code.pop(0)
+        if len(code) == 1: code = code[0]
+
+        transmitted_data['message_data'] = callback.message
+        await func(code, transmitted_data=transmitted_data)
