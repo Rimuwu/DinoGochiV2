@@ -191,11 +191,11 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
                         steps.append(
                             {"type": 'inv', "name": iterable_id, "data":     
                                 {'item_filter': [iterable_id], 
-                                'changing_filters': False
-                                }, 
-                                'message': {'text': t(
-                                    'item_use.recipe.consumable_item', lang)
-                                            }}
+                                'changing_filters': False,
+                                },
+                                "translate_message": True,
+                                'message': 'item_use.recipe.consumable_item',
+                                            }
                         )
                 await ChooseStepState(edit_craft, userid, 
                                       chatid, lang, steps, transmitted_data)
@@ -367,7 +367,8 @@ async def eat_adapter(return_data: dict, transmitted_data: dict):
 
     steps = [
         {"type": 'int', "name": 'count', "data": {"max_int": max_count}, 
-            'message': {'text': t('css.wait_count', lang), 
+         "translate_message": True,
+            'message': {'text': 'css.wait_count', 
                         'reply_markup': feed_count_markup(
                             dino.stats['eat'], int(item_data['act'] * percent), max_count, item_name, lang)}}
             ]
