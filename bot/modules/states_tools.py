@@ -279,13 +279,13 @@ async def ChoosePagesState(function, userid: int,
             data['settings'] = {'horizontal': horizontal, "vertical": vertical}
 
         await update_page_function(pages, 0, chatid, lang)
-        return True, 'optionplus', pages
+        return True, 'pages', pages
     else:
         if len(options) == 0: element = None
         else: element = options[list(options.keys())[0]]
 
         await function(element, transmitted_data)
-        return False, 'optionplus', pages
+        return False, 'pages', pages
 
 chooses = {
     'dino': ChooseDinoState,
@@ -303,7 +303,7 @@ async def ChooseStepState(function, userid: int,
                          chatid: int, lang: str,
                          steps: list = [],
                          transmitted_data=None):
-    """ Конвеерная Система Состояний
+    """ Конвейерная Система Состояний
         Устанавливает ожидание нескольких ответов, запуская состояния по очереди.
         
         steps = [
@@ -311,9 +311,20 @@ async def ChooseStepState(function, userid: int,
                 'message': {'text': str, 'reply_markup': markup}}
         ]
         type - тип опроса пользователя (chooses)
+          или 'update_data' c функцией для обновления данных (получает и возвращает transmitted_data) + возвращает ответ для сохранения
+          В данных можно указать async: True для асинхронной функции
+          Параметр name тоже обязателен.
+
         name - имя ключа в возвращаемом инвентаре (не повторять для корректности)
         data - данные для функции создания опроса
         message - данные для отправляемо сообщения перед опросом
+        translate_message (bool, optional) - если наш текст это чистый ключ из данных, то можно переводить на ходу
+        image (str, optional) - если нам надо отправить картинку, то добавляем сюда путь к ней
+
+
+        transmitted_data
+        edit_message (optional) - если нужно не отсылать сообщения, а обновлять, то можно добавить этот ключ.
+        delete_steps (optional) - можно добавить для удаления данных отработанных шагов
 
         В function передаёт 
         >>> answer: dict, transmitted_data: dict
@@ -322,9 +333,13 @@ async def ChooseStepState(function, userid: int,
     for step in steps:
         if step['type'] in chooses:
             step['function'] = chooses[step['type']]
-            
+
             step['data'] = dict(add_if_not(
                 step['data'], userid, chatid, lang))
+        elif step['type'] == 'update_data': pass
+            # В данных уже должен быть ключ function
+            # function получает transmitted_data
+            # function должна возвращать transmitted_data, answer
         else:
             steps.remove(step)
     
@@ -349,24 +364,46 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
         
         Для фото, добавить в message ключ image с путём до фото
 
-        Для изменения предыдущего сообщения добавить edit_message: True в message у ПЕРВОГО элемента, будет работать на все следующие шаги.
-        Требуется добавление message_data в transmitted_data
+        Для edit_message требуется добавление message_data в transmitted_data.temp
         (Использовать только для inline состояний, не подойдёт для MessageSteps)
     """
     userid = transmitted_data['userid']
     chatid = transmitted_data['chatid']
+    lang = transmitted_data['lang']
     
     steps = transmitted_data['steps']
     return_data = transmitted_data['return_data']
+    temp = {}
 
     # Обновление внутренних данных
     if not start:
         name = steps[len(return_data)]['name']
         if name:
             transmitted_data['return_data'][name] = answer
+        else: print('Имя не указано, бесконечный запрос данных')
 
     if len(return_data) != len(steps): #Получение данных по очереди
         ret_data = steps[len(return_data)]
+
+        if ret_data['type'] == 'update_data':
+            # Обработчик данных между запросами
+            # Не может стоять последней, для этого есть return_function
+            if 'async' in ret_data and ret_data['async']:
+                transmitted_data, answer = await ret_data['function'](transmitted_data)
+            else:
+                transmitted_data, answer = ret_data['function'](transmitted_data)
+
+            transmitted_data['return_data'][ret_data['name']] = answer
+            ret_data = steps[len(return_data)]
+
+        # Очистка данных
+        if 'delete_steps' in transmitted_data and transmitted_data['delete_steps'] and len(return_data) != 0:
+            # Для экономия места мы можем удалять данные отработанных шагов
+            transmitted_data['steps'][len(return_data)-1] = 0
+
+        if 'temp' in transmitted_data: 
+            temp = transmitted_data['temp'].copy()
+            del transmitted_data['temp']
 
         # Следующая функция по счёту
         func_answer, func_type = await ret_data['function'](next_step, 
@@ -378,16 +415,23 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
             await bot.delete_state(userid, chatid)
             await bot.reset_data(userid, chatid)
         if func_answer:
-            # Отправка сообщения / фото из message: dict, если None - ничего
+            # Отправка сообщения / фото из image, если None - ничего
             if ret_data['message']:
                 edit_message = False
                 last_message = None
 
-                if 'edit_message' in steps[0]:
-                    edit_message = steps[0]['edit_message']
+                if 'edit_message' in transmitted_data:
+                    edit_message = transmitted_data['edit_message']
                 
-                if 'message_data' in transmitted_data:
-                    last_message = transmitted_data['message_data']
+                if 'message_data' in temp:
+                    last_message = temp['message_data']
+
+                if 'translate_message' in ret_data:
+                    if ret_data['translate_message']:
+                        if 'caption' in ret_data['message']:
+                            ret_data['message']['caption'] = t(ret_data['message']['caption'], lang)
+                        elif 'text' in ret_data['message']:
+                            ret_data['message']['text'] = t(ret_data['message']['text'], lang)
 
                 if edit_message and len(return_data) != 0 and last_message:
                     if 'image' in steps[0]:
@@ -404,11 +448,6 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
                         await bot.send_photo(chatid, photo=photo, parse_mode='Markdown', **ret_data['message'])
                     else:
                         await bot.send_message(chatid, parse_mode='Markdown', **ret_data['message'])
-
-        # Обновление данных состояния
-        if not start and func_answer:
-            async with bot.retrieve_data(userid, chatid) as data:
-                data['transmitted_data'] = transmitted_data
 
     else: #Все данные получены
         await bot.delete_state(userid, chatid)
