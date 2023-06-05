@@ -302,5 +302,6 @@ async def journey_complexity(callback: CallbackQuery):
         code.pop(0)
         if len(code) == 1: code = code[0]
 
-        transmitted_data['message_data'] = callback.message
+        transmitted_data['temp'] = {}
+        transmitted_data['temp']['message_data'] = callback.message
         await func(code, transmitted_data=transmitted_data)
