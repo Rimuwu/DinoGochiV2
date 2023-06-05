@@ -198,27 +198,22 @@ def dino_game(dino_id: int):
     
     return pil_image_to_file(img)
 
-# def dino_journey(bd_user, user, dino_user_id):
+def dino_journey(dino_id: str, journey_way: str):
+    
+    assert journey_way in ['desert', 'forest', 'magic-forest', 'mountains', 'ocean'], f'Путь путешествия {journey_way} не найден'
+    
+    n_img = randint(1, 12)
+    bg_p = Image.open(f"images/actions/journey/{journey_way}/{n_img}.png").resize((900, 350), Image.Resampling.LANCZOS)
 
-#     dino_id = str(bd_user['dinos'][dino_user_id]['dino_id'])
-#     n_img = random.randint(1, 5)
-#     bg_p = Image.open(f"images/journey/{n_img}.png")
+    dino_image = Image.open("images/" + str(DINOS['elements'][dino_id]['image']))
+    sz = 412
+    dino_image = dino_image.resize((sz, sz), Image.Resampling.LANCZOS)
+    dino_image = dino_image.transpose(Image.FLIP_LEFT_RIGHT)
 
-#     dino_image = Image.open("images/" + str(json_f['elements'][dino_id]['image']))
-#     sz = 412
-#     dino_image = dino_image.resize((sz, sz), Image.Resampling.LANCZOS)
-#     dino_image = dino_image.transpose(Image.FLIP_LEFT_RIGHT)
+    x, y = -35, randint(80, 120)
+    img = trans_paste(dino_image, bg_p, 1.0, (x + y, x, sz + x + y, sz + x))
 
-#     xy = -35
-#     x2 = random.randint(80, 120)
-#     img = Functions.trans_paste(dino_image, bg_p, 1.0, (xy + x2, xy, sz + xy + x2, sz + xy))
-
-#     n_rand = random.randint(1,3) #Создано чтобы не смешивались фотки
-
-#     img.save(f'{config.TEMP_DIRECTION}/journey_{n_rand}.png')
-#     profile = open(f"{config.TEMP_DIRECTION}/journey_{n_rand}.png", 'rb')
-
-#     return profile
+    return pil_image_to_file(img)
 
 def dino_collecting(dino_id: int, col_type: str):
     img = Image.open(f"images/actions/collecting/{col_type}.png")
