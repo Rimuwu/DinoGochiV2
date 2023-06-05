@@ -7,7 +7,7 @@ from bot.taskmanager import add_task
 dino_mood = mongo_client.connections.dino_mood
 dinosaurs = mongo_client.bot.dinosaurs
 
-REPEAT_MINUTS = 5
+REPEAT_MINUTES = 5
 
 async def mood_check():
     """ Проверяет и выдаёт настроение
@@ -81,4 +81,4 @@ async def mood_check():
 
 if __name__ != '__main__':
     if conf.active_tasks:
-        add_task(mood_check, REPEAT_MINUTS * 60.0, 5.0)
+        add_task(mood_check, REPEAT_MINUTES * 60.0, 5.0)
