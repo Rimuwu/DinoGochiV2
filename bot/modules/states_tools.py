@@ -174,10 +174,9 @@ async def ChooseOptionState(function, userid: int,
 
 async def ChooseInlineState(function, userid: int, 
                          chatid: int, lang: str,
-                         auth_key: str='handler',
                          transmitted_data=None):
     """ Устанавливает состояние ожидания нажатия кнопки
-        auth_key - ключ который должен стоят в начале callback
+        Все ключи callback должны начинаться с 'chooseinline'
 
         В function передаёт 
         >>> answer: list transmitted_data: dict
@@ -189,7 +188,6 @@ async def ChooseInlineState(function, userid: int,
     async with bot.retrieve_data(userid, chatid) as data:
         data['function'] = function
         data['transmitted_data'] = transmitted_data
-        data['auth_key'] = auth_key
     return True, 'inline'
 
 async def ChooseCustomState(function, custom_handler, 
@@ -245,7 +243,7 @@ async def ChoosePagesState(function, userid: int,
             return 
                - если не требуется ничего обновлять, можно ничего не возвращать.
                - если требуется после какого то элемента удалить состояние - {'status': 'reset'}
-               - если требуется обновить страницу с переданнами данными - {'status': 'update', 'options': {}} (по желанию ключ 'page')
+               - если требуется обновить страницу с переданными данными - {'status': 'update', 'options': {}} (по желанию ключ 'page')
                - если требуется удалить или добавить элемент, при этом обновив страницу 
                {'status': 'edit', 'elements': {'add' | 'delete': data}}
                  - 'add' - в data требуется передать словарь с ключами, данные объединяются
