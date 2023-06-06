@@ -74,7 +74,7 @@ async def main_checks():
             if random.uniform(0, 1) <= P_HEAL_EAT:
 
                 await mutate_dino_stat(dino, 'heal', randint(1, 4))
-                if randint(1, 0): await mutate_dino_stat(dino, 'eat', -1)
+                if randint(0, 1): await mutate_dino_stat(dino, 'eat', -1)
                 
         # =================== Настроение ========================== #
 
