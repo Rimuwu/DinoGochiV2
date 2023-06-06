@@ -56,6 +56,9 @@ async def ChooseDino(message: Message):
     if message.text in ret_data.keys():
         await bot.delete_state(userid, message.chat.id)
         await bot.reset_data(message.from_user.id,  message.chat.id)
+        if 'steps' in transmitted_data:
+            transmitted_data['steps'][len(transmitted_data['return_data'])]['umessageid'] = message.id
+
         await func(ret_data[message.text], transmitted_data=transmitted_data)
     else:
         await bot.send_message(message.chat.id, 
@@ -97,6 +100,9 @@ async def ChooseInt(message: Message):
     else:
         await bot.delete_state(userid, message.chat.id)
         await bot.reset_data(message.from_user.id,  message.chat.id)
+        if 'steps' in transmitted_data:
+            transmitted_data['steps'][len(transmitted_data['return_data'])]['umessageid'] = message.id
+
         await func(number, transmitted_data=transmitted_data)
 
 @bot.message_handler(state=GeneralStates.ChooseString, is_authorized=True)
@@ -126,6 +132,9 @@ async def ChooseString(message: Message):
     else:
         await bot.delete_state(userid, message.chat.id)
         await bot.reset_data(message.from_user.id,  message.chat.id)
+        if 'steps' in transmitted_data:
+            transmitted_data['steps'][len(transmitted_data['return_data'])]['umessageid'] = message.id
+
         await func(content, transmitted_data=transmitted_data)
 
 @bot.message_handler(state=GeneralStates.ChooseConfirm, is_authorized=True)
@@ -154,6 +163,9 @@ async def ChooseConfirm(message: Message):
         else:
             await bot.delete_state(userid, message.chat.id)
             await bot.reset_data(message.from_user.id,  message.chat.id)
+            if 'steps' in transmitted_data:
+                transmitted_data['steps'][len(transmitted_data['return_data'])]['umessageid'] = message.id
+
             await func(buttons_data[content], transmitted_data=transmitted_data)
 
     else:
@@ -173,6 +185,9 @@ async def ChooseOption(message: Message):
         transmitted_data = data['transmitted_data']
 
     if message.text in options.keys():
+        if 'steps' in transmitted_data:
+            transmitted_data['steps'][len(transmitted_data['return_data'])]['umessageid'] = message.id
+
         await bot.delete_state(userid, message.chat.id)
         await bot.reset_data(message.from_user.id,  message.chat.id)
         await func(options[message.text], transmitted_data=transmitted_data)
@@ -194,6 +209,9 @@ async def ChooseCustom(message: Message):
     result, answer = await custom_handler(message, transmitted_data) # Обязан возвращать bool, Any
     
     if result:
+        if 'steps' in transmitted_data:
+            transmitted_data['steps'][len(transmitted_data['return_data'])]['umessageid'] = message.id
+
         await bot.delete_state(userid, message.chat.id)
         await bot.reset_data(message.from_user.id,  message.chat.id)
         await func(answer, transmitted_data=transmitted_data)
@@ -226,6 +244,9 @@ async def ChooseOptionPages(message: Message):
 
         transmitted_data['options'] = options
         transmitted_data['key'] = message.text
+        if 'steps' in transmitted_data:
+            transmitted_data['steps'][len(transmitted_data['return_data'])]['umessageid'] = message.id
+
         res = await func(
             options[message.text], transmitted_data=transmitted_data)
 
@@ -303,4 +324,7 @@ async def ChooseInline(callback: CallbackQuery):
 
     transmitted_data['temp'] = {}
     transmitted_data['temp']['message_data'] = callback.message
+
+    transmitted_data['steps'][len(transmitted_data['return_data'])]['bmessageid'] = callback.message.id
+
     await func(code, transmitted_data=transmitted_data)
