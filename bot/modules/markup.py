@@ -222,7 +222,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
     else:
         log(prefix='Markup', 
             message=f'not_found_key User: {userid}, Data: {markup_key}', lvl=2)
-    
+
     buttons = tranlate_data(
         data=buttons, 
         locale=language_code, 
