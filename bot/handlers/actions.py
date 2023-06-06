@@ -11,7 +11,8 @@ from bot.modules.data_format import (list_to_inline, list_to_keyboard,
                                      seconds_to_str)
 from bot.modules.dinosaur import (Dino, end_collecting, end_game, end_sleep,
                                   start_sleep)
-from bot.modules.images import dino_collecting, dino_game
+from bot.modules.friends import send_action_invite
+from bot.modules.images import dino_collecting, dino_game, dino_journey
 from bot.modules.inline import inline_menu
 from bot.modules.inventory_tools import start_inv
 from bot.modules.item import counts_items
@@ -25,6 +26,7 @@ from bot.modules.mood import add_mood, check_breakdown, check_inspiration
 from bot.modules.states_tools import (ChooseIntState, ChooseOptionState,
                                       ChoosePagesState, ChooseStepState)
 from bot.modules.user import User, count_inventory_items, premium
+from bot.modules.friend_tools import start_friend_menu
 
 users = mongo_client.bot.users
 items = mongo_client.bot.items
@@ -293,39 +295,48 @@ async def entertainments_adapter(game, transmitted_data):
     userid = transmitted_data['userid']
     chatid = transmitted_data['chatid']
     lang = transmitted_data['lang']
-    dino = transmitted_data['dino']
+    dino: Dino = transmitted_data['dino']
+    friend = transmitted_data['friend']
     buttons = {}
-    
+
     for key, value in get_data('entertainments.time', lang).items():
         buttons[value['text']] = f'game_start {key} {dino.alt_id} {game}'
-        
+
+    # Выбор времени
     markup = list_to_inline([buttons])
     await bot.send_message(chatid, t('entertainments.answer_text', lang), reply_markup=markup)
+
+    # Пригласить друга
+    if friend:
+        await send_action_invite(userid, friend, 'game', dino.alt_id, lang)
+    else:
+        text = t('entertainments.invite_friend.text', lang)
+        button = t('entertainments.invite_friend.button', lang)
+        markup = list_to_inline([
+            {button: f'invite_to_action game {dino.alt_id}'}
+        ])
+        await bot.send_message(chatid, text, reply_markup=markup)
+ 
+    # Возврат в меню
     await bot.send_message(chatid, t('back_text.actions_menu', lang), reply_markup=m(userid, 'last_menu', lang))
     
-@bot.message_handler(text='commands_name.actions.entertainments')
-async def entertainments(message: Message):
-    userid = message.from_user.id
-    lang = message.from_user.language_code
-    chatid = message.chat.id
+async def start_game_ent(userid: int, chatid: int, lang: str, 
+                         dino: Dino, friend: int = 0):
 
-    user = User(userid)
-    last_dino = user.get_last_dino()
-
-    transmitted_data = {'dino': last_dino}
+    transmitted_data = {'dino': dino, 'friend': friend}
     last_game = '-'
 
-    if last_dino:
-        if last_dino.status == 'pass':
+    if dino:
+        if dino.status == 'pass':
             game_data = get_data('entertainments', lang)
             game_buttons = []
             options = {}
             need = ['console', 'snake', 'pin-pong', 'ball']
 
-            if check_accessory(last_dino, '44'):
+            if check_accessory(dino, '44'):
                 need += ["puzzles", "chess", "jenga", "dnd"]
 
-            if user.premium:
+            if premium(userid):
                 need += ["monopolia", "bowling", "darts", "golf"]
 
             for key, value in game_data['game'].items():
@@ -333,8 +344,8 @@ async def entertainments(message: Message):
                     options[value] = key
                     game_buttons.append(value)
 
-            if last_dino.memory['games']:
-                last = last_dino.memory['games'][0]
+            if dino.memory['games']:
+                last = dino.memory['games'][0]
                 last_game = t(f'entertainments.game.{last}', lang)
 
             await ChoosePagesState(entertainments_adapter, userid, chatid, lang, options, transmitted_data=transmitted_data, horizontal=3)
@@ -346,8 +357,19 @@ async def entertainments(message: Message):
                                              ),
                                 reply_markup=
                                 inline_menu('dino_profile', lang, 
-                                            dino_alt_id_markup=last_dino.alt_id
+                                            dino_alt_id_markup=dino.alt_id
                                                             ))
+    
+@bot.message_handler(text='commands_name.actions.entertainments')
+async def entertainments(message: Message):
+    userid = message.from_user.id
+    lang = message.from_user.language_code
+    chatid = message.chat.id
+    
+    user = User(userid)
+    last_dino = user.get_last_dino()
+    if last_dino:
+        await start_game_ent(userid, chatid, lang, last_dino)
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('game_start'), is_authorized=True)
 async def game_button(callback: CallbackQuery):
@@ -562,75 +584,77 @@ async def collecting_callback(callback: CallbackQuery):
                                  data['items'], data['sended'], 
                                  items_names)
 
-async def journey_start_adp(return_data: int, transmitted_data: dict):
+async def journey_start_adp(return_data: dict, transmitted_data: dict):
     userid = transmitted_data['userid']
     lang = transmitted_data['lang']
     chatid = transmitted_data['chatid']
-    dino = transmitted_data['last_dino']
+    dino: Dino = transmitted_data['last_dino']
+    friend = transmitted_data['friend']
+    location = return_data['location']
+    time_key = return_data['time_key']
+    
+    image = dino_journey(dino.data_id, location, friend)
     
     print(return_data)
+    print(transmitted_data)
 
-@bot.message_handler(text='commands_name.actions.journey')
-async def journey_start(message: Message):
-    userid = message.from_user.id
-    lang = message.from_user.language_code
-    chatid = message.chat.id
-    
+async def start_journey(userid: int, chatid: int, lang: str, 
+                        friend: int = 0):
     user = User(userid)
     last_dino = user.get_last_dino()
-    
-    premium_loc = ['magic-forest']
 
-    img = open('images/actions/journey/preview.png', 'rb')
+    premium_loc = ['magic-forest']
     content_data = get_data('journey_start', lang)
-    
+
     text, a = content_data['ask_loc'], 1
     buttons = {}
 
     for key, dct in content_data['locations'].items():
         text += f"*{a}*. {dct['text']}\n\n"
         if user.premium or key not in premium_loc:
-            buttons[dct['name']] = f'j_location {key}'
+            buttons[dct['name']] = f'chooseinline {key}'
         a += 1
 
     text_complexity, buttons_complexity = '', []
     comp = content_data['complexity']
     text_complexity = comp['text']
     buttons_complexity.append({comp['button']: 'journey_complexity'})
-    
+
     m1_reply = list_to_inline(buttons_complexity)
     m2_reply = list_to_inline([buttons], 2)
-    
+
     await bot.send_message(chatid, text_complexity, 
                            reply_markup=m1_reply)
-    
-    # await bot.send_photo(chatid, img, text, 
-    #                      reply_markup=m2_reply, parse_mode='Markdown')
-    
+
     text_time = content_data['time_info']
     buttons_time = [{}, {}, {}]
     b = 2
     for key, dct in content_data['time_text'].items():
         if len(buttons_time[2 - b].keys()) >= b + 1: b -= 1
-        buttons_time[2 - b][dct['text']] = f'j_time {key}'
+        buttons_time[2 - b][dct['text']] = f'chooseinline {key}'
 
     m3_reply = list_to_inline(buttons_time)
-    # await bot.send_message(chatid, text_time, reply_markup=m3_reply)
-    
+
     steps = [
-        {"type": 'inline', "name": 'location', 
-         "data": {"auth_key": 'j_location'}, 
+        {"type": 'inline', "name": 'location', "data": {}, 
          "image": 'images/actions/journey/preview.png',
-         "message": {"caption": text, "reply_markup": m2_reply, 
-                     }
+         "message": {"caption": text, "reply_markup": m2_reply}
         },
-        {"type": 'inline', "name": 'time_key', 
-         "data": {"auth_key": 'j_time'}, 
+        {"type": 'inline', "name": 'time_key', "data": {}, 
          "message": {"caption": text_time, "reply_markup": m3_reply}
         }
     ]
-    
-    await ChooseStepState(journey_start_adp, userid, chatid, lang, steps, {'last_dino': last_dino, "edit_message": True})
+
+    await ChooseStepState(journey_start_adp, userid, chatid, lang, steps, 
+                          {'last_dino': last_dino, "edit_message": True, 'friend': friend})
+
+@bot.message_handler(text='commands_name.actions.journey')
+async def journey_com(message: Message):
+    userid = message.from_user.id
+    lang = message.from_user.language_code
+    chatid = message.chat.id
+
+    await start_journey(userid, chatid, lang)
 
 
 @bot.callback_query_handler(func=
@@ -641,3 +665,44 @@ async def journey_complexity(callback: CallbackQuery):
     
     text = t('journey_complexity', lang)
     await bot.send_message(chatid, text, parse_mode='Markdown')
+    
+    
+async def invite_adp(friend, transmitted_data: dict):
+    userid = transmitted_data['userid']
+    chatid = transmitted_data['chatid']
+    lang = transmitted_data['lang']
+    action = transmitted_data['action']
+    dino_alt = transmitted_data['dino_alt']
+    
+    await send_action_invite(userid, friend.id, action, dino_alt, lang)
+    # Возврат в меню
+    await bot.send_message(chatid, t('back_text.actions_menu', lang), reply_markup=m(userid, 'last_menu', lang))
+
+@bot.callback_query_handler(func=
+                            lambda call: call.data.startswith('invite_to_action'))
+async def invite_to_action(callback: CallbackQuery):
+    lang = callback.from_user.language_code
+    chatid = callback.message.chat.id
+    userid = callback.from_user.id
+    data = callback.data.split()
+    
+    transmitted_data = {
+        'action': data[1],
+        'dino_alt': data[2]
+    }
+
+    # Выьор друга и функция send_action_invite
+    await start_friend_menu(invite_adp, userid, chatid, lang, True, transmitted_data)
+
+    text = t('invite_to_action', lang)
+    await bot.send_message(chatid, text, parse_mode='Markdown')
+
+@bot.callback_query_handler(func=
+                            lambda call: call.data.startswith('join_to_action'))
+async def join(callback: CallbackQuery):
+    lang = callback.from_user.language_code
+    chatid = callback.message.chat.id
+    
+    
+    # Выбор динозавра и присоединение к активности, отсылать фотку так же и к кому присоединились
+    # + 0.5 к эффективности и настроение "поиграл с другом"
