@@ -287,21 +287,20 @@ async def ChooseOptionPages(message: Message):
         await bot.send_message(message.chat.id, 
                 t('states.ChooseOption.error_not_option', lang))
 
-@bot.callback_query_handler(state=GeneralStates.ChooseInline, is_authorized=True, func=lambda call: True)
-async def journey_complexity(callback: CallbackQuery):
+@bot.callback_query_handler(state=GeneralStates.ChooseInline, is_authorized=True, 
+                            func=lambda call: call.data.startswith('chooseinline'))
+async def ChooseInline(callback: CallbackQuery):
     code = callback.data.split()
     chatid = callback.message.chat.id
     userid = callback.from_user.id
     
     async with bot.retrieve_data(userid, chatid) as data:
         func = data['function']
-        auth_key = data['auth_key']
         transmitted_data = data['transmitted_data']
 
-    if code[0] == auth_key:
-        code.pop(0)
-        if len(code) == 1: code = code[0]
+    code.pop(0)
+    if len(code) == 1: code = code[0]
 
-        transmitted_data['temp'] = {}
-        transmitted_data['temp']['message_data'] = callback.message
-        await func(code, transmitted_data=transmitted_data)
+    transmitted_data['temp'] = {}
+    transmitted_data['temp']['message_data'] = callback.message
+    await func(code, transmitted_data=transmitted_data)
