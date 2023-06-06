@@ -181,37 +181,56 @@ def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_vie
 
     return pil_image_to_file(img)
 
-def dino_game(dino_id: int):
+def dino_game(dino_id: int, add_dino_id: int = 0):
     n_img = randint(1, 2)
     img = Image.open(f"images/actions/game/{n_img}.png")
 
+    if not add_dino_id:
+        sz, x, y = 412, randint(120, 340), randint(-65, -35)
+    else:
+        sz, x, y = 350, 20, -5
+        x2, y2 = 420, -15
+
+        dino_data = DINOS['elements'][str(add_dino_id)]
+        dino_image = Image.open(f'images/{dino_data["image"]}')
+        dino_image = dino_image.resize((sz, sz), Image.Resampling.LANCZOS)
+        img = trans_paste(dino_image, img, 1.0, 
+                        (x2 + y2, y2, sz + x2 + y2, sz + y2))
+    
     dino_data = DINOS['elements'][str(dino_id)]
     dino_image = Image.open(f'images/{dino_data["image"]}')
-    
-    sz, x, y = 412, randint(-65, -35), randint(220, 340)
 
     dino_image = dino_image.resize((sz, sz), Image.Resampling.LANCZOS)
     dino_image = dino_image.transpose(Image.FLIP_LEFT_RIGHT)
 
     img = trans_paste(dino_image, img, 1.0, 
-                      (y + x, x, sz + y + x, sz + x))
+                      (x + y, y, sz + x + y, sz + y))
     
     return pil_image_to_file(img)
 
-def dino_journey(dino_id: str, journey_way: str):
-    
+def dino_journey(dino_id: int, journey_way: str, add_dino_id: int = 0):
     assert journey_way in ['desert', 'forest', 'magic-forest', 'mountains', 'ocean'], f'Путь путешествия {journey_way} не найден'
-    
-    n_img = randint(1, 12)
+
+    n_img, sz = randint(1, 12), 350
+
     bg_p = Image.open(f"images/actions/journey/{journey_way}/{n_img}.png").resize((900, 350), Image.Resampling.LANCZOS)
 
-    dino_image = Image.open("images/" + str(DINOS['elements'][dino_id]['image']))
-    sz = 412
+    dino_image = Image.open("images/" + 
+                        str(DINOS['elements'][str(dino_id)]['image']))
     dino_image = dino_image.resize((sz, sz), Image.Resampling.LANCZOS)
     dino_image = dino_image.transpose(Image.FLIP_LEFT_RIGHT)
 
-    x, y = -35, randint(80, 120)
-    img = trans_paste(dino_image, bg_p, 1.0, (x + y, x, sz + x + y, sz + x))
+    x, y = 80, 25
+    img = trans_paste(dino_image, bg_p, 1.0, (x + y, y, sz + x + y, sz + y))
+
+    if add_dino_id:
+        sz = 320
+        dino_image = Image.open("images/" + str(
+            DINOS['elements'][str(add_dino_id)]['image']))
+        dino_image = dino_image.resize((sz, sz), Image.Resampling.LANCZOS)
+
+        x, y = 450, 35
+        img = trans_paste(dino_image, bg_p, 1.0, (x + y, y, sz + x + y, sz + y))
 
     return pil_image_to_file(img)
 
@@ -221,11 +240,11 @@ def dino_collecting(dino_id: int, col_type: str):
     dino_data = DINOS['elements'][str(dino_id)]
     dino_image = Image.open(f'images/{dino_data["image"]}')
     
-    sz, x, y = 350, 10, 50
+    sz, x, y = 350, 50, 10
 
     dino_image = dino_image.resize((sz, sz), Image.Resampling.BILINEAR)
     dino_image = dino_image.transpose(Image.FLIP_LEFT_RIGHT)
 
     img = trans_paste(dino_image, img, 1.0, 
-                      (y + x, x, sz + y + x, sz + x))
+                      (x + y, y, sz + x + y, sz + y))
     return pil_image_to_file(img)
