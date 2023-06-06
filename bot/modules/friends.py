@@ -91,7 +91,7 @@ async def send_action_invite(userid: int, friendid: int, action: str,
 
     if chat_user and ok:
         for_me = t(f'send_action.{action}.for_me', lang, 
-                   friendname=user_name(chat_user.user))
+                   friendname=user_name(chat2_user.user))
         await bot.send_message(userid, for_me)
     else:
         await bot.send_message(userid, t('send_action.error', lang))
