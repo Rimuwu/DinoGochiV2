@@ -21,7 +21,7 @@ from bot.modules.item import get_name
 from bot.modules.item_tools import use_item
 from bot.modules.localization import get_data, t
 from bot.modules.markup import count_markup, feed_count_markup
-from bot.modules.markup import markups_menu as m
+from bot.modules.markup import cancel_markup, markups_menu as m
 from bot.modules.mood import add_mood, check_breakdown, check_inspiration
 from bot.modules.states_tools import (ChooseIntState, ChooseOptionState,
                                       ChoosePagesState, ChooseStepState)
@@ -291,102 +291,126 @@ async def feed(message: Message):
     
     await start_inv(inventory_adapter, userid, chatid, lang, ['eat'], changing_filters=False, transmitted_data=transmitted_data)
 
-async def entertainments_adapter(game, transmitted_data):
+# async def entertainments_adapter(game, transmitted_data):
+#     userid = transmitted_data['userid']
+#     chatid = transmitted_data['chatid']
+#     lang = transmitted_data['lang']
+#     dino: Dino = transmitted_data['dino']
+#     friend = transmitted_data['friend']
+#     invite = transmitted_data['invite']
+#     buttons = {}
+
+#     for key, value in get_data('entertainments.time', lang).items():
+#         buttons[value['text']] = f'game_start {key} {dino.alt_id} {game}'
+
+#     # Выбор времени
+#     markup = list_to_inline([buttons])
+#     await bot.send_message(chatid, t('entertainments.answer_text', lang), reply_markup=markup)
+
+#     # Пригласить друга
+#     if friend:
+#         await send_action_invite(userid, friend, 'game', dino.alt_id, lang)
+#     else:
+#         text = t('entertainments.invite_friend.text', lang)
+#         button = t('entertainments.invite_friend.button', lang)
+#         markup = list_to_inline([
+#             {button: f'invite_to_action game {dino.alt_id}'}
+#         ])
+#         await bot.send_message(chatid, text, reply_markup=markup)
+
+#     # Возврат в меню
+#     await bot.send_message(chatid, t('back_text.actions_menu', lang), reply_markup=m(userid, 'last_menu', lang))
+    
+async def start_game_ent(userid: int, chatid: int, lang: str, 
+                         dino: Dino, friend: int = 0, invite: bool = True):
+    """ Запуск активности игра
+        friend - id друга при наличии
+        invite - приглашаем ли мы друга или присоединяемся
+            приглашаем - True
+    """
+    transmitted_data = {
+        'dino': dino, 
+        'friend': friend, 'invite': invite
+    }
+
+    # Создание первого выбора
+    game_data = get_data('entertainments', lang)
+    game_buttons, options = [], {}
+    last_game = '-'
+    need = ['console', 'snake', 'pin-pong', 'ball']
+
+    if check_accessory(dino, '44'):
+        need += ["puzzles", "chess", "jenga", "dnd"]
+
+    if premium(userid):
+        need += ["monopolia", "bowling", "darts", "golf"]
+
+    for key, value in game_data['game'].items():
+        if key in need:
+            options[value] = key
+            game_buttons.append(value)
+
+    if dino.memory['games']:
+        last = dino.memory['games'][0]
+        last_game = t(f'entertainments.game.{last}', lang)
+
+    # Второе сообщение
+    buttons = {}
+
+    for key, value in get_data('entertainments.time', lang).items():
+        buttons[value['text']] = f'chooseinline {key}'
+    markup = list_to_inline([buttons])
+
+    steps = [
+        {"type": 'pages', "name": 'game', 
+          "data": {"options": options}, 
+          'translate_message': True,
+          'translate_args': {'last_game': last_game},
+          'message': {'text': 'entertainments.answer_game'
+              }
+        },
+        {
+            "type": 'update_data', 'name': 'zero',
+            'function': delete_markup,
+            'async': True
+        },
+        {"type": 'inline', "name": 'time', "data": {}, 
+          'translate_message': True,
+          'delete_message': True,
+          'message': {'text': 'entertainments.answer_text',
+                      'reply_markup': markup
+              }
+        }
+    ]
+
+    await ChooseStepState(game_start, userid, chatid, lang, steps, transmitted_data)
+
+async def delete_markup(transmitted_data):
+    chatid = transmitted_data['chatid']
+    lang = transmitted_data['lang']
+
+    await bot.send_message(chatid, '➡️', reply_markup=cancel_markup(lang))
+    return transmitted_data, 0
+
+async def game_start(return_data: dict, 
+                     transmitted_data: dict):
     userid = transmitted_data['userid']
     chatid = transmitted_data['chatid']
     lang = transmitted_data['lang']
     dino: Dino = transmitted_data['dino']
+
     friend = transmitted_data['friend']
-    buttons = {}
+    invite = transmitted_data['invite']
 
-    for key, value in get_data('entertainments.time', lang).items():
-        buttons[value['text']] = f'game_start {key} {dino.alt_id} {game}'
-
-    # Выбор времени
-    markup = list_to_inline([buttons])
-    await bot.send_message(chatid, t('entertainments.answer_text', lang), reply_markup=markup)
-
-    # Пригласить друга
-    if friend:
-        await send_action_invite(userid, friend, 'game', dino.alt_id, lang)
-    else:
-        text = t('entertainments.invite_friend.text', lang)
-        button = t('entertainments.invite_friend.button', lang)
-        markup = list_to_inline([
-            {button: f'invite_to_action game {dino.alt_id}'}
-        ])
-        await bot.send_message(chatid, text, reply_markup=markup)
- 
-    # Возврат в меню
-    await bot.send_message(chatid, t('back_text.actions_menu', lang), reply_markup=m(userid, 'last_menu', lang))
-    
-async def start_game_ent(userid: int, chatid: int, lang: str, 
-                         dino: Dino, friend: int = 0):
-
-    transmitted_data = {'dino': dino, 'friend': friend}
-    last_game = '-'
-
-    if dino:
-        if dino.status == 'pass':
-            game_data = get_data('entertainments', lang)
-            game_buttons = []
-            options = {}
-            need = ['console', 'snake', 'pin-pong', 'ball']
-
-            if check_accessory(dino, '44'):
-                need += ["puzzles", "chess", "jenga", "dnd"]
-
-            if premium(userid):
-                need += ["monopolia", "bowling", "darts", "golf"]
-
-            for key, value in game_data['game'].items():
-                if key in need:
-                    options[value] = key
-                    game_buttons.append(value)
-
-            if dino.memory['games']:
-                last = dino.memory['games'][0]
-                last_game = t(f'entertainments.game.{last}', lang)
-
-            await ChoosePagesState(entertainments_adapter, userid, chatid, lang, options, transmitted_data=transmitted_data, horizontal=3)
-            await bot.send_message(chatid, 
-                                   t('entertainments.answer_game',lang, last_game=last_game))
-
-        else:
-            await bot.send_message(chatid, t('entertainments.alredy_busy', lang
-                                             ),
-                                reply_markup=
-                                inline_menu('dino_profile', lang, 
-                                            dino_alt_id_markup=dino.alt_id
-                                                            ))
-    
-@bot.message_handler(text='commands_name.actions.entertainments')
-async def entertainments(message: Message):
-    userid = message.from_user.id
-    lang = message.from_user.language_code
-    chatid = message.chat.id
-    
-    user = User(userid)
-    last_dino = user.get_last_dino()
-    if last_dino:
-        await start_game_ent(userid, chatid, lang, last_dino)
-
-@bot.callback_query_handler(func=lambda call: call.data.startswith('game_start'), is_authorized=True)
-async def game_button(callback: CallbackQuery):
-    game = callback.data.split()[3]
-    dino_data = callback.data.split()[2]
-    code = callback.data.split()[1]
-    lang = callback.from_user.language_code
-    chatid = callback.message.chat.id
-    userid = callback.from_user.id
-    dino = Dino(dino_data) #type: ignore
+    game = return_data['game']
+    code = return_data['time']
     
     if dino.status == 'pass':
         percent, repeat = dino.memory_percent('games', game)
-        
+
         r_t = get_data('entertainments', lang)['time'][code]['data']
         game_time = randint(*r_t) * 60
-        
+
         res = check_inspiration(dino._id, 'game')
         if res: percent += 1.0
 
@@ -399,6 +423,28 @@ async def game_button(callback: CallbackQuery):
             text += t(f'entertainments.game_text.penalty', lang, percent=int(percent*100))
 
         await bot.send_photo(chatid, image, text, reply_markup=m(userid, 'last_menu', lang, True))
+        
+        # Пригласить друга
+        if friend:
+            await send_action_invite(userid, friend, 'game', dino.alt_id, lang)
+        else:
+            text = t('entertainments.invite_friend.text', lang)
+            button = t('entertainments.invite_friend.button', lang)
+            markup = list_to_inline([
+                {button: f'invite_to_action game {dino.alt_id}'}
+            ])
+            await bot.send_message(chatid, text, reply_markup=markup)
+
+@bot.message_handler(text='commands_name.actions.entertainments')
+async def entertainments(message: Message):
+    userid = message.from_user.id
+    lang = message.from_user.language_code
+    chatid = message.chat.id
+    
+    user = User(userid)
+    dino = user.get_last_dino()
+    if dino:
+        await start_game_ent(userid, chatid, lang, dino)
 
 @bot.message_handler(text='commands_name.actions.stop_game')
 async def stop_game(message: Message):
@@ -691,7 +737,7 @@ async def invite_to_action(callback: CallbackQuery):
         'dino_alt': data[2]
     }
 
-    # Выьор друга и функция send_action_invite
+    # Выбор друга и функция send_action_invite
     await start_friend_menu(invite_adp, userid, chatid, lang, True, transmitted_data)
 
     text = t('invite_to_action', lang)
