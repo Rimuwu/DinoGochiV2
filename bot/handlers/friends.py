@@ -10,8 +10,9 @@ from bot.modules.markup import cancel_markup, confirm_markup
 from bot.modules.markup import markups_menu as m
 from bot.modules.notifications import user_notification
 from bot.modules.states_tools import (ChooseConfirmState, ChooseCustomState,
-                                      ChoosePagesState)
+                                      ChoosePagesState, ChooseDinoState)
 from bot.modules.user import user_name
+from bot.handlers.actions import start_game_ent
 
 users = mongo_client.bot.users
 friends = mongo_client.connections.friends
@@ -241,3 +242,14 @@ async def remove_friend(message: Message):
     await ChoosePagesState(
         adp_delte, userid, chatid, lang, options, 
         autoanswer=False, one_element=True)
+
+@bot.callback_query_handler(func=lambda call: 
+    call.data.startswith('start_joint_game'))
+async def start_joint_game(call: CallbackQuery):
+    # Вызов кнопки совместной игры
+    chatid = call.message.chat.id
+    user_id = call.from_user.id
+    lang = call.from_user.language_code
+
+    friend = int(call.data.split()[1])
+    await start_game_ent(user_id, chatid, lang, friend)
