@@ -1,20 +1,27 @@
 from bot.exec import bot
 from bot.modules.user import get_frineds, user_name, user_info
 from bot.modules.states_tools import ChoosePagesState
+from bot.modules.localization import t, get_data
+from bot.modules.data_format import list_to_inline
 
 
-async def friend_handler(friend, transmitted_data):
+async def friend_handler(friend, transmitted_data: dict):
     lang = transmitted_data['lang']
     chatid = transmitted_data['chatid']
 
     text = user_info(friend, lang)
+    buttons = {}
+    
+    for key, text_b in get_data('friend_list.buttons', lang).items():
+        buttons[text_b] = f'{key} {friend.id}'
+    markup = list_to_inline([buttons], 2)
 
     photos = await bot.get_user_profile_photos(friend.id, limit=1)
     if photos.photos:
         photo_id = photos.photos[0][0].file_id #type: ignore
-        await bot.send_photo(chatid, photo_id, text, parse_mode='Markdown')
+        await bot.send_photo(chatid, photo_id, text, parse_mode='Markdown', reply_markup=markup)
     else:
-        await bot.send_message(chatid, text, parse_mode='Markdown')
+        await bot.send_message(chatid, text, parse_mode='Markdown', reply_markup=markup)
 
 async def start_friend_menu(function, 
                 userid: int, chatid: int, lang: str, 
@@ -22,16 +29,16 @@ async def start_friend_menu(function,
                 transmitted_data = None):
     friends = get_frineds(userid)['friends']
     options = {}
-    
+
     if function == None: function = friend_handler
-    
+
     for friend_id in friends:
         try:
             chat_user = await bot.get_chat_member(friend_id, friend_id)
             friend = chat_user.user
         except: friend = None
         if friend: options[user_name(friend, False)] = friend
-    
+
     await ChoosePagesState(
         function, userid, chatid, lang, options, 
         horizontal=2, vertical=3,
