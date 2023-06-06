@@ -1,4 +1,5 @@
 from telebot.asyncio_handler_backends import State, StatesGroup
+from telebot.types import InlineKeyboardMarkup
 
 from bot.config import mongo_client
 from bot.exec import bot
@@ -277,13 +278,13 @@ async def ChoosePagesState(function, userid: int,
             data['settings'] = {'horizontal': horizontal, "vertical": vertical}
 
         await update_page_function(pages, 0, chatid, lang)
-        return True, 'pages', pages
+        return True, pages
     else:
         if len(options) == 0: element = None
         else: element = options[list(options.keys())[0]]
 
         await function(element, transmitted_data)
-        return False, 'pages', pages
+        return False, pages
 
 chooses = {
     'dino': ChooseDinoState,
@@ -317,12 +318,18 @@ async def ChooseStepState(function, userid: int,
         data - данные для функции создания опроса
         message - данные для отправляемо сообщения перед опросом
         translate_message (bool, optional) - если наш текст это чистый ключ из данных, то можно переводить на ходу
+            translate_args - словарь с аргументами для перевода
         image (str, optional) - если нам надо отправить картинку, то добавляем сюда путь к ней
 
+        ТОЛЬКО ДЛЯ Inline
+          delete_markup  (bool, optional) - удаляет клавиатуру после завершения
+        
+        delete_user_message (boll, optional) - удалить сообщение пользователя на следующем этапе
+        delete_message (boll, optional) - удалить сообщения бота на следующем этапе
 
         transmitted_data
-        edit_message (optional) - если нужно не отсылать сообщения, а обновлять, то можно добавить этот ключ.
-        delete_steps (optional) - можно добавить для удаления данных отработанных шагов
+          edit_message (bool, optional) - если нужно не отсылать сообщения, а обновлять, то можно добавить этот ключ.
+          delete_steps (bool, optional) - можно добавить для удаления данных отработанных шагов
 
         В function передаёт 
         >>> answer: dict, transmitted_data: dict
@@ -340,7 +347,7 @@ async def ChooseStepState(function, userid: int,
             # function должна возвращать transmitted_data, answer
         else:
             steps.remove(step)
-    
+
     transmitted_data = dict(add_if_not(transmitted_data, 
                             userid, chatid, lang))
     
@@ -379,6 +386,19 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
         if name:
             transmitted_data['return_data'][name] = answer
         else: print('Имя не указано, бесконечный запрос данных')
+        
+    if len(return_data) - 1 >= 0:
+        last_step = steps[len(return_data) - 1]
+        
+        if steps[len(return_data) - 1]['type'] == 'inline':
+            if 'delete_markup' in last_step and last_step['delete_markup']:
+                await bot.edit_message_reply_markup(chatid, last_step['messageid'], reply_markup=InlineKeyboardMarkup())
+        
+        if 'delete_message' in last_step and last_step['delete_message']:
+            await bot.delete_message(chatid, last_step['bmessageid'])
+
+        if 'delete_user_message' in last_step and last_step['delete_user_message']:
+            await bot.delete_message(chatid, last_step['umessageid'])
 
     if len(return_data) != len(steps): #Получение данных по очереди
         ret_data = steps[len(return_data)]
@@ -417,6 +437,7 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
             if ret_data['message']:
                 edit_message = False
                 last_message = None
+                trans_d = {}
 
                 if 'edit_message' in transmitted_data:
                     edit_message = transmitted_data['edit_message']
@@ -426,33 +447,42 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
 
                 if 'translate_message' in ret_data:
                     if ret_data['translate_message']:
+                        if 'translate_args' in ret_data:
+                            trans_d = ret_data['translate_args']
+                        
                         if 'caption' in ret_data['message']:
-                            ret_data['message']['caption'] = t(ret_data['message']['caption'], lang)
+                            ret_data['message']['caption'] = t(ret_data['message']['caption'], lang, **trans_d)
                         elif 'text' in ret_data['message']:
-                            ret_data['message']['text'] = t(ret_data['message']['text'], lang)
+                            ret_data['message']['text'] = t(ret_data['message']['text'], lang, **trans_d)
 
                 if edit_message and len(return_data) != 0 and last_message:
                     if 'image' in steps[0]:
-                        await bot.edit_message_caption(
+                        bmessage = await bot.edit_message_caption(
                             chat_id=chatid, message_id=last_message.id,
                             parse_mode='Markdown', **ret_data['message'])
                     else:
-                        await bot.edit_message_text(
+                        bmessage = await bot.edit_message_text(
                             chat_id=chatid, message_id=last_message.id, parse_mode='Markdown', **ret_data['message'])
                 else:
                     if 'image' in ret_data:
                         photo = open(ret_data['image'], 'rb')
 
-                        await bot.send_photo(chatid, photo=photo, parse_mode='Markdown', **ret_data['message'])
+                        bmessage = await bot.send_photo(chatid, photo=photo, parse_mode='Markdown', **ret_data['message'])
                     else:
-                        await bot.send_message(chatid, parse_mode='Markdown', **ret_data['message'])
+                        bmessage = await bot.send_message(chatid, parse_mode='Markdown', **ret_data['message'])
+                
+                ret_data['bmessageid'] = bmessage.id
+
+        # Обновление данных состояния
+        if not start and func_answer:
+            async with bot.retrieve_data(userid, chatid) as data:
+                data['transmitted_data'] = transmitted_data
 
     else: #Все данные получены
         await bot.delete_state(userid, chatid)
         await bot.reset_data(userid, chatid)
 
         return_function = transmitted_data['return_function']
-        del transmitted_data['steps']
         del transmitted_data['return_function']
         del transmitted_data['return_data']
 
