@@ -189,8 +189,7 @@ async def requests_callback(call: CallbackQuery):
     
     await bot.send_message(chatid, t('requests.wait'))
     await request_open(user_id, chatid, lang)
-    
-    
+
 async def delete_friend(_: bool, transmitted_data: dict):
     lang = transmitted_data['lang']
     chatid = transmitted_data['chatid']
@@ -242,3 +241,12 @@ async def remove_friend(message: Message):
     await ChoosePagesState(
         adp_delte, userid, chatid, lang, options, 
         autoanswer=False, one_element=True)
+
+@bot.callback_query_handler(func=lambda call: 
+    call.data.startswith('joint_dinosaur'))
+async def joint_dinosaur(call: CallbackQuery):
+    chatid = call.message.chat.id
+    user_id = call.from_user.id
+    lang = call.from_user.language_code
+
+    # Отсылаем сообщение с согласем на совместное управление динозавром
