@@ -65,10 +65,11 @@ class User:
     def UpdateData(self, data):
         if data: self.__dict__ = data
     
-    @property
-    def get_dinos(self) -> list:
-        """Возвращает список с объектами динозавров."""
-        dino_list = get_dinos(self.userid)
+    def get_dinos(self, all_dinos: bool=True) -> list:
+        """Возвращает список с объектами динозавров.
+           all_dinos - Если False то не запросит совместных динозавров 
+        """
+        dino_list = get_dinos(self.userid, all_dinos)
         self.dinos = dino_list
         return dino_list
 
@@ -186,10 +187,17 @@ def insert_user(userid: int):
     log(prefix='InsertUser', message=f'User: {userid}', lvl=0)
     return users.insert_one(User(userid).__dict__)
 
-def get_dinos(userid: int) -> list:
+def get_dinos(userid: int, all_dinos: bool = True) -> list:
     """Возвращает список с объектами динозавров."""
     dino_list = []
-    for dino_obj in dino_owners.find({'owner_id': userid}, {'dino_id': 1}):
+
+    if all_dinos:
+        res = list(dino_owners.find({'owner_id': userid}, 
+                                          {'dino_id': 1}))
+    else:
+        res = list(dino_owners.find({'owner_id': userid, 'type': 'owner'}, {'dino_id': 1}))
+
+    for dino_obj in res:
         dino_list.append(Dino(dino_obj['dino_id']))
 
     return dino_list
@@ -244,7 +252,7 @@ def last_dino(user: User):
             user.update({'$set': {'settings.last_dino': None}})
             return last_dino(user)
     else:
-        dino_lst = user.get_dinos
+        dino_lst = user.get_dinos()
         if len(dino_lst):
             dino = dino_lst[0]
             user.update({'$set': {'settings.last_dino': dino._id}})
@@ -288,7 +296,7 @@ def max_dino_col(lvl: int, user_id: int=0, premium: bool=False):
        Если передаётся user_id то считает сколько динозавров у юзера вместе с лимитом
        {
           'standart': { 'now': 0, 'limit': 0},
-           'additional': {'now': 0, 'limit': 1}
+          'additional': {'now': 0, 'limit': 1}
         }
     """
     col = {
@@ -482,5 +490,5 @@ def count_inventory_items(userid: int, find_type: list):
         item_data = get_item_data(item['items_data']['item_id'])
         item_type = item_data['type']
 
-        if item_type in find_type: result += 1
+        if item_type in find_type or not find_type: result += 1
     return result
