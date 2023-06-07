@@ -11,6 +11,16 @@
                 {
                     "_id": "in_tavern",
                     "users": []
+                },
+
+                {
+                    "_id": "tracking_links",
+                    "links": {}
+                },
+
+                {
+                    "_id": "advertisement",
+                    "data": {}
                 }
             ]
         }
