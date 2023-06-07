@@ -63,8 +63,7 @@ def insert_friend_connect(userid: int, friendid: int, action: str):
         return friends.insert_one(data)
     return False
 
-async def send_action_invite(userid: int, friendid: int, action: str, 
-                             dino_alt: str, lang: str):
+async def send_action_invite(userid: int, friendid: int, action: str, dino_alt: str, lang: str):
     """ userid - отправитель
         friendid - тот кто присоединится к активности
     """
@@ -74,7 +73,7 @@ async def send_action_invite(userid: int, friendid: int, action: str,
         chat_user = await bot.get_chat_member(userid, userid)
         username = user_name(chat_user.user)
     except: username = '-'
-    
+
     try:
         chat2_user = await bot.get_chat_member(friendid, friendid)
         friend_lang = chat2_user.user.language_code
