@@ -31,29 +31,30 @@ async def collecting_adapter(return_data, transmitted_data):
     st_premium = premium(userid)
     
     if st_premium and eat_count + count > GAME_SETTINGS['premium_max_eat_items'] \
-        or not st_premium and eat_count + count > GAME_SETTINGS['max_eat_items']:
-            
+        or not st_premium and \
+        eat_count + count > GAME_SETTINGS['max_eat_items']:
+
         text = t(f'collecting.max_count', lang,
                 eat_count=eat_count)
         await bot.send_message(chatid, text, reply_markup=m(
             userid, 'last_menu', lang))
     else:
         dino.collecting(userid, option, count)
-        
+
         image = dino_collecting(dino.data_id, option)
         text = t(f'collecting.result.{option}', lang,
                 dino_name=dino.name, count=count)
         stop_button = t(f'collecting.stop_button.{option}', lang)
         markup = list_to_inline([
             {stop_button: f'collecting stop {dino.alt_id}'}])
-        
+
         await bot.send_photo(chatid, image, text, reply_markup=markup)
         await bot.send_message(chatid, t('back_text.actions_menu', lang),
                                     reply_markup=m(userid, 'last_menu', lang)
                                     )
 
 
-@bot.message_handler(text='commands_name.actions.collecting')
+@bot.message_handler(text='commands_name.actions.collecting', dino_pass=True)
 async def collecting_button(message: Message):
     userid = message.from_user.id
     lang = message.from_user.language_code
@@ -62,7 +63,7 @@ async def collecting_button(message: Message):
     last_dino = user.get_last_dino()
     
     if last_dino:
-        if last_dino.status == 'pass':
+
             if user.premium:
                 max_count = GAME_SETTINGS['premium_max_collecting']
             else: max_count = GAME_SETTINGS['max_collecting']
@@ -90,12 +91,6 @@ async def collecting_button(message: Message):
                                         lang, steps, 
                                     transmitted_data={'dino': last_dino, 'delete_steps': True})
     
-        else:
-            await bot.send_message(chatid, t('collecting.alredy_busy', lang),
-                                reply_markup=
-                                inline_menu('dino_profile', lang, 
-                                            dino_alt_id_markup=last_dino.alt_id)
-                                )
             
 @bot.message_handler(text='commands_name.actions.progress')
 async def collecting_progress(message: Message):
