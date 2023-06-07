@@ -69,13 +69,11 @@ async def end_choice(option: str, transmitted_data: dict):
             await long_sleep(last_dino, userid, lang)
     
     else:
-        await bot.send_message(userid, t('put_to_bed.alredy_busy', lang),
-            reply_markup=
-                                inline_menu('dino_profile', lang, 
-                                            dino_alt_id_markup=last_dino.alt_id
-                                                            ))
+        await bot.send_message(userid, t('alredy_busy', lang),
+            reply_markup=inline_menu('dino_profile', lang, 
+            dino_alt_id_markup=last_dino.alt_id))
 
-@bot.message_handler(text='commands_name.actions.put_to_bed')
+@bot.message_handler(text='commands_name.actions.put_to_bed', dino_pass=True)
 async def put_to_bed(message: Message):
     """Уложить спать динозавра
     """
@@ -87,38 +85,33 @@ async def put_to_bed(message: Message):
     last_dino = user.get_last_dino()
 
     if last_dino:
-        if last_dino.status == 'pass':
-            if last_dino.stats['energy'] >= 90:
-                await bot.send_message(message.chat.id, 
-                                       t('put_to_bed.dont_want', lang)
-                                       )
-            else:
-                if not check_accessory(last_dino, '16'):
-                    # Если нет мишки, то просто длинный сон
-                    await long_sleep(last_dino, userid, lang)
-                else:
-                    # Даём выбор сна
-                    sl_buttons = get_data('put_to_bed.buttons', lang).copy()
-                    cancel_button = t('buttons_name.cancel', lang)
-                    sl_buttons.append(cancel_button)
-
-                    buttons = list_to_keyboard(sl_buttons, 2, one_time_keyboard=True)
-                    options = {
-                        sl_buttons[0][0]: 'long',
-                        sl_buttons[0][1]: 'short'
-                    }
-                    trans_data = { 
-                        'last_dino': last_dino
-                    }
-
-                    await ChooseOptionState(end_choice, userid, chatid, lang, options, trans_data) # Ожидаем выбор варианта
-                    await bot.send_message(userid, 
-                            t('put_to_bed.choice', lang), 
-                            reply_markup=buttons)
+        if last_dino.stats['energy'] >= 90:
+            await bot.send_message(message.chat.id, 
+                                    t('put_to_bed.dont_want', lang)
+                                    )
         else:
-            await bot.send_message(userid, t('put_to_bed.alredy_busy', lang),
-                reply_markup=inline_menu('dino_profile', lang, 
-                                         dino_alt_id_markup=last_dino.alt_id))
+            if not check_accessory(last_dino, '16'):
+                # Если нет мишки, то просто длинный сон
+                await long_sleep(last_dino, userid, lang)
+            else:
+                # Даём выбор сна
+                sl_buttons = get_data('put_to_bed.buttons', lang).copy()
+                cancel_button = t('buttons_name.cancel', lang)
+                sl_buttons.append(cancel_button)
+
+                buttons = list_to_keyboard(sl_buttons, 2, one_time_keyboard=True)
+                options = {
+                    sl_buttons[0][0]: 'long',
+                    sl_buttons[0][1]: 'short'
+                }
+                trans_data = { 
+                    'last_dino': last_dino
+                }
+
+                await ChooseOptionState(end_choice, userid, chatid, lang, options, trans_data) # Ожидаем выбор варианта
+                await bot.send_message(userid, 
+                        t('put_to_bed.choice', lang), 
+                        reply_markup=buttons)
     else:
         await bot.send_message(userid, t('edit_dino_button.notfouned', lang),
                 reply_markup=m(userid, 'last_menu', lang))
