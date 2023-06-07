@@ -67,7 +67,7 @@ async def send_action_invite(userid: int, friendid: int, action: str, dino_alt: 
     """ userid - отправитель
         friendid - тот кто присоединится к активности
     """
-    chat_user = None
+    chat_user, chat2_user = None, None
 
     try:
         chat_user = await bot.get_chat_member(userid, userid)
@@ -82,13 +82,13 @@ async def send_action_invite(userid: int, friendid: int, action: str, dino_alt: 
     send_text = t(f'send_action.{action}.send', friend_lang, 
                   username=username)
     button = t(f'send_action.{action}.send_button', friend_lang)
-    markup = list_to_inline([{button: f'join_to_action {action} {dino_alt}'}])
+    markup = list_to_inline([{button: f'join_to_action {action} {dino_alt} {userid}'}])
     try:
         await bot.send_message(friendid, send_text, reply_markup=markup)
         ok = True
     except: ok = False
 
-    if chat_user and ok:
+    if chat2_user and ok:
         for_me = t(f'send_action.{action}.for_me', lang, 
                    friendname=user_name(chat2_user.user))
         await bot.send_message(userid, for_me)
