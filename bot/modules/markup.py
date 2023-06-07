@@ -175,15 +175,14 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
 
         def get_buttons(dino: Dino) -> list:
             data = ['journey', 'put_to_bed', 'collecting', 'entertainments']
-            if dino:
-                if dino.status == 'journey':
-                    data[0] = 'return'
-                elif dino.status == 'sleep':
-                    data[1] = 'awaken'
-                elif dino.status == 'collecting':
-                    data[2] = 'progress'
-                elif dino.status == 'game':
-                    data[3] = 'stop_game'
+            if dino.status == 'journey':
+                data[0] = 'return'
+            elif dino.status == 'sleep':
+                data[1] = 'awaken'
+            elif dino.status == 'collecting':
+                data[2] = 'progress'
+            elif dino.status == 'game':
+                data[3] = 'stop_game'
             return data
 
         # Меню действий
@@ -199,7 +198,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
         if col_dinos == 1:
             dino = user.get_dinos()[0]
             dp_buttons = get_buttons(dino)
-
+            
             buttons = [
                 ["feed"],
                 [dp_buttons[3], dp_buttons[0]],
