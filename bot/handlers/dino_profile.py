@@ -212,7 +212,8 @@ async def dino_menu(call: types.CallbackQuery):
                 if data_m['unit'] <= 0: em = '💔'
                 act = t(f'mood_log.{key}', lang)
                 
-                unit = data_m['unit'] * data_m['col']
+                unit = str(data_m['unit'] * data_m['col'])
+                if data_m['unit'] > 0: unit = '+'+unit
 
                 text += f'{em} {act}: `{unit}` '
                 if data_m['col'] > 1: text += f'x{data_m["col"]}'
