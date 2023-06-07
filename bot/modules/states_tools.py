@@ -30,9 +30,10 @@ def add_if_not(data: dict, userid: int, chatid: int, lang: str):
     return data
 
 async def ChooseDinoState(function, userid: int, chatid: int, 
-        lang: str, add_egg: bool=True, 
+        lang: str, add_egg: bool=True, all_dinos: bool=True,
         transmitted_data=None):
     """ Устанавливает состояние ожидания динозавра
+        all_dinos - Если False то не будет совместных динозавров 
 
        В function передаёт 
        >>> element: Dino | Egg, transmitted_data: dict
@@ -41,7 +42,7 @@ async def ChooseDinoState(function, userid: int, chatid: int,
         Возвращает 2 если был создано состояние, 1 если завершилось автоматически (1 вариант выбора), 0 - невозможно завершить
     """
     user = User(userid)
-    elements = user.get_dinos
+    elements = user.get_dinos(all_dinos)
     if add_egg: elements += user.get_eggs
     if not transmitted_data: transmitted_data = {}
     
@@ -432,6 +433,7 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
             # Если функция возвращает не свой тип, а "cancel" - её надо принудительно завершить
             await bot.delete_state(userid, chatid)
             await bot.reset_data(userid, chatid)
+
         if func_answer:
             # Отправка сообщения / фото из image, если None - ничего
             if ret_data['message']:
@@ -457,12 +459,13 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
 
                 if edit_message and len(return_data) != 0 and last_message:
                     if 'image' in steps[0]:
-                        bmessage = await bot.edit_message_caption(
+                        await bot.edit_message_caption(
                             chat_id=chatid, message_id=last_message.id,
                             parse_mode='Markdown', **ret_data['message'])
                     else:
-                        bmessage = await bot.edit_message_text(
+                        await bot.edit_message_text(
                             chat_id=chatid, message_id=last_message.id, parse_mode='Markdown', **ret_data['message'])
+                    bmessage = last_message.id
                 else:
                     if 'image' in ret_data:
                         photo = open(ret_data['image'], 'rb')
