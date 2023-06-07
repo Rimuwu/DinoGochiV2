@@ -24,7 +24,7 @@ from bot.modules.markup import count_markup, feed_count_markup
 from bot.modules.markup import cancel_markup, markups_menu as m
 from bot.modules.mood import add_mood, check_breakdown, check_inspiration
 from bot.modules.states_tools import (ChooseIntState, ChooseOptionState,
-                                      ChoosePagesState, ChooseStepState)
+                                      ChooseDinoState, ChooseStepState)
 from bot.modules.user import User, count_inventory_items, premium
 from bot.modules.friend_tools import start_friend_menu
 
@@ -42,7 +42,7 @@ async def edit_dino_buttom(message: Message):
     """
     user_id = message.from_user.id
     user = User(user_id)
-    dinos = user.get_dinos
+    dinos = user.get_dinos()
     data_names = {}
 
     for element in dinos:
@@ -293,14 +293,15 @@ async def feed(message: Message):
 
 async def start_game_ent(userid: int, chatid: int, 
                          lang: str, dino: Dino, 
-                         friend: int = 0, join: bool = True):
+                         friend: int = 0, join: bool = True, join_dino: str = ''):
     """ Запуск активности игра
         friend - id друга при наличии
         join - присоединяется ли человек к игре
     """
     transmitted_data = {
         'dino': dino, 
-        'friend': friend, 'join': join
+        'friend': friend, 'join': join,
+        'join_dino': join_dino
     }
 
     # Создание первого выбора
@@ -358,8 +359,9 @@ async def start_game_ent(userid: int, chatid: int,
 async def delete_markup(transmitted_data):
     chatid = transmitted_data['chatid']
     lang = transmitted_data['lang']
-
-    await bot.send_message(chatid, '➡️', reply_markup=cancel_markup(lang))
+    
+    text = t(f'entertainments.zero', lang)
+    await bot.send_message(chatid, text, reply_markup=cancel_markup(lang))
     return transmitted_data, 0
 
 async def game_start(return_data: dict, 
@@ -371,12 +373,33 @@ async def game_start(return_data: dict,
 
     friend = transmitted_data['friend']
     join_status = transmitted_data['join']
+    join_dino = transmitted_data['join_dino']
+    friend_dino_id = 0
 
     game = return_data['game']
     code = return_data['time']
-    
+
     if dino.status == 'pass':
         percent, repeat = dino.memory_percent('games', game)
+
+        if friend and join_status and join_dino:
+            dino_f = dinosaurs.find_one({'alt_id': join_dino})
+            if dino_f:
+                friend_dino_id = dino_f['data_id']
+                res = game_task.find_one({'dino_id': dino_f['_id']})
+                if not res: 
+                    join_dino = 0
+                    text_m = t('entertainments.join_end', lang)
+                    await bot.send_message(chatid, text_m)
+                else: 
+                    percent += 0.5
+                    game_task.update_one({'dino_id': join_dino}, 
+                                        {'$inc': {'game_percent': 0.5}})
+
+                    text_m = t('entertainments.dino_join', lang, 
+                             dinoname=dino.name)
+                    image = dino_game(friend_dino_id, dino.data_id)
+                    await bot.send_photo(friend, image, text_m)
 
         r_t = get_data('entertainments', lang)['time'][code]['data']
         game_time = randint(*r_t) * 60
@@ -385,7 +408,7 @@ async def game_start(return_data: dict,
         if res: percent += 1.0
 
         dino.game(game_time, percent)
-        image = dino_game(dino.data_id)
+        image = dino_game(dino.data_id, friend_dino_id)
 
         text = t(f'entertainments.game_text.m{str(repeat)}', lang, 
                 game=t(f'entertainments.game.{game}', lang)) + '\n'
@@ -397,9 +420,7 @@ async def game_start(return_data: dict,
         # Пригласить друга
         if friend and not join_status:
             await send_action_invite(userid, friend, 'game', dino.alt_id, lang)
-        elif friend and join_status:
-            ...
-        else:
+        elif not friend:
             text = t('entertainments.invite_friend.text', lang)
             button = t('entertainments.invite_friend.button', lang)
             markup = list_to_inline([
@@ -709,20 +730,61 @@ async def invite_to_action(callback: CallbackQuery):
         'dino_alt': data[2]
     }
 
-    # Выбор друга и функция send_action_invite
-    await start_friend_menu(invite_adp, userid, chatid, lang, True, transmitted_data)
+    dino = dinosaurs.find_one({'alt_id': data[2]})
+    if dino:
+        res = game_task.find_one({'dino_id': dino['_id']})
+        if res: 
+            await start_friend_menu(invite_adp, userid, chatid, lang, True, transmitted_data)
 
-    text = t('invite_to_action', lang)
-    await bot.send_message(chatid, text, parse_mode='Markdown')
+            text = t('invite_to_action', lang)
+            await bot.send_message(chatid, text, parse_mode='Markdown')
+
+async def join_adp(dino: Dino, transmitted_data):
+    userid = transmitted_data['userid']
+    chatid = transmitted_data['chatid']
+    lang = transmitted_data['lang']
+    
+    action = transmitted_data['action']
+    friend_dino = transmitted_data['friend_dino']
+    friend = transmitted_data['friendid']
+    text = ''
+
+    if dino.alt_id == friend_dino:
+        text = t('join_to_action.one_dino', lang)
+    elif dino.status != 'pass':
+        text = t('join_to_action.alredy_busy', lang)
+
+    if text:
+        await bot.send_message(chatid, text, parse_mode='Markdown', reply_markup=m(userid, 'last_menu', lang))
+    
+    else:
+        if action == 'game':
+            await start_game_ent(userid, chatid, lang, 
+                                 dino, friend, True, friend_dino)
 
 @bot.callback_query_handler(func=
                             lambda call: call.data.startswith('join_to_action'))
 async def join(callback: CallbackQuery):
     lang = callback.from_user.language_code
     chatid = callback.message.chat.id
+    userid = callback.from_user.id
     data = callback.data.split()
+
+    action = data[1]
+    friend_dino = data[2]
+    friendid = data[3]
     
-    сюда
-    
-    # Выбор динозавра и присоединение к активности, отсылать фотку так же и к кому присоединились
-    # + 0.5 к эффективности и настроение "поиграл с другом"
+    dino = dinosaurs.find_one({'alt_id': friend_dino})
+    if dino:
+        res = game_task.find_one({'dino_id': dino['_id']})
+        if not res: 
+            text = t('entertainments.join_end', lang)
+            await bot.send_message(chatid, text)
+        else:
+            transmitted_data = {
+                'action': action,
+                'friend_dino': friend_dino,
+                'friendid': friendid
+            }
+
+            await ChooseDinoState(join_adp, userid, chatid, lang, False, transmitted_data=transmitted_data)
