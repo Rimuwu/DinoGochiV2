@@ -120,7 +120,7 @@ async def join_adp(dino: Dino, transmitted_data):
     if dino.alt_id == friend_dino:
         text = t('join_to_action.one_dino', lang)
     elif dino.status != 'pass':
-        text = t('join_to_action.alredy_busy', lang)
+        text = t('alredy_busy', lang)
 
     if text:
         await bot.send_message(chatid, text, parse_mode='Markdown', reply_markup=m(userid, 'last_menu', lang))
