@@ -14,10 +14,12 @@ dinosaurs = mongo_client.bot.dinosaurs
 
 keys = [
     'good_sleep', 'end_game', 'multi_games', 'multi_heal', 
-    'multi_eat', 'multi_energy', 'dream', 'good_eat' # Положительное 
+    'multi_eat', 'multi_energy', 'dream', 'good_eat', 'playing_together', 
+    # Положительное 
 
     'bad_sleep', 'stop_game', 'little_game', 'little_heal',
-    'little_eat', 'little_energy', 'bad_dream', 'bad_eat', 'repeat_eat' # Отрицательное
+    'little_eat', 'little_energy', 'bad_dream', 'bad_eat', 'repeat_eat', 
+    # Отрицательное
 ]
 
 breakdowns = {
@@ -25,17 +27,17 @@ breakdowns = {
         'cancel_mood': 35,
         'duration_time': (3600, 14400),
     },
-    
+
     'hysteria': {
         'cancel_mood': 30,
         'duration_time': (1800, 9000)
     },
-    
+
     'unrestrained_play': {
         'cancel_mood': 30,
         'duration_time': (8300, 10800)
     }, 
-    
+
     'downgrade': {
         'duration_time': 0
     }
@@ -81,7 +83,6 @@ def add_mood(dino: ObjectId, key: str, unit: int, duration: int,
             'start_time': int(time()),
             'type': 'mood_edit'
         }
-        
         print('add_mood', dino, key, unit, duration)
         dino_mood.insert_one(data)
 
