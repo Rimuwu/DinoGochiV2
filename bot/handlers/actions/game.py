@@ -123,8 +123,11 @@ async def game_start(return_data: dict,
                     await bot.send_message(chatid, text_m)
                 else: 
                     percent += 0.5
-                    game_task.update_one({'dino_id': join_dino}, 
+                    game_task.update_one({'dino_id': dino_f['data_id']}, 
                                         {'$inc': {'game_percent': 0.5}})
+
+                    add_mood(dino._id, 'playing_together', 1, 1800)
+                    add_mood(dino_f['data_id'], 'playing_together', 1, 1800)
 
                     text_m = t('entertainments.dino_join', lang, 
                              dinoname=dino.name)
