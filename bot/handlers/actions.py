@@ -291,46 +291,16 @@ async def feed(message: Message):
     
     await start_inv(inventory_adapter, userid, chatid, lang, ['eat'], changing_filters=False, transmitted_data=transmitted_data)
 
-# async def entertainments_adapter(game, transmitted_data):
-#     userid = transmitted_data['userid']
-#     chatid = transmitted_data['chatid']
-#     lang = transmitted_data['lang']
-#     dino: Dino = transmitted_data['dino']
-#     friend = transmitted_data['friend']
-#     invite = transmitted_data['invite']
-#     buttons = {}
-
-#     for key, value in get_data('entertainments.time', lang).items():
-#         buttons[value['text']] = f'game_start {key} {dino.alt_id} {game}'
-
-#     # Выбор времени
-#     markup = list_to_inline([buttons])
-#     await bot.send_message(chatid, t('entertainments.answer_text', lang), reply_markup=markup)
-
-#     # Пригласить друга
-#     if friend:
-#         await send_action_invite(userid, friend, 'game', dino.alt_id, lang)
-#     else:
-#         text = t('entertainments.invite_friend.text', lang)
-#         button = t('entertainments.invite_friend.button', lang)
-#         markup = list_to_inline([
-#             {button: f'invite_to_action game {dino.alt_id}'}
-#         ])
-#         await bot.send_message(chatid, text, reply_markup=markup)
-
-#     # Возврат в меню
-#     await bot.send_message(chatid, t('back_text.actions_menu', lang), reply_markup=m(userid, 'last_menu', lang))
-    
-async def start_game_ent(userid: int, chatid: int, lang: str, 
-                         dino: Dino, friend: int = 0, invite: bool = True):
+async def start_game_ent(userid: int, chatid: int, 
+                         lang: str, dino: Dino, 
+                         friend: int = 0, join: bool = True):
     """ Запуск активности игра
         friend - id друга при наличии
-        invite - приглашаем ли мы друга или присоединяемся
-            приглашаем - True
+        join - присоединяется ли человек к игре
     """
     transmitted_data = {
         'dino': dino, 
-        'friend': friend, 'invite': invite
+        'friend': friend, 'join': join
     }
 
     # Создание первого выбора
@@ -400,7 +370,7 @@ async def game_start(return_data: dict,
     dino: Dino = transmitted_data['dino']
 
     friend = transmitted_data['friend']
-    invite = transmitted_data['invite']
+    join_status = transmitted_data['join']
 
     game = return_data['game']
     code = return_data['time']
@@ -423,10 +393,12 @@ async def game_start(return_data: dict,
             text += t(f'entertainments.game_text.penalty', lang, percent=int(percent*100))
 
         await bot.send_photo(chatid, image, text, reply_markup=m(userid, 'last_menu', lang, True))
-        
+
         # Пригласить друга
-        if friend:
+        if friend and not join_status:
             await send_action_invite(userid, friend, 'game', dino.alt_id, lang)
+        elif friend and join_status:
+            ...
         else:
             text = t('entertainments.invite_friend.text', lang)
             button = t('entertainments.invite_friend.button', lang)
@@ -440,7 +412,7 @@ async def entertainments(message: Message):
     userid = message.from_user.id
     lang = message.from_user.language_code
     chatid = message.chat.id
-    
+
     user = User(userid)
     dino = user.get_last_dino()
     if dino:
@@ -515,7 +487,7 @@ async def collecting_adapter(return_data, transmitted_data):
         or not st_premium and eat_count + count > GAME_SETTINGS['max_eat_items']:
             
         text = t(f'collecting.max_count', lang,
-                couneat_countt=eat_count)
+                eat_count=eat_count)
         await bot.send_message(chatid, text, reply_markup=m(
             userid, 'last_menu', lang))
     else:
@@ -748,7 +720,9 @@ async def invite_to_action(callback: CallbackQuery):
 async def join(callback: CallbackQuery):
     lang = callback.from_user.language_code
     chatid = callback.message.chat.id
+    data = callback.data.split()
     
+    сюда
     
     # Выбор динозавра и присоединение к активности, отсылать фотку так же и к кому присоединились
     # + 0.5 к эффективности и настроение "поиграл с другом"
