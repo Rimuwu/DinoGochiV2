@@ -10,12 +10,15 @@ from bot.modules.markup import cancel_markup, confirm_markup
 from bot.modules.markup import markups_menu as m
 from bot.modules.notifications import user_notification
 from bot.modules.states_tools import (ChooseConfirmState, ChooseCustomState,
-                                      ChoosePagesState, ChooseDinoState)
+                                      ChoosePagesState, ChooseDinoState, ChooseStepState)
 from bot.modules.user import user_name
+from bot.modules.dinosaur import Dino
 from bot.handlers.actions.game import start_game_ent
 
 users = mongo_client.bot.users
 friends = mongo_client.connections.friends
+dinosaurs = mongo_client.bot.dinosaurs
+dino_owners = mongo_client.connections.dino_owners
 
 @bot.message_handler(text='commands_name.friends.add_friend')
 async def add_friend(message: Message):
@@ -213,7 +216,8 @@ async def adp_delte(friendid: int, transmitted_data: dict):
     await ChooseConfirmState(delete_friend, userid, chatid, lang, True, transmitted_data)
     await bot.send_message(chatid, t('friend_delete.confirm', lang,     
                                      name=transmitted_data['key']), 
-                           reply_markup=confirm_markup(lang))
+                           reply_markup=confirm_markup
+                           (lang))
 
 @bot.message_handler(text='commands_name.friends.remove_friend')
 async def remove_friend(message: Message):
@@ -242,11 +246,57 @@ async def remove_friend(message: Message):
         adp_delte, userid, chatid, lang, options, 
         autoanswer=False, one_element=True)
 
+async def joint(return_data: dict, 
+                transmitted_data: dict):
+    lang = transmitted_data['lang']
+    chatid = transmitted_data['chatid']
+    userid= transmitted_data['userid']
+    friendid = transmitted_data['friendid']
+    username = transmitted_data['username']
+    dino: Dino = return_data['dino']
+
+    res = dino_owners.find({'dino_id': dino._id})
+    res2 = dino_owners.find({'owner_id': friendid, 'type': 'add_owner'})
+    
+    if len(list(res)) >= 2:
+        text = t('joint_dinosaur.max_owners', lang)
+    elif len(list(res2)) >= 1:
+        text = t('joint_dinosaur.max_dino', lang)
+    else:
+        text = t('joint_dinosaur.ok', lang)
+
+        friend_text = t('joint_dinosaur.message_to_friend', lang, username=username, dinoname=dino.name)
+        transl_data = get_data('joint_dinosaur.button', lang)
+        reply = list_to_inline([
+            {transl_data[0]: f'take_dino {dino.alt_id}',
+             transl_data[1]: "delete_message"
+             }
+        ])
+        await bot.send_message(friendid, friend_text, reply_markup=reply)
+    
+    await bot.send_message(chatid, text, reply_markup=m(userid, 'last_menu', lang))
+
 @bot.callback_query_handler(func=lambda call: 
     call.data.startswith('joint_dinosaur'))
 async def joint_dinosaur(call: CallbackQuery):
-    chatid = call.message.chat.id
-    user_id = call.from_user.id
     lang = call.from_user.language_code
+    chatid = call.message.chat.id
+    userid = call.from_user.id
+    data = call.data.split()
+
+    steps = [
+        {"type": 'bool', 'name': 'check',
+         "data": {'cancel': True},
+         'translate_message': True,
+         'message': {'text': 'joint_dinosaur.check',
+         'reply_markup': confirm_markup(lang)
+                     }
+        },
+        {"type": 'dino', 'name': 'dino',
+         "data": {'add_egg': True, 'all_dinos': True}
+        }
+    ]
+
+    await ChooseStepState(joint, userid, chatid, lang, steps, {'friendid': int(data[1]), 'username': user_name(call.from_user)})
 
     # Отсылаем сообщение с согласем на совместное управление динозавром
