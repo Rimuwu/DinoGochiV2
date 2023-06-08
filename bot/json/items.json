@@ -2794,5 +2794,17 @@
       "rank": "legendary",
       "type": "special",
       "class": "reborn"
-    }
+    },
+    "ale": {
+      "buffs": {
+        "heal": 5,
+        "energy": 5,
+        "mood": 5
+      },
+      "act": 1,
+      "class": "ALL",
+      "image": "item114",
+      "rank": "common",
+      "type": "eat"
   }
+}
