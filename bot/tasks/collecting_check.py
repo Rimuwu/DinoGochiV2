@@ -50,9 +50,9 @@ async def collecting_process():
                     if dino: await mutate_dino_stat(dino, 'energy', -1)
             
             dino = Dino(coll_data['dino_id'])
-            if check_accessory(dino, '15', True): chance = 0.25
+            if await check_accessory(dino, '15'): chance = 0.25
             else: chance = 0.2
-            
+
             res = check_inspiration(coll_data['dino_id'], 'collecting')
             if res: chance *= 2
             
@@ -61,6 +61,8 @@ async def collecting_process():
                                              randint(1, 5))
 
             if random.uniform(0, 1) <= COLLECTING_CHANCE:
+                await check_accessory(dino, '15', True)
+
                 items = GAME_SETTINGS['collecting_items'][coll_data["collecting_type"]]
                 count = randint(1, 3)
                 
