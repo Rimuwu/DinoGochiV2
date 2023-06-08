@@ -67,7 +67,7 @@ def item_info_markup(item: dict, lang):
     return markup_inline
 
 def dino_profile_markup(add_acs_button: bool, lang: str, 
-                        alt_id: str, joint_dino: bool, my_joint: bool):
+                        alt_id: str, joint_dino: bool, my_joint: bool, premium: bool):
     # Инлайн меню с быстрыми действиями. Например как снять аксессуар
     # joint_dino - Отказаться от динозавра
     # my_joint - Отменить второго владельца
@@ -84,6 +84,8 @@ def dino_profile_markup(add_acs_button: bool, lang: str,
         buttons[rai['joint_dino']['text']] = rai['joint_dino']['data']
     if my_joint: 
         buttons[rai['my_joint']['text']] = rai['my_joint']['data']
+    if premium:
+        buttons[rai['kindergarten']['text']] = rai['kindergarten']['data']
 
     for but in buttons: buttons[but] = buttons[but].format(dino=alt_id)
     return list_to_inline([buttons], 2)
