@@ -13,7 +13,7 @@ users = mongo_client.bot.users
 dinosaurs = mongo_client.bot.dinosaurs
 management = mongo_client.bot.management
 referals = mongo_client.connections.referals
-
+tavern = mongo_client.connections.tavern
 
 def back_menu(userid) -> str:
     """Возвращает предыдущее меню
@@ -80,6 +80,9 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
                 old_last_menu = user_dict.get('last_markup')
             
         users.update_one({"userid": userid}, {'$set': {'last_markup': markup_key}})
+
+    if user_dict and user_dict['last_markup'] == "dino_tavern_menu":
+        tavern.delete_one({'userid': userid})
 
     if markup_key == 'main_menu':
         # Главное меню
@@ -222,6 +225,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
     else:
         log(prefix='Markup', 
             message=f'not_found_key User: {userid}, Data: {markup_key}', lvl=2)
+        return markups_menu(userid, 'main_menu', language_code)
 
     buttons = tranlate_data(
         data=buttons, 
