@@ -40,7 +40,7 @@ async def start_game_ent(userid: int, chatid: int,
     last_game = '-'
     need = ['console', 'snake', 'pin-pong', 'ball']
 
-    if check_accessory(dino, '44'):
+    if await check_accessory(dino, '44'):
         need += ["puzzles", "chess", "jenga", "dnd"]
 
     if premium(userid):
@@ -108,58 +108,63 @@ async def game_start(return_data: dict,
 
     game = return_data['game']
     code = return_data['time']
+    
+    res_dino_status = dinosaurs.find_one({"_id": dino._id}, {'status': 1})
+    if res_dino_status:
+        if res_dino_status['status'] != 'pass':
+            await bot.send_message(chatid, t('alredy_busy', lang), reply_markup=m(userid, 'last_menu', lang))
+            return
 
-    if dino.status == 'pass':
-        percent, repeat = dino.memory_percent('games', game)
+    percent, repeat = dino.memory_percent('games', game)
 
-        if friend and join_status and join_dino:
-            dino_f = dinosaurs.find_one({'alt_id': join_dino})
-            if dino_f:
-                friend_dino_id = dino_f['data_id']
-                res = game_task.find_one({'dino_id': dino_f['_id']})
-                if not res: 
-                    join_dino = 0
-                    text_m = t('entertainments.join_end', lang)
-                    await bot.send_message(chatid, text_m)
-                else: 
-                    percent += 0.5
-                    game_task.update_one({'dino_id': dino_f['data_id']}, 
-                                        {'$inc': {'game_percent': 0.5}})
+    if friend and join_status and join_dino:
+        dino_f = dinosaurs.find_one({'alt_id': join_dino})
+        if dino_f:
+            friend_dino_id = dino_f['data_id']
+            res = game_task.find_one({'dino_id': dino_f['_id']})
+            if not res: 
+                join_dino = 0
+                text_m = t('entertainments.join_end', lang)
+                await bot.send_message(chatid, text_m)
+            else: 
+                percent += 0.5
+                game_task.update_one({'dino_id': dino_f['data_id']}, 
+                                    {'$inc': {'game_percent': 0.5}})
 
-                    add_mood(dino._id, 'playing_together', 1, 1800)
-                    add_mood(dino_f['data_id'], 'playing_together', 1, 1800)
+                add_mood(dino._id, 'playing_together', 1, 1800)
+                add_mood(dino_f['data_id'], 'playing_together', 1, 1800)
 
-                    text_m = t('entertainments.dino_join', lang, 
-                             dinoname=dino.name)
-                    image = dino_game(friend_dino_id, dino.data_id)
-                    await bot.send_photo(friend, image, text_m)
+                text_m = t('entertainments.dino_join', lang, 
+                            dinoname=dino.name)
+                image = dino_game(friend_dino_id, dino.data_id)
+                await bot.send_photo(friend, image, text_m)
 
-        r_t = get_data('entertainments', lang)['time'][code]['data']
-        game_time = randint(*r_t) * 60
+    r_t = get_data('entertainments', lang)['time'][code]['data']
+    game_time = randint(*r_t) * 60
 
-        res = check_inspiration(dino._id, 'game')
-        if res: percent += 1.0
+    res = check_inspiration(dino._id, 'game')
+    if res: percent += 1.0
 
-        dino.game(game_time, percent)
-        image = dino_game(dino.data_id, friend_dino_id)
+    dino.game(game_time, percent)
+    image = dino_game(dino.data_id, friend_dino_id)
 
-        text = t(f'entertainments.game_text.m{str(repeat)}', lang, 
-                game=t(f'entertainments.game.{game}', lang)) + '\n'
-        if percent < 1.0:
-            text += t(f'entertainments.game_text.penalty', lang, percent=int(percent*100))
+    text = t(f'entertainments.game_text.m{str(repeat)}', lang, 
+            game=t(f'entertainments.game.{game}', lang)) + '\n'
+    if percent < 1.0:
+        text += t(f'entertainments.game_text.penalty', lang, percent=int(percent*100))
 
-        await bot.send_photo(chatid, image, text, reply_markup=m(userid, 'last_menu', lang, True))
+    await bot.send_photo(chatid, image, text, reply_markup=m(userid, 'last_menu', lang, True))
 
-        # Пригласить друга
-        if friend and not join_status:
-            await send_action_invite(userid, friend, 'game', dino.alt_id, lang)
-        elif not friend:
-            text = t('entertainments.invite_friend.text', lang)
-            button = t('entertainments.invite_friend.button', lang)
-            markup = list_to_inline([
-                {button: f'invite_to_action game {dino.alt_id}'}
-            ])
-            await bot.send_message(chatid, text, reply_markup=markup)
+    # Пригласить друга
+    if friend and not join_status:
+        await send_action_invite(userid, friend, 'game', dino.alt_id, lang)
+    elif not friend:
+        text = t('entertainments.invite_friend.text', lang)
+        button = t('entertainments.invite_friend.button', lang)
+        markup = list_to_inline([
+            {button: f'invite_to_action game {dino.alt_id}'}
+        ])
+        await bot.send_message(chatid, text, reply_markup=markup)
 
 @bot.message_handler(text='commands_name.actions.entertainments')
 async def entertainments(message: Message):
