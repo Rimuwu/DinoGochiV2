@@ -6,14 +6,13 @@ from bot.modules.data_format import list_to_inline
 from bot.modules.friend_tools import start_friend_menu
 from bot.modules.friends import get_frineds, insert_friend_connect
 from bot.modules.localization import get_data, t
-from bot.modules.markup import cancel_markup, confirm_markup
+from bot.modules.markup import cancel_markup, confirm_markup, count_markup
 from bot.modules.markup import markups_menu as m
 from bot.modules.notifications import user_notification
 from bot.modules.states_tools import (ChooseConfirmState, ChooseCustomState,
-                                      ChoosePagesState, ChooseDinoState, ChooseStepState)
-from bot.modules.user import user_name
-from bot.modules.dinosaur import Dino
-from bot.handlers.actions.game import start_game_ent
+                                      ChoosePagesState, ChooseDinoState, ChooseStepState, ChooseIntState)
+from bot.modules.user import user_name, take_coins
+from bot.modules.dinosaur import Dino, create_dino_connection
 
 users = mongo_client.bot.users
 friends = mongo_client.connections.friends
@@ -228,7 +227,7 @@ async def remove_friend(message: Message):
     requests = get_frineds(userid)['friends']
     options = {}
     a = 0
-    
+
     for friend_id in requests:
         try:
             chat_user = await bot.get_chat_member(friend_id, friend_id)
@@ -238,7 +237,6 @@ async def remove_friend(message: Message):
             a += 1
             name = user_name(friend)
             if name in options: name = name + str(a)
-            
             options[name] = friend_id
 
     await bot.send_message(chatid, t('friend_delete.delete_info'))
@@ -250,7 +248,7 @@ async def joint(return_data: dict,
                 transmitted_data: dict):
     lang = transmitted_data['lang']
     chatid = transmitted_data['chatid']
-    userid= transmitted_data['userid']
+    userid = transmitted_data['userid']
     friendid = transmitted_data['friendid']
     username = transmitted_data['username']
     dino: Dino = return_data['dino']
@@ -290,13 +288,99 @@ async def joint_dinosaur(call: CallbackQuery):
          'translate_message': True,
          'message': {'text': 'joint_dinosaur.check',
          'reply_markup': confirm_markup(lang)
-                     }
+                    }
         },
         {"type": 'dino', 'name': 'dino',
-         "data": {'add_egg': True, 'all_dinos': True}
+         "data": {'add_egg': False, 'all_dinos': False},
+         "message": {}
         }
     ]
 
     await ChooseStepState(joint, userid, chatid, lang, steps, {'friendid': int(data[1]), 'username': user_name(call.from_user)})
 
-    # Отсылаем сообщение с согласем на совместное управление динозавром
+@bot.callback_query_handler(func=lambda call: 
+    call.data.startswith('take_dino'))
+async def take_dino(call: CallbackQuery):
+    lang = call.from_user.language_code
+    chatid = call.message.chat.id
+    userid = call.from_user.id
+    data = call.data.split()
+
+    dino_alt = data[1]
+    await bot.delete_message(chatid, call.message.id)
+
+    res2 = dino_owners.find({'owner_id': userid, 'type': 'add_owner'})
+    if len(list(res2)) >= 1:
+        text = t('take_dino.max_dino', lang)
+        await bot.send_message(chatid, text)
+    else:
+        dino = dinosaurs.find_one({'alt_id': dino_alt})
+        if dino:
+            res = dino_owners.find({'dino_id': dino['_id']})
+            
+            # Получение владельца
+            owner = 0
+            for i in list(res):
+                if i['type'] == 'owner': owner = i['owner_id']
+            
+            if len(list(res)) >= 2:
+                text = t('take_dino.max_owners', lang)
+                await bot.send_message(chatid, text)
+            else:
+                # Сообщение и свзяь для дополнительного владельца
+                create_dino_connection(dino['_id'], userid, 'add_owner')
+                text = t('take_dino.ok', lang, dinoname=dino['name'])
+                await bot.send_message(chatid, text)
+
+                # Сообщение для владульца дино
+                text_to_owner = t('take_dino.message_to_owner', lang, dinoname=dino['name'], username=user_name(call.from_user))
+                if owner: await bot.send_message(owner, text_to_owner)
+
+@bot.callback_query_handler(func=lambda call: 
+    call.data.startswith('take_money'))
+async def take_money(call: CallbackQuery):
+    lang = call.from_user.language_code
+    chatid = call.message.chat.id
+    userid = call.from_user.id
+    data = call.data.split()
+
+    friendid = int(data[1])
+    user = users.find_one({'userid': userid})
+    # take_coins(userid)
+    
+    if user:
+        max_int = user['coins']
+        if max_int > 0:
+            await ChooseIntState(transfer_coins, userid, chatid, lang, 
+                                max_int=max_int, transmitted_data={'friendid': friendid, 'username': user_name(call.from_user)})
+            
+            text = t('take_money.col_coins', lang, max_int=max_int)
+            await bot.send_message(chatid, text, reply_markup=
+                                count_markup(max_int, lang))
+        else:
+            text = t('take_money.zero_coins', lang)
+            await bot.send_message(chatid, text)
+
+async def transfer_coins(col: int, transmitted_data: dict):
+    lang = transmitted_data['lang']
+    chatid = transmitted_data['chatid']
+    userid = transmitted_data['userid']
+    friendid = transmitted_data['friendid']
+    username = transmitted_data['username']
+    
+    status = take_coins(userid, col*-1, True)
+    
+    if status:
+        text = t('take_money.send', lang)
+        await bot.send_message(chatid, text, 
+                            reply_markup=m(userid, 'last_menu', lang))
+        
+        text = t('take_money.transfer', lang, username=username, coins=col)
+        await bot.send_message(friendid, text, 
+                            reply_markup=m(userid, 'last_menu', lang))
+        users.update_one({'userid': friendid}, {'$inc': {'coins': col}})
+    
+    else:
+        text = t('take_money.no_coins', lang)
+        await bot.send_message(chatid, text, 
+                            reply_markup=m(userid, 'last_menu', lang))
