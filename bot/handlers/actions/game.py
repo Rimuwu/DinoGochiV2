@@ -128,8 +128,11 @@ async def game_start(return_data: dict,
                 await bot.send_message(chatid, text_m)
             else: 
                 percent += 0.5
-                game_task.update_one({'dino_id': dino_f['data_id']}, 
-                                    {'$inc': {'game_percent': 0.5}})
+
+                res = game_task.find_one({'dino_id': dino_f['data_id']})
+                if res and res['game_percent'] < 2.0:
+                    game_task.update_one({'dino_id': dino_f['data_id']}, 
+                                        {'$inc': {'game_percent': 0.5}})
 
                 add_mood(dino._id, 'playing_together', 1, 1800)
                 add_mood(dino_f['data_id'], 'playing_together', 1, 1800)
@@ -226,5 +229,7 @@ async def stop_game(message: Message):
             else:
                 if last_dino.status == 'game':
                     last_dino.update({'$set': {'status': 'pass'}})
-                
+
                 await bot.send_message(chatid, '❌', reply_markup=m(userid, 'last_menu', lang, True))
+        else:
+            await bot.send_message(chatid, t('stop_game.unrestrained_play', lang))
