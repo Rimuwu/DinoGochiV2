@@ -28,8 +28,14 @@ async def short_sleep(number: int, transmitted_data: dict):
     lang = transmitted_data['lang']
     chatid = transmitted_data['chatid']
     dino = transmitted_data['last_dino']
+    
+    res_dino_status = dinosaurs.find_one({"_id": dino._id}, {'status': 1})
+    if res_dino_status:
+        if res_dino_status['status'] != 'pass':
+            await bot.send_message(chatid, t('alredy_busy', lang), reply_markup=m(userid, 'last_menu', lang))
+            return
 
-    check_accessory(dino, '16', True)
+    await check_accessory(dino, '16', True)
     start_sleep(dino._id, 'short', number * 60)
     await bot.send_message(chatid, 
                 t('put_to_bed.sleep', lang),
@@ -39,6 +45,13 @@ async def short_sleep(number: int, transmitted_data: dict):
 async def long_sleep(dino: Dino, userid: int, lang: str):
     """ Отправляем дино в длинный сон
     """
+    
+    res_dino_status = dinosaurs.find_one({"_id": dino._id}, {'status': 1})
+    if res_dino_status:
+        if res_dino_status['status'] != 'pass':
+            await bot.send_message(userid, t('alredy_busy', lang), reply_markup=m(userid, 'last_menu', lang))
+            return
+
     start_sleep(dino._id, 'long')
     await bot.send_message(userid, 
                 t('put_to_bed.sleep', lang),
@@ -90,7 +103,7 @@ async def put_to_bed(message: Message):
                                     t('put_to_bed.dont_want', lang)
                                     )
         else:
-            if not check_accessory(last_dino, '16'):
+            if not await check_accessory(last_dino, '16'):
                 # Если нет мишки, то просто длинный сон
                 await long_sleep(last_dino, userid, lang)
             else:
