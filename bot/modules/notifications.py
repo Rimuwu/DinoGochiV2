@@ -10,6 +10,7 @@ from bot.modules.data_format import seconds_to_str
 from bot.modules.inline import inline_menu
 from bot.modules.localization import get_data, t
 from bot.modules.logs import log
+from bot.modules.item import get_name
 
 dinosaurs = mongo_client.bot.dinosaurs
 dino_owners = mongo_client.connections.dino_owners
@@ -87,23 +88,32 @@ async def dino_notification(dino_id: ObjectId, not_type: str, **kwargs):
                 chat_user = await bot.get_chat_member(owner["owner_id"], owner["owner_id"])
                 lang = chat_user.user.language_code
             except: lang = 'en'
-            
+
             user = users.find_one({'userid': owner['owner_id']})
             if user and user['settings']['notifications']:
+
+                # Добавление переменных в данные
                 if kwargs.get('add_time_end', False):
+                    # Данные об времени окончания
                     kwargs['time_end'] = seconds_to_str(
                         kwargs.get('secs', 0), lang)
-                    
+
                 if user['settings'].get('my_name', False):
+                    # Имя хозяина
                     kwargs['owner_name'] = user['settings']['my_name']
                     if not kwargs['owner_name']:
                         kwargs['owner_name'] = t('owner', lang)
                 else: kwargs['owner_name'] = t('owner', lang)
-                
+
                 if 'add_message' in kwargs:
                     # Если мы хотим добавить какое то сообщение в тексте, но мы не хотим запрашивать владельца и получать его язык, мы можем добавить ключ add_message c путём к тексту
                     kwargs['add_message'] = t(kwargs['add_message'], lang, **kwargs)
 
+                if 'item_id' in kwargs:
+                    # Получение имени предмета
+                    kwargs['item_name'] = get_name(kwargs['item_id'], lang)
+
+                # Формирование текста
                 if not_type in replics_notifications:
                     # Тут мы выбираем случайную реплику для динозавра
                     replics = get_data(
@@ -113,12 +123,15 @@ async def dino_notification(dino_id: ObjectId, not_type: str, **kwargs):
                     markup = get_data(
                         f'notifications.{not_type}.inline_menu', lang)
                     markup_inline = inline_menu(markup, lang, **kwargs)
-                else: 
+                else:
                     data = get_data(f'notifications.{not_type}', lang)
+                    if type(data) == dict:
+                        text = data['text'].format(**kwargs)
+                        markup_inline = inline_menu(data['inline_menu'], lang, **kwargs)
+                    else:
+                        text = data.format(**kwargs)
 
-                    text = data['text'].format(**kwargs)
-                    markup_inline = inline_menu(data['inline_menu'], lang, **kwargs)
-
+                # Уведомление
                 log(prefix='DinoNotification', 
                     message=f'User: {owner["owner_id"]} DinoId: {dino_id}, Data: {not_type} Kwargs: {kwargs}', lvl=0)
                 try:
@@ -135,10 +148,8 @@ async def dino_notification(dino_id: ObjectId, not_type: str, **kwargs):
         kwargs['dino_alt_id_markup'] = dino['alt_id']
         res = dino_mood.find_one({'dino_id': dino_id, 
                             'type': 'breakdown', 'action': 'seclusion'})
-
         # Отменя уведолмения если динозавр спит или у него нервный срыв
         if dino['status'] != 'sleep' and not res:
-
             if not_type in tracked_notifications:
 
                 if check_dino_notification(dino_id, not_type):
