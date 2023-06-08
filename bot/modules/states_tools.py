@@ -161,7 +161,7 @@ async def ChooseOptionState(function, userid: int,
     """
     if not transmitted_data: transmitted_data = {}
     transmitted_data = add_if_not(transmitted_data, userid, chatid, lang)
-    
+
     if len(options) > 1:
         await bot.set_state(userid, GeneralStates.ChooseOption, chatid)
         async with bot.retrieve_data(userid, chatid) as data:
@@ -170,7 +170,9 @@ async def ChooseOptionState(function, userid: int,
             data['options'] = options
         return True, 'option'
     else:
-        element = options[list(options.keys())[0]]
+        element = None
+        if len(options.keys()) > 0:
+            element = options[list(options.keys())[0]]
         await function(element, transmitted_data)
         return False, 'option'
 
