@@ -66,8 +66,12 @@ def item_info_markup(item: dict, lang):
     
     return markup_inline
 
-def dino_profile_markup(add_acs_button: bool, lang: str, alt_id: str):
+def dino_profile_markup(add_acs_button: bool, lang: str, 
+                        alt_id: str, joint_dino: bool, my_joint: bool):
     # Инлайн меню с быстрыми действиями. Например как снять аксессуар
+    # joint_dino - Отказаться от динозавра
+    # my_joint - Отменить второго владельца
+    
     buttons = {}
     rai = get_loc_data('p_profile.inline_menu', lang)
 
@@ -76,6 +80,10 @@ def dino_profile_markup(add_acs_button: bool, lang: str, alt_id: str):
         rai['reset_activ_item']['data']
 
     buttons[rai['mood_log']['text']] = rai['mood_log']['data']
-    for but in buttons: 
-        buttons[but] = buttons[but].format(dino=alt_id)
+    if joint_dino: 
+        buttons[rai['joint_dino']['text']] = rai['joint_dino']['data']
+    if my_joint: 
+        buttons[rai['my_joint']['text']] = rai['my_joint']['data']
+
+    for but in buttons: buttons[but] = buttons[but].format(dino=alt_id)
     return list_to_inline([buttons], 2)
