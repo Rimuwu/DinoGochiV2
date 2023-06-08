@@ -1,28 +1,30 @@
 from asyncio import sleep
+from datetime import datetime, timedelta, timezone
+from random import choice
+from time import time
 
-from telebot.types import Message
+from telebot.types import Message, CallbackQuery, InlineKeyboardMarkup
 
 from bot.config import mongo_client
 from bot.const import GAME_SETTINGS as GS
 from bot.exec import bot
-from bot.modules.data_format import user_name, seconds_to_str
-from bot.modules.item import counts_items
+from bot.modules.data_format import list_to_inline, seconds_to_str, user_name
+from bot.modules.item import counts_items, AddItemToUser
 from bot.modules.localization import get_data, t
 from bot.modules.markup import back_menu
 from bot.modules.markup import markups_menu as m
-from bot.modules.user import User
 from bot.modules.statistic import get_now_statistic
-from datetime import datetime, timezone, timedelta
+from bot.modules.user import User, take_coins, user_name
 
 users = mongo_client.bot.users
 management = mongo_client.bot.management
+tavern = mongo_client.connections.tavern
 
 @bot.message_handler(text='buttons_name.back', is_authorized=True)
 async def back_buttom(message: Message):
     userid = message.from_user.id
     lang = message.from_user.language_code
     back_m = back_menu(userid)
-    
     # Переделать таверну полностью
 
     text = t(f'back_text.{back_m}', lang)
@@ -106,13 +108,29 @@ async def tavern_menu(message: Message):
     friends = user.get_friends['friends']
     text = ''
 
-    management.update_one({'_id': 'in_tavern'}, {'$push': {'users': userid}})
-    users_in_tavern = management.find_one({'_id': 'in_tavern'})['users'] #type: ignore
-    friends_in_tavern = set(friends) & set(users_in_tavern)
+    tavern.insert_one({
+        'userid': userid,
+        'time_in': int(time()),
+        'lang': lang,
+        'name': user_name(message.from_user, False)
+    })
+    friends_in_tavern = []
+    for i in friends:
+        if tavern.find_one({"userid": i}): friends_in_tavern.append(i)
 
-    await bot.send_message(message.chat.id, t('menu_text.dino_tavern.info', lang), reply_markup=m(userid, 'dino_tavern_menu', lang))
-    msg = await bot.send_message(message.chat.id, t('menu_text.dino_tavern.friends', lang))
+    await bot.send_message(message.chat.id,
+            t('menu_text.dino_tavern.info', lang), reply_markup=m(userid, 'dino_tavern_menu', lang))
+    
+    data_enter = get_data('tavern_enter', lang)
+    text = f'🍻 {choice(data_enter)}'
+    await bot.send_message(message.chat.id, text)
+
+    msg = await bot.send_message(message.chat.id, 
+            t('menu_text.dino_tavern.friends', lang))
+
     text = t('menu_text.dino_tavern.friends2', lang)
+    buttons = t('menu_text.dino_tavern.button', lang)
+    buttons = list_to_inline([{buttons: f"buy_ale {userid}"}])
 
     if len(friends_in_tavern):
         text += '\n'
@@ -120,18 +138,18 @@ async def tavern_menu(message: Message):
             friendChat = await bot.get_chat_member(friendid, friendid)
             friend = friendChat.user
             if friend:
-                text += f' ● {user_name(friend)}\n'
+                text += f' 🎱 {user_name(friend)}\n'
                 text_to_friend = t('menu_text.dino_tavern.went', 
                                    friend.language_code, 
                                    name=user_name(message.from_user))
                 try:
                     await bot.send_message(
-                        friendid, text_to_friend)
+                        friendid, text_to_friend, reply_markup=buttons)
                 except:
                     await sleep(0.5)
                     try: 
                         await bot.send_message(
-                            friendid, text_to_friend)
+                            friendid, text_to_friend, reply_markup=buttons)
                     except: pass
     else:
         text += '❌'
@@ -186,3 +204,24 @@ async def referal_menu(message: Message):
                 award_text=award_text, lvl=lvl), 
                 parse_mode='Markdown',
                 reply_markup=m(userid, 'referal_menu', lang))
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith('buy_ale'))
+async def buy_ale(callback: CallbackQuery):
+    chatid = callback.message.chat.id
+    userid = callback.from_user.id
+    data = callback.data.split()
+    lang = callback.from_user.language_code
+    
+    friend = int(data[1])
+    if take_coins(userid, -50, True):
+        AddItemToUser(friend, 'ale')
+
+        text = t('buy_ale.me', lang)
+        await bot.edit_message_reply_markup(chatid, callback.message.id, reply_markup=InlineKeyboardMarkup())
+        await bot.answer_callback_query(callback.id, text, True)
+
+        text = t('buy_ale.friend', lang, username=user_name(callback.from_user))
+        await bot.send_message(friend, text)
+    else:
+        text = t('buy_ale.no_coins', lang)
+        await bot.send_message(friend, text)
