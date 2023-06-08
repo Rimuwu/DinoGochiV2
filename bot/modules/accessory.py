@@ -16,18 +16,17 @@ async def downgrade_accessory(dino: Dino, acc_type: str, max_unit: int = 2):
     if item:
         if 'abilities' in item and 'endurance' in item['abilities']:
             num = randint(0, max_unit)
-            item['abilities']['endurance'] -= num
 
             if item['abilities']['endurance'] <= 0:
                 dino.update({"$set": {f'activ_items.{acc_type}': None}})
+                await dino_notification(dino._id, 'broke_accessory')
             else:
-                dino.update({"$inc": {f'activ_items.{acc_type}': num}})
-            await dino_notification(dino._id, 'broke_accessory')
+                dino.update({"$inc": {f'activ_items.{acc_type}.abilities.endurance': -num}})
             return True
         else: return False
-    else: return False
+    return False
 
-def check_accessory(dino: Dino, item_id: str, downgrade: bool=False):
+async def check_accessory(dino: Dino, item_id: str, downgrade: bool=False):
     """Проверяет, активирован ли аксессуар с id - item_id
        downgrade - если активирован, то вызывает понижение прочности предмета
     """
@@ -37,10 +36,9 @@ def check_accessory(dino: Dino, item_id: str, downgrade: bool=False):
     if acces_item:
         if acces_item['item_id'] == item_id:
             if downgrade:
-                return downgrade_accessory(dino, data_item['type'])
+                return await downgrade_accessory(dino, data_item['type'][:-3])
             else:
                 return True
         else:
             return False
-    else:
-        return False
+    return False
