@@ -113,7 +113,7 @@ async def dino_profile(userid: int, dino: Dino, lang: str, custom_url: str):
                acsess[key] = f'{name} \[ *{item["abilities"]["endurance"]}* ]'
             else: acsess[key] = f'{name}'
                 
-    menu = dino_profile_markup(add_blok, lang, dino.alt_id, joint_dino, my_joint)
+    menu = dino_profile_markup(add_blok, lang, dino.alt_id, joint_dino, my_joint, user.premium)
     if add_blok:
         text += t('p_profile.accs', lang, formating=False).format(**acsess)
     
