@@ -15,7 +15,7 @@ items = mongo_client.bot.items
 
 def dialog_system(name: str, lang: str, 
                   key: str = 'start', end_keys: list = [], 
-                  dialog_name: str = ''):
+                  dialog_name: str = '', **kwargs):
     """ Основаная функция генерации текста для диалога, возвращает статус законченности, текст, клавиатуру, и последний обработанный ключ
     """
     text = ''
@@ -30,7 +30,8 @@ def dialog_system(name: str, lang: str,
     user_name = escape_markdown(name)
     people_content: str = data[key]["text"].format(
         user_name = escape_markdown(name),
-        people_name = data["people_name"]
+        people_name = data["people_name"],
+        **kwargs
     )
     
     if 'previous' in now_data:
