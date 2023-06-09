@@ -1,2810 +1,2810 @@
 {
-    "1": {
-      "buffs": {
-        "heal": 15
-      },
-      "act": 10,
-      "class": "ALL",
-      "image": "item1",
-      "rank": "common",
-      "type": "eat"
-    },
-    "2": {
-      "buffs": {
-        "mood": 10
-      },
-      "act": 5,
-      "class": "ALL",
-      "image": "item2",
-      "ns_craft": {
-        "1": {
-          "create": [
-            "47"
-          ],
-          "materials": [
-            "2",
-            "2",
-            "2",
-            "2",
-            "2",
-            "2",
-            "2",
-            "2",
-            "2",
-            "2",
-            "2",
-            "2",
-            "2",
-            "2",
-            "2"
-          ]
-        }
-      },
-      "rank": "common",
-      "type": "eat"
-    },
-    "3": {
-      "image": "item3",
-      "inc_type": "random",
-      "incub_time": 43200,
-      "rank": "rare",
-      "type": "egg"
-    },
-    "4": {
-      "abilities": {
-        "endurance": 100
-      },
-      "image": "item4",
-      "rank": "uncommon",
-      "type": "game_ac"
-    },
-    "5": {
-      "act": 25,
-      "class": "Carnivore",
-      "image": "item5",
-      "ns_craft": {
-        "1": {
-          "create": [
-            "12"
-          ],
-          "materials": [
-            "5"
-          ]
-        }
-      },
-      "rank": "common",
-      "type": "eat"
-    },
-    "6": {
-      "act": 25,
-      "class": "Herbivore",
-      "image": "item6",
-      "ns_craft": {
-        "1": {
-          "create": [
-            "11"
-          ],
-          "materials": [
-            "6"
-          ]
-        }
-      },
-      "rank": "common",
-      "type": "eat"
-    },
-    "7": {
-      "act": 25,
-      "class": "Flying",
-      "image": "item7",
-      "ns_craft": {
-        "1": {
-          "create": [
-            "80"
-          ],
-          "materials": [
-            "7",
-            "7"
-          ]
-        },
-        "2": {
-          "create": [
-            "13"
-          ],
-          "materials": [
-            "7"
-          ]
-        }
-      },
-      "rank": "common",
-      "type": "eat"
-    },
-    "8": {
-      "act": 15,
-      "class": "Carnivore",
-      "image": "item8",
-      "ns_craft": {
-        "1": {
-          "create": [
-            "12"
-          ],
-          "materials": [
-            "8",
-            "8"
-          ]
-        }
-      },
-      "rank": "common",
-      "type": "eat"
-    },
-    "9": {
-      "act": 15,
-      "class": "Herbivore",
-      "image": "item9",
-      "ns_craft": {
-        "1": {
-          "create": [
-            "11"
-          ],
-          "materials": [
-            "9",
-            "9"
-          ]
-        },
-        "2": {
-          "create": [
-            "95"
-          ],
-          "materials": [
-            "9"
-          ]
-        }
-      },
-      "rank": "common",
-      "type": "eat"
-    },
-    "10": {
-      "act": 15,
-      "class": "Flying",
-      "image": "item10",
-      "ns_craft": {
-        "1": {
-          "create": [
-            "13"
-          ],
-          "materials": [
-            "10",
-            "10"
-          ]
-        }
-      },
-      "rank": "common",
-      "type": "eat"
-    },
-    "11": {
-      "act": 20,
-      "class": "Herbivore",
-      "image": "item11",
-      "ns_craft": {
-        "1": {
-          "create": [
-            "9"
-          ],
-          "materials": [
-            "11"
-          ]
-        },
-        "2": {
-          "create": [
-            "6"
-          ],
-          "materials": [
-            "11",
-            "11"
-          ]
-        }
-      },
-      "rank": "common",
-      "type": "eat"
-    },
-    "12": {
-      "act": 20,
-      "class": "Carnivore",
-      "image": "item12",
-      "ns_craft": {
-        "1": {
-          "create": [
-            "8"
-          ],
-          "materials": [
-            "12"
-          ]
-        },
-        "2": {
-          "create": [
-            "5"
-          ],
-          "materials": [
-            "12",
-            "12"
-          ]
-        }
-      },
-      "rank": "common",
-      "type": "eat"
-    },
-    "13": {
-      "act": 20,
-      "class": "Flying",
-      "image": "item13",
-      "ns_craft": {
-        "1": {
-          "create": [
-            "7"
-          ],
-          "materials": [
-            "13",
-            "13"
-          ]
-        },
-        "2": {
-          "create": [
-            "10"
-          ],
-          "materials": [
-            "13"
-          ]
-        }
-      },
-      "rank": "common",
-      "type": "eat"
-    },
-    "14": {
-      "abilities": {
-        "endurance": 100
-      },
-      "image": "item14",
-      "rank": "uncommon",
-      "type": "journey_ac"
-    },
-    "15": {
-      "abilities": {
-        "endurance": 100
-      },
-      "act": 10,
-      "image": "item15",
-      "rank": "uncommon",
-      "type": "collecting_ac"
-    },
-    "16": {
-      "abilities": {
-        "endurance": 100
-      },
-      "image": "item16",
-      "rank": "uncommon",
-      "type": "sleep_ac"
-    },
-    "17": {
-      "buffs": {
-        "heal": 15
-      },
-      "act": 1,
-      "class": "ALL",
-      "image": "item17",
-      "rank": "uncommon",
-      "type": "eat"
-    },
-    "18": {
-      "buffs": {
-        "mood": 15
-      },
-      "act": 25,
-      "class": "ALL",
-      "image": "item18",
-      "ns_craft": {
-        "1": {
-          "create": [
-            "48"
-          ],
-          "materials": [
-            "18",
-            "18",
-            "18",
-            "18",
-            "18",
-            "18",
-            "18",
-            "18",
-            "18"
-          ]
-        }
-      },
-      "rank": "common",
-      "type": "eat"
-    },
-    "19": {
-      "buffs": {
-        "mood": 20
-      },
-      "act": 20,
-      "class": "ALL",
-      "image": "item19",
-      "rank": "common",
-      "type": "eat"
-    },
-    "20": {
-      "image": "item20",
-      "inc_type": "unc",
-      "incub_time": 86400,
-      "ns_craft": {
-        "1": {
-          "create": [
-            "22"
-          ],
-          "materials": [
-            "20",
-            "20",
-            "20",
-            "20",
-            "20",
-            "20",
-            "20",
-            "20",
-            "20",
-            "20"
-          ]
-        }
-      },
-      "rank": "mystical",
-      "type": "egg"
-    },
-    "21": {
-      "image": "item21",
-      "inc_type": "com",
-      "incub_time": 1800,
-      "ns_craft": {
-        "1": {
-          "create": [
-            "20"
-          ],
-          "materials": [
-            "21",
-            "21",
-            "21",
-            "21",
-            "21",
-            "21",
-            "21",
-            "21",
-            "21",
-            "21"
-          ]
-        }
-      },
-      "rank": "mystical",
-      "type": "egg"
-    },
-    "22": {
-      "image": "item22",
-      "inc_type": "rar",
-      "incub_time": 172800,
-      "ns_craft": {
-        "1": {
-          "create": [
-            "23"
-          ],
-          "materials": [
-            "22",
-            "22",
-            "22",
-            "22",
-            "22",
-            "22",
-            "22",
-            "22",
-            "22",
-            "22"
-          ]
-        }
-      },
-      "rank": "mystical",
-      "type": "egg"
-    },
-    "23": {
-      "image": "item23",
-      "inc_type": "mys",
-      "incub_time": 259200,
-      "ns_craft": {
-        "1": {
-          "create": [
-            "24"
-          ],
-          "materials": [
-            "23",
-            "23",
-            "23",
-            "23",
-            "23",
-            "23",
-            "23",
-            "23",
-            "23",
-            "23"
-          ]
-        }
-      },
-      "rank": "mystical",
-      "type": "egg"
-    },
-    "24": {
-      "image": "item24",
-      "inc_type": "leg",
-      "incub_time": 396000,
-      "rank": "legendary",
-      "type": "egg"
-    },
-    "25": {
-      "image": "item25",
-      "rank": "common",
-      "type": "material"
-    },
-    "26": {
-      "image": "item26",
-      "rank": "common",
-      "type": "material"
-    },
-    "27": {
-      "image": "item27",
-      "rank": "common",
-      "type": "material"
-    },
-    "28": {
-      "image": "item28",
-      "rank": "common",
-      "type": "material"
-    },
-    "29": {
-      "abilities": {
-        "endurance": 100
-      },
-      "image": "item29",
-      "rank": "uncommon",
-      "type": "journey_ac"
-    },
-    "30": {
-      "abilities": {
-        "uses": 3
-      },
-      "create": [
-        {
-          "item": "29",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "26",
-          "type": "delete"
-        },
-        {
-          "item": "26",
-          "type": "delete"
-        },
-        {
-          "item": "26",
-          "type": "delete"
-        },
-        {
-          "item": "26",
-          "type": "delete"
-        },
-        {
-          "item": "26",
-          "type": "delete"
-        }
-      ],
-      "rank": "rare",
-      "type": "recipe"
-    },
-    "31": {
-      "abilities": {
-        "endurance": 100
-      },
-      "image": "item31",
-      "rank": "uncommon",
-      "type": "collecting_ac"
-    },
-    "32": {
-      "abilities": {
-        "uses": 1
-      },
-      "create": [
-        {
-          "item": "31",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "27",
-          "type": "delete"
-        },
-        {
-          "item": "27",
-          "type": "delete"
-        },
-        {
-          "item": "27",
-          "type": "delete"
-        },
-        {
-          "item": "27",
-          "type": "delete"
-        },
-        {
-          "item": "25",
-          "type": "delete"
-        },
-        {
-          "item": "25",
-          "type": "delete"
-        },
-        {
-          "item": "25",
-          "type": "delete"
-        }
-      ],
-      "rank": "rare",
-      "type": "recipe"
-    },
-    "33": {
-      "buffs": {
-        "heal": 25,
-        "mood": -10
-      },
-      "act": 5,
-      "class": "ALL",
-      "image": "item33",
-      "rank": "rare",
-      "type": "eat"
-    },
-    "34": {
-      "abilities": {
-        "uses": 10
-      },
-      "create": [
-        {
-          "item": "33",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "28",
-          "type": "delete"
-        },
-        {
-          "item": "28",
-          "type": "delete"
-        },
-        {
-          "item": "28",
-          "type": "delete"
-        },
-        {
-          "item": "28",
-          "type": "delete"
-        },
-        {
-          "item": "28",
-          "type": "delete"
-        }
-      ],
-      "rank": "rare",
-      "type": "recipe"
-    },
-    "35": {
-      "act": 45,
-      "class": "Herbivore",
-      "image": "item35",
-      "rank": "rare",
-      "type": "eat"
-    },
-    "36": {
-      "buffs": {
-        "energy": 25
-      },
-      "act": -30,
-      "class": "ALL",
-      "image": "item36",
-      "rank": "rare",
-      "type": "eat"
-    },
-    "37": {
-      "abilities": {
-        "uses": 10
-      },
-      "create": [
-        {
-          "item": "36",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "35",
-          "type": "delete"
-        },
-        {
-          "item": "35",
-          "type": "delete"
-        },
-        {
-          "item": "35",
-          "type": "delete"
-        },
-        {
-          "item": "35",
-          "type": "delete"
-        },
-        {
-          "item": "35",
-          "type": "delete"
-        }
-      ],
-      "rank": "rare",
-      "type": "recipe"
-    },
-    "38": {
-      "act": 40,
-      "class": "Carnivore",
-      "image": "item38",
-      "rank": "rare",
-      "type": "eat"
-    },
-    "39": {
-      "abilities": {
-        "uses": 10
-      },
-      "create": [
-        {
-          "item": "38",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "act": 10,
-          "item": "31",
-          "type": "endurance"
-        },
-        {
-          "item": "8",
-          "type": "delete"
-        },
-        {
-          "item": "8",
-          "type": "delete"
-        }
-      ],
-      "rank": "rare",
-      "type": "recipe"
-    },
-    "40": {
-      "act": 70,
-      "class": "Herbivore",
-      "image": "item40",
-      "rank": "rare",
-      "type": "eat"
-    },
-    "41": {
-      "abilities": {
-        "uses": 40
-      },
-      "create": [
-        {
-          "item": "40",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "6",
-          "type": "delete"
-        },
-        {
-          "item": "9",
-          "type": "delete"
-        },
-        {
-          "item": "11",
-          "type": "delete"
-        }
-      ],
-      "rank": "rare",
-      "type": "recipe"
-    },
-    "42": {
-      "act": 55,
-      "class": "Flying",
-      "image": "item42",
-      "rank": "rare",
-      "type": "eat"
-    },
-    "43": {
-      "abilities": {
-        "uses": 40
-      },
-      "create": [
-        {
-          "item": "42",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "10",
-          "type": "delete"
-        },
-        {
-          "item": "10",
-          "type": "delete"
-        },
-        {
-          "item": "10",
-          "type": "delete"
-        },
-        {
-          "act": 10,
-          "item": "4",
-          "type": "endurance"
-        }
-      ],
-      "rank": "rare",
-      "type": "recipe"
-    },
-    "44": {
-      "abilities": {
-        "endurance": 100
-      },
-      "image": "item44",
-      "rank": "uncommon",
-      "type": "game_ac"
-    },
-    "45": {
-      "abilities": {
-        "endurance": 100
-      },
-      "image": "item45",
-      "rank": "rare",
-      "type": "journey_ac"
-    },
-    "46": {
-      "abilities": {
-        "uses": 2
-      },
-      "create": [
-        {
-          "item": "45",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "26",
-          "type": "delete"
-        },
-        {
-          "item": "26",
-          "type": "delete"
-        },
-        {
-          "item": "26",
-          "type": "delete"
-        },
-        {
-          "item": "27",
-          "type": "delete"
-        },
-        {
-          "item": "27",
-          "type": "delete"
-        },
-        {
-          "act": 30,
-          "item": "15",
-          "type": "endurance"
-        }
-      ],
-      "rank": "rare",
-      "type": "recipe"
-    },
-    "47": {
-      "buffs": {
-        "mood": 10
-      },
-      "abilities": {
-        "uses": 15
-      },
-      "act": 6,
-      "class": "ALL",
-      "image": "item47",
-      "rank": "uncommon",
-      "type": "eat"
-    },
-    "48": {
-      "buffs": {
-        "mood": 15
-      },
-      "abilities": {
-        "uses": 9
-      },
-      "act": 25,
-      "class": "ALL",
-      "image": "item48",
-      "rank": "uncommon",
-      "type": "eat"
-    },
-    "49": {
-      "abilities": {
-        "mana": 0
-      },
-      "image": "item49",
-      "rank": "rare",
-      "type": "material"
-    },
-    "50": {
-      "buffs": {
-        "mood": 40
-      },
-      "act": 75,
-      "class": "ALL",
-      "image": "item50",
-      "rank": "rare",
-      "type": "eat"
-    },
-    "51": {
-      "image": "item51",
-      "rank": "common",
-      "type": "material"
-    },
-    "52": {
-      "image": "item52",
-      "rank": "uncommon",
-      "type": "material"
-    },
-    "53": {
-      "abilities": {
-        "endurance": 50
-      },
-      "class": "near",
-      "damage": {
-        "max": 3,
-        "min": 1
-      },
-      "image": "item53",
-      "rank": "uncommon",
-      "type": "weapon"
-    },
-    "54": {
-      "add_damage": 0,
-      "add_effects": [],
-      "image": "item54",
-      "rank": "uncommon",
-      "type": "ammunition"
-    },
-    "55": {
-      "abilities": {
-        "endurance": 70
-      },
-      "ammunition": [
-        "54"
-      ],
-      "class": "far",
-      "damage": {
-        "max": 5,
-        "min": 1
-      },
-      "image": "item55",
-      "rank": "uncommon",
-      "type": "weapon"
-    },
-    "56": {
-      "abilities": {
-        "uses": 5
-      },
-      "create": [
-        {
-          "item": "50",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "9",
-          "type": "delete"
-        },
-        {
-          "item": "9",
-          "type": "delete"
-        },
-        {
-          "item": "9",
-          "type": "delete"
-        },
-        {
-          "item": "8",
-          "type": "delete"
-        },
-        {
-          "item": "8",
-          "type": "delete"
-        }
-      ],
-      "rank": "rare",
-      "type": "recipe"
-    },
-    "57": {
-      "abilities": {
-        "uses": 2
-      },
-      "create": [
-        {
-          "item": "53",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "act": 30,
-          "item": "15",
-          "type": "endurance"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        }
-      ],
-      "rank": "rare",
-      "type": "recipe"
-    },
-    "58": {
-      "abilities": {
-        "uses": 2
-      },
-      "create": [
-        {
-          "item": "55",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "act": 30,
-          "item": "15",
-          "type": "endurance"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        }
-      ],
-      "rank": "rare",
-      "type": "recipe"
-    },
-    "59": {
-      "abilities": {
-        "uses": 11
-      },
-      "create": [
-        {
-          "abilities": {
-            "stack": 3
-          },
-          "item": "54",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "act": 10,
-          "item": "15",
-          "type": "endurance"
-        }
-      ],
-      "rank": "rare",
-      "type": "recipe"
-    },
-    "60": {
-      "capacity": 10,
-      "image": "item45",
-      "rank": "rare",
-      "type": "backpack"
-    },
-    "61": {
-      "abilities": {
-        "uses": 2
-      },
-      "create": [
-        {
-          "item": "60",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "26",
-          "type": "delete"
-        },
-        {
-          "item": "26",
-          "type": "delete"
-        },
-        {
-          "item": "26",
-          "type": "delete"
-        },
-        {
-          "item": "26",
-          "type": "delete"
-        },
-        {
-          "item": "26",
-          "type": "delete"
-        },
-        {
-          "item": "26",
-          "type": "delete"
-        },
-        {
-          "item": "26",
-          "type": "delete"
-        },
-        {
-          "item": "26",
-          "type": "delete"
-        },
-        {
-          "item": "26",
-          "type": "delete"
-        },
-        {
-          "item": "26",
-          "type": "delete"
-        },
-        {
-          "item": "26",
-          "type": "delete"
-        },
-        {
-          "item": "26",
-          "type": "delete"
-        },
-        {
-          "item": "26",
-          "type": "delete"
-        },
-        {
-          "item": "26",
-          "type": "delete"
-        },
-        {
-          "item": "26",
-          "type": "delete"
-        }
-      ],
-      "rank": "rare",
-      "type": "recipe"
-    },
-    "62": {
-      "abilities": {
-        "endurance": 120
-      },
-      "image": "item62",
-      "rank": "uncommon",
-      "reflection": 2,
-      "type": "armor"
-    },
-    "63": {
-      "abilities": {
-        "uses": 2
-      },
-      "create": [
-        {
-          "item": "62",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        }
-      ],
-      "rank": "uncommon",
-      "type": "recipe"
-    },
-    "64": {
-      "abilities": {
-        "endurance": 20
-      },
-      "class": "near",
-      "damage": {
-        "max": 1,
-        "min": 0
-      },
-      "effectiv": 2,
-      "image": "item64",
-      "rank": "uncommon",
-      "type": "weapon"
-    },
-    "65": {
-      "abilities": {
-        "uses": 2
-      },
-      "create": [
-        {
-          "item": "64",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "51",
-          "type": "delete"
+    "jar_honey": {
+        "buffs": {
+            "heal": 15
+        },
+        "act": 10,
+        "class": "ALL",
+        "image": "item1",
+        "rank": "common",
+        "type": "eat"
+    },
+    "cookie": {
+        "buffs": {
+            "mood": 10
+        },
+        "act": 5,
+        "class": "ALL",
+        "image": "item2",
+        "ns_craft": {
+            "1": {
+                "create": [
+                    "set_cookies"
+                ],
+                "materials": [
+                    "cookie",
+                    "cookie",
+                    "cookie",
+                    "cookie",
+                    "cookie",
+                    "cookie",
+                    "cookie",
+                    "cookie",
+                    "cookie",
+                    "cookie",
+                    "cookie",
+                    "cookie",
+                    "cookie",
+                    "cookie",
+                    "cookie"
+                ]
+            }
+        },
+        "rank": "common",
+        "type": "eat"
+    },
+    "mysterious_egg": {
+        "image": "item3",
+        "inc_type": "random",
+        "incub_time": 43200,
+        "rank": "rare",
+        "type": "egg"
+    },
+    "timer": {
+        "abilities": {
+            "endurance": 100
+        },
+        "image": "item4",
+        "rank": "uncommon",
+        "type": "game_ac"
+    },
+    "wild_boar_meat": {
+        "act": 25,
+        "class": "Carnivore",
+        "image": "item5",
+        "ns_craft": {
+            "1": {
+                "create": [
+                    "chicken_leg"
+                ],
+                "materials": [
+                    "wild_boar_meat"
+                ]
+            }
+        },
+        "rank": "common",
+        "type": "eat"
+    },
+    "bunch_herbs": {
+        "act": 25,
+        "class": "Herbivore",
+        "image": "item6",
+        "ns_craft": {
+            "1": {
+                "create": [
+                    "berries"
+                ],
+                "materials": [
+                    "bunch_herbs"
+                ]
+            }
+        },
+        "rank": "common",
+        "type": "eat"
+    },
+    "fish": {
+        "act": 25,
+        "class": "Flying",
+        "image": "item7",
+        "ns_craft": {
+            "1": {
+                "create": [
+                    "crab"
+                ],
+                "materials": [
+                    "fish",
+                    "fish"
+                ]
+            },
+            "2": {
+                "create": [
+                    "small_fish"
+                ],
+                "materials": [
+                    "fish"
+                ]
+            }
+        },
+        "rank": "common",
+        "type": "eat"
+    },
+    "wolf_meat": {
+        "act": 15,
+        "class": "Carnivore",
+        "image": "item8",
+        "ns_craft": {
+            "1": {
+                "create": [
+                    "chicken_leg"
+                ],
+                "materials": [
+                    "wolf_meat",
+                    "wolf_meat"
+                ]
+            }
+        },
+        "rank": "common",
+        "type": "eat"
+    },
+    "grasses_from_fields": {
+        "act": 15,
+        "class": "Herbivore",
+        "image": "item9",
+        "ns_craft": {
+            "1": {
+                "create": [
+                    "berries"
+                ],
+                "materials": [
+                    "grasses_from_fields",
+                    "grasses_from_fields"
+                ]
+            },
+            "2": {
+                "create": [
+                    "grain"
+                ],
+                "materials": [
+                    "grasses_from_fields"
+                ]
+            }
+        },
+        "rank": "common",
+        "type": "eat"
+    },
+    "seafood": {
+        "act": 15,
+        "class": "Flying",
+        "image": "item10",
+        "ns_craft": {
+            "1": {
+                "create": [
+                    "small_fish"
+                ],
+                "materials": [
+                    "seafood",
+                    "seafood"
+                ]
+            }
+        },
+        "rank": "common",
+        "type": "eat"
+    },
+    "berries": {
+        "act": 20,
+        "class": "Herbivore",
+        "image": "item11",
+        "ns_craft": {
+            "1": {
+                "create": [
+                    "grasses_from_fields"
+                ],
+                "materials": [
+                    "berries"
+                ]
+            },
+            "2": {
+                "create": [
+                    "bunch_herbs"
+                ],
+                "materials": [
+                    "berries",
+                    "berries"
+                ]
+            }
+        },
+        "rank": "common",
+        "type": "eat"
+    },
+    "chicken_leg": {
+        "act": 20,
+        "class": "Carnivore",
+        "image": "item12",
+        "ns_craft": {
+            "1": {
+                "create": [
+                    "wolf_meat"
+                ],
+                "materials": [
+                    "chicken_leg"
+                ]
+            },
+            "2": {
+                "create": [
+                    "wild_boar_meat"
+                ],
+                "materials": [
+                    "chicken_leg",
+                    "chicken_leg"
+                ]
+            }
+        },
+        "rank": "common",
+        "type": "eat"
+    },
+    "small_fish": {
+        "act": 20,
+        "class": "Flying",
+        "image": "item13",
+        "ns_craft": {
+            "1": {
+                "create": [
+                    "fish"
+                ],
+                "materials": [
+                    "small_fish",
+                    "small_fish"
+                ]
+            },
+            "2": {
+                "create": [
+                    "seafood"
+                ],
+                "materials": [
+                    "small_fish"
+                ]
+            }
+        },
+        "rank": "common",
+        "type": "eat"
+    },
+    "cloak": {
+        "abilities": {
+            "endurance": 100
+        },
+        "image": "item14",
+        "rank": "uncommon",
+        "type": "journey_ac"
+    },
+    "tooling": {
+        "abilities": {
+            "endurance": 100
+        },
+        "act": 10,
+        "image": "item15",
+        "rank": "uncommon",
+        "type": "collecting_ac"
+    },
+    "bear": {
+        "abilities": {
+            "endurance": 100
+        },
+        "image": "item16",
+        "rank": "uncommon",
+        "type": "sleep_ac"
+    },
+    "therapeutic_mixture": {
+        "buffs": {
+            "heal": 15
         },
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        },
-        {
-          "item": "51",
-          "type": "delete"
-        }
-      ],
-      "rank": "uncommon",
-      "type": "recipe"
-    },
-    "66": {
-      "image": "item66",
-      "rank": "mythical",
-      "time": "forever",
-      "type": "special",
-      "class": "freezing"
-    },
-    "67": {
-      "image": "item67",
-      "rank": "mythical",
-      "type": "special",
-      "class": "defrosting"
-    },
-    "68": {
-      "buffs": {
-        "energy": 5
-      },
-      "act": 10,
-      "class": "ALL",
-      "image": "item68",
-      "rank": "common",
-      "type": "eat"
-    },
-    "69": {
-      "buffs": {
-        "energy": 2,
-        "mood": 5
-      },
-      "abilities": {
-        "uses": 10
-      },
-      "act": 3,
-      "class": "ALL",
-      "image": "item69",
-      "rank": "uncommon",
-      "type": "eat"
-    },
-    "70": {
-      "abilities": {
-        "uses": 5
-      },
-      "create": [
-        {
-          "item": "69",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "68",
-          "type": "delete"
-        },
-        {
-          "item": "68",
-          "type": "delete"
-        }
-      ],
-      "rank": "uncommon",
-      "type": "recipe"
-    },
-    "71": {
-      "act": 10,
-      "class": "Herbivore",
-      "image": "item71",
-      "rank": "common",
-      "type": "eat"
-    },
-    "72": {
-      "buffs": {
-        "mood": 25
-      },
-      "act": 20,
-      "class": "ALL",
-      "image": "item72",
-      "rank": "uncommon",
-      "type": "eat"
-    },
-    "73": {
-      "abilities": {
-        "uses": 5
-      },
-      "create": [
-        {
-          "item": "72",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "act": 5,
-          "item": "31",
-          "type": "endurance"
-        },
-        {
-          "item": "71",
-          "type": "delete"
-        },
-        {
-          "item": "71",
-          "type": "delete"
-        }
-      ],
-      "rank": "uncommon",
-      "type": "recipe"
-    },
-    "74": {
-      "buffs": {
-        "mood": 20
-      },
-      "act": 10,
-      "class": "ALL",
-      "image": "item74",
-      "rank": "uncommon",
-      "type": "eat"
-    },
-    "75": {
-      "abilities": {
-        "uses": 10
-      },
-      "create": [
-        {
-          "item": "74",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "11",
-          "type": "delete"
-        }
-      ],
-      "rank": "uncommon",
-      "type": "recipe"
-    },
-    "76": {
-      "buffs": {
-        "heal": -2
-      },
-      "act": 5,
-      "class": "Herbivore",
-      "image": "item76",
-      "rank": "common",
-      "type": "eat"
-    },
-    "77": {
-      "act": 50,
-      "class": "Carnivore",
-      "image": "item77",
-      "rank": "rare",
-      "type": "eat"
-    },
-    "78": {
-      "abilities": {
-        "uses": 5
-      },
-      "create": [
-        {
-          "item": "77",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "act": 10,
-          "item": "31",
-          "type": "endurance"
-        },
-        {
-          "item": "8",
-          "type": "delete"
-        },
-        {
-          "item": "9",
-          "type": "delete"
-        },
-        {
-          "item": "76",
-          "type": "delete"
-        }
-      ],
-      "rank": "rare",
-      "type": "recipe"
-    },
-    "79": {
-      "act": 15,
-      "class": "Herbivore",
-      "image": "item79",
-      "rank": "common",
-      "type": "eat"
-    },
-    "80": {
-      "act": 50,
-      "class": "Flying",
-      "image": "item80",
-      "rank": "rare",
-      "type": "eat"
-    },
-    "81": {
-      "buffs": {
-        "energy": 30
-      },
-      "act": 5,
-      "class": "ALL",
-      "image": "item81",
-      "rank": "rare",
-      "type": "eat"
-    },
-    "82": {
-      "buffs": {
-        "heal": -2,
-        "mood": 10
-      },
-      "act": 15,
-      "class": "Herbivore",
-      "image": "item82",
-      "rank": "uncommon",
-      "type": "eat"
-    },
-    "83": {
-      "buffs": {
-        "heal": 10
-      },
-      "act": 50,
-      "class": "ALL",
-      "image": "item83",
-      "rank": "rare",
-      "type": "eat"
-    },
-    "84": {
-      "abilities": {
-        "uses": 5
-      },
-      "create": [
-        {
-          "item": "83",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "act": 10,
-          "item": "31",
-          "type": "endurance"
-        },
-        {
-          "item": "5",
-          "type": "delete"
-        },
-        {
-          "item": "5",
-          "type": "delete"
-        }
-      ],
-      "rank": "rare",
-      "type": "recipe"
-    },
-    "85": {
-      "act": 10,
-      "class": "Herbivore",
-      "image": "item85",
-      "rank": "common",
-      "type": "eat"
-    },
-    "86": {
-      "act": 30,
-      "class": "ALL",
-      "image": "item86",
-      "rank": "common",
-      "type": "eat"
-    },
-    "87": {
-      "abilities": {
-        "uses": 5
-      },
-      "create": [
-        {
-          "item": "86",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "85",
-          "type": "delete"
-        },
-        {
-          "item": "7",
-          "type": "delete"
-        }
-      ],
-      "rank": "rare",
-      "type": "recipe"
-    },
-    "88": {
-      "buffs": {
-        "energy": 20
-      },
-      "act": 10,
-      "class": "ALL",
-      "image": "item88",
-      "rank": "uncommon",
-      "type": "eat"
-    },
-    "89": {
-      "abilities": {
-        "uses": 5
-      },
-      "create": [
-        {
-          "item": "88",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "68",
-          "type": "delete"
-        },
-        {
-          "item": "68",
-          "type": "delete"
-        }
-      ],
-      "rank": "uncommon",
-      "type": "recipe"
-    },
-    "90": {
-      "buffs": {
-        "mood": 100
-      },
-      "abilities": {
-        "uses": 6
-      },
-      "act": 40,
-      "class": "ALL",
-      "image": "item90",
-      "rank": "mystical",
-      "type": "eat"
-    },
-    "91": {
-      "abilities": {
-        "uses": 2
-      },
-      "create": [
-        {
-          "item": "90",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "68",
-          "type": "delete"
-        },
-        {
-          "item": "68",
-          "type": "delete"
-        },
-        {
-          "item": "68",
-          "type": "delete"
-        },
-        {
-          "item": "68",
-          "type": "delete"
-        },
-        {
-          "item": "11",
-          "type": "delete"
-        },
-        {
-          "item": "11",
-          "type": "delete"
-        },
-        {
-          "item": "11",
-          "type": "delete"
-        },
-        {
-          "item": "11",
-          "type": "delete"
-        },
-        {
-          "item": "11",
-          "type": "delete"
-        },
-        {
-          "item": "1",
-          "type": "delete"
-        },
-        {
-          "item": "2",
-          "type": "delete"
-        },
-        {
-          "item": "2",
-          "type": "delete"
-        }
-      ],
-      "rank": "mystical",
-      "type": "recipe"
-    },
-    "92": {
-      "act": 50,
-      "class": "ALL",
-      "image": "item92",
-      "rank": "rare",
-      "type": "eat"
-    },
-    "93": {
-      "abilities": {
-        "uses": 5
-      },
-      "create": [
-        {
-          "item": "92",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "85",
-          "type": "delete"
-        },
-        {
-          "item": "85",
-          "type": "delete"
-        },
-        {
-          "item": "76",
-          "type": "delete"
-        },
-        {
-          "item": "76",
-          "type": "delete"
-        }
-      ],
-      "rank": "rare",
-      "type": "recipe"
-    },
-    "94": {
-      "buffs": {
-        "mood": 15
-      },
-      "act": 20,
-      "class": "ALL",
-      "image": "item94",
-      "rank": "rare",
-      "type": "eat"
-    },
-    "95": {
-      "act": 10,
-      "class": "Herbivore",
-      "image": "item95",
-      "rank": "common",
-      "type": "eat"
-    },
-    "96": {
-      "act": 30,
-      "class": "ALL",
-      "image": "item96",
-      "rank": "uncommon",
-      "type": "eat"
-    },
-    "97": {
-      "abilities": {
-        "uses": 10
-      },
-      "create": [
-        {
-          "item": "96",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "95",
-          "type": "delete"
-        },
-        {
-          "item": "95",
-          "type": "delete"
-        }
-      ],
-      "rank": "uncommon",
-      "type": "recipe"
-    },
-    "98": {
-      "buffs": {
-        "mood": 20
-      },
-      "act": 50,
-      "class": "Herbivore",
-      "image": "item98",
-      "rank": "uncommon",
-      "type": "eat"
-    },
-    "99": {
-      "buffs": {
-        "energy": 10
-      },
-      "act": 60,
-      "class": "Flying",
-      "image": "item99",
-      "rank": "uncommon",
-      "type": "eat"
-    },
-    "100": {
-      "buffs": {
-        "heal": 10
-      },
-      "act": 60,
-      "class": "Carnivore",
-      "image": "item100",
-      "rank": "uncommon",
-      "type": "eat"
-    },
-    "101": {
-      "abilities": {
-        "uses": 5
-      },
-      "create": [
-        {
-          "item": "98",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "95",
-          "type": "delete"
-        },
-        {
-          "item": "95",
-          "type": "delete"
-        },
-        {
-          "item": "11",
-          "type": "delete"
-        },
-        {
-          "item": "11",
-          "type": "delete"
-        }
-      ],
-      "rank": "uncommon",
-      "type": "recipe"
-    },
-    "102": {
-      "abilities": {
-        "uses": 5
-      },
-      "create": [
-        {
-          "item": "99",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "95",
-          "type": "delete"
-        },
-        {
-          "item": "95",
-          "type": "delete"
-        },
-        {
-          "item": "7",
-          "type": "delete"
-        },
-        {
-          "item": "7",
-          "type": "delete"
-        }
-      ],
-      "rank": "uncommon",
-      "type": "recipe"
-    },
-    "103": {
-      "abilities": {
-        "uses": 5
-      },
-      "create": [
-        {
-          "item": "100",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "95",
-          "type": "delete"
-        },
-        {
-          "item": "95",
-          "type": "delete"
-        },
-        {
-          "item": "8",
-          "type": "delete"
-        },
-        {
-          "item": "8",
-          "type": "delete"
-        }
-      ],
-      "rank": "uncommon",
-      "type": "recipe"
-    },
-    "104": {
-      "act": 30,
-      "class": "Carnivore",
-      "image": "item104",
-      "rank": "uncommon",
-      "type": "eat"
-    },
-    "105": {
-      "abilities": {
-        "uses": 10
-      },
-      "create": [
-        {
-          "item": "104",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "act": 10,
-          "item": "31",
-          "type": "endurance"
-        },
-        {
-          "item": "5",
-          "type": "delete"
-        }
-      ],
-      "rank": "uncommon",
-      "type": "recipe"
-    },
-    "106": {
-      "buffs": {
-        "heal": 20,
-        "mood": 20
-      },
-      "abilities": {
-        "uses": 2
-      },
-      "act": 100,
-      "class": "Carnivore",
-      "image": "item106",
-      "rank": "mystical",
-      "type": "eat"
-    },
-    "107": {
-      "abilities": {
-        "uses": 2
-      },
-      "create": [
-        {
-          "item": "106",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "38",
-          "type": "delete"
-        },
-        {
-          "item": "86",
-          "type": "delete"
-        },
-        {
-          "item": "40",
-          "type": "delete"
-        }
-      ],
-      "rank": "mystical",
-      "type": "recipe"
-    },
-    "108": {
-      "act": 50,
-      "class": "ALL",
-      "image": "item108",
-      "rank": "rare",
-      "type": "eat"
-    },
-    "109": {
-      "abilities": {
-        "uses": 5
-      },
-      "create": [
-        {
-          "item": "108",
-          "type": "create"
-        }
-      ],
-      "image": "recipe",
-      "materials": [
-        {
-          "item": "96",
-          "type": "delete"
-        },
-        {
-          "item": "8",
-          "type": "delete"
-        },
-        {
-          "item": "9",
-          "type": "delete"
-        }
-      ],
-      "rank": "rare",
-      "type": "recipe"
-    },
-    "110": {
-      "col_repit": {
-        "act": 4,
-        "type": "static"
-      },
-      "drop_items": [
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 1,
-            "type": "random"
-          },
-          "id": "38"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 1,
-            "type": "random"
-          },
-          "id": "40"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 1,
-            "type": "random"
-          },
-          "id": "42"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 1,
-            "type": "random"
-          },
-          "id": "48"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "max": 2,
-            "min": 1,
-            "type": "random"
-          },
-          "id": "50"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "max": 10,
-            "min": 1,
-            "type": "random"
-          },
-          "id": "68"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 1,
-            "type": "random"
-          },
-          "id": "69"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 1,
-            "type": "random"
-          },
-          "id": "72"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 1,
-            "type": "random"
-          },
-          "id": "74"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 1,
-            "type": "random"
-          },
-          "id": "77"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "max": 20,
-            "min": 5,
-            "type": "random"
-          },
-          "id": "79"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "max": 10,
-            "min": 2,
-            "type": "random"
-          },
-          "id": "80"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 1,
-            "type": "random"
-          },
-          "id": "81"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 1,
-            "type": "random"
-          },
-          "id": "83"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "max": 10,
-            "min": 5,
-            "type": "random"
-          },
-          "id": "85"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            4,
-            10
-          ],
-          "col": {
-            "max": 5,
-            "min": 2,
-            "type": "random"
-          },
-          "id": "86"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 1,
-            "type": "random"
-          },
-          "id": "88"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            1,
-            10
-          ],
-          "col": {
-            "act": 1,
-            "type": "static"
-          },
-          "id": "90"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 1,
-            "type": "random"
-          },
-          "id": "92"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "max": 5,
-            "min": 2,
-            "type": "random"
-          },
-          "id": "94"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            5,
-            100
-          ],
-          "col": {
-            "max": 30,
-            "min": 10,
-            "type": "random"
-          },
-          "id": "95"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            1,
-            10
-          ],
-          "col": {
-            "max": 6,
-            "min": 2,
-            "type": "random"
-          },
-          "id": "96"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 1,
-            "type": "random"
-          },
-          "id": "98"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 1,
-            "type": "random"
-          },
-          "id": "99"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 1,
-            "type": "random"
-          },
-          "id": "100"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "max": 10,
-            "min": 4,
-            "type": "random"
-          },
-          "id": "104"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            3,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 1,
-            "type": "random"
-          },
-          "id": "106"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            4,
-            10
-          ],
-          "col": {
-            "max": 10,
-            "min": 2,
-            "type": "random"
-          },
-          "id": "108"
-        }
-      ],
-      "image": "case",
-      "rank": "mythical",
-      "type": "case"
-    },
-    "111": {
-      "col_repit": {
-        "act": 4,
-        "type": "static"
-      },
-      "drop_items": [
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "act": 1,
-            "type": "static"
-          },
-          "id": "30"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "act": 1,
-            "type": "static"
-          },
-          "id": "32"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            3,
-            10
-          ],
-          "col": {
-            "act": 1,
-            "type": "static"
-          },
-          "id": "34"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            3,
-            10
-          ],
-          "col": {
-            "act": 1,
-            "type": "static"
-          },
-          "id": "37"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "act": 1,
-            "type": "static"
-          },
-          "id": "39"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 2,
-            "type": "random"
-          },
-          "id": "40"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 2,
-            "type": "random"
-          },
-          "id": "43"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            4,
-            10
-          ],
-          "col": {
-            "act": 1,
-            "type": "static"
-          },
-          "id": "46"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            4,
-            10
-          ],
-          "col": {
-            "act": 1,
-            "type": "static"
-          },
-          "id": "56"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            4,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 2,
-            "type": "random"
-          },
-          "id": "70"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            4,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 2,
-            "type": "random"
-          },
-          "id": "73"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            4,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 2,
-            "type": "random"
-          },
-          "id": "75"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            4,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 2,
-            "type": "random"
-          },
-          "id": "78"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            4,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 2,
-            "type": "random"
-          },
-          "id": "84"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            4,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 2,
-            "type": "random"
-          },
-          "id": "87"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            4,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 2,
-            "type": "random"
-          },
-          "id": "89"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            4,
-            10
-          ],
-          "col": {
-            "max": 3,
-            "min": 1,
-            "type": "random"
-          },
-          "id": "91"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            4,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 2,
-            "type": "random"
-          },
-          "id": "93"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            3,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 2,
-            "type": "random"
-          },
-          "id": "97"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            4,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 2,
-            "type": "random"
-          },
-          "id": "101"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            4,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 2,
-            "type": "random"
-          },
-          "id": "102"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            4,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 2,
-            "type": "random"
-          },
-          "id": "103"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            4,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 2,
-            "type": "random"
-          },
-          "id": "105"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            4,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 2,
-            "type": "random"
-          },
-          "id": "107"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            4,
-            10
-          ],
-          "col": {
-            "max": 4,
-            "min": 2,
-            "type": "random"
-          },
-          "id": "109"
-        }
-      ],
-      "image": "case",
-      "rank": "mythical",
-      "type": "case"
-    },
-    "112": {
-      "col_repit": {
         "act": 1,
-        "type": "static"
-      },
-      "drop_items": [
-        {
-          "abilities": {},
-          "chance": [
-            1,
-            100
-          ],
-          "col": {
-            "act": 1,
-            "type": "static"
-          },
-          "id": "23"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            1,
-            1000
-          ],
-          "col": {
-            "act": 1,
-            "type": "static"
-          },
-          "id": "24"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "act": 1,
-            "type": "static"
-          },
-          "id": "110"
-        },
-        {
-          "abilities": {},
-          "chance": [
-            2,
-            10
-          ],
-          "col": {
-            "act": 1,
-            "type": "static"
-          },
-          "id": "111"
-        }
-      ],
-      "image": "case",
-      "rank": "mythical",
-      "type": "case"
+        "class": "ALL",
+        "image": "item17",
+        "rank": "uncommon",
+        "type": "eat"
     },
-    "113": {
-      "abilities": {
-        "endurance": 100
-      },
-      "image": "item113",
-      "rank": "rare",
-      "type": "journey_ac"
+    "slice_pizza": {
+        "buffs": {
+            "mood": 15
+        },
+        "act": 25,
+        "class": "ALL",
+        "image": "item18",
+        "ns_craft": {
+            "1": {
+                "create": [
+                    "pizza"
+                ],
+                "materials": [
+                    "slice_pizza",
+                    "slice_pizza",
+                    "slice_pizza",
+                    "slice_pizza",
+                    "slice_pizza",
+                    "slice_pizza",
+                    "slice_pizza",
+                    "slice_pizza",
+                    "slice_pizza"
+                ]
+            }
+        },
+        "rank": "common",
+        "type": "eat"
     },
-    "114": {
-      "image": "item113",
-      "rank": "legendary",
-      "type": "special",
-      "class": "reborn"
+    "sweet_pancakes": {
+        "buffs": {
+            "mood": 20
+        },
+        "act": 20,
+        "class": "ALL",
+        "image": "item19",
+        "rank": "common",
+        "type": "eat"
+    },
+    "unusual_egg": {
+        "image": "item20",
+        "inc_type": "unc",
+        "incub_time": 86400,
+        "ns_craft": {
+            "1": {
+                "create": [
+                    "rare_egg"
+                ],
+                "materials": [
+                    "unusual_egg",
+                    "unusual_egg",
+                    "unusual_egg",
+                    "unusual_egg",
+                    "unusual_egg",
+                    "unusual_egg",
+                    "unusual_egg",
+                    "unusual_egg",
+                    "unusual_egg",
+                    "unusual_egg"
+                ]
+            }
+        },
+        "rank": "mystical",
+        "type": "egg"
+    },
+    "regular_egg": {
+        "image": "item21",
+        "inc_type": "com",
+        "incub_time": 1800,
+        "ns_craft": {
+            "1": {
+                "create": [
+                    "unusual_egg"
+                ],
+                "materials": [
+                    "regular_egg",
+                    "regular_egg",
+                    "regular_egg",
+                    "regular_egg",
+                    "regular_egg",
+                    "regular_egg",
+                    "regular_egg",
+                    "regular_egg",
+                    "regular_egg",
+                    "regular_egg"
+                ]
+            }
+        },
+        "rank": "mystical",
+        "type": "egg"
+    },
+    "rare_egg": {
+        "image": "item22",
+        "inc_type": "rar",
+        "incub_time": 172800,
+        "ns_craft": {
+            "1": {
+                "create": [
+                    "mystic_egg"
+                ],
+                "materials": [
+                    "rare_egg",
+                    "rare_egg",
+                    "rare_egg",
+                    "rare_egg",
+                    "rare_egg",
+                    "rare_egg",
+                    "rare_egg",
+                    "rare_egg",
+                    "rare_egg",
+                    "rare_egg"
+                ]
+            }
+        },
+        "rank": "mystical",
+        "type": "egg"
+    },
+    "mystic_egg": {
+        "image": "item23",
+        "inc_type": "mys",
+        "incub_time": 259200,
+        "ns_craft": {
+            "1": {
+                "create": [
+                    "legendary_egg"
+                ],
+                "materials": [
+                    "mystic_egg",
+                    "mystic_egg",
+                    "mystic_egg",
+                    "mystic_egg",
+                    "mystic_egg",
+                    "mystic_egg",
+                    "mystic_egg",
+                    "mystic_egg",
+                    "mystic_egg",
+                    "mystic_egg"
+                ]
+            }
+        },
+        "rank": "mystical",
+        "type": "egg"
+    },
+    "legendary_egg": {
+        "image": "item24",
+        "inc_type": "leg",
+        "incub_time": 396000,
+        "rank": "legendary",
+        "type": "egg"
+    },
+    "blank_piece_paper": {
+        "image": "item25",
+        "rank": "common",
+        "type": "material"
+    },
+    "skin": {
+        "image": "item26",
+        "rank": "common",
+        "type": "material"
+    },
+    "twigs_tree": {
+        "image": "item27",
+        "rank": "common",
+        "type": "material"
+    },
+    "fish_oil": {
+        "image": "item28",
+        "rank": "common",
+        "type": "material"
+    },
+    "leather_clothing": {
+        "abilities": {
+            "endurance": 100
+        },
+        "image": "item29",
+        "rank": "uncommon",
+        "type": "journey_ac"
+    },
+    "clothing_recipe": {
+        "abilities": {
+            "uses": 3
+        },
+        "create": [
+            {
+                "item": "leather_clothing",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "skin",
+                "type": "delete"
+            },
+            {
+                "item": "skin",
+                "type": "delete"
+            },
+            {
+                "item": "skin",
+                "type": "delete"
+            },
+            {
+                "item": "skin",
+                "type": "delete"
+            },
+            {
+                "item": "skin",
+                "type": "delete"
+            }
+        ],
+        "rank": "rare",
+        "type": "recipe"
+    },
+    "torch": {
+        "abilities": {
+            "endurance": 100
+        },
+        "image": "item31",
+        "rank": "uncommon",
+        "type": "collecting_ac"
+    },
+    "torch_recipe": {
+        "abilities": {
+            "uses": 1
+        },
+        "create": [
+            {
+                "item": "torch",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "twigs_tree",
+                "type": "delete"
+            },
+            {
+                "item": "twigs_tree",
+                "type": "delete"
+            },
+            {
+                "item": "twigs_tree",
+                "type": "delete"
+            },
+            {
+                "item": "twigs_tree",
+                "type": "delete"
+            },
+            {
+                "item": "blank_piece_paper",
+                "type": "delete"
+            },
+            {
+                "item": "blank_piece_paper",
+                "type": "delete"
+            },
+            {
+                "item": "blank_piece_paper",
+                "type": "delete"
+            }
+        ],
+        "rank": "rare",
+        "type": "recipe"
+    },
+    "medicinal_drink": {
+        "buffs": {
+            "heal": 25,
+            "mood": -10
+        },
+        "act": 5,
+        "class": "ALL",
+        "image": "item33",
+        "rank": "rare",
+        "type": "eat"
+    },
+    "drink_recipe": {
+        "abilities": {
+            "uses": 10
+        },
+        "create": [
+            {
+                "item": "medicinal_drink",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "fish_oil",
+                "type": "delete"
+            },
+            {
+                "item": "fish_oil",
+                "type": "delete"
+            },
+            {
+                "item": "fish_oil",
+                "type": "delete"
+            },
+            {
+                "item": "fish_oil",
+                "type": "delete"
+            },
+            {
+                "item": "fish_oil",
+                "type": "delete"
+            }
+        ],
+        "rank": "rare",
+        "type": "recipe"
+    },
+    "gourmet_herbs": {
+        "act": 45,
+        "class": "Herbivore",
+        "image": "item35",
+        "rank": "rare",
+        "type": "eat"
+    },
+    "tea": {
+        "buffs": {
+            "energy": 25
+        },
+        "act": -30,
+        "class": "ALL",
+        "image": "item36",
+        "rank": "rare",
+        "type": "eat"
+    },
+    "tea_recipe": {
+        "abilities": {
+            "uses": 10
+        },
+        "create": [
+            {
+                "item": "tea",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "gourmet_herbs",
+                "type": "delete"
+            },
+            {
+                "item": "gourmet_herbs",
+                "type": "delete"
+            },
+            {
+                "item": "gourmet_herbs",
+                "type": "delete"
+            },
+            {
+                "item": "gourmet_herbs",
+                "type": "delete"
+            },
+            {
+                "item": "gourmet_herbs",
+                "type": "delete"
+            }
+        ],
+        "rank": "rare",
+        "type": "recipe"
+    },
+    "roasted_meat": {
+        "act": 40,
+        "class": "Carnivore",
+        "image": "item38",
+        "rank": "rare",
+        "type": "eat"
+    },
+    "meat_recipe": {
+        "abilities": {
+            "uses": 10
+        },
+        "create": [
+            {
+                "item": "roasted_meat",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "act": 10,
+                "item": "torch",
+                "type": "endurance"
+            },
+            {
+                "item": "wolf_meat",
+                "type": "delete"
+            },
+            {
+                "item": "wolf_meat",
+                "type": "delete"
+            }
+        ],
+        "rank": "rare",
+        "type": "recipe"
+    },
+    "salad": {
+        "act": 70,
+        "class": "Herbivore",
+        "image": "item40",
+        "rank": "rare",
+        "type": "eat"
+    },
+    "salad_recipe": {
+        "abilities": {
+            "uses": 40
+        },
+        "create": [
+            {
+                "item": "salad",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "bunch_herbs",
+                "type": "delete"
+            },
+            {
+                "item": "grasses_from_fields",
+                "type": "delete"
+            },
+            {
+                "item": "berries",
+                "type": "delete"
+            }
+        ],
+        "rank": "rare",
+        "type": "recipe"
+    },
+    "soup": {
+        "act": 55,
+        "class": "Flying",
+        "image": "item42",
+        "rank": "rare",
+        "type": "eat"
+    },
+    "soup_recipe": {
+        "abilities": {
+            "uses": 40
+        },
+        "create": [
+            {
+                "item": "soup",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "seafood",
+                "type": "delete"
+            },
+            {
+                "item": "seafood",
+                "type": "delete"
+            },
+            {
+                "item": "seafood",
+                "type": "delete"
+            },
+            {
+                "act": 10,
+                "item": "timer",
+                "type": "endurance"
+            }
+        ],
+        "rank": "rare",
+        "type": "recipe"
+    },
+    "board_games": {
+        "abilities": {
+            "endurance": 100
+        },
+        "image": "item44",
+        "rank": "uncommon",
+        "type": "game_ac"
+    },
+    "hiking_bag": {
+        "abilities": {
+            "endurance": 100
+        },
+        "image": "item45",
+        "rank": "rare",
+        "type": "journey_ac"
+    },
+    "pouch_recipe": {
+        "abilities": {
+            "uses": 2
+        },
+        "create": [
+            {
+                "item": "hiking_bag",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "skin",
+                "type": "delete"
+            },
+            {
+                "item": "skin",
+                "type": "delete"
+            },
+            {
+                "item": "skin",
+                "type": "delete"
+            },
+            {
+                "item": "twigs_tree",
+                "type": "delete"
+            },
+            {
+                "item": "twigs_tree",
+                "type": "delete"
+            },
+            {
+                "act": 30,
+                "item": "tooling",
+                "type": "endurance"
+            }
+        ],
+        "rank": "rare",
+        "type": "recipe"
+    },
+    "set_cookies": {
+        "buffs": {
+            "mood": 10
+        },
+        "abilities": {
+            "uses": 15
+        },
+        "act": 6,
+        "class": "ALL",
+        "image": "item47",
+        "rank": "uncommon",
+        "type": "eat"
+    },
+    "pizza": {
+        "buffs": {
+            "mood": 15
+        },
+        "abilities": {
+            "uses": 9
+        },
+        "act": 25,
+        "class": "ALL",
+        "image": "item48",
+        "rank": "uncommon",
+        "type": "eat"
+    },
+    "magic_stone": {
+        "abilities": {
+            "mana": 0
+        },
+        "image": "item49",
+        "rank": "rare",
+        "type": "material"
+    },
+    "taco": {
+        "buffs": {
+            "mood": 40
+        },
+        "act": 75,
+        "class": "ALL",
+        "image": "item50",
+        "rank": "rare",
+        "type": "eat"
+    },
+    "bone": {
+        "image": "item51",
+        "rank": "common",
+        "type": "material"
+    },
+    "iron": {
+        "image": "item52",
+        "rank": "uncommon",
+        "type": "material"
+    },
+    "bone_sword": {
+        "abilities": {
+            "endurance": 50
+        },
+        "class": "near",
+        "damage": {
+            "max": 3,
+            "min": 1
+        },
+        "image": "item53",
+        "rank": "uncommon",
+        "type": "weapon"
+    },
+    "bone_arrow": {
+        "add_damage": 0,
+        "add_effects": [],
+        "image": "item54",
+        "rank": "uncommon",
+        "type": "ammunition"
+    },
+    "bone_onions": {
+        "abilities": {
+            "endurance": 70
+        },
+        "ammunition": [
+            "bone_arrow"
+        ],
+        "class": "far",
+        "damage": {
+            "max": 5,
+            "min": 1
+        },
+        "image": "item55",
+        "rank": "uncommon",
+        "type": "weapon"
+    },
+    "taco_recipe": {
+        "abilities": {
+            "uses": 5
+        },
+        "create": [
+            {
+                "item": "taco",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "grasses_from_fields",
+                "type": "delete"
+            },
+            {
+                "item": "grasses_from_fields",
+                "type": "delete"
+            },
+            {
+                "item": "grasses_from_fields",
+                "type": "delete"
+            },
+            {
+                "item": "wolf_meat",
+                "type": "delete"
+            },
+            {
+                "item": "wolf_meat",
+                "type": "delete"
+            }
+        ],
+        "rank": "rare",
+        "type": "recipe"
+    },
+    "sword_recipe": {
+        "abilities": {
+            "uses": 2
+        },
+        "create": [
+            {
+                "item": "bone_sword",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "act": 30,
+                "item": "tooling",
+                "type": "endurance"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            }
+        ],
+        "rank": "rare",
+        "type": "recipe"
+    },
+    "onion_recipe": {
+        "abilities": {
+            "uses": 2
+        },
+        "create": [
+            {
+                "item": "bone_onions",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "act": 30,
+                "item": "tooling",
+                "type": "endurance"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            }
+        ],
+        "rank": "rare",
+        "type": "recipe"
+    },
+    "arrow_recipe": {
+        "abilities": {
+            "uses": 11
+        },
+        "create": [
+            {
+                "abilities": {
+                    "stack": 3
+                },
+                "item": "bone_arrow",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "act": 10,
+                "item": "tooling",
+                "type": "endurance"
+            }
+        ],
+        "rank": "rare",
+        "type": "recipe"
+    },
+    "regular_backpack": {
+        "capacity": 10,
+        "image": "item45",
+        "rank": "rare",
+        "type": "backpack"
+    },
+    "backpack_recipe": {
+        "abilities": {
+            "uses": 2
+        },
+        "create": [
+            {
+                "item": "regular_backpack",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "skin",
+                "type": "delete"
+            },
+            {
+                "item": "skin",
+                "type": "delete"
+            },
+            {
+                "item": "skin",
+                "type": "delete"
+            },
+            {
+                "item": "skin",
+                "type": "delete"
+            },
+            {
+                "item": "skin",
+                "type": "delete"
+            },
+            {
+                "item": "skin",
+                "type": "delete"
+            },
+            {
+                "item": "skin",
+                "type": "delete"
+            },
+            {
+                "item": "skin",
+                "type": "delete"
+            },
+            {
+                "item": "skin",
+                "type": "delete"
+            },
+            {
+                "item": "skin",
+                "type": "delete"
+            },
+            {
+                "item": "skin",
+                "type": "delete"
+            },
+            {
+                "item": "skin",
+                "type": "delete"
+            },
+            {
+                "item": "skin",
+                "type": "delete"
+            },
+            {
+                "item": "skin",
+                "type": "delete"
+            },
+            {
+                "item": "skin",
+                "type": "delete"
+            }
+        ],
+        "rank": "rare",
+        "type": "recipe"
+    },
+    "bone_shield": {
+        "abilities": {
+            "endurance": 120
+        },
+        "image": "item62",
+        "rank": "uncommon",
+        "reflection": 2,
+        "type": "armor"
+    },
+    "shield_recipe": {
+        "abilities": {
+            "uses": 2
+        },
+        "create": [
+            {
+                "item": "bone_shield",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            }
+        ],
+        "rank": "uncommon",
+        "type": "recipe"
+    },
+    "bone_pickaxe": {
+        "abilities": {
+            "endurance": 20
+        },
+        "class": "near",
+        "damage": {
+            "max": 1,
+            "min": 0
+        },
+        "effectiv": 2,
+        "image": "item64",
+        "rank": "uncommon",
+        "type": "weapon"
+    },
+    "pickaxe_recipe": {
+        "abilities": {
+            "uses": 2
+        },
+        "create": [
+            {
+                "item": "bone_pickaxe",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            },
+            {
+                "item": "bone",
+                "type": "delete"
+            }
+        ],
+        "rank": "uncommon",
+        "type": "recipe"
+    },
+    "freezing": {
+        "image": "item66",
+        "rank": "mythical",
+        "time": "forever",
+        "type": "special",
+        "class": "freezing"
+    },
+    "defrost": {
+        "image": "item67",
+        "rank": "mythical",
+        "type": "special",
+        "class": "defrosting"
+    },
+    "chocolate": {
+        "buffs": {
+            "energy": 5
+        },
+        "act": 10,
+        "class": "ALL",
+        "image": "item68",
+        "rank": "common",
+        "type": "eat"
+    },
+    "candy": {
+        "buffs": {
+            "energy": 2,
+            "mood": 5
+        },
+        "abilities": {
+            "uses": 10
+        },
+        "act": 3,
+        "class": "ALL",
+        "image": "item69",
+        "rank": "uncommon",
+        "type": "eat"
+    },
+    "candy_recipe": {
+        "abilities": {
+            "uses": 5
+        },
+        "create": [
+            {
+                "item": "candy",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "chocolate",
+                "type": "delete"
+            },
+            {
+                "item": "chocolate",
+                "type": "delete"
+            }
+        ],
+        "rank": "uncommon",
+        "type": "recipe"
+    },
+    "maize": {
+        "act": 10,
+        "class": "Herbivore",
+        "image": "item71",
+        "rank": "common",
+        "type": "eat"
+    },
+    "popcorn": {
+        "buffs": {
+            "mood": 25
+        },
+        "act": 20,
+        "class": "ALL",
+        "image": "item72",
+        "rank": "uncommon",
+        "type": "eat"
+    },
+    "popcorn_recipe": {
+        "abilities": {
+            "uses": 5
+        },
+        "create": [
+            {
+                "item": "popcorn",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "act": 5,
+                "item": "torch",
+                "type": "endurance"
+            },
+            {
+                "item": "maize",
+                "type": "delete"
+            },
+            {
+                "item": "maize",
+                "type": "delete"
+            }
+        ],
+        "rank": "uncommon",
+        "type": "recipe"
+    },
+    "juice": {
+        "buffs": {
+            "mood": 20
+        },
+        "act": 10,
+        "class": "ALL",
+        "image": "item74",
+        "rank": "uncommon",
+        "type": "eat"
+    },
+    "juice_recipe": {
+        "abilities": {
+            "uses": 10
+        },
+        "create": [
+            {
+                "item": "juice",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "berries",
+                "type": "delete"
+            }
+        ],
+        "rank": "uncommon",
+        "type": "recipe"
+    },
+    "spices": {
+        "buffs": {
+            "heal": -2
+        },
+        "act": 5,
+        "class": "Herbivore",
+        "image": "item76",
+        "rank": "common",
+        "type": "eat"
+    },
+    "spicy_steak": {
+        "act": 50,
+        "class": "Carnivore",
+        "image": "item77",
+        "rank": "rare",
+        "type": "eat"
+    },
+    "steak_recipe": {
+        "abilities": {
+            "uses": 5
+        },
+        "create": [
+            {
+                "item": "spicy_steak",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "act": 10,
+                "item": "torch",
+                "type": "endurance"
+            },
+            {
+                "item": "wolf_meat",
+                "type": "delete"
+            },
+            {
+                "item": "grasses_from_fields",
+                "type": "delete"
+            },
+            {
+                "item": "spices",
+                "type": "delete"
+            }
+        ],
+        "rank": "rare",
+        "type": "recipe"
+    },
+    "banana": {
+        "act": 15,
+        "class": "Herbivore",
+        "image": "item79",
+        "rank": "common",
+        "type": "eat"
+    },
+    "crab": {
+        "act": 50,
+        "class": "Flying",
+        "image": "item80",
+        "rank": "rare",
+        "type": "eat"
+    },
+    "coffee": {
+        "buffs": {
+            "energy": 30
+        },
+        "act": 5,
+        "class": "ALL",
+        "image": "item81",
+        "rank": "rare",
+        "type": "eat"
+    },
+    "mushroom": {
+        "buffs": {
+            "heal": -2,
+            "mood": 10
+        },
+        "act": 15,
+        "class": "Herbivore",
+        "image": "item82",
+        "rank": "uncommon",
+        "type": "eat"
+    },
+    "broth": {
+        "buffs": {
+            "heal": 10
+        },
+        "act": 50,
+        "class": "ALL",
+        "image": "item83",
+        "rank": "rare",
+        "type": "eat"
+    },
+    "broth_recipe": {
+        "abilities": {
+            "uses": 5
+        },
+        "create": [
+            {
+                "item": "broth",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "act": 10,
+                "item": "torch",
+                "type": "endurance"
+            },
+            {
+                "item": "wild_boar_meat",
+                "type": "delete"
+            },
+            {
+                "item": "wild_boar_meat",
+                "type": "delete"
+            }
+        ],
+        "rank": "rare",
+        "type": "recipe"
+    },
+    "rice": {
+        "act": 10,
+        "class": "Herbivore",
+        "image": "item85",
+        "rank": "common",
+        "type": "eat"
+    },
+    "sushi": {
+        "act": 30,
+        "class": "ALL",
+        "image": "item86",
+        "rank": "common",
+        "type": "eat"
+    },
+    "sushi_recipe": {
+        "abilities": {
+            "uses": 5
+        },
+        "create": [
+            {
+                "item": "sushi",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "rice",
+                "type": "delete"
+            },
+            {
+                "item": "fish",
+                "type": "delete"
+            }
+        ],
+        "rank": "rare",
+        "type": "recipe"
+    },
+    "hot_chocolate": {
+        "buffs": {
+            "energy": 20
+        },
+        "act": 10,
+        "class": "ALL",
+        "image": "item88",
+        "rank": "uncommon",
+        "type": "eat"
+    },
+    "hot_chocolate_recipe": {
+        "abilities": {
+            "uses": 5
+        },
+        "create": [
+            {
+                "item": "hot_chocolate",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "chocolate",
+                "type": "delete"
+            },
+            {
+                "item": "chocolate",
+                "type": "delete"
+            }
+        ],
+        "rank": "uncommon",
+        "type": "recipe"
+    },
+    "cake": {
+        "buffs": {
+            "mood": 100
+        },
+        "abilities": {
+            "uses": 6
+        },
+        "act": 40,
+        "class": "ALL",
+        "image": "item90",
+        "rank": "mystical",
+        "type": "eat"
+    },
+    "cake_recipe": {
+        "abilities": {
+            "uses": 2
+        },
+        "create": [
+            {
+                "item": "cake",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "chocolate",
+                "type": "delete"
+            },
+            {
+                "item": "chocolate",
+                "type": "delete"
+            },
+            {
+                "item": "chocolate",
+                "type": "delete"
+            },
+            {
+                "item": "chocolate",
+                "type": "delete"
+            },
+            {
+                "item": "berries",
+                "type": "delete"
+            },
+            {
+                "item": "berries",
+                "type": "delete"
+            },
+            {
+                "item": "berries",
+                "type": "delete"
+            },
+            {
+                "item": "berries",
+                "type": "delete"
+            },
+            {
+                "item": "berries",
+                "type": "delete"
+            },
+            {
+                "item": "jar_honey",
+                "type": "delete"
+            },
+            {
+                "item": "cookie",
+                "type": "delete"
+            },
+            {
+                "item": "cookie",
+                "type": "delete"
+            }
+        ],
+        "rank": "mystical",
+        "type": "recipe"
+    },
+    "curry": {
+        "act": 50,
+        "class": "ALL",
+        "image": "item92",
+        "rank": "rare",
+        "type": "eat"
+    },
+    "curry_recipe": {
+        "abilities": {
+            "uses": 5
+        },
+        "create": [
+            {
+                "item": "curry",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "rice",
+                "type": "delete"
+            },
+            {
+                "item": "rice",
+                "type": "delete"
+            },
+            {
+                "item": "spices",
+                "type": "delete"
+            },
+            {
+                "item": "spices",
+                "type": "delete"
+            }
+        ],
+        "rank": "rare",
+        "type": "recipe"
+    },
+    "dango": {
+        "buffs": {
+            "mood": 15
+        },
+        "act": 20,
+        "class": "ALL",
+        "image": "item94",
+        "rank": "rare",
+        "type": "eat"
+    },
+    "grain": {
+        "act": 10,
+        "class": "Herbivore",
+        "image": "item95",
+        "rank": "common",
+        "type": "eat"
+    },
+    "bread": {
+        "act": 30,
+        "class": "ALL",
+        "image": "item96",
+        "rank": "uncommon",
+        "type": "eat"
+    },
+    "bread_recipe": {
+        "abilities": {
+            "uses": 10
+        },
+        "create": [
+            {
+                "item": "bread",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "grain",
+                "type": "delete"
+            },
+            {
+                "item": "grain",
+                "type": "delete"
+            }
+        ],
+        "rank": "uncommon",
+        "type": "recipe"
+    },
+    "berry_pie": {
+        "buffs": {
+            "mood": 20
+        },
+        "act": 50,
+        "class": "Herbivore",
+        "image": "item98",
+        "rank": "uncommon",
+        "type": "eat"
+    },
+    "fish_cake": {
+        "buffs": {
+            "energy": 10
+        },
+        "act": 60,
+        "class": "Flying",
+        "image": "item99",
+        "rank": "uncommon",
+        "type": "eat"
+    },
+    "meat_pie": {
+        "buffs": {
+            "heal": 10
+        },
+        "act": 60,
+        "class": "Carnivore",
+        "image": "item100",
+        "rank": "uncommon",
+        "type": "eat"
+    },
+    "berry_pie_recipe": {
+        "abilities": {
+            "uses": 5
+        },
+        "create": [
+            {
+                "item": "berry_pie",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "grain",
+                "type": "delete"
+            },
+            {
+                "item": "grain",
+                "type": "delete"
+            },
+            {
+                "item": "berries",
+                "type": "delete"
+            },
+            {
+                "item": "berries",
+                "type": "delete"
+            }
+        ],
+        "rank": "uncommon",
+        "type": "recipe"
+    },
+    "fish_pie_recipe": {
+        "abilities": {
+            "uses": 5
+        },
+        "create": [
+            {
+                "item": "fish_cake",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "grain",
+                "type": "delete"
+            },
+            {
+                "item": "grain",
+                "type": "delete"
+            },
+            {
+                "item": "fish",
+                "type": "delete"
+            },
+            {
+                "item": "fish",
+                "type": "delete"
+            }
+        ],
+        "rank": "uncommon",
+        "type": "recipe"
+    },
+    "meat_pie_recipe": {
+        "abilities": {
+            "uses": 5
+        },
+        "create": [
+            {
+                "item": "meat_pie",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "grain",
+                "type": "delete"
+            },
+            {
+                "item": "grain",
+                "type": "delete"
+            },
+            {
+                "item": "wolf_meat",
+                "type": "delete"
+            },
+            {
+                "item": "wolf_meat",
+                "type": "delete"
+            }
+        ],
+        "rank": "uncommon",
+        "type": "recipe"
+    },
+    "bacon": {
+        "act": 30,
+        "class": "Carnivore",
+        "image": "item104",
+        "rank": "uncommon",
+        "type": "eat"
+    },
+    "bacon_recipe": {
+        "abilities": {
+            "uses": 10
+        },
+        "create": [
+            {
+                "item": "bacon",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "act": 10,
+                "item": "torch",
+                "type": "endurance"
+            },
+            {
+                "item": "wild_boar_meat",
+                "type": "delete"
+            }
+        ],
+        "rank": "uncommon",
+        "type": "recipe"
+    },
+    "bento": {
+        "buffs": {
+            "heal": 20,
+            "mood": 20
+        },
+        "abilities": {
+            "uses": 2
+        },
+        "act": 100,
+        "class": "Carnivore",
+        "image": "item106",
+        "rank": "mystical",
+        "type": "eat"
+    },
+    "bento_recipe": {
+        "abilities": {
+            "uses": 2
+        },
+        "create": [
+            {
+                "item": "bento",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "roasted_meat",
+                "type": "delete"
+            },
+            {
+                "item": "sushi",
+                "type": "delete"
+            },
+            {
+                "item": "salad",
+                "type": "delete"
+            }
+        ],
+        "rank": "mystical",
+        "type": "recipe"
+    },
+    "sandwich": {
+        "act": 50,
+        "class": "ALL",
+        "image": "item108",
+        "rank": "rare",
+        "type": "eat"
+    },
+    "sandwich_recipe": {
+        "abilities": {
+            "uses": 5
+        },
+        "create": [
+            {
+                "item": "sandwich",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "bread",
+                "type": "delete"
+            },
+            {
+                "item": "wolf_meat",
+                "type": "delete"
+            },
+            {
+                "item": "grasses_from_fields",
+                "type": "delete"
+            }
+        ],
+        "rank": "rare",
+        "type": "recipe"
+    },
+    "chest_food": {
+        "col_repit": {
+            "act": 4,
+            "type": "static"
+        },
+        "drop_items": [
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 1,
+                    "type": "random"
+                },
+                "id": "roasted_meat"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 1,
+                    "type": "random"
+                },
+                "id": "salad"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 1,
+                    "type": "random"
+                },
+                "id": "soup"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 1,
+                    "type": "random"
+                },
+                "id": "pizza"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "max": 2,
+                    "min": 1,
+                    "type": "random"
+                },
+                "id": "taco"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "max": 10,
+                    "min": 1,
+                    "type": "random"
+                },
+                "id": "chocolate"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 1,
+                    "type": "random"
+                },
+                "id": "candy"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 1,
+                    "type": "random"
+                },
+                "id": "popcorn"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 1,
+                    "type": "random"
+                },
+                "id": "juice"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 1,
+                    "type": "random"
+                },
+                "id": "spicy_steak"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "max": 20,
+                    "min": 5,
+                    "type": "random"
+                },
+                "id": "banana"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "max": 10,
+                    "min": 2,
+                    "type": "random"
+                },
+                "id": "crab"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 1,
+                    "type": "random"
+                },
+                "id": "coffee"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 1,
+                    "type": "random"
+                },
+                "id": "broth"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "max": 10,
+                    "min": 5,
+                    "type": "random"
+                },
+                "id": "rice"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    4,
+                    10
+                ],
+                "col": {
+                    "max": 5,
+                    "min": 2,
+                    "type": "random"
+                },
+                "id": "sushi"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 1,
+                    "type": "random"
+                },
+                "id": "hot_chocolate"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    1,
+                    10
+                ],
+                "col": {
+                    "act": 1,
+                    "type": "static"
+                },
+                "id": "cake"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 1,
+                    "type": "random"
+                },
+                "id": "curry"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "max": 5,
+                    "min": 2,
+                    "type": "random"
+                },
+                "id": "dango"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    5,
+                    100
+                ],
+                "col": {
+                    "max": 30,
+                    "min": 10,
+                    "type": "random"
+                },
+                "id": "grain"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    1,
+                    10
+                ],
+                "col": {
+                    "max": 6,
+                    "min": 2,
+                    "type": "random"
+                },
+                "id": "bread"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 1,
+                    "type": "random"
+                },
+                "id": "berry_pie"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 1,
+                    "type": "random"
+                },
+                "id": "fish_cake"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 1,
+                    "type": "random"
+                },
+                "id": "meat_pie"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "max": 10,
+                    "min": 4,
+                    "type": "random"
+                },
+                "id": "bacon"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    3,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 1,
+                    "type": "random"
+                },
+                "id": "bento"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    4,
+                    10
+                ],
+                "col": {
+                    "max": 10,
+                    "min": 2,
+                    "type": "random"
+                },
+                "id": "sandwich"
+            }
+        ],
+        "image": "case",
+        "rank": "mythical",
+        "type": "case"
+    },
+    "recipe_chest": {
+        "col_repit": {
+            "act": 4,
+            "type": "static"
+        },
+        "drop_items": [
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "act": 1,
+                    "type": "static"
+                },
+                "id": "clothing_recipe"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "act": 1,
+                    "type": "static"
+                },
+                "id": "torch_recipe"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    3,
+                    10
+                ],
+                "col": {
+                    "act": 1,
+                    "type": "static"
+                },
+                "id": "drink_recipe"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    3,
+                    10
+                ],
+                "col": {
+                    "act": 1,
+                    "type": "static"
+                },
+                "id": "tea_recipe"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "act": 1,
+                    "type": "static"
+                },
+                "id": "meat_recipe"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 2,
+                    "type": "random"
+                },
+                "id": "salad"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 2,
+                    "type": "random"
+                },
+                "id": "soup_recipe"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    4,
+                    10
+                ],
+                "col": {
+                    "act": 1,
+                    "type": "static"
+                },
+                "id": "pouch_recipe"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    4,
+                    10
+                ],
+                "col": {
+                    "act": 1,
+                    "type": "static"
+                },
+                "id": "taco_recipe"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    4,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 2,
+                    "type": "random"
+                },
+                "id": "candy_recipe"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    4,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 2,
+                    "type": "random"
+                },
+                "id": "popcorn_recipe"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    4,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 2,
+                    "type": "random"
+                },
+                "id": "juice_recipe"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    4,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 2,
+                    "type": "random"
+                },
+                "id": "steak_recipe"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    4,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 2,
+                    "type": "random"
+                },
+                "id": "broth_recipe"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    4,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 2,
+                    "type": "random"
+                },
+                "id": "sushi_recipe"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    4,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 2,
+                    "type": "random"
+                },
+                "id": "hot_chocolate_recipe"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    4,
+                    10
+                ],
+                "col": {
+                    "max": 3,
+                    "min": 1,
+                    "type": "random"
+                },
+                "id": "cake_recipe"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    4,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 2,
+                    "type": "random"
+                },
+                "id": "curry_recipe"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    3,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 2,
+                    "type": "random"
+                },
+                "id": "bread_recipe"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    4,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 2,
+                    "type": "random"
+                },
+                "id": "berry_pie_recipe"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    4,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 2,
+                    "type": "random"
+                },
+                "id": "fish_pie_recipe"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    4,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 2,
+                    "type": "random"
+                },
+                "id": "meat_pie_recipe"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    4,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 2,
+                    "type": "random"
+                },
+                "id": "bacon_recipe"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    4,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 2,
+                    "type": "random"
+                },
+                "id": "bento_recipe"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    4,
+                    10
+                ],
+                "col": {
+                    "max": 4,
+                    "min": 2,
+                    "type": "random"
+                },
+                "id": "sandwich_recipe"
+            }
+        ],
+        "image": "case",
+        "rank": "mythical",
+        "type": "case"
+    },
+    "gift_2023": {
+        "col_repit": {
+            "act": 1,
+            "type": "static"
+        },
+        "drop_items": [
+            {
+                "abilities": {},
+                "chance": [
+                    1,
+                    100
+                ],
+                "col": {
+                    "act": 1,
+                    "type": "static"
+                },
+                "id": "mystic_egg"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    1,
+                    1000
+                ],
+                "col": {
+                    "act": 1,
+                    "type": "static"
+                },
+                "id": "legendary_egg"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "act": 1,
+                    "type": "static"
+                },
+                "id": "chest_food"
+            },
+            {
+                "abilities": {},
+                "chance": [
+                    2,
+                    10
+                ],
+                "col": {
+                    "act": 1,
+                    "type": "static"
+                },
+                "id": "recipe_chest"
+            }
+        ],
+        "image": "case",
+        "rank": "mythical",
+        "type": "case"
+    },
+    "rod": {
+        "abilities": {
+            "endurance": 100
+        },
+        "image": "item113",
+        "rank": "rare",
+        "type": "journey_ac"
+    },
+    "stone_resurrection": {
+        "image": "item113",
+        "rank": "legendary",
+        "type": "special",
+        "class": "reborn"
     },
     "ale": {
-      "buffs": {
-        "heal": 5,
-        "energy": 5,
-        "mood": 5
-      },
-      "act": 1,
-      "class": "ALL",
-      "image": "item114",
-      "rank": "common",
-      "type": "eat"
-  }
+        "buffs": {
+            "heal": 5,
+            "energy": 5,
+            "mood": 5
+        },
+        "act": 1,
+        "class": "ALL",
+        "image": "item114",
+        "rank": "common",
+        "type": "eat"
+    }
 }
