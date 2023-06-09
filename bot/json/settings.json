@@ -223,7 +223,7 @@
         "rescue_kit": {
             "type": "kit",
             "cost": {
-                "jar_honey": {
+                "1": {
                     "USD": 0.5,
                     "RUB": 40
                 }
@@ -233,7 +233,7 @@
         "reborn": {
             "type": "kit",
             "cost": {
-                "jar_honey": {
+                "1": {
                     "USD": 0.6,
                     "RUB": 50
                 }
