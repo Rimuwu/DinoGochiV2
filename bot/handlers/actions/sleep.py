@@ -35,7 +35,7 @@ async def short_sleep(number: int, transmitted_data: dict):
             await bot.send_message(chatid, t('alredy_busy', lang), reply_markup=m(userid, 'last_menu', lang))
             return
 
-    await check_accessory(dino, '16', True)
+    await check_accessory(dino, 'bear', True)
     start_sleep(dino._id, 'short', number * 60)
     await bot.send_message(chatid, 
                 t('put_to_bed.sleep', lang),
@@ -103,7 +103,7 @@ async def put_to_bed(message: Message):
                                     t('put_to_bed.dont_want', lang)
                                     )
         else:
-            if not await check_accessory(last_dino, '16'):
+            if not await check_accessory(last_dino, 'bear'):
                 # Если нет мишки, то просто длинный сон
                 await long_sleep(last_dino, userid, lang)
             else:
