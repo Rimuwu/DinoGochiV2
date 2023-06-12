@@ -2,7 +2,7 @@
     "collections": {
         "bot": ["users", "dinosaurs", "items", "products", "management", "dead_dinos"],
         "tasks": ["game", "incubation", "journey", "sleep", "collecting", "subscriptions", "statistic"],
-        "connections": ["referals", "friends", "dino_owners", "dino_mood", "tavern", "daily_reward"]
+        "connections": ["referals", "friends", "dino_owners", "dino_mood", "tavern", "daily_reward", "quests"]
     },
 
     "please_create_this": {
@@ -298,5 +298,5 @@
     "dead_dialog_item": "mysterious_egg",
 
     "inspiration_bonus": 2,
-    "event_points": 10
+    "event_points": 20
 } 
