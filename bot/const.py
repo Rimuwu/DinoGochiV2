@@ -3,7 +3,7 @@
 import json
 
 with open('bot/json/items.json', encoding='utf-8') as f: 
-    ITEMS = json.load(f)
+    ITEMS = json.load(f) # type: dict
 
 with open('bot/json/dino_data.json', encoding='utf-8') as f: 
     DINOS = json.load(f) # type: dict
