@@ -40,7 +40,7 @@ async def start_game_ent(userid: int, chatid: int,
     last_game = '-'
     need = ['console', 'snake', 'pin-pong', 'ball']
 
-    if await check_accessory(dino, '44'):
+    if await check_accessory(dino, 'board_games'):
         need += ["puzzles", "chess", "jenga", "dnd"]
 
     if premium(userid):
