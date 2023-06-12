@@ -16,7 +16,7 @@ collecting_task = mongo_client.tasks.collecting
 dinosaurs = mongo_client.bot.dinosaurs
 dino_owners = mongo_client.connections.dino_owners
 
-REPEAT_MINUTS = 2
+REPEAT_MINUTS = 10
 ENERGY_DOWN = 0.03 * REPEAT_MINUTS
 ENERGY_DOWN2 = 0.5 * REPEAT_MINUTS
 LVL_CHANCE = 0.125 * REPEAT_MINUTS
@@ -48,27 +48,27 @@ async def collecting_process():
                 if random.uniform(0, 1) <= ENERGY_DOWN2: 
                     dino = dinosaurs.find_one({'_id': coll_data['dino_id']})
                     if dino: await mutate_dino_stat(dino, 'energy', -1)
-            
+
             dino = Dino(coll_data['dino_id'])
-            if await check_accessory(dino, '15'): chance = 0.25
+            if await check_accessory(dino, 'tooling'): chance = 0.25
             else: chance = 0.2
 
             res = check_inspiration(coll_data['dino_id'], 'collecting')
             if res: chance *= 2
-            
+
             if random.uniform(0, 1) <= chance: 
                 await experience_enhancement(coll_data['sended'], 
                                              randint(1, 5))
 
             if random.uniform(0, 1) <= COLLECTING_CHANCE:
-                await check_accessory(dino, '15', True)
+                await check_accessory(dino, 'tooling', True)
 
                 items = GAME_SETTINGS['collecting_items'][coll_data["collecting_type"]]
                 count = randint(1, 3)
-                
+
                 if coll_data['now_count'] + count > coll_data['max_count']:
                     count = coll_data['max_count'] - coll_data['now_count']
-                
+
                 for _ in range(count):
                     rar = random.choices(list(items.keys()), [50, 25, 15, 9, 1])[0]
                     item = random.choice(items[rar])
@@ -76,18 +76,12 @@ async def collecting_process():
                     if item in coll_data['items']:
                         coll_data['items'][item] += 1
                     else: coll_data['items'][item] = 1
-                
-                collecting_task.update_one({'_id': coll_data['_id']}, 
-                                            {'$set': {
-                                                'items': coll_data['items']
-                                                    },
-                                            '$inc': {'now_count': count}
-                                                })
-                    
+
+                collecting_task.update_one({'_id': coll_data['_id']}, {'$set': {'items': coll_data['items'] },'$inc': {'now_count': count}})
+
                 if coll_data['now_count'] + count == coll_data['max_count']:
                     await stop_collect(coll_data)
-                
-                
+
 if __name__ != '__main__':
     if conf.active_tasks:
         add_task(collecting_process, REPEAT_MINUTS * 60.0, 1.0)
