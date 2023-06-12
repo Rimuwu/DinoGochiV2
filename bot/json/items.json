@@ -2787,7 +2787,7 @@
         },
         "image": "item113",
         "rank": "rare",
-        "type": "journey_ac"
+        "type": "collecting_ac"
     },
     "stone_resurrection": {
         "image": "item113",
@@ -2806,5 +2806,26 @@
         "image": "item114",
         "rank": "common",
         "type": "eat"
+    },
+    "net": {
+        "abilities": {
+            "endurance": 100
+        },
+        "image": "recipe",
+        "rank": "rare",
+        "type": "collecting_ac"
+    },
+    "basket": {
+        "abilities": {
+            "endurance": 100
+        },
+        "image": "recipe",
+        "rank": "rare",
+        "type": "collecting_ac"
+    },
+    "rope": {
+        "image": "recipe",
+        "rank": "common",
+        "type": "material"
     }
 }
