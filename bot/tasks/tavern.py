@@ -45,4 +45,4 @@ async def tavern_life():
 
 if __name__ != '__main__':
     if conf.active_tasks:
-        add_task(tavern_life, 1.0, 1.0) # 180.0, 10.0
+        add_task(tavern_life, 180.0, 10.0) # 180.0, 10.0
