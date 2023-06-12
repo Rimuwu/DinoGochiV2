@@ -52,13 +52,9 @@ class User:
         self.xp = 0
 
         self.dungeon = { 
-            'statistics': [],
-            'quests': {
-                'activ_quests': [],
-                'max_quests': 5,
-                'ended': 0
-                }
-            }
+            'quest_ended': 0,
+            'dungeon_ended': 0
+        }
         
         self.UpdateData(users.find_one({"userid": self.userid})) #Обновление данных
         
