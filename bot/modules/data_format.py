@@ -10,16 +10,15 @@ from bot.modules.localization import get_data
 
 
 def escape_markdown(content: str) -> str:
+    """ Экранирует символы Markdown в строке.
     """
-    Экранирует символы Markdown в строке Markdown.
-    """
-    
+
     parse = re.sub(r"([_*\[\]()~`>\#\+\-=|\!\{\}])", r"", content)
     reparse = re.sub(r"\\\\([_*\[\]()~`>\#\+\-=|!\{\}])", r"", parse)
     return reparse 
 
 def chunks(lst: list, n: int) -> list:
-    """Делит список lst, на списки по n элементов
+    """ Делит список lst, на списки по n элементов
        Возвращает список
     """
     def work():
@@ -27,32 +26,35 @@ def chunks(lst: list, n: int) -> list:
             yield lst[i:i + n]
     return list(work())
     
-def random_dict(data: dict):
-    """Предоставляет общий формат данных, подерживающий 
+def random_dict(data: dict) -> int:
+    """ Предоставляет общий формат данных, подерживающий 
        случайные и статичные элементы.
-    
+
     Типы словаря:
     { "min": 1, "max": 2, "type": "random" }
     >>> Случайное число от 1 до 2
-    { "act": [12, 42, 1] "type": "choice" } 
+    { "act": [12, 42, 1], "type": "choice" } 
     >>> Случайный элемент
     { "act": 1, "type": "static" }
     >>> Статичное число 1
     """
-    if data["type"] == "static": return data['act']
 
-    elif data["type"] == "random":
-        if data['min'] < data['max']:
-            return random.randint(data['min'], data['max'])
-        else: return data['min']
-    
-    elif data["type"] == "choice":
-        if data['act']: return random.choice(data['act']) #type: int
-        else: return 0
+    if type(data) == dict:
+        if data["type"] == "static": return data['act']
+
+        elif data["type"] == "random":
+            if data['min'] < data['max']:
+                return random.randint(data['min'], data['max'])
+            else: return data['min']
+        
+        elif data["type"] == "choice":
+            if data['act']: return random.choice(data['act'])
+            else: return 0
+    elif type(data) == int: return data
     return 0
 
 def list_to_keyboard(buttons: list, row_width: int = 3, resize_keyboard: bool = True, one_time_keyboard = None) -> ReplyKeyboardMarkup:
-    '''Превращает список со списками в объект клавиатуры.
+    """ Превращает список со списками в объект клавиатуры.
         Example:
             butttons = [ ['привет'], ['отвяжись', 'ты кто?'] ]
 
@@ -65,7 +67,7 @@ def list_to_keyboard(buttons: list, row_width: int = 3, resize_keyboard: bool = 
         >  привет
           отвяжись  
           ты кто?
-    '''
+    """
     markup = ReplyKeyboardMarkup(row_width=row_width, 
                                  resize_keyboard=resize_keyboard, 
                                  one_time_keyboard=one_time_keyboard)
@@ -82,7 +84,7 @@ def list_to_keyboard(buttons: list, row_width: int = 3, resize_keyboard: bool = 
     return markup
 
 def list_to_inline(buttons: list, row_width: int = 3) -> InlineKeyboardMarkup:
-    '''Превращает список со списками в объект inlineKeyboard.
+    """ Превращает список со списками в объект inlineKeyboard.
         Example:
             butttons = [ {'привет':'call_key'}, {'отвяжись':'call_key'}, {'ты кто?':'call_key'} ]
 
@@ -95,36 +97,31 @@ def list_to_inline(buttons: list, row_width: int = 3) -> InlineKeyboardMarkup:
         >  привет
           отвяжись  
           ты кто?
-    '''
+    """
     inline = InlineKeyboardMarkup(row_width=row_width)
 
     if len(buttons) == 1:
         inline.add(
             *[InlineKeyboardButton(
-            text=key, callback_data=item) for key, item in buttons[0].items()]
-              )
-
+            text=key, callback_data=item) for key, item in buttons[0].items()])
     else:
         for line in buttons:
             inline.add(*[InlineKeyboardButton(
-                text=key, callback_data=item) for key, item in line.items()]
-                       )
-
+                text=key, callback_data=item) for key, item in line.items()])
     return inline
 
 def user_name(user: User, username: bool = True) -> str:
-    """Возвращает имя / ник, в зависимости от того, что есть
+    """ Возвращает имя / ник, в зависимости от того, что есть
     """
     if user.username is not None and username:
         return f'@{user.username}'
     else:
         if user.last_name is not None and user.first_name:
             return escape_markdown(f'{user.first_name} {user.last_name}')
-        else:
-            return escape_markdown(user.first_name)
+        else: return escape_markdown(user.first_name)
 
 def random_quality() -> str:
-    """Случайная редкость
+    """ Случайная редкость
     """
     rarities = list(GAME_SETTINGS['dino_rarity'].keys())
     weights = list(GAME_SETTINGS['dino_rarity'].values())
@@ -133,22 +130,22 @@ def random_quality() -> str:
     return quality
 
 def random_code(length: int=10):
-    """Генерирует случайный код из букв и цыфр
+    """ Генерирует случайный код из букв и цыфр
     """
     alphabet = string.ascii_letters + string.digits
-
     code = ''.join(random.choice(alphabet) for i in range(length))
-
     return code
 
 def seconds_to_time(seconds: int) -> dict:
-    """Преобразует число в словарь
+    """ Преобразует число в словарь
     """
     time_calculation = {
+        'weekly': 604800,
         'day': 86400, 'hour': 3600, 
         'minute': 60, 'second': 1
     }
     time_dict = {
+        'weekly': 0,
         'day': 0, 'hour': 0, 
         'minute': 0, 'second': 0
     }
@@ -162,24 +159,32 @@ def seconds_to_time(seconds: int) -> dict:
 
     return time_dict 
 
-def seconds_to_str(seconds: int, lang: str='en', mini: bool=False):
-    """Преобразует число секунд в строку
+def seconds_to_str(seconds: int, lang: str='en', mini: bool=False, max_lvl='second'):
+    """ Преобразует число секунд в строку
        Example:
        > seconds=10000 lang='ru'
        > 1 день 2 минуты 41 секунда
        
        > seconds=10000 lang='ru' mini=True
        > 1д. 2мин. 41сек.
+       
+       max_lvl - Определяет максимальную глубину погружения
+       Example:
+       > seconds=3900 max_lvl=second
+       > 1ч. 5м.
+       
+       > seconds=3900 max_lvl=hour
+       > 1ч.
     """
+    if seconds < 0: seconds = 0
     time_format = dict(get_data('time_format', lang)) # type: dict
     result = ''
 
     def ending_w(time_type: str, unit: int) -> str:
         """Опредеяет окончание для слова
         """
-        if mini:
-            return time_format[time_type][3]
-        
+        if mini: return time_format[time_type][3]
+
         else:
             result = ''
             if unit < 11 or unit > 14:
@@ -191,7 +196,6 @@ def seconds_to_str(seconds: int, lang: str='en', mini: bool=False):
                 result = time_format[time_type][1]
             elif unit > 4 or unit == 0:
                 result = time_format[time_type][2]
-
         return result
 
     data = seconds_to_time(seconds=seconds)
@@ -201,12 +205,13 @@ def seconds_to_str(seconds: int, lang: str='en', mini: bool=False):
                 result += f'{unit}{ending_w(tp, unit)} '
             else:
                 result += f'{unit} {ending_w(tp, unit)} '
+        if max_lvl == tp: break
     
     if result[:-1]: return result[:-1]
     else: return '0'
 
 def near_key_number(n: int, data: dict, alternative: int=1):
-    """Находит ближайшее меньшее число среди ключей.
+    """ Находит ближайшее меньшее число среди ключей.
        В словаре ключи должны быть str(числами), в порядке убывания
 
        Пример:
@@ -216,8 +221,7 @@ def near_key_number(n: int, data: dict, alternative: int=1):
         alterantive - если не получилось найти ключ, будет возвращён
     """
     for key in data.keys():
-        if int(key) <= n:
-            return data[key]
+        if int(key) <= n: return data[key]
     return data[alternative]
 
 def crop_text(text: str, unit: int=10, postfix: str='...'):
@@ -238,7 +242,7 @@ def filling_with_emptiness(lst: list, horizontal: int, vertical: int):
     return lst
 
 def chunk_pages(options: dict, horizontal: int=2, vertical: int=3):
-    """Чанкует страницы и добавляем пустые элементы для сохранения структуры
+    """ Чанкует страницы и добавляем пустые элементы для сохранения структуры
     """
     if options:
         pages = chunks(chunks(list(options.keys()), horizontal), vertical)
