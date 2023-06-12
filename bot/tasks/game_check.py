@@ -4,7 +4,7 @@ from time import time
 
 from bot.config import conf, mongo_client
 from bot.modules.dinosaur import end_game, mutate_dino_stat
-from bot.modules.mood import add_mood
+from bot.modules.mood import add_mood, check_breakdown
 from bot.modules.user import experience_enhancement
 from bot.taskmanager import add_task
 
@@ -43,11 +43,11 @@ async def game_process():
     
             if dino['stats']['game'] < 100:
                 if random.uniform(0, 1) <= LVL_CHANCE: 
-                    
-                    dino_con = dino_owners.find_one({'dino_id': dino['_id']})
-                    if dino_con:
-                        userid = dino_con['owner_id']
-                        await experience_enhancement(userid, randint(1, 19))
+                    if not check_breakdown(dino['_id'], 'unrestrained_play'):
+                        dino_con = dino_owners.find_one({'dino_id': dino['_id']})
+                        if dino_con:
+                            userid = dino_con['owner_id']
+                            await experience_enhancement(userid, randint(1, 19))
                 
                 if dino['stats']['game'] < 100:
                     if random.uniform(0, 1) <= GAME_CHANCE:
