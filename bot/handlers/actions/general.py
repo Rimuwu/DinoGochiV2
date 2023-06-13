@@ -1,33 +1,17 @@
-from random import randint
-from time import time
 
 from telebot.types import CallbackQuery, Message
 
 from bot.config import mongo_client
-from bot.const import GAME_SETTINGS
 from bot.exec import bot
-from bot.modules.accessory import check_accessory
-from bot.modules.data_format import (list_to_inline, list_to_keyboard,
-                                     seconds_to_str)
-from bot.modules.dinosaur import (Dino, end_collecting, end_game, end_sleep,
-                                  start_sleep)
-from bot.modules.friends import send_action_invite
-from bot.modules.images import dino_collecting, dino_game, dino_journey
-from bot.modules.inline import inline_menu
-from bot.modules.inventory_tools import start_inv
-from bot.modules.item import counts_items
-from bot.modules.item import get_data as get_item_data
-from bot.modules.item import get_name
-from bot.modules.item_tools import use_item
-from bot.modules.localization import get_data, t
-from bot.modules.markup import count_markup, feed_count_markup
-from bot.modules.markup import cancel_markup, markups_menu as m
-from bot.modules.mood import add_mood, check_breakdown, check_inspiration
-from bot.modules.states_tools import (ChooseIntState, ChooseOptionState,
-                                      ChooseDinoState, ChooseStepState)
-from bot.modules.user import User, count_inventory_items, premium
-from bot.modules.friend_tools import start_friend_menu
 from bot.handlers.actions.game import start_game_ent
+from bot.modules.data_format import list_to_inline
+from bot.modules.dinosaur import Dino
+from bot.modules.friend_tools import start_friend_menu
+from bot.modules.friends import send_action_invite
+from bot.modules.localization import t
+from bot.modules.markup import markups_menu as m
+from bot.modules.states_tools import ChooseDinoState
+from bot.modules.user import User
 
 users = mongo_client.bot.users
 items = mongo_client.bot.items
