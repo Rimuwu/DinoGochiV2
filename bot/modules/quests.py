@@ -1,12 +1,14 @@
 from random import choice, randint
 from time import time
 
+from bson.objectid import ObjectId
+
+from bot.config import mongo_client
 from bot.const import ITEMS, QUESTS
-from bot.modules.data_format import random_dict, list_to_inline, seconds_to_str, random_code
+from bot.modules.data_format import (list_to_inline, random_code, random_dict,
+seconds_to_str)
 from bot.modules.item import counts_items, get_name
 from bot.modules.localization import get_data, t
-from bot.config import mongo_client
-from bson.objectid import ObjectId
 
 quests_data = mongo_client.bot.quests
 
@@ -31,7 +33,7 @@ def save_eat_items():
                 eat_data[item['rank']] = [key]
     return eat_data
 
-def create_quest(complexity: int, qtype: str=''):
+def create_quest(complexity: int, qtype: str='', lang: str = 'en'):
     """ Создание данных для квеста
         complexity - [1, 5]
     """
@@ -94,11 +96,11 @@ def create_quest(complexity: int, qtype: str=''):
 
         quest['reward']['coins'] = coins
 
-        authors = get_data('quests.authors')
-        quest['author'] = authors.index(choice(authors))
+        authors = get_data('quests.authors', lang)
+        quest['author'] = choice(authors)
 
-        names = get_data(f'quests.{qtype}')
-        quest['name'] = names.index(choice(names))
+        names = get_data(f'quests.{qtype}', lang)
+        quest['name'] = choice(names)
 
         quest['time_end'] = int(time()) + random_dict(complex_time[complexity])
         quest['time_start'] = int(time())
@@ -111,8 +113,8 @@ def quest_ui(quest: dict, lang: str, quest_id: str=''):
     """
     text = ''
 
-    name = get_data(f'quests.{quest["type"]}', lang)[quest["name"]]
-    author = get_data(f'quests.authors', lang)[quest["author"]]
+    name = quest["name"]
+    author = quest["author"]
     text += t('quest.had', lang, 
               name=name, author=author) + '\n\n'
     complexity = t('quest.comp_element', lang) * quest['complexity']
@@ -172,7 +174,6 @@ def quest_ui(quest: dict, lang: str, quest_id: str=''):
 def save_quest(quest: dict, owner_id: int): 
     """ Сохраняет квест в базе
     """
-    
     def generation_code():
         code = random_code(10)
         if quests_data.find_one({'alt_id': code}):
@@ -183,10 +184,49 @@ def save_quest(quest: dict, owner_id: int):
     quest['owner_id'] = owner_id
 
     quests_data.insert_one(quest)
+    return quest['alt_id']
 
 def quest_resampling(questid: ObjectId):
     """ Убирает владельца квеста, тем самым предоставляя квест для распределния на новых участников
     """
-    quests_data.update_one({'_id': questid}, {'owner_id': 0})
+    quests_data.update_one({'_id': questid}, {'$set': {'owner_id': 0}})
+
+def quest_process(userid: int, quest_type: str, unit: int = 0, items: list = []):
+    """ Заносит данные в квест
+    """
+
+    quests = quests_data.find({"owner_id": userid, 'type': quest_type})
+
+    for quest in quests:
+
+        if quest_type == 'get':
+            for i in items:
+                quest['data']['items'].remove(i)
+
+            quests_data.update_one({'_id': quest['_id']}, {"$set": {'data.items': quest['data']['items']}})
+        
+        elif quest_type in ['journey', 'game']:
+            minuts = quest['data']['minutes']
+            if unit + minuts[1] > minuts[0]:
+                plus = minuts[0] - minuts[1]
+            else: plus = unit
+
+            if plus:
+                quests_data.update_one({'_id': quest['_id']}, {"$inc": {'data.minutes.1': plus}})
+
+        elif quest_type in ['fishing', 'collecting', 'hunt']:
+            count = quest['data']['minutes']
+            if unit + count[1] > count[0]:
+                plus = count[0] - count[1]
+            else: plus = unit
+            if plus:
+                quests_data.update_one({'_id': quest['_id']}, {"$inc": {'data.count': plus}})
+
+        elif quest_type == 'feed':
+
+            for i in items:
+                if i in quest['data']['items']:
+                    quests_data.update_one({'_id': quest['_id']}, {"$inc": {f'data.items.{i}': 1}})
+
 
 EAT_DATA = save_eat_items()
