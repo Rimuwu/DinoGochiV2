@@ -3,6 +3,7 @@
 from telebot import types
 from bot.exec import bot
 from bot.modules.logs import log
+from bot.modules.localization import t
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('delete_message'))
@@ -15,3 +16,11 @@ async def delete_message(call: types.CallbackQuery):
 async def not_found(call: types.CallbackQuery):
     userid = call.from_user.id
     log(f'Ключ {call.data} не был обработан! Пользователь: {userid}', 2, "CallbackQuery")
+
+@bot.message_handler(is_authorized=False)
+async def not_authorized(message: types.Message):
+    lang = message.from_user.language_code
+    chatid = message.chat.id
+
+    text = t('not_authorized', lang)
+    await bot.send_message(chatid, text)
