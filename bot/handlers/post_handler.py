@@ -12,6 +12,9 @@ async def delete_message(call: types.CallbackQuery):
     await bot.delete_message(chatid, call.message.id)
     await bot.answer_callback_query(call.id, "🗑")
 
+@bot.callback_query_handler(func=lambda call: call.data.startswith(' '))
+async def pass_h(call: types.CallbackQuery): pass
+
 @bot.callback_query_handler(func=lambda call: True)
 async def not_found(call: types.CallbackQuery):
     userid = call.from_user.id
