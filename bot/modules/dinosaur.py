@@ -338,7 +338,6 @@ def start_game(dino_baseid: ObjectId, duration: int=1800,
 async def end_game(dino_id: ObjectId, send_notif: bool=True):
     """Заканчивает игру и отсылает уведомление.
     """
-    
     dinosaurs.update_one({'_id': dino_id}, 
                             {'$set': {'status': 'pass'}})
     game_task.delete_one({'dino_id': dino_id}) 
@@ -489,7 +488,7 @@ async def get_dino_language(dino_id: ObjectId) -> str:
     return lang
 
 def set_status(dino_id: ObjectId, new_status: str, now_status: str = ''):
-    """ Устанавливает состояние динозавра.
+    """ Устанавливает состояние динозавра. Делает это грубо.
     """
 
     assert new_status in ['pass', 'sleep', 'game', 'journey', 'collecting', 'dungeon', 'freezing', 'kindergarten', 'hysteria'], f'Состояние {new_status} не найдено!'
@@ -505,10 +504,10 @@ def set_status(dino_id: ObjectId, new_status: str, now_status: str = ''):
             sleep_time = sleeper['sleep_end'] - sleeper['sleep_start']
             asyncio.run_coroutine_threadsafe(
                 end_sleep(dino_id, sleeper['_id'], sleep_time), asyncio.get_event_loop())
-        
+
     elif now_status == 'game':
         asyncio.run_coroutine_threadsafe(end_game(dino_id), asyncio.get_event_loop())
-    
+
     elif now_status == 'collecting':
         data = collecting_task.find_one({'dino_id': dino_id})
         if data:
