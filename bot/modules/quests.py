@@ -2,9 +2,13 @@ from random import choice, randint
 from time import time
 
 from bot.const import ITEMS, QUESTS
-from bot.modules.data_format import random_dict, list_to_inline, seconds_to_str
+from bot.modules.data_format import random_dict, list_to_inline, seconds_to_str, random_code
 from bot.modules.item import counts_items, get_name
 from bot.modules.localization import get_data, t
+from bot.config import mongo_client
+from bson.objectid import ObjectId
+
+quests_data = mongo_client.bot.quests
 
 complex_time = {
     1: {"min": 36000, "max": 57600, "type": "random"},
@@ -27,8 +31,9 @@ def save_eat_items():
                 eat_data[item['rank']] = [key]
     return eat_data
 
-def create_quest(complexity: int, qtype: str='', lang: str='en'):
-    """complexity - [1, 5]
+def create_quest(complexity: int, qtype: str=''):
+    """ Создание данных для квеста
+        complexity - [1, 5]
     """
     quests = []
     assert 1 <= complexity <= 5, f"1 <= {complexity} <= 5"
@@ -89,8 +94,11 @@ def create_quest(complexity: int, qtype: str='', lang: str='en'):
 
         quest['reward']['coins'] = coins
 
-        quest['author'] = choice(get_data('quests.authors', lang))
-        quest['name'] = choice(get_data(f'quests.{qtype}', lang))
+        authors = get_data('quests.authors')
+        quest['author'] = authors.index(choice(authors))
+
+        names = get_data(f'quests.{qtype}')
+        quest['name'] = names.index(choice(names))
 
         quest['time_end'] = int(time()) + random_dict(complex_time[complexity])
         quest['time_start'] = int(time())
@@ -98,21 +106,25 @@ def create_quest(complexity: int, qtype: str='', lang: str='en'):
         return quest
     else: return {}
 
-def quest_ui(quest: dict, lang: str):
+def quest_ui(quest: dict, lang: str, quest_id: str=''):
+    """ Генерация текста и клавиатуры о квесте
+    """
     text = ''
-    
+
+    name = get_data(f'quests.{quest["type"]}', lang)[quest["name"]]
+    author = get_data(f'quests.authors', lang)[quest["author"]]
     text += t('quest.had', lang, 
-              name=quest['name'], author=quest['author']) + '\n\n'
+              name=name, author=author) + '\n\n'
     complexity = t('quest.comp_element', lang) * quest['complexity']
     text += t('quest.complexity', lang, complexity=complexity) + '\n'
-    
+
     qtype = t(f'quest.types.{quest["type"]}', lang)
     text += t('quest.type', lang, qtype=qtype) + '\n\n'
 
     if quest['type'] == 'get':
         items_list = counts_items(quest['data']['items'], lang)
         text += t('quest.get', lang, items_list=items_list)
-    
+
     elif quest['type'] == 'game':
         minutes, now = quest['data']['minutes']
         text += t('quest.game', lang, min=minutes, now=now)
@@ -138,7 +150,7 @@ def quest_ui(quest: dict, lang: str):
     elif quest['type'] == 'hunt':
         cmax, now = quest['data']['count']
         text += t('quest.hunt', lang, max=cmax, now=now)
-    
+
     text += '\n\n' + t('quest.reward.had', lang) + '\n'
     if quest['reward']['coins']:
         text += t('quest.reward.coins', lang, coins=quest['reward']['coins'])
@@ -148,10 +160,33 @@ def quest_ui(quest: dict, lang: str):
     time_end = quest['time_end'] - quest['time_start']
     text += '\n\n' + t('quest.time_end', lang, time_end=seconds_to_str(time_end, lang))
 
-    tb: dict = get_data('quest.buttons', lang)
-    buttons = dict(zip(tb.values(), tb.keys()))
+    buttons = {}
+    if quest_id:
+        tb: dict = get_data('quest.buttons', lang)
+        for key, value in tb.items():
+            buttons[value] = key + ' ' + quest_id
+
     markup = list_to_inline([buttons], 2)
-    
     return text, markup
+
+def save_quest(quest: dict, owner_id: int): 
+    """ Сохраняет квест в базе
+    """
+    
+    def generation_code():
+        code = random_code(10)
+        if quests_data.find_one({'alt_id': code}):
+            code = generation_code()
+        return code
+
+    quest['alt_id'] = generation_code()
+    quest['owner_id'] = owner_id
+
+    quests_data.insert_one(quest)
+
+def quest_resampling(questid: ObjectId):
+    """ Убирает владельца квеста, тем самым предоставляя квест для распределния на новых участников
+    """
+    quests_data.update_one({'_id': questid}, {'owner_id': 0})
 
 EAT_DATA = save_eat_items()
