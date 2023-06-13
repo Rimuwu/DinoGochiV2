@@ -13,7 +13,7 @@ from bot.const import GAME_SETTINGS as GS
 from bot.exec import bot
 from bot.modules.data_format import random_code, random_quality
 from bot.modules.images import create_dino_image, create_egg_image
-from bot.modules.item import AddItemToUser, counts_items
+from bot.modules.item import AddItemToUser
 from bot.modules.localization import log
 from bot.modules.notifications import (dino_notification, notification_manager,
                                        user_notification)
