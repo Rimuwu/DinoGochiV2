@@ -78,7 +78,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
                 )
             if user_dict:
                 old_last_menu = user_dict.get('last_markup')
-            
+
         users.update_one({"userid": userid}, {'$set': {'last_markup': markup_key}})
 
     if user_dict and user_dict['last_markup'] == "dino_tavern_menu":
@@ -155,7 +155,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
             ['dungeon', 'quests'],
             ['edit'],
         ]
-    
+
     elif markup_key == 'referal_menu':
         # Меню рефералов
         prefix = 'commands_name.referal.'
