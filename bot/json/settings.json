@@ -1,8 +1,8 @@
 {   
     "collections": {
-        "bot": ["users", "dinosaurs", "items", "products", "management", "dead_dinos"],
+        "bot": ["users", "dinosaurs", "items", "products", "management", "dead_dinos", "quests"],
         "tasks": ["game", "incubation", "journey", "sleep", "collecting", "subscriptions", "statistic"],
-        "connections": ["referals", "friends", "dino_owners", "dino_mood", "tavern", "daily_reward", "quests", "dungeon_statistic"]
+        "connections": ["referals", "friends", "dino_owners", "dino_mood", "tavern", "daily_reward", "dungeon_statistic"]
     },
 
     "please_create_this": {
