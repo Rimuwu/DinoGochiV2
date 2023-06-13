@@ -3,10 +3,11 @@ from random import randint
 from time import time
 
 from bot.config import conf, mongo_client
-from bot.modules.dinosaur import end_game, mutate_dino_stat
+from bot.modules.dinosaur import end_game, mutate_dino_stat, get_owner
 from bot.modules.mood import add_mood, check_breakdown
 from bot.modules.user import experience_enhancement
 from bot.taskmanager import add_task
+from bot.modules.quests import quest_process
 
 game_task = mongo_client.tasks.game
 dinosaurs = mongo_client.bot.dinosaurs
@@ -24,8 +25,10 @@ async def game_end():
 
     for i in data:
         await end_game(i['dino_id'])
-
         game_time = i['game_end'] - i['game_start']
+        owner = get_owner(i['dino_id'])
+        quest_process(owner['owner_id'], 'game', (game_time) // 60)
+
         add_mood(i['dino_id'], 'end_game', 1, 
                  int((game_time // 2) * i['game_percent']))
 
