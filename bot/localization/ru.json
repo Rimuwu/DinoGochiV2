@@ -1979,7 +1979,7 @@
         },
 
         "quest": {
-            "had": "📜 | *{name}*\n🎩 Заказал: {author}",
+            "had": "📜 *|* *{name}*\n🎩 *Заказал*: {author}",
 
             "complexity": "🧧  *Сложность *: {complexity}",
             "comp_element": "⭐",
