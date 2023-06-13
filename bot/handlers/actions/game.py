@@ -16,6 +16,8 @@ from bot.modules.markup import markups_menu as m
 from bot.modules.mood import add_mood, check_breakdown, check_inspiration
 from bot.modules.states_tools import ChooseStepState
 from bot.modules.user import User, premium
+from bot.modules.quests import quest_process
+from time import time
 
 dinosaurs = mongo_client.bot.dinosaurs
 game_task = mongo_client.tasks.game
@@ -220,6 +222,8 @@ async def stop_game(message: Message):
                         text = t('stop_game.whatever', lang)
 
                     await end_game(last_dino._id, False)
+                    game_time = (int(time()) - game_data['game_start']) // 60
+                    quest_process(userid, 'game', game_time)
                 else:
                     # Невозможно оторвать от игры
                     text = t('stop_game.dont_tear', lang)
