@@ -78,7 +78,7 @@ async def dino_profile(userid: int, dino: Dino, lang: str, custom_url: str):
         text += t(
                 f'p_profile.game.text', lang, em_game_act=tem['em_game_act'])
         if data:
-            if True or await check_accessory(dino, 'timer', True):
+            if await check_accessory(dino, 'timer', True):
                 end = seconds_to_str(data['game_end'] - int(time()), lang)
                 text += t(
                     f'p_profile.game.game_end', lang, end=end)
