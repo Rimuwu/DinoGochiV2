@@ -271,7 +271,7 @@ async def joint(return_data: dict,
              }
         ])
         await bot.send_message(friendid, friend_text, reply_markup=reply)
-    
+
     await bot.send_message(chatid, text, reply_markup=m(userid, 'last_menu', lang))
 
 @bot.callback_query_handler(func=lambda call: 
