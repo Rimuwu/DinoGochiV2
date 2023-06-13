@@ -11,6 +11,7 @@ from . import profile_menu
 from . import friends
 from . import referal_menu
 from . import dialogs
+from . import quests
 
 from . import actions
 
