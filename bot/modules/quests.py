@@ -7,10 +7,11 @@ from bot.config import mongo_client
 from bot.const import ITEMS, QUESTS
 from bot.modules.data_format import (list_to_inline, random_code, random_dict,
 seconds_to_str)
-from bot.modules.item import counts_items, get_name
+from bot.modules.item import counts_items, get_name, RemoveItemFromUser
 from bot.modules.localization import get_data, t
 
 quests_data = mongo_client.bot.quests
+items = mongo_client.bot.items
 
 complex_time = {
     1: {"min": 36000, "max": 57600, "type": "random"},
@@ -194,18 +195,10 @@ def quest_resampling(questid: ObjectId):
 def quest_process(userid: int, quest_type: str, unit: int = 0, items: list = []):
     """ Заносит данные в квест
     """
-
     quests = quests_data.find({"owner_id": userid, 'type': quest_type})
 
     for quest in quests:
-
-        if quest_type == 'get':
-            for i in items:
-                quest['data']['items'].remove(i)
-
-            quests_data.update_one({'_id': quest['_id']}, {"$set": {'data.items': quest['data']['items']}})
-        
-        elif quest_type in ['journey', 'game']:
+        if quest_type in ['journey', 'game']:
             minuts = quest['data']['minutes']
             if unit + minuts[1] > minuts[0]:
                 plus = minuts[0] - minuts[1]
@@ -215,18 +208,57 @@ def quest_process(userid: int, quest_type: str, unit: int = 0, items: list = [])
                 quests_data.update_one({'_id': quest['_id']}, {"$inc": {'data.minutes.1': plus}})
 
         elif quest_type in ['fishing', 'collecting', 'hunt']:
-            count = quest['data']['minutes']
+            count = quest['data']['count']
             if unit + count[1] > count[0]:
                 plus = count[0] - count[1]
             else: plus = unit
             if plus:
-                quests_data.update_one({'_id': quest['_id']}, {"$inc": {'data.count': plus}})
+                quests_data.update_one({'_id': quest['_id']}, 
+                                       {"$inc": {'data.count.1': plus}})
 
         elif quest_type == 'feed':
-
             for i in items:
                 if i in quest['data']['items']:
-                    quests_data.update_one({'_id': quest['_id']}, {"$inc": {f'data.items.{i}': 1}})
+                    if quest['data']['items'][i][1] < quest['data']['items'][i][0]:
+                        quests_data.update_one({'_id': quest['_id']}, 
+                                               {"$inc": {f'data.items.{i}.1': 1}})
 
+def check_quest(quest: dict) -> bool:
+    """ Проверяет квест на выполнение, если тип квеста "get" то в случае выполнения удалит предметы
+    """
+    if quest['type'] == 'get': 
+        count_items = {}
+
+        # Сортируем для запроса
+        for i in quest['data']['items']:
+            if i in count_items:
+                count_items[i] += 1
+            else: count_items[i] = 1
+
+        # Проверяем на наличие
+        for key, value in count_items.items():
+            result = items.find_one({"items_data.item_id": key,
+                                     "count": {"$gte": value}})
+            if not result: return False
+
+        # Удаляем предметы
+        for key, value in count_items.items():
+            RemoveItemFromUser(quest['owner_id'], key, value)
+        return True
+    
+    elif quest['type'] in ['journey', 'game']:
+        minuts = quest['data']['minutes']
+        if minuts[1] >= minuts[0]: return True
+        return False
+
+    elif quest['type'] == 'feed':
+        for key, value in quest['data']['items'].items():
+            if value[0] > value[1]: return False
+        return True
+
+    elif quest['type'] in ['fishing', 'collecting', 'hunt']:
+        count = quest['data']['count']
+        if count[1] >= count[0]: return True
+        return False
 
 EAT_DATA = save_eat_items()
