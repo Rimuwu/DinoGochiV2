@@ -104,60 +104,62 @@ async def actions_menu(message: Message):
 async def tavern_menu(message: Message):
     userid = message.from_user.id
     lang = message.from_user.language_code
-    user = User(userid)
-    friends = user.get_friends['friends']
     text = ''
-    
+
     photo = open('images/remain/taverna/dino_taverna.png', 'rb')
     await bot.send_photo(message.chat.id, photo, 
             t('menu_text.dino_tavern.info', lang), reply_markup=m(userid, 'dino_tavern_menu', lang))
 
-    tavern.insert_one({
-        'userid': userid,
-        'time_in': int(time()),
-        'lang': lang,
-        'name': user_name(message.from_user, False)
-    })
-    friends_in_tavern = []
-    for i in friends:
-        if tavern.find_one({"userid": i}): friends_in_tavern.append(i)
+    user = User(userid)
+    friends = user.get_friends['friends']
 
     data_enter = get_data('tavern_enter', lang)
     text = f'🍻 {choice(data_enter)}'
     await bot.send_message(message.chat.id, text)
+    
+    if not tavern.find_one({'userid': userid}):
+        tavern.insert_one({
+            'userid': userid,
+            'time_in': int(time()),
+            'lang': lang,
+            'name': user_name(message.from_user, False)
+        })
+        friends_in_tavern = []
+        for i in friends:
+            if tavern.find_one({"userid": i}): friends_in_tavern.append(i)
 
-    msg = await bot.send_message(message.chat.id, 
-            t('menu_text.dino_tavern.friends', lang))
+        msg = await bot.send_message(message.chat.id, 
+                t('menu_text.dino_tavern.friends', lang))
 
-    text = t('menu_text.dino_tavern.friends2', lang)
-    buttons = t('menu_text.dino_tavern.button', lang)
-    buttons = list_to_inline([{buttons: f"buy_ale {userid}"}])
+        text = t('menu_text.dino_tavern.friends2', lang)
+        buttons = t('menu_text.dino_tavern.button', lang)
+        buttons = list_to_inline([{buttons: f"buy_ale {userid}"}])
 
-    if len(friends_in_tavern):
-        text += '\n'
-        for friendid in friends_in_tavern:
-            friendChat = await bot.get_chat_member(friendid, friendid)
-            friend = friendChat.user
-            if friend:
-                text += f' 🎱 {user_name(friend)}\n'
-                text_to_friend = t('menu_text.dino_tavern.went', 
-                                   friend.language_code, 
-                                   name=user_name(message.from_user))
-                try:
-                    await bot.send_message(
-                        friendid, text_to_friend, reply_markup=buttons)
-                except:
-                    await sleep(0.3)
-                    try: 
+        if len(friends_in_tavern):
+            text += '\n'
+            for friendid in friends_in_tavern:
+                friendChat = await bot.get_chat_member(friendid, friendid)
+                friend = friendChat.user
+                if friend:
+                    text += f' 🎱 {user_name(friend)}\n'
+                    text_to_friend = t('menu_text.dino_tavern.went', 
+                                    friend.language_code, 
+                                    name=user_name(message.from_user))
+                    try:
                         await bot.send_message(
                             friendid, text_to_friend, reply_markup=buttons)
-                    except: pass
-    else: text += '❌'
-    
-    text += '\n' + t('menu_text.dino_tavern.tavern_col', lang,
-              col = tavern.count_documents({}))
+                    except:
+                        await sleep(0.3)
+                        try: 
+                            await bot.send_message(
+                                friendid, text_to_friend, reply_markup=buttons)
+                        except: pass
+        else: text += '❌'
+        
+        text += '\n' + t('menu_text.dino_tavern.tavern_col', lang,
+                col = tavern.count_documents({}))
 
-    await bot.edit_message_text(text=text, chat_id=userid, message_id=msg.message_id)
+        await bot.edit_message_text(text=text, chat_id=userid, message_id=msg.message_id)
 
 @bot.message_handler(text='commands_name.profile.about', is_authorized=True)
 async def about_menu(message: Message):
