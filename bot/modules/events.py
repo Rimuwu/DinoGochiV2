@@ -7,9 +7,9 @@ from bot.config import mongo_client
 events = mongo_client.tasks.events
 
 def get_event(event_type: str='', alternative: str='standart'):
-    res = events.find_one({'_id': event_type})
+    res = events.find_one({'type': event_type})
     if res: return res
-    else: return alternative
+    return {}
     
 def create_event(event_type: str = ''):
 
@@ -17,7 +17,7 @@ def create_event(event_type: str = ''):
         event_type = choice(['add_hunting', 'add_fishing', 'add_collecting', 'add_all'])
 
     event = {
-        '_id': event_type,
+        'type': event_type,
         'data': {},
         'time_start': int(time.time()),
         'time_end': 0
@@ -54,7 +54,7 @@ def create_event(event_type: str = ''):
     return event
 
 def add_event(event: dict):
-    res = events.find_one({'_id': event['_id']})
+    res = events.find_one({'type': event['type']})
     if not res:
         events.insert_one(event)
         return True
@@ -64,15 +64,15 @@ async def auto_event():
     """ Проверка системных событий
     """
     # Проверка на время года
-    time_year = get_event('time_year', None)
+    time_year = get_event('time_year')
     ty_event = create_event('time_year')
     if time_year:
         if time_year['data']['season'] != ty_event['data']['season']:
-            events.update_one({'_id': 'time_year'}, {'data': ty_event['data']})
+            events.update_one({'type': 'time_year'}, {'data': ty_event['data']})
     else: add_event(ty_event)
     
     # Проверка на новогоднее событие
-    new_year = get_event('time_year', None)
+    new_year = get_event('time_year')
     if not new_year:
         day_n = int(time.strftime("%j"))
         if day_n >= 358:
