@@ -1,7 +1,7 @@
 {   
     "collections": {
         "bot": ["users", "dinosaurs", "items", "products", "management", "dead_dinos", "quests"],
-        "tasks": ["game", "incubation", "journey", "sleep", "collecting", "subscriptions", "statistic"],
+        "tasks": ["game", "incubation", "journey", "sleep", "collecting", "subscriptions", "statistic", "events"],
         "connections": ["referals", "friends", "dino_owners", "dino_mood", "tavern", "daily_reward", "dungeon_statistic"]
     },
 
@@ -89,36 +89,29 @@
 
     "events": {
 
-        "data_set": {
-            "col": { "min": 1, "max": 2, "type": "random" },
-            "events": ["add_hunting", "add_fishing", "add_collecting", "add_extraction"],
-
-            "time": [7200, 14400, 21600, 43200, 86400, 129600]
-        },
-
         "random_data": {
             "random_col": { "min": 1, "max": 2, "type": "random" },
+            "random_time": [7200, 14400, 21600, 43200, 86400, 129600],
 
             "add_hunting": {
-                "bacon": [50, 100],
-                "spicy_steak": [20, 100]
+                "bacon": [5, 10],
+                "spicy_steak": [2, 10]
             },
 
             "add_fishing": {
-                "curry": [50, 100],
-                "fish_cake": [20, 100]
+                "curry": [5, 10],
+                "fish_cake": [2, 10]
             },
 
             "add_collecting": {
-                "sushi": [50, 100],
-                "berry_pie": [20, 100]
+                "sushi": [5, 10],
+                "berry_pie": [2, 10]
             },
 
-            "add_extraction": {
-                "popcorn": [50, 100],
-                "cake": [20, 100]
+            "add_all": {
+                "popcorn": [5, 10],
+                "cake": [2, 10]
             }
-
         },
 
         "time_year": {
