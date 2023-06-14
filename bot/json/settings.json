@@ -291,5 +291,20 @@
     "dead_dialog_item": "mysterious_egg",
 
     "inspiration_bonus": 2,
-    "event_points": 20
+    "event_points": 20,
+
+    "daily_award": {
+        "lvl1": {
+            "items": ["medicinal_drink", "sandwich", "crab", "rise", "wild_boar_meat", "ale"],
+            "coins": 200
+        },
+        "lvl2": {
+            "items": ["tea", "sandwich", "ale", "soup", "salad", "pizza"],
+            "coins": 222
+        },
+        "bonus": {
+            "items": ["taco", "broth", "hot_chocolate"],
+            "coins": 111
+        }
+    }
 } 
