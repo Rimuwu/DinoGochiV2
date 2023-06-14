@@ -107,6 +107,10 @@ async def tavern_menu(message: Message):
     user = User(userid)
     friends = user.get_friends['friends']
     text = ''
+    
+    photo = open('images/remain/taverna/dino_taverna.png', 'rb')
+    await bot.send_photo(message.chat.id, photo, 
+            t('menu_text.dino_tavern.info', lang), reply_markup=m(userid, 'dino_tavern_menu', lang))
 
     tavern.insert_one({
         'userid': userid,
@@ -117,10 +121,6 @@ async def tavern_menu(message: Message):
     friends_in_tavern = []
     for i in friends:
         if tavern.find_one({"userid": i}): friends_in_tavern.append(i)
-
-    photo = open('images/remain/taverna/dino_taverna.png', 'rb')
-    await bot.send_photo(message.chat.id, photo, 
-            t('menu_text.dino_tavern.info', lang), reply_markup=m(userid, 'dino_tavern_menu', lang))
 
     data_enter = get_data('tavern_enter', lang)
     text = f'🍻 {choice(data_enter)}'
@@ -147,14 +147,14 @@ async def tavern_menu(message: Message):
                     await bot.send_message(
                         friendid, text_to_friend, reply_markup=buttons)
                 except:
-                    await sleep(0.5)
+                    await sleep(0.3)
                     try: 
                         await bot.send_message(
                             friendid, text_to_friend, reply_markup=buttons)
                     except: pass
     else: text += '❌'
     
-    text += '\n\n' + t('menu_text.dino_tavern.tavern_col', lang,
+    text += '\n' + t('menu_text.dino_tavern.tavern_col', lang,
               col = tavern.count_documents({}))
 
     await bot.edit_message_text(text=text, chat_id=userid, message_id=msg.message_id)
