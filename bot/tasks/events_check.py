@@ -10,18 +10,18 @@ events = mongo_client.tasks.events
 async def old_events():
     """ Удаляет истёкшие события
     """
-    events_data = list(events.find({}, {'_id': 1, 'time_end': 1})).copy()
+    events_data = list(events.find({}, {'type': 1, 'time_end': 1})).copy()
 
     for i in events_data:
         if i['time_end'] != 0 and int(time()) >= i['time_end']:
-            events.delete_one({'_id': i['_id']})
+            events.delete_one({'type': i['type']})
 
 async def random_event():
-    events_data = list(events.find({}, {'_id'})).copy()
+    events_data = list(events.find({}, {'type'})).copy()
     not_system = []
     
     for i in events_data:
-        if i['_id'] not in ['new_year', 'time_year']: not_system.append(i['_id'])
+        if i['type'] not in ['new_year', 'time_year']: not_system.append(i['type'])
 
     if (True or randint(1, 18) == 18) and len(not_system ) == 0:
         event = create_event()
