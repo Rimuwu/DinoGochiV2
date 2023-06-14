@@ -9,7 +9,7 @@ from bot.exec import bot
 from bot.modules.accessory import check_accessory
 from bot.modules.data_format import near_key_number, seconds_to_str, user_name, list_to_keyboard
 from bot.modules.dinosaur import Dino, Egg
-from bot.modules.events import get_one_event
+from bot.modules.events import get_event
 from bot.modules.inline import dino_profile_markup
 from bot.modules.item import get_name, AddItemToUser
 from bot.modules.localization import get_data, t
@@ -41,7 +41,9 @@ async def dino_profile(userid: int, dino: Dino, lang: str, custom_url: str):
             joint_dino = True
         if owner['owner_id'] == userid and owner['type'] == 'owner' and len(owners) >= 2: my_joint = True
 
-    season = get_one_event('time_year')
+    season = get_event('time_year')
+    if type(season) == dict:
+        season = season['data']['season']
     tem = GAME_SETTINGS['events']['time_year'][season]
 
     stats_text = ''
