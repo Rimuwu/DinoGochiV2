@@ -21,7 +21,7 @@ async def tavern_quest(user):
     if quests_data.count_documents({'owner_id': user['userid']}) < 5:
         if free_quests and not randint(0, 3):
             quest_id = choice(free_quests)['_id']
-            quests_data.update_one({'_id': quest_id})
+            quests_data.update_one({'_id': quest_id}, {'owner_id': user['userid']})
             text = t('quest.resаmpling', lang)
         else:
             compl = choices([2, 1], [0.25, 0.5])[0]
@@ -62,10 +62,9 @@ async def tavern_life():
                         t('tavern_sleep', user['lang']))
             except: pass
 
-        elif randint(1, 10) == 5:
+        elif randint(1, 5) == 5:
             await tavern_replic(in_tavern, user)
-
-        elif randint(1, 10) == 5:
+        elif randint(1, 5) == 5:
             await tavern_quest(user)
 
 async def quest_managment():
