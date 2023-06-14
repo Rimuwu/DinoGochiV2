@@ -153,7 +153,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
         add_back_button = True
         buttons = [
             ['dungeon', 'quests'],
-            ['edit'],
+            ['edit', 'daily_award', 'events'],
         ]
 
     elif markup_key == 'referal_menu':
@@ -284,8 +284,7 @@ def get_answer_keyboard(elements: list, lang: str='en') -> dict:
         keyboard = list_to_keyboard(buttons_list, 2) #превращаем список в клавиатуру
 
         return {'case': 2, 'keyboard': keyboard, 'data_names': data_names}
-    
-    
+
 def count_markup(max_count: int=1, lang: str='en') -> ReplyKeyboardMarkup:
     """Создаёт клавиатуру для быстрого выбора числа
         Предлагает выбрать 1, max_count // 2, max_count
