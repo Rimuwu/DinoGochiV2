@@ -35,15 +35,16 @@ async def dino_profile(userid: int, dino: Dino, lang: str, custom_url: str):
 
     user = User(userid)
     owners = list(dino_owners.find({'dino_id': dino._id}))
-    
+
     for owner in owners:
         if owner['owner_id'] == userid and owner['type'] == 'add_owner':
             joint_dino = True
         if owner['owner_id'] == userid and owner['type'] == 'owner' and len(owners) >= 2: my_joint = True
 
     season = get_event('time_year')
-    if type(season) == dict:
+    if 'data' in season:
         season = season['data']['season']
+    else: season = 'standart'
     tem = GAME_SETTINGS['events']['time_year'][season]
 
     stats_text = ''
@@ -82,8 +83,7 @@ async def dino_profile(userid: int, dino: Dino, lang: str, custom_url: str):
         if data:
             if await check_accessory(dino, 'timer', True):
                 end = seconds_to_str(data['game_end'] - int(time()), lang)
-                text += t(
-                    f'p_profile.game.game_end', lang, end=end)
+                text += t(f'p_profile.game.game_end', lang, end=end)
 
             duration = seconds_to_str(int(time()) - data['game_start'], lang)
             text += t(
