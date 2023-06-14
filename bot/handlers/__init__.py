@@ -12,6 +12,7 @@ from . import friends
 from . import referal_menu
 from . import dialogs
 from . import quests
+from . import tavern
 
 from . import actions
 
