@@ -488,3 +488,12 @@ def count_inventory_items(userid: int, find_type: list):
 
         if item_type in find_type or not find_type: result += 1
     return result
+
+async def user_in_chat(userid: int, chatid: int):
+    statuss = ['creator', 'administrator', 'member']
+    try:
+        result = await bot.get_chat_member(chat_id=chatid, user_id=userid)
+    except Exception as e: return False
+
+    if result.status in statuss: return True
+    return False
