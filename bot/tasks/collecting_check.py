@@ -11,6 +11,7 @@ from bot.modules.item import counts_items
 from bot.modules.accessory import check_accessory
 from bot.modules.dinosaur import Dino, mutate_dino_stat
 from bot.modules.mood import check_inspiration
+from bot.modules.quests import quest_process
 
 collecting_task = mongo_client.tasks.collecting
 dinosaurs = mongo_client.bot.dinosaurs
@@ -36,6 +37,8 @@ async def stop_collect(coll_data):
     await end_collecting(coll_data['dino_id'], 
                                  coll_data['items'], coll_data['sended'], 
                                  items_names)
+
+    quest_process(coll_data['sended'], coll_data['collecting_type'], coll_data['now_count'])
 
 async def collecting_process():
     data = list(collecting_task.find({})).copy()
