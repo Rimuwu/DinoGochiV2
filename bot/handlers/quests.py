@@ -7,9 +7,10 @@ from telebot.types import (CallbackQuery, InlineKeyboardButton,
 from bot.config import mongo_client
 from bot.exec import bot
 from bot.modules.data_format import list_to_inline, seconds_to_str
-from bot.modules.item import counts_items
+from bot.modules.item import AddItemToUser
 from bot.modules.localization import get_data, t
-from bot.modules.quests import quest_resampling, quest_ui
+from bot.modules.quests import quest_resampling, quest_ui, check_quest
+from bot.modules.user import take_coins
 
 quests_data = mongo_client.bot.quests
 users = mongo_client.bot.users
@@ -61,6 +62,27 @@ async def quest(call: CallbackQuery):
                 mark = list_to_inline([{text: ' '}])
                 await bot.edit_message_reply_markup(chatid, message.id, 
                                     reply_markup=mark)
+            elif data[1] == 'end':
+                result = check_quest(quest)
+
+                if result:
+                    text = t('quest.end_quest', lang, author_name=quest['author'], name=quest['name'])
+
+                    b_name = t('quest.end_quest_button', lang)
+                    mark = list_to_inline([{b_name: ' '}])
+
+                    await bot.edit_message_reply_markup(chatid, message.id, reply_markup=mark)
+
+                    take_coins(userid, quest['reward']['coins'], True)
+                    for i in quest['reward']['items']: 
+                        AddItemToUser(userid, i)
+
+                    quests_data.delete_one({'_id': quest['_id']})
+                    users.update_one({'userid': userid}, {'$inc': {'dungeon.quest_ended': 1}})
+
+                else: text = t('quest.conditions', lang)
+
+                await bot.send_message(chatid, text, parse_mode='Markdown')
     else:
         text = t('quest.not_found', lang)
         await bot.send_message(chatid, text)
