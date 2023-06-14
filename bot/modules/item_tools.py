@@ -17,6 +17,7 @@ from bot.modules.markup import (confirm_markup, count_markup,
 from bot.modules.states_tools import ChooseStepState
 from bot.modules.user import User, experience_enhancement, get_dead_dinos
 from bot.modules.mood import add_mood
+from bot.modules.quests import quest_process
 
 users = mongo_client.bot.users
 items = mongo_client.bot.items
@@ -78,7 +79,7 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
     data_item: dict = get_data(item_id)
     item_name: str = get_name(item_id, lang)
     type_item: str = data_item['type']
-    
+
     if type_item == 'eat' and dino:
         
         if dino.status == 'sleep':
@@ -94,12 +95,11 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
                 percent = 1
                 if dino.age.days >= 10:
                     percent, repeat = dino.memory_percent('eat', item_id)
-                    return_text = t(f'item_use.eat.repeat.m{repeat}', lang, 
-                            percent=int(percent*100)) + '\n'
+                    return_text = t(f'item_use.eat.repeat.m{repeat}', lang, percent=int(percent*100)) + '\n'
 
                     if repeat >= 3:
                         add_mood(dino._id, 'repeat_eat', -1, 900)
-                    
+
                 dino.stats['eat'] = edited_stats(dino.stats['eat'], 
                                     int((data_item['act'] * count)*percent))
                 return_text += t('item_use.eat.great', lang, 
@@ -110,7 +110,7 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
                 # Если еда не соответствует классу, то убираем дполнительные бафы.
                 use_baff_status = False
                 loses_eat = randint(0, (data_item['act'] * count) // 2) * -1
-                
+
                 # Получаем конечную характеристики
                 dino.stats['eat'] = edited_stats(dino.stats['eat'], loses_eat)
 
@@ -118,7 +118,8 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
                          loses_eat=loses_eat)
 
                 add_mood(dino._id, 'bad_eat', -1, 1200)
-    
+            quest_process(userid, 'feed', items=[item_id] * count)
+
     elif type_item in ['game_ac', "journey_ac", "collecting_ac", "sleep_ac", 'weapon', 'armor', 'backpack'] and dino:
         action_to_type = {
             'game_ac': 'game', 'journey_ac': 'journey', 
