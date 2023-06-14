@@ -14,6 +14,7 @@ from bot.modules.markup import count_markup
 from bot.modules.markup import markups_menu as m
 from bot.modules.states_tools import ChooseStepState
 from bot.modules.user import User, count_inventory_items, premium
+from bot.modules.quests import quest_process
 
 users = mongo_client.bot.users
 dinosaurs = mongo_client.bot.dinosaurs
@@ -141,10 +142,12 @@ async def collecting_callback(callback: CallbackQuery):
         items_list = []
         for key, count in data['items'].items():
             items_list += [key] * count
-            
+
         items_names = counts_items(items_list, lang)
-            
+
         if action == 'stop':
             await end_collecting(dino._id, 
                                  data['items'], data['sended'], 
                                  items_names)
+            quest_process(data['sended'], data['collecting_type'], 
+                          data['now_count'])
