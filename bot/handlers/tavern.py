@@ -11,8 +11,10 @@ from bot.modules.markup import markups_menu as m
 from bot.modules.notifications import user_notification
 from bot.modules.states_tools import (ChooseConfirmState, ChooseCustomState,
                                       ChoosePagesState, ChooseDinoState, ChooseStepState, ChooseIntState)
-from bot.modules.user import user_name, take_coins
+from bot.modules.user import user_name, take_coins, user_in_chat
 from bot.modules.dinosaur import Dino, create_dino_connection
+from bot.const import GAME_SETTINGS as GS
+from bot.modules.item import counts_items
 
 events = mongo_client.tasks.events
 
@@ -27,9 +29,37 @@ async def events_c(message: Message):
     res = list(events.find({}))
     a = 0
     for event in res:
-        event_text = t(f"events.{event['_id']}", lang)
-        if event['_id'] == 'time_year':
-            event_text = event_text[event['data']['season']]
-        text += f'+{a}. {event_text}\n'
+        a += 1
+
+        if event['type'] == 'time_year':
+            season = event['data']['season']
+            event_text = t(f"events.time_year.{season}", lang)
+        else: event_text = t(f"events.{event['type']}", lang)
+        text += f'{a}. {event_text}\n\n'
 
     await bot.send_message(chatid, text)
+
+@bot.message_handler(text='commands_name.dino_tavern.daily_award', is_authorized=True)
+async def bonus(message: Message):
+    userid = message.from_user.id
+    lang = message.from_user.language_code
+    chatid = message.chat.id
+
+    award_data = GS['daily_award']
+    lvl1 = counts_items(award_data['lvl1']['items'], lang) \
+        + f', ' + str(award_data['lvl1']['coins']) + ' 👑'
+
+    lvl2 = counts_items(award_data['lvl2']['items'], lang) \
+        + f', ' + str(award_data['lvl2']['coins']) + ' 👑'
+
+    bonus = counts_items(award_data['bonus']['items'], lang) \
+        + f', ' + str(award_data['bonus']['coins']) + ' 👑'
+
+    text = t('daily_award.info', lang, lvl_1=lvl1, lvl_2=lvl2, bonus=bonus
+             )
+    
+    res = await user_in_chat(userid, -1001673242031)
+    print(res)
+    
+    await bot.send_message(chatid, text, parse_mode='Markdown')
+    
