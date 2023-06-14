@@ -3,8 +3,9 @@
 from telebot.asyncio_handler_backends import BaseMiddleware, SkipHandler
 from telebot.types import Message
 from bot.exec import bot
+from asyncio import sleep
 
-DEFAULT_RATE_LIMIT = 0.2
+DEFAULT_RATE_LIMIT = 1
 
 class AntifloodMiddleware(BaseMiddleware):
 
@@ -20,7 +21,8 @@ class AntifloodMiddleware(BaseMiddleware):
             self.last_time[message.from_user.id] = message.date
             return
         if message.date - self.last_time[message.from_user.id] < self.limit:
-            return SkipHandler()
+            # SkipHandler()
+            return await sleep(0.5)
         self.last_time[message.from_user.id] = message.date
 
     async def post_process(self, message, data, exception):
