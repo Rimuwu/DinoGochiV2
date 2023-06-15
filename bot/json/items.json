@@ -565,6 +565,7 @@
         },
         "act": 5,
         "class": "ALL",
+        "drink": true,
         "image": "item33",
         "rank": "rare",
         "type": "eat"
@@ -618,6 +619,7 @@
         },
         "act": -30,
         "class": "ALL",
+        "drink": true,
         "image": "item36",
         "rank": "rare",
         "type": "eat"
@@ -1400,6 +1402,7 @@
         },
         "act": 10,
         "class": "ALL",
+        "drink": true,
         "image": "item74",
         "rank": "uncommon",
         "type": "eat"
@@ -1494,6 +1497,7 @@
         },
         "act": 5,
         "class": "ALL",
+        "drink": true,
         "image": "item81",
         "rank": "rare",
         "type": "eat"
@@ -1592,6 +1596,7 @@
         },
         "act": 10,
         "class": "ALL",
+        "drink": true,
         "image": "item88",
         "rank": "uncommon",
         "type": "eat"
@@ -2803,6 +2808,7 @@
         },
         "act": 1,
         "class": "ALL",
+        "drink": true,
         "image": "item114",
         "rank": "common",
         "type": "eat"
@@ -2826,6 +2832,7 @@
     "rope": {
         "image": "recipe",
         "rank": "common",
-        "type": "material"
+        "type": "material",
+        "cant_sell": true
     }
 }
