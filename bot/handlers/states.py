@@ -154,9 +154,11 @@ async def ChooseConfirm(message: Message):
     buttons_data = {
         buttons['enable']: True,
         buttons['confirm']: True,
-        buttons['disable']: False
+        buttons['disable']: False,
+        buttons['yes']: True,
+        buttons['no']: False
     }
-    
+
     if content in buttons_data:
         if not(buttons_data[content]) and cancel_status:
             await cancel(message)
