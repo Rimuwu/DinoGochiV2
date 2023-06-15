@@ -317,7 +317,7 @@ async def ChooseStepState(function, userid: int,
           В данных можно указать async: True для асинхронной функции
           Параметр name тоже обязателен.
 
-        name - имя ключа в возвращаемом инвентаре (не повторять для корректности)
+        name - имя ключа в возвращаемом инвентаре (при повторении, будет создан список с записями)
         data - данные для функции создания опроса
         message - данные для отправляемо сообщения перед опросом
         translate_message (bool, optional) - если наш текст это чистый ключ из данных, то можно переводить на ходу
@@ -348,8 +348,7 @@ async def ChooseStepState(function, userid: int,
             # В данных уже должен быть ключ function
             # function получает transmitted_data
             # function должна возвращать transmitted_data, answer
-        else:
-            steps.remove(step)
+        else: steps.remove(step)
 
     transmitted_data = dict(add_if_not(transmitted_data, 
                             userid, chatid, lang))
@@ -357,6 +356,7 @@ async def ChooseStepState(function, userid: int,
     transmitted_data['steps'] = steps
     transmitted_data['return_function'] = function
     transmitted_data['return_data'] = {}
+    transmitted_data['process'] = 0
     await next_step(0, transmitted_data, True)
 
 
@@ -378,33 +378,38 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
     userid = transmitted_data['userid']
     chatid = transmitted_data['chatid']
     lang = transmitted_data['lang']
-    
+
     steps = transmitted_data['steps']
-    return_data = transmitted_data['return_data']
     temp = {}
 
     # Обновление внутренних данных
     if not start:
-        name = steps[len(return_data)]['name']
+        name = steps[transmitted_data['process']]['name']
         if name:
-            transmitted_data['return_data'][name] = answer
+            if name in transmitted_data['return_data']:
+                if type(transmitted_data['return_data'][name]) == list:
+                    transmitted_data['return_data'][name].append(answer)
+                else:
+                    transmitted_data['return_data'][name] = [transmitted_data['return_data'][name], answer]
+            else: transmitted_data['return_data'][name] = answer
+            transmitted_data['process'] += 1
         else: print('Имя не указано, бесконечный запрос данных')
-        
-    if len(return_data) - 1 >= 0:
-        last_step = steps[len(return_data) - 1]
-        
-        if steps[len(return_data) - 1]['type'] == 'inline':
+
+    if transmitted_data['process'] - 1 >= 0:
+        last_step = steps[transmitted_data['process'] - 1]
+
+        if steps[transmitted_data['process'] - 1]['type'] == 'inline':
             if 'delete_markup' in last_step and last_step['delete_markup']:
                 await bot.edit_message_reply_markup(chatid, last_step['messageid'], reply_markup=InlineKeyboardMarkup())
-        
+
         if 'delete_message' in last_step and last_step['delete_message']:
             await bot.delete_message(chatid, last_step['bmessageid'])
 
         if 'delete_user_message' in last_step and last_step['delete_user_message']:
             await bot.delete_message(chatid, last_step['umessageid'])
 
-    if len(return_data) != len(steps): #Получение данных по очереди
-        ret_data = steps[len(return_data)]
+    if transmitted_data['process'] < len(steps): #Получение данных по очереди
+        ret_data = steps[transmitted_data['process']]
 
         if ret_data['type'] == 'update_data':
             # Обработчик данных между запросами
@@ -415,12 +420,13 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
                 transmitted_data, answer = ret_data['function'](transmitted_data)
 
             transmitted_data['return_data'][ret_data['name']] = answer
-            ret_data = steps[len(return_data)]
+            transmitted_data['process'] += 1
+            ret_data = steps[transmitted_data['process']]
 
         # Очистка данных
-        if 'delete_steps' in transmitted_data and transmitted_data['delete_steps'] and len(return_data) != 0:
+        if 'delete_steps' in transmitted_data and transmitted_data['delete_steps'] and transmitted_data['process'] != 0:
             # Для экономия места мы можем удалять данные отработанных шагов
-            transmitted_data['steps'][len(return_data)-1] = 0
+            del transmitted_data['steps'][transmitted_data['process']-1]
 
         if 'temp' in transmitted_data: 
             temp = transmitted_data['temp'].copy()
@@ -459,7 +465,7 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
                         elif 'text' in ret_data['message']:
                             ret_data['message']['text'] = t(ret_data['message']['text'], lang, **trans_d)
 
-                if edit_message and len(return_data) != 0 and last_message:
+                if edit_message and transmitted_data['process'] != 0 and last_message:
                     if 'image' in steps[0]:
                         await bot.edit_message_caption(
                             chat_id=chatid, message_id=last_message.id,
@@ -487,7 +493,9 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
         await bot.reset_data(userid, chatid)
 
         return_function = transmitted_data['return_function']
+        return_data = transmitted_data['return_data']
         del transmitted_data['return_function']
         del transmitted_data['return_data']
+        del transmitted_data['process']
 
         await return_function(return_data, transmitted_data)
