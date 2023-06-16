@@ -217,17 +217,18 @@ def get_eggs(userid: int) -> list:
 
     return eggs_list
 
-def get_inventory(userid: int):
+def get_inventory(userid: int, exclude_ids: list):
     inv, count = [], 0
 
     for item_dict in items.find({'owner_id': userid}, 
                                 {'_id': 0, 'owner_id': 0}):
-        item = {
-            'item': item_dict['items_data'], 
-            "count": item_dict['count']
-            }
-        inv.append(item)
-        count += item_dict['count']
+        if item_dict['items_data']['item_id'] not in exclude_ids:
+            item = {
+                'item': item_dict['items_data'], 
+                "count": item_dict['count']
+                }
+            inv.append(item)
+            count += item_dict['count']
 
     return inv, count
 
