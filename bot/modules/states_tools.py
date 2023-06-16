@@ -301,6 +301,20 @@ chooses = {
     'inv': start_inv,
 }
 
+def prepare_steps(steps: list, userid: int, chatid: int, lang: str):
+    for step in steps:
+        if step['type'] in chooses:
+            step['function'] = chooses[step['type']]
+
+            step['data'] = dict(add_if_not(
+                step['data'], userid, chatid, lang))
+        elif step['type'] == 'update_data': pass
+            # В данных уже должен быть ключ function
+            # function получает transmitted_data
+            # function должна возвращать transmitted_data, answer
+        else: steps.remove(step)
+    return steps
+
 async def ChooseStepState(function, userid: int, 
                          chatid: int, lang: str,
                          steps: list = [],
@@ -338,17 +352,7 @@ async def ChooseStepState(function, userid: int,
         >>> answer: dict, transmitted_data: dict
     """
     if not transmitted_data: transmitted_data = {}
-    for step in steps:
-        if step['type'] in chooses:
-            step['function'] = chooses[step['type']]
-
-            step['data'] = dict(add_if_not(
-                step['data'], userid, chatid, lang))
-        elif step['type'] == 'update_data': pass
-            # В данных уже должен быть ключ function
-            # function получает transmitted_data
-            # function должна возвращать transmitted_data, answer
-        else: steps.remove(step)
+    steps = prepare_steps(steps, userid,  chatid, lang)
 
     transmitted_data = dict(add_if_not(transmitted_data, 
                             userid, chatid, lang))
