@@ -205,12 +205,14 @@ async def filter_menu(userid: int, chatid: int):
 
 async def start_inv(function, userid: int, chatid: int, lang: str, 
                     type_filter: list = [], item_filter: list = [], 
+                    exclude_ids: list = [],
                     start_page: int = 0, changing_filters: bool = True,
                     transmitted_data = None):
     """ Функция запуска инвентаря
         type_filter - фильтр типов предметов
         item_filter - фильтр по id предметам
         start_page - стартовая страница
+        exclude_ids - исключаемые id
         changing_filters - разрешено ли изменять фильтры
         one_time_pages - сколько генерировать страниц за раз, все если 0
     """
@@ -224,7 +226,7 @@ async def start_inv(function, userid: int, chatid: int, lang: str,
     if user_settings: inv_view = user_settings['settings']['inv_view']
     else: inv_view = [2, 3]
     
-    invetory, count = get_inventory(userid)
+    invetory, count = get_inventory(userid, exclude_ids)
     pages, row, items_data, names = inventory_pages(invetory, lang, inv_view, type_filter, item_filter)
 
     if not pages:
