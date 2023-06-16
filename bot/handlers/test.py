@@ -21,9 +21,9 @@ from bot.modules.inventory_tools import inventory_pages
 from bot.modules.item import (AddItemToUser, DowngradeItem, get_data,
                               get_item_dict, get_name)
 from bot.modules.localization import get_data, t
-from bot.modules.markup import count_markup, down_menu, list_to_keyboard
+from bot.modules.markup import count_markup, down_menu, list_to_keyboard, confirm_markup
 from bot.modules.notifications import user_notification, notification_manager
-from bot.modules.states_tools import ChoosePagesState, ChooseStepState
+from bot.modules.states_tools import ChoosePagesState, ChooseStepState, prepare_steps
 from bot.modules.user import User, max_dino_col
 from bot.modules.statistic import get_now_statistic
 
@@ -128,6 +128,74 @@ async def test_options_pages(message):
 async def st(message):
     
     get_now_statistic()
+    
+@bot.message_handler(commands=['eat'])
+async def st(message):
+    
+    text = ''
+    for key, value in ITEMS.items():
+        if value['type'] == 'eat':
+            text += t(f'items_names.{key}.name', 'ru') + ' ' + value['class'] + '\n'
+    
+        if value['type'] == 'recipe':
+            cr = value['create'][0]['item']
+            if ITEMS[cr]['type'] == 'eat':
+                text += t(f'items_names.{key}.name', 'ru')
+                mat = ''
+                for i in value['materials']: 
+                    mat += ' ' + i['item'] + ' '
+                
+                text += mat + '\n'
+    
+    print(text)
+    await bot.send_message(message.chat.id, text)
+    
+def upd(transmitted_data):
+    
+    if transmitted_data['return_data']['chose']:
+        steps = [
+            {"type": 'inv', "name": 'item', "data": {}, 
+            'message': {'text': 'inventory open'}},
+            {"type": 'bool', "name": 'chose', "data": {}, 
+            'message': {'text': 'Добавить ещё предмет?',
+                        'reply_markup': list_to_keyboard(['✅ Да', '❌ Нет'])
+                        }},
+            {'type': 'update_data', 'function': upd,
+             'name': 're', 'data': {}}
+        ]
+
+        steps = prepare_steps(steps, transmitted_data['userid'], transmitted_data['chatid'], transmitted_data['lang'])
+
+        transmitted_data['steps'] += steps
+
+        print(transmitted_data['steps'])
+    
+    return transmitted_data, 0
+    
+async def ret(return_data, transmitted_data):
+    print(return_data)
+
+@bot.message_handler(commands=['inv'])
+async def top_inv(message):
+    
+    userid = message.from_user.id
+    chatid = message.chat.id
+    lang = message.from_user.language_code
+    
+    steps = [
+        {"type": 'inv', "name": 'item', "data": {}, 
+            'message': {'text': 'inventory open'}},
+        {"type": 'bool', "name": 'chose', "data": {}, 
+            'message': {'text': 'Добавить ещё предмет?',
+                        'reply_markup': list_to_keyboard(['✅ Да', '❌ Нет'])
+                        }},
+        {
+            'type': 'update_data', 'function': upd,
+            'name': 're', 'data': {}
+        }
+    ]
+
+    await ChooseStepState(ret, userid, chatid, lang, steps)
 
 # @bot.message_handler(commands=['names'])
 # async def names(message):
