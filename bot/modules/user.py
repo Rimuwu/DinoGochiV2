@@ -16,6 +16,7 @@ from bot.modules.localization import get_data, t
 from bot.modules.logs import log
 from bot.modules.notifications import user_notification
 from bot.modules.referals import get_code_owner, get_user_sub
+from datetime import datetime, timedelta
 
 users = mongo_client.bot.users
 items = mongo_client.bot.items
@@ -28,6 +29,7 @@ dino_owners = mongo_client.connections.dino_owners
 friends = mongo_client.connections.friends
 subscriptions = mongo_client.tasks.subscriptions
 referals = mongo_client.connections.referals
+daily_award_data = mongo_client.connections.daily_award
 
 class User:
 
@@ -46,7 +48,9 @@ class User:
             'inv_view': [2, 3],
             'my_name': '' # Как вас называет динозавр
             }
-            
+
+        self.notifications = []
+
         self.coins = 100
         self.lvl = 0
         self.xp = 0
@@ -55,12 +59,12 @@ class User:
             'quest_ended': 0,
             'dungeon_ended': 0
         }
-        
+
         self.UpdateData(users.find_one({"userid": self.userid})) #Обновление данных
-        
+
     def UpdateData(self, data):
         if data: self.__dict__ = data
-    
+
     def get_dinos(self, all_dinos: bool=True) -> list:
         """Возвращает список с объектами динозавров.
            all_dinos - Если False то не запросит совместных динозавров 
@@ -498,3 +502,31 @@ async def user_in_chat(userid: int, chatid: int):
 
     if result.status in statuss: return True
     return False
+
+def check_name(user: teleUser):
+    """ Проверяет есть ли в нике надпись DinoGochi
+    """
+    text = user.full_name.lower()
+    if 'dinogochi' in text: return True
+    return False
+
+def daily_award_con(userid: int):
+    """ Заносит в данные чекин о награде
+        0 - уже в базе 
+        != 0 - занесён в базу
+    """
+    res = daily_award_data.find_one({'owner_id': userid})
+    if res: return 0
+    else:
+        # Количество секунд в момент начала следующего дня
+        today = datetime.today()
+        tomorrow = today + timedelta(days=1)
+        tomorrow = tomorrow.replace(hour=0, minute=0, second=0, microsecond=0)
+
+        data = {
+            'owner_id': userid,
+            'time_end': int(tomorrow.timestamp()),
+            'send_notification': False
+        }
+        daily_award_data.insert_one(data)
+        return int(tomorrow.timestamp())

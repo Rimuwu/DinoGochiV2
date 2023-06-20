@@ -108,14 +108,14 @@ async def tavern_menu(message: Message):
 
     photo = open('images/remain/taverna/dino_taverna.png', 'rb')
     await bot.send_photo(message.chat.id, photo, 
-            t('menu_text.dino_tavern.info', lang), reply_markup=m(userid, 'dino_tavern_menu', lang))
+            t('menu_text.dino_tavern.info', lang))
 
     user = User(userid)
     friends = user.get_friends['friends']
 
     data_enter = get_data('tavern_enter', lang)
     text = f'🍻 {choice(data_enter)}'
-    await bot.send_message(message.chat.id, text)
+    await bot.send_message(message.chat.id, text, reply_markup=m(userid, 'dino_tavern_menu', lang))
     
     if not tavern.find_one({'userid': userid}):
         tavern.insert_one({
