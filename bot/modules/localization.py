@@ -24,15 +24,11 @@ def load() -> None:
 
 def alternative_language(lang: str):
     languages = {
-        'ru': ['ua', 'en']
+        'ua': 'ru',
+        'ru': 'en'
     }
-
-    for key, item in languages.items():
-        if lang in item: 
-            return key
-    else:
-        return lang
-
+    if lang in languages: return languages[lang]
+    return lang
 
 def get_data(key: str, locale: str = "en") -> Any:
     """Возвращает данные локализации
