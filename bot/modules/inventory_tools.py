@@ -66,7 +66,7 @@ def inventory_pages(items: list, lang: str = 'en',
                 code = item_code(item)
 
                 if code in code_items:
-                     code_items[code]['count'] += count
+                    code_items[code]['count'] += count
                 else:
                     code_items[code] = {'item': item, 'count': count}
 
@@ -247,7 +247,7 @@ async def start_inv(function, userid: int, chatid: int, lang: str,
         await bot.set_state(userid, InventoryStates.Inventory, chatid)
         async with bot.retrieve_data(userid, chatid) as data:
             data['pages'] = pages
-            data['len_pages'] = len(pages)
+            data['max_page'] = len(pages)
             data['items_data'] = items_data
             data['names'] = names
             data['filters'] = type_filter
