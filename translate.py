@@ -6,14 +6,14 @@ from langdetect import DetectorFactory, detect
 
 DetectorFactory.seed = 0
 
-with open('ru.json', encoding='utf-8') as f: 
-    ru = json.load(f) # type: dict
-
-with open('en.json', encoding='utf-8') as f: 
-    en = json.load(f) # type: dict
-
 from_l = 'ru'
 ro_l = 'en'
+
+with open(f'{from_l}.json', encoding='utf-8') as f: 
+    main_lang = json.load(f) # type: dict
+
+with open(f'{ro_l}.json', encoding='utf-8') as f: 
+    add_lang = json.load(f) # type: dict
 
 def trs(text: str, trs='bing'):
     # spl = text.split('{')
@@ -41,20 +41,17 @@ def trs_circul(s, c=0):
 
     try: return trs(s, 'yandex')
     except: 
-        try: 
-            return trs(s, 'translateCom')
+        try:  return trs(s, 'google')
         except:
             try: return trs(s, 'deepl')
             except: 
-                try: return trs(s, 'google')
-                except: 
-                    try: return trs(s, 'alibaba')
+                try: return trs(s, 'alibaba')
+                except:
+                    try: return trs(s, 'bing')
                     except:
-                        try: return trs(s, 'bing')
-                        except:
-                            c += 1
-                            print('ПОВТОРНАЯ ТРАНСЛЯЦИЯ')
-                            return trs_circul(s, c)
+                        c += 1
+                        print('ПОВТОРНАЯ ТРАНСЛЯЦИЯ')
+                        return trs_circul(s, c)
     
 
 def dict_string(s):
@@ -67,15 +64,20 @@ def dict_string(s):
         return lst
     elif type(s) == dict:
         dct = {}
-        for key, value in s.items(): dct[key] = dict_string(value)
+        for key, value in s.items(): 
+            if key not in ['data', 'callback', 'inline_menu']:
+                dct[key] = dict_string(value)
+            else: dct[key] = value
         return dct
     return s
 
 def save(data):
-    with open('en.json', 'w', encoding='utf-8') as f:
+    with open(f'{ro_l}.json', 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
-for key, value in ru['ru'].items():
-    if key not in en:
-        en[key] = dict_string(value)
-        save(en)
+if not add_lang: add_lang[ro_l] = {}
+
+for key, value in main_lang['ru'].items():
+    if key not in add_lang[ro_l]:
+        add_lang[ro_l][key] = dict_string(value)
+        save(add_lang)
