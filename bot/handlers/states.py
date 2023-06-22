@@ -317,6 +317,7 @@ async def ChooseInline(callback: CallbackQuery):
     chatid = callback.message.chat.id
     userid = callback.from_user.id
     
+    
     async with bot.retrieve_data(userid, chatid) as data:
         func = data['function']
         transmitted_data = data['transmitted_data']
@@ -327,6 +328,6 @@ async def ChooseInline(callback: CallbackQuery):
     transmitted_data['temp'] = {}
     transmitted_data['temp']['message_data'] = callback.message
 
-    transmitted_data['steps'][len(transmitted_data['return_data'])]['bmessageid'] = callback.message.id
+    transmitted_data['steps'][transmitted_data['process']]['bmessageid'] = callback.message.id
 
     await func(code, transmitted_data=transmitted_data)
