@@ -26,6 +26,8 @@ from bot.modules.notifications import user_notification, notification_manager
 from bot.modules.states_tools import ChoosePagesState, ChooseStepState, prepare_steps
 from bot.modules.user import User, max_dino_col
 from bot.modules.statistic import get_now_statistic
+from bot.modules.quests import create_quest, quest_ui, save_quest
+from bot.modules.journey import create_event, random_event
 
 dinosaurs = mongo_client.bot.dinosaurs
 
@@ -121,8 +123,8 @@ async def test_options_pages(message):
     
     user = User( message.from_user.id)
     dino = user.get_last_dino()
-
-    await notification_manager(dino._id, 'heal', 50)
+    if dino:
+        await notification_manager(dino._id, 'heal', 50)
 
 @bot.message_handler(commands=['st'])
 async def st(message):
@@ -130,7 +132,7 @@ async def st(message):
     get_now_statistic()
     
 @bot.message_handler(commands=['eat'])
-async def st(message):
+async def eat(message):
     
     text = ''
     for key, value in ITEMS.items():
@@ -153,8 +155,16 @@ async def st(message):
 def upd(transmitted_data):
     
     if transmitted_data['return_data']['chose']:
+        items = transmitted_data['return_data']['items']
+        items_id = []
+        
+        if type(items) == dict:
+            items_id.append(items['item_id'])
+        else:
+            for i in items: items_id.append(i['item_id'])
         steps = [
-            {"type": 'inv', "name": 'item', "data": {}, 
+            {"type": 'inv', "name": 'items', "data": {
+                'exclude_ids': items_id}, 
             'message': {'text': 'inventory open'}},
             {"type": 'bool', "name": 'chose', "data": {}, 
             'message': {'text': 'Добавить ещё предмет?',
@@ -168,8 +178,6 @@ def upd(transmitted_data):
 
         transmitted_data['steps'] += steps
 
-        print(transmitted_data['steps'])
-    
     return transmitted_data, 0
     
 async def ret(return_data, transmitted_data):
@@ -183,7 +191,7 @@ async def top_inv(message):
     lang = message.from_user.language_code
     
     steps = [
-        {"type": 'inv', "name": 'item', "data": {}, 
+        {"type": 'inv', "name": 'items', "data": {}, 
             'message': {'text': 'inventory open'}},
         {"type": 'bool', "name": 'chose', "data": {}, 
             'message': {'text': 'Добавить ещё предмет?',
@@ -196,6 +204,45 @@ async def top_inv(message):
     ]
 
     await ChooseStepState(ret, userid, chatid, lang, steps)
+
+@bot.message_handler(commands=['add_all'])
+async def add_all(message):
+    
+    userid = message.from_user.id
+    chatid = message.chat.id
+    lang = message.from_user.language_code
+    
+    for i in ITEMS:
+        AddItemToUser(userid, i, 10)
+    
+    print('sedf')
+    
+
+@bot.message_handler(commands=['journey'])
+async def add_all(message):
+    
+    userid = message.from_user.id
+    chatid = message.chat.id
+    lang = message.from_user.language_code
+    
+    for _ in range(10):
+        f = create_event('forest', event='item')
+        print(f)
+    print('----------------------')
+
+@bot.message_handler(commands=['event'])
+async def ev(message):
+    
+    userid = message.from_user.id
+    chatid = message.chat.id
+    lang = message.from_user.language_code
+    
+    user = User( message.from_user.id)
+    dino = user.get_last_dino()
+    if dino:
+        for i in range(10):
+            status = await random_event(dino._id, 'forest')
+            print(status)
 
 # @bot.message_handler(commands=['names'])
 # async def names(message):
