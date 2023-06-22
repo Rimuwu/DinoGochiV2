@@ -85,11 +85,10 @@ class User:
         eggs_list = get_eggs(self.userid)
         self.eggs = eggs_list
         return eggs_list
-    
-    @property
-    def get_inventory(self):
+
+    def get_inventory(self, exclude_ids: list=[]):
         """Возвращает список с предметами в инвентаре"""
-        inv, count = get_inventory(self.userid)
+        inv, count = get_inventory(self.userid, exclude_ids)
         self.inventory = inv
         return inv, count
 
@@ -221,9 +220,8 @@ def get_eggs(userid: int) -> list:
 
     return eggs_list
 
-def get_inventory(userid: int, exclude_ids: list):
+def get_inventory(userid: int, exclude_ids: list = []):
     inv, count = [], 0
-
     for item_dict in items.find({'owner_id': userid}, 
                                 {'_id': 0, 'owner_id': 0}):
         if item_dict['items_data']['item_id'] not in exclude_ids:
@@ -451,7 +449,7 @@ def user_info(data_user: teleUser, lang: str, secret: bool = False):
                      )
     
     if not secret:
-        items, count = user.get_inventory
+        items, count = user.get_inventory()
         
         return_text += '\n\n'
         return_text += t('user_profile.inventory', lang,
@@ -525,8 +523,7 @@ def daily_award_con(userid: int):
 
         data = {
             'owner_id': userid,
-            'time_end': int(tomorrow.timestamp()),
-            'send_notification': False
+            'time_end': int(tomorrow.timestamp())
         }
         daily_award_data.insert_one(data)
         return int(tomorrow.timestamp())
