@@ -35,8 +35,8 @@ def item_info_markup(item: dict, lang):
     loc_data = get_loc_data('item_info.static.buttons', lang)
     buttons_dict = {}
 
-    if item_data['type'] not in ['material', 'ammunition']:
-        buttons_dict[loc_data['use']] = f"item use {item_code(item)}"
+    if item_data['type'] not in ['material', 'ammunition', 'dummy']:
+        buttons_dict[loc_data['use'][item_data['type']]] = f"item use {item_code(item)}"
     
     buttons_dict[loc_data['delete']] = f"item delete {item_code(item)}"
     buttons_dict[loc_data['exchange']] = f"item exchange {item_code(item)}"
