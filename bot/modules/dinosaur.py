@@ -381,7 +381,8 @@ async def end_sleep(dino_id: ObjectId,
                             secs=sec_time)
 
 
-def start_journey(dino_baseid: ObjectId, owner_id: int, duration: int=1800):
+def start_journey(dino_baseid: ObjectId, owner_id: int, 
+                  duration: int=1800, location: str = 'forest'):
     """Запуск активности "путешествие". 
        + Изменение статуса динозавра 
     """
@@ -391,8 +392,9 @@ def start_journey(dino_baseid: ObjectId, owner_id: int, duration: int=1800):
         'dino_id': dino_baseid,
         'journey_start': int(time()),
         'journey_end': int(time()) + duration,
-        'journey_log': [],
-        'items': [],
+
+        'location': location,
+        'journey_log': [], 'items': [],
         'coins': 0
     }
     result = journey_task.insert_one(game)
@@ -400,6 +402,13 @@ def start_journey(dino_baseid: ObjectId, owner_id: int, duration: int=1800):
                          {'$set': {'status': 'journey'}})
     return result
 
+async def end_journey(dino_id: ObjectId, send_notif: bool=True):
+    
+    journey_task.delete_one({'dino_id': dino_id})
+    dinosaurs.update_one({'_id': dino_id}, 
+                         {'$set': {'status': 'pass'}})
+
+    if send_notif: await dino_notification(dino_id, 'journey_end')
 
 def start_collecting(dino_baseid: ObjectId, owner_id: int, coll_type: str, max_count: int):
     """Запуск активности "сбор пищи". 
