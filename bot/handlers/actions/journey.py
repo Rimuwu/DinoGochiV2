@@ -1,18 +1,19 @@
 
-from telebot.types import CallbackQuery, Message
+from telebot.types import CallbackQuery, Message, InputMedia
 
 from bot.config import mongo_client
 from bot.exec import bot
 from bot.modules.data_format import list_to_inline
-from bot.modules.dinosaur import Dino
+from bot.modules.dinosaur import Dino, start_journey as action_journey
 from bot.modules.images import dino_journey
 from bot.modules.localization import get_data, t
 from bot.modules.states_tools import ChooseStepState
 from bot.modules.user import User
+from bot.modules.markup import markups_menu as m
 
 users = mongo_client.bot.users
 dinosaurs = mongo_client.bot.dinosaurs
-
+premium_loc = ['magic-forest']
 
 async def journey_start_adp(return_data: dict, transmitted_data: dict):
     userid = transmitted_data['userid']
@@ -22,18 +23,27 @@ async def journey_start_adp(return_data: dict, transmitted_data: dict):
     friend = transmitted_data['friend']
     location = return_data['location']
     time_key = return_data['time_key']
+    last_mess_id = transmitted_data['steps'][-1]['bmessageid']
     
+    data_time = get_data(f'journey_start.time_text.{time_key}', lang)
     image = dino_journey(dino.data_id, location, friend)
-    
-    print(return_data)
-    print(transmitted_data)
+    action_journey(dino._id, userid, data_time['time'], location)
+
+    loc_name = get_data(f'journey_start.locations.{location}', lang)['name']
+    time_text = data_time['text']
+    text = t('journey_start.start', lang, 
+             loc_name=loc_name, time_text=time_text)
+
+    await bot.edit_message_media(
+        InputMedia(
+            type='photo', media=image, caption=text),
+        chatid, last_mess_id)
+    await bot.send_message(chatid, t('journey_start.start_2', lang), reply_markup=m(userid, 'last_menu', lang))
 
 async def start_journey(userid: int, chatid: int, lang: str, 
                         friend: int = 0):
     user = User(userid)
     last_dino = user.get_last_dino()
-
-    premium_loc = ['magic-forest']
     content_data = get_data('journey_start', lang)
 
     text, a = content_data['ask_loc'], 1
@@ -76,7 +86,7 @@ async def start_journey(userid: int, chatid: int, lang: str,
     ]
 
     await ChooseStepState(journey_start_adp, userid, chatid, lang, steps, 
-                          {'last_dino': last_dino, "edit_message": True, 'friend': friend})
+                          {'last_dino': last_dino, "edit_message": True, 'friend': friend, 'delete_steps': True})
 
 @bot.message_handler(text='commands_name.actions.journey')
 async def journey_com(message: Message):
@@ -94,3 +104,5 @@ async def journey_complexity(callback: CallbackQuery):
     
     text = t('journey_complexity', lang)
     await bot.send_message(chatid, text, parse_mode='Markdown')
+    
+
