@@ -24,7 +24,7 @@ async def mood_check():
             else: upd_data[dino_id] = {'unit': mood_data['unit'], 
                                        'while': [], 'events': []
                                        }
-        
+
         if mood_data['type'] == 'mood_edit':
             if int(time()) >= mood_data['end_time']:
                 # Закончилось время эффекта
@@ -43,7 +43,7 @@ async def mood_check():
                   'type': mood_data['type']
                   }
             )
-            
+
             if int(time()) >= mood_data['end_time']:
                 # Закончилось время эффекта
                 dino_mood.delete_one({'_id': mood_data['_id']})
@@ -51,7 +51,6 @@ async def mood_check():
                 if mood_data['action'] == 'hysteria':
                     dinosaurs.update_one({'_id': dino_id}, 
                                          {'$set': {'status': 'pass'}})
-           
 
     for dino_id, data in upd_data.items():
         dino = dinosaurs.find_one({'_id': dino_id})
@@ -74,7 +73,7 @@ async def mood_check():
                         if upd_data['action'] == 'hysteria':
                             dinosaurs.update_one({'_id': dino_id}, 
                                                  {'$set': {'status': 'pass'}})
-                         
+
                 if event_data['type'] == 'inspiration':
                     if dino['stats']['mood'] <= event_data['cancel_mood']:
                         dino_mood.delete_one({'_id': event_data['_id']})
