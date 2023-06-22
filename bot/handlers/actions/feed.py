@@ -47,13 +47,14 @@ async def inventory_adapter(item, transmitted_data):
         else: max_count = base_item['count']
 
         if max_count > limiter: max_count = limiter
-        
+
         percent = 1
         if dino.age.days >= 10:
             percent, repeat = dino.memory_percent('games', item['item_id'], False)
 
         steps = [
-            {"type": 'int', "name": 'count', "data": {"max_int": max_count}, 
+            {"type": 'int', "name": 'count', "data": {
+                "max_int": max_count, "autoanswer": False}, 
              "translate_message": True,
                 'message': {'text': 'css.wait_count', 
                             'reply_markup': feed_count_markup(
