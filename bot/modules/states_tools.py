@@ -74,6 +74,7 @@ async def ChooseDinoState(function, userid: int, chatid: int,
 async def ChooseIntState(function, userid: int, 
                 chatid: int, lang: str,
                 min_int: int = 1, max_int: int = 10,
+                autoanswer: bool = True,
                 transmitted_data=None):
     """ Устанавливает состояние ожидания числа
 
@@ -88,8 +89,8 @@ async def ChooseIntState(function, userid: int,
     
     if not transmitted_data: transmitted_data = {}
     transmitted_data = add_if_not(transmitted_data, userid, chatid, lang)
-    
-    if min_int != max_int:
+
+    if min_int != max_int or not autoanswer:
         await bot.set_state(userid, GeneralStates.ChooseInt, chatid)
         async with bot.retrieve_data(userid, chatid) as data:
             data['function'] = function
@@ -298,7 +299,7 @@ chooses = {
     'inline': ChooseInlineState,
     'custom': ChooseCustomState,
     'pages': ChoosePagesState,
-    'inv': start_inv,
+    'inv': start_inv
 }
 
 def prepare_steps(steps: list, userid: int, chatid: int, lang: str):
@@ -430,7 +431,7 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
         # Очистка данных
         if 'delete_steps' in transmitted_data and transmitted_data['delete_steps'] and transmitted_data['process'] != 0:
             # Для экономия места мы можем удалять данные отработанных шагов
-            del transmitted_data['steps'][transmitted_data['process']-1]
+            transmitted_data['steps'][transmitted_data['process']-1] = {}
 
         if 'temp' in transmitted_data: 
             temp = transmitted_data['temp'].copy()
@@ -470,7 +471,7 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
                             ret_data['message']['text'] = t(ret_data['message']['text'], lang, **trans_d)
 
                 if edit_message and transmitted_data['process'] != 0 and last_message:
-                    if 'image' in steps[0]:
+                    if 'image' in steps[0] or 'caption' in ret_data['message']:
                         await bot.edit_message_caption(
                             chat_id=chatid, message_id=last_message.id,
                             parse_mode='Markdown', **ret_data['message'])
