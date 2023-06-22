@@ -46,7 +46,7 @@ async def one_time(data, one_time_unit):
                     
                 if uniform(0, 1) <= DREAM_CHANCE:
                     if randint(1, 3) == 2:
-                        add_mood(dino['_id'], 'bad_dream', 1, 2700, True)
+                        add_mood(dino['_id'], 'bad_dream', -1, 2700, True)
                     else:
                         add_mood(dino['_id'], 'dream', 1, 2700, True)
 
