@@ -1290,6 +1290,7 @@
         "type": "recipe"
     },
     "freezing": {
+        "cant_sell": true,
         "image": "item66",
         "rank": "mythical",
         "time": "forever",
@@ -1297,6 +1298,7 @@
         "class": "freezing"
     },
     "defrost": {
+        "cant_sell": true,
         "image": "item67",
         "rank": "mythical",
         "type": "special",
@@ -2728,6 +2730,7 @@
         "type": "case"
     },
     "gift_2023": {
+        "cant_sell": true,
         "col_repit": {
             "act": 1,
             "type": "static"
@@ -2798,7 +2801,8 @@
         "image": "item113",
         "rank": "legendary",
         "type": "special",
-        "class": "reborn"
+        "class": "reborn",
+        "cant_sell": true
     },
     "ale": {
         "buffs": {
@@ -2832,7 +2836,41 @@
     "rope": {
         "image": "recipe",
         "rank": "common",
-        "type": "material",
-        "cant_sell": true
+        "type": "material"
+    },
+    "wool": {
+        "image": "recipe",
+        "rank": "common",
+        "type": "material"
+    },
+    "stylus": {
+        "image": "recipe",
+        "rank": "common",
+        "type": "material"
+    },
+    "book_forest": {
+        "image": "recipe",
+        "rank": "mystical",
+        "type": "book"
+    },
+    "book_lost-islands": {
+        "image": "recipe",
+        "rank": "mystical",
+        "type": "book"
+    },
+    "book_desert": {
+        "image": "recipe",
+        "rank": "mystical",
+        "type": "book"
+    },
+    "book_mountains": {
+        "image": "recipe",
+        "rank": "mystical",
+        "type": "book"
+    },
+    "book_magic-forest": {
+        "image": "recipe",
+        "rank": "mystical",
+        "type": "book"
     }
 }
