@@ -12,7 +12,7 @@ from bot.modules.inventory_tools import (InventoryStates, back_button,
                                          start_inv, swipe_page)
 from bot.modules.item import CheckItemFromUser, decode_item, get_name, RemoveItemFromUser
 from bot.modules.item import get_data as get_item_data
-from bot.modules.item_tools import data_for_use_item, delete_item_action
+from bot.modules.item_tools import data_for_use_item, delete_item_action, exchange_item, book_page
 from bot.modules.localization import get_data, t
 from bot.modules.markup import markups_menu as m
 
@@ -116,6 +116,8 @@ async def inv_callback(call: CallbackQuery):
         # Очищает фильтры
         await start_inv(None, chatid, chatid, lang)
 
+    
+
 @bot.callback_query_handler(func=lambda call: call.data.startswith('item'))
 async def item_callback(call: CallbackQuery):
     call_data = call.data.split()
@@ -132,7 +134,7 @@ async def item_callback(call: CallbackQuery):
         elif call_data[1] == 'delete':
             await delete_item_action(userid, chatid, item, lang)
         elif call_data[1] == 'exchange':
-            ...
+            await exchange_item(userid, chatid, item, lang)
         elif call_data[1] == 'egg':
             ret_data = CheckItemFromUser(userid, item)
 
@@ -156,8 +158,7 @@ async def item_callback(call: CallbackQuery):
                 await bot.send_message(chatid, 
                         t('item_use.cannot_be_used', lang),  
                           reply_markup=m(userid, 'last_menu', lang))
-        else:
-            print('item_callback', call_data[1])
+        else: print('item_callback', call_data[1])
 
 # Поиск внутри инвентаря
 @bot.callback_query_handler(state=InventoryStates.InventorySearch, 
@@ -227,10 +228,8 @@ async def filter_callback(call: CallbackQuery):
         if call_data[2] == 'null':
             async with bot.retrieve_data(userid, chatid) as data:
                 data['filters'] = []
-
             if filters:
                 await filter_menu(userid, chatid)
-        
         else:
             data_list_filters = filters_data[call_data[2]]['keys']
 
@@ -245,3 +244,17 @@ async def filter_callback(call: CallbackQuery):
                 data['filters'] = filters
 
             await filter_menu(userid, chatid)
+
+@bot.callback_query_handler(func=lambda call: call.data.split()[0] == 'book')
+async def book(call: CallbackQuery):
+    call_data = call.data.split()
+    chatid = call.message.chat.id
+    userid = call.from_user.id
+    lang = call.from_user.language_code
+    
+    book_id = call_data[1]
+    page = int(call_data[2])
+    text, markup = book_page(book_id, page, lang)
+    try:
+        await bot.edit_message_text(text, chatid, call.message.id, reply_markup=markup)
+    except: pass
