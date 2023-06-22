@@ -17,7 +17,7 @@
 from bot.config import mongo_client
 from bot.const import ITEMS
 from bot.modules.data_format import random_dict, seconds_to_str
-from bot.modules.localization import get_all_locales
+from bot.modules.localization import get_all_locales, t
 from bot.modules.localization import get_data as get_loc_data
 from bot.modules.logs import log
 
@@ -30,8 +30,7 @@ def get_data(itemid: str) -> dict:
     # Проверяем еть ли предмет с таким ключём в items.json
     if itemid in ITEMS.keys():
         return ITEMS[itemid]
-    else:
-        return {}
+    else: return {}
 
 def load_items_names() -> dict:
     """Загружает все имена предметов из локалищации в один словарь. 
@@ -48,19 +47,25 @@ def load_items_names() -> dict:
             if loc_name:
                 items_names[item_key][loc_key] = loc_name
             else:
-                items_names[item_key][loc_key] = f"{item_key}_name"
+                items_names[item_key][loc_key] = item_key
     return items_names
 
 items_names = load_items_names()
 
-def get_name(itemid: str, lang: str='en') -> str:
+def get_name(itemid: str, lang: str='en', endurance: int=0) -> str:
     """Получение имени предмета"""
     name = ''
-   
+
     if itemid in items_names:
         if lang not in items_names[itemid]:
             lang = 'en'
-        name = items_names[itemid][lang]['name']
+        if endurance and 'alternative_name' in items_names[itemid][lang]:
+            if str(endurance) in items_names[itemid][lang]['alternative_name']:
+                name = items_names[itemid][lang]['alternative_name'][endurance]
+            else: 
+                name = items_names[itemid][lang]['name']
+        else: 
+            name = items_names[itemid][lang]['name']
     return name
 
 def get_description(itemid: str, lang: str='en') -> str:
@@ -477,7 +482,7 @@ def item_info(item: dict, lang: str):
     Returns:
         Str, Image
     """
-    standart = ['freezing', 'defrosting', 'dummy', 'material']
+    standart = ['special', 'dummy', 'material']
     image = None
     
     item_id: str = item['item_id']
@@ -519,6 +524,13 @@ def item_info(item: dict, lang: str):
         dp_text += loc_d['type_info'][
             type_loc]['add_text'].format(
                 item_decription=get_description(item_id, lang))
+
+    # Книга
+    elif type_item == 'book':
+        dp_text += loc_d['type_info'][
+            type_loc]['add_text'].format(
+                item_decription=get_description(item_id, lang))
+
     # Рецепты
     elif type_item == 'recipe':
         dp_text += loc_d['type_info'][
@@ -528,11 +540,18 @@ def item_info(item: dict, lang: str):
                 item_decription=get_description(item_id, lang))
     # Оружие
     elif type_item == 'weapon':
-        dp_text += loc_d['type_info'][
-            type_loc]['add_text'].format(
-                ammunition=counts_items(data_item['ammunition'], lang),
-                min=data_item['damage']['min'],
-                max=data_item['damage']['max'])
+        if type_loc == 'near':
+            dp_text += loc_d['type_info'][
+                type_loc]['add_text'].format(
+                    endurance=item['abilities']['endurance'],
+                    min=data_item['damage']['min'],
+                    max=data_item['damage']['max'])
+        else:
+            dp_text += loc_d['type_info'][
+                type_loc]['add_text'].format(
+                    ammunition=counts_items(data_item['ammunition'], lang),
+                    min=data_item['damage']['min'],
+                    max=data_item['damage']['max'])
     # Боеприпасы
     elif type_item == 'ammunition':
         dp_text += loc_d['type_info'][
@@ -552,7 +571,7 @@ def item_info(item: dict, lang: str):
     elif type_item == 'case':
         dp_text += loc_d['type_info'][
             type_loc]['add_text'].format(
-                content=get_case_content(data_item['drop_items'], lang))
+                content=get_case_content(data_item['drop_items'], lang, '\n'))
     # Яйца
     elif type_item == 'egg':
         end_time = seconds_to_str(data_item['incub_time'], lang)
@@ -560,7 +579,14 @@ def item_info(item: dict, lang: str):
             type_loc]['add_text'].format(
                 inc_time=end_time, 
                 rarity=get_loc_data(f'rare.{data_item["inc_type"]}', lang)[1])
-            
+
+    elif type_item == 'recipe':
+        dp_text += loc_d['type_info'][
+            type_loc]['add_text'].format(
+                create=sort_materials(data_item['create'], lang),
+                materials=sort_materials(data_item['materials'], lang),
+                item_decription=get_description(item_id, lang))
+
     # Информация о внутренних свойствах
     if 'abilities' in item.keys():
         for iterable_key in ['uses', 'endurance', 'mana']:
