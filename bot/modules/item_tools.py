@@ -11,19 +11,20 @@ from bot.modules.item import (AddItemToUser, CalculateDowngradeitem,
                               RemoveItemFromUser, UseAutoRemove, counts_items,
                               get_data, get_item_dict, get_name, is_standart,
                               item_code)
+from bot.modules.localization import get_data as get_loca_data
 from bot.modules.localization import t
 from bot.modules.markup import (confirm_markup, count_markup,
                                 feed_count_markup, markups_menu)
-from bot.modules.states_tools import ChooseStepState
-from bot.modules.user import User, experience_enhancement, get_dead_dinos
 from bot.modules.mood import add_mood
 from bot.modules.quests import quest_process
+from bot.modules.states_tools import ChooseStepState
+from bot.modules.user import User, experience_enhancement, get_dead_dinos
 
 users = mongo_client.bot.users
 items = mongo_client.bot.items
 
-def exchange_item(item: dict, from_user: int, to_user: int, 
-                  count: int = 1):
+async def exchange_item(userid: int, chatid:int, item: dict, lang: str):
+    print(userid, chatid, item, lang)
     ...
 
 async def end_craft(transmitted_data: dict):
@@ -127,7 +128,7 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
             'weapon': 'weapon', 'armor': 'armor', 'backpack': 'backpack'
         }
         accessory_type = action_to_type[type_item]
-        
+
         if dino.status == accessory_type:
             # Запрещает менять активный предмет во время совпадающий с его типом активности
             return_text = t('item_use.accessory.no_change', lang)
@@ -146,7 +147,7 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
                     '$set': {f'activ_items.{accessory_type}': item}})
             
             return_text = t('item_use.accessory.change', lang)
-    
+
     elif type_item == 'recipe':
         materials = {'delete': [], 'edit': {}}
         send_status, use_status = False, False 
@@ -154,11 +155,11 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
 
         for iterable_item in data_item['materials']:
             iterable_id: str = iterable_item['item']
-            
+
             if iterable_item['type'] == 'delete':
                 materials['delete'].append(get_item_dict(
                     iterable_id))
-                
+
             elif iterable_item['type'] == 'endurance':
                 if 'endurance' not in materials['edit']:
                     materials['edit']['endurance'] = {}
@@ -186,7 +187,7 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
                         'data_item': data_item,
                         'delete_item': item
                                     }
-                
+
                 for iterable_key in materials['edit']:
                     for iterable_id in materials['edit'][iterable_key]:
                         steps.append(
@@ -214,12 +215,12 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
         else:
             use_status, send_status = False, True
             return_text = t('item_use.recipe.not_enough_m', lang, materials=counts_items(not_enough_items, lang))
-    
+
     elif data_item['type'] == 'case':
         send_status = False
         drop = data_item['drop_items']; shuffle(drop)
         drop_items = {}
-        
+
         col_repit = random_dict(data_item['col_repit'])
         for _ in range(col_repit):
             drop_item = None
@@ -232,10 +233,10 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
             drop_col = random_dict(drop_item['col'])
             if drop_item['id'] in drop_items: drop_items[drop_items['id']] += drop_col
             else: drop_items[drop_items['id']] = drop_col
-            
+
             drop_item_data = get_data(drop_item['id'])
             image = open(f"images/items/{drop_item_data['image']}.png", 'rb')
-            
+
             await bot.send_photo(userid, image, 
                                  t('item_use.case.drop_item', lang), 
                                  parse_mode='Markdown', reply_markup=markups_menu(userid, 'last_menu', lang))
@@ -244,7 +245,7 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
         user = User(userid)
         dino_limit = user.max_dino_col()['standart']
         use_status = False
-        
+
         if dino_limit['now'] < dino_limit['limit']:
             send_status = False
             buttons = {}
@@ -267,12 +268,12 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
     if data_item.get('buffs', []) and use_status and use_baff_status and dino:
         # Применяем бонусы от предметов
         return_text += '\n\n'
-        
+
         for bonus in data_item['buffs']:
             if data_item['buffs'][bonus] > 0:
                 bonus_name = '+' + bonus
             else: bonus_name = '-' + bonus
-            
+
             dino.stats[bonus] = edited_stats(dino.stats[bonus], 
                          data_item['buffs'][bonus] * count)
 
@@ -282,7 +283,7 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
     if dino_update_list and dino:
         # Обновляем данные, не связанные с харрактеристиками, например активные предметы
         for i in dino_update_list: dino.update(i)
-    
+
     if dino:
         # Обновляем данные харрактеристик
         upd_values = {}
@@ -291,9 +292,9 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
             for i in dino_now.stats:
                 if dino_now.stats[i] != dino.stats[i]:
                     upd_values['stats.'+i] = dino.stats[i] - dino_now.stats[i]
-    
+
         if upd_values: dino_now.update({'$inc': upd_values})
-    
+
     if use_status: UseAutoRemove(userid, item, count)
     return send_status, return_text
 
@@ -315,7 +316,7 @@ async def edit_craft(return_data: dict, transmitted_data: dict):
         if iterable_data['data']['status'] == 'cannot':
             ok = False
             item_name = get_name(iterable_data['old_item']['item_id'], lang)
-            
+
             await bot.send_message(chatid, 
                 t('item_use.recipe.enough_characteristics', lang, item_name=item_name), 
                 parse_mode='Markdown', 
@@ -324,7 +325,7 @@ async def edit_craft(return_data: dict, transmitted_data: dict):
     if ok:
         for iterable_data in items_data.copy(): 
             iterable_item = iterable_data['old_item']
-            
+
             if iterable_data['data']['status'] == 'remove':
                 RemoveItemFromUser(userid, iterable_item['item_id'], 1,
                                    iterable_item['abilities'])
@@ -338,18 +339,18 @@ async def adapter(return_data: dict, transmitted_data: dict):
     userid = transmitted_data['userid']
     chatid = transmitted_data['chatid']
     lang = transmitted_data['lang']
-    
+
     send_status, return_text = await use_item(userid, chatid, lang, transmitted_data['items_data'], **return_data)
-    
+
     if send_status:
         await bot.send_message(chatid, return_text, parse_mode='Markdown', reply_markup=markups_menu(userid, 'last_menu', lang))
-        
+
 async def pre_adapter(return_data: dict, transmitted_data: dict):
     return_data['confirm'] = True
     return_data['dino'] = transmitted_data['dino']
-    
+
     await adapter(return_data, transmitted_data)
-        
+
 async def eat_adapter(return_data: dict, transmitted_data: dict):
     dino: Dino = return_data['dino']
     transmitted_data['dino'] = dino
@@ -357,11 +358,11 @@ async def eat_adapter(return_data: dict, transmitted_data: dict):
     userid = transmitted_data['userid']
     chatid = transmitted_data['chatid']
     max_count = transmitted_data['max_count']
-    
+
     item = transmitted_data['items_data']
     item_data = get_data(item['item_id'])
     item_name = get_name(item['item_id'], lang)
-    
+
     percent = 1
     if dino.age.days >= 10:
         percent, repeat = dino.memory_percent('games', item['item_id'], False)
@@ -376,13 +377,25 @@ async def eat_adapter(return_data: dict, transmitted_data: dict):
     await ChooseStepState(pre_adapter, userid, chatid, lang, steps, 
                                 transmitted_data=transmitted_data)
 
+def book_page(book_id: str, page: int, lang: str):
+    pages = get_loca_data(f'books.{book_id}', lang)
+    if page >= len(pages): page = 0
+    elif page < 0: page = len(pages) - 1
+
+    text = pages[page]
+    markup = list_to_inline(
+        [{'◀': f'book {book_id} {page-1}', '▶': f'book {book_id} {page+1}'}, 
+         {'🗑': 'delete_message'}]
+    )
+    return text, markup
+
 async def data_for_use_item(item: dict, userid: int, chatid: int, lang: str, confirm: bool = True):
     item_id = item['item_id']
     data_item = get_data(item_id)
     type_item = data_item['type']
     limiter = 100 # Ограничение по количеству использований за раз
     adapter_function = adapter
-    
+
     base_item = items.find_one({'owner_id': userid, 'items_data': item})
     transmitted_data = {'items_data': item}
     item_name = get_name(item_id, lang)
@@ -392,7 +405,7 @@ async def data_for_use_item(item: dict, userid: int, chatid: int, lang: str, con
     if type(base_item) is None:
         await bot.send_message(chatid, t('item_use.no_item', lang))
     elif type(base_item) is dict:
-        
+
         if 'abilities' in item.keys() and 'uses' in item['abilities']:
             max_count = base_item['count'] * base_item['items_data']['abilities']['uses']
         else: max_count = base_item['count']
@@ -433,13 +446,13 @@ async def data_for_use_item(item: dict, userid: int, chatid: int, lang: str, con
             ]
         elif type_item == 'egg':
             steps = []
-            
+
         elif type_item == 'special':
-            
+
             if data_item['class'] in ['freezing', 'defrosting']:
                 ...
             elif  data_item['class'] in ['reborn']:
-                
+
                 dead = get_dead_dinos(userid)
             #     dinos_dict = {}
             #     for i_dino in dead:
@@ -450,7 +463,12 @@ async def data_for_use_item(item: dict, userid: int, chatid: int, lang: str, con
             #     {"type": 'pages', "name": 'dino', "data": {'options': dinos_dict}, 
             #         'message': {'text': t('css.wait_count', lang)}}
             # ]
+        
+        elif type_item == 'book':
+            text, markup = book_page(item_id, 0, lang)
 
+            await bot.send_message(chatid, text, reply_markup=markup)
+            return
         else:
             ok = False
             await bot.send_message(chatid, t('item_use.cannot_be_used', lang))
