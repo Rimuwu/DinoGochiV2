@@ -205,11 +205,10 @@ def dino_game(dino_id: int, add_dino_id: int = 0):
 
     img = trans_paste(dino_image, img, 1.0, 
                       (x + y, y, sz + x + y, sz + y))
-    
     return pil_image_to_file(img)
 
 def dino_journey(dino_id: int, journey_way: str, add_dino_id: int = 0):
-    assert journey_way in ['desert', 'forest', 'magic-forest', 'mountains', 'ocean'], f'Путь путешествия {journey_way} не найден'
+    assert journey_way in ['desert', 'forest', 'magic-forest', 'mountains', 'lost-islands'], f'Путь путешествия {journey_way} не найден'
 
     n_img, sz = randint(1, 12), 350
 
