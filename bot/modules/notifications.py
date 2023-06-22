@@ -173,7 +173,7 @@ async def user_notification(user_id: int, not_type: str,
     unstandart_notification = [
         'incubation_ready', # необходим dino_alt_id_markup, user_name
         'send_request', #необходим user_name
-        'not_independent_dead', 'independent_dead'
+        'not_independent_dead', 'independent_dead', 'daily_award'
     ]
     add_way = '.'+kwargs.get('add_way', '')
     
