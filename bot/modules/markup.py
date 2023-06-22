@@ -38,6 +38,14 @@ def back_menu(userid) -> str:
         return result
     else: return 'main_menu'
 
+def get_buttons(dino: Dino) -> list:
+    data = ['journey', 'put_to_bed', 'collecting', 'entertainments']
+    if dino.status == 'journey': data[0] = 'events'
+    elif dino.status == 'sleep': data[1] = 'awaken'
+    elif dino.status == 'collecting': data[2] = 'progress'
+    elif dino.status == 'game': data[3] = 'stop_game'
+    return data
+
 def markups_menu(userid: int, markup_key: str = 'main_menu', 
                  language_code: str = 'en', last_markup: bool = False):
     """Главная функция создания меню для клавиатур
@@ -175,19 +183,6 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
             buttons[0][1] = f'notranslate.{t("commands_name.referal.friend_code", language_code)} {friend_code["code"]}'
 
     elif markup_key == 'actions_menu':
-
-        def get_buttons(dino: Dino) -> list:
-            data = ['journey', 'put_to_bed', 'collecting', 'entertainments']
-            if dino.status == 'journey':
-                data[0] = 'return'
-            elif dino.status == 'sleep':
-                data[1] = 'awaken'
-            elif dino.status == 'collecting':
-                data[2] = 'progress'
-            elif dino.status == 'game':
-                data[3] = 'stop_game'
-            return data
-
         # Меню действий
         prefix = 'commands_name.actions.'
         add_back_button = True
@@ -272,13 +267,13 @@ def get_answer_keyboard(elements: list, lang: str='en') -> dict:
             n += 1
 
             if type(element) == Dino:
-                txt = f'{n}🦕 {element.name}' #type: ignore
+                txt = f'{n}🦕 {element.name}'
             elif type(element) == Egg:
                 txt = f'{n}🥚'
-            
+
             data_names[txt] = element
             names.append(txt)
-            
+
         buttons_list = chunks(names, 2) #делим на строчки по 2 элемента
         buttons_list.append([t('buttons_name.cancel', lang)]) #добавляем кнопку отмены
         keyboard = list_to_keyboard(buttons_list, 2) #превращаем список в клавиатуру
