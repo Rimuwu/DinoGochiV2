@@ -523,13 +523,13 @@ def item_info(item: dict, lang: str):
     elif type_item in ['game_ac', 'sleep_ac', 'journey_ac', 'collecting_ac']:
         dp_text += loc_d['type_info'][
             type_loc]['add_text'].format(
-                item_decription=get_description(item_id, lang))
+                item_description=get_description(item_id, lang))
 
     # Книга
     elif type_item == 'book':
         dp_text += loc_d['type_info'][
             type_loc]['add_text'].format(
-                item_decription=get_description(item_id, lang))
+                item_description=get_description(item_id, lang))
 
     # Рецепты
     elif type_item == 'recipe':
@@ -537,7 +537,7 @@ def item_info(item: dict, lang: str):
             type_loc]['add_text'].format(
                 create=sort_materials(data_item['create'], lang),
                 materials=sort_materials(data_item['materials'], lang),
-                item_decription=get_description(item_id, lang))
+                item_description=get_description(item_id, lang))
     # Оружие
     elif type_item == 'weapon':
         if type_loc == 'near':
@@ -585,7 +585,7 @@ def item_info(item: dict, lang: str):
             type_loc]['add_text'].format(
                 create=sort_materials(data_item['create'], lang),
                 materials=sort_materials(data_item['materials'], lang),
-                item_decription=get_description(item_id, lang))
+                item_description=get_description(item_id, lang))
 
     # Информация о внутренних свойствах
     if 'abilities' in item.keys():
