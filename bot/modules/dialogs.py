@@ -83,8 +83,7 @@ async def dead_last_dino(userid: int, name: str, lang: str,
                 users.update_one({'userid': userid}, {'$inc': 
                     {'coins': -coins}})
                 items.delete_many({'owner_id': userid})
-                
-                AddItemToUser(userid, GS['dead_dialog_item'])
+
                 itm_data = get_item_dict(GS['dead_dialog_item'])
 
                 buttons = {}
