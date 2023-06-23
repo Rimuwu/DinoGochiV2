@@ -8,7 +8,6 @@ from bson.objectid import ObjectId
 
 from bot.config import mongo_client
 from bot.const import DINOS
-from bot.const import GAME_SETTINGS
 from bot.const import GAME_SETTINGS as GS
 from bot.exec import bot
 from bot.modules.data_format import random_code, random_quality
@@ -119,15 +118,15 @@ class Dino:
                 if item: AddItemToUser(owner['owner_id'], item['item_id'])
 
             if user:
-                
                 col_dinos = dino_owners.find_one(
                     {'onwer_id': owner['owner_id']})
-                
+
                 col_eggs = incubations.find_one(
                     {'onwer_id': owner['owner_id'], 'type': owner})
 
                 if user['lvl'] <= GS['dead_dialog_max_lvl'] and not col_dinos and not col_eggs:
                     way = 'not_independent_dead'
+                    AddItemToUser(user['userid'], GS['dead_dialog_item'])
                 else:
                     way = 'independent_dead'
                     AddItemToUser(user['userid'], GS['dead_dino_item'])
@@ -161,7 +160,7 @@ class Dino:
            Сохраняет только при update = True
         """
         repeat = self.memory[memory_type].count(obj)
-        percent = GAME_SETTINGS['penalties'][memory_type][str(repeat)]
+        percent = GS['penalties'][memory_type][str(repeat)]
 
         if update:
             max_repeat = {'games': 3, 'eat': 5}
@@ -254,7 +253,7 @@ def incubation_egg(egg_id: int, owner_id: int, inc_time: int=0, quality: str='ra
     egg.dino_id = dino_id
 
     if inc_time == 0: #Стандартное время инкцбации 
-        egg.incubation_time = int(time()) + GAME_SETTINGS['first_dino_time_incub']
+        egg.incubation_time = int(time()) + GS['first_dino_time_incub']
     
     log(prefix='InsertEgg', message=f'owner_id: {owner_id} data: {egg.__dict__}', lvl=0)
     return incubations.insert_one(egg.__dict__)
@@ -402,13 +401,15 @@ def start_journey(dino_baseid: ObjectId, owner_id: int,
                          {'$set': {'status': 'journey'}})
     return result
 
-async def end_journey(dino_id: ObjectId, send_notif: bool=True):
-    
-    journey_task.delete_one({'dino_id': dino_id})
-    dinosaurs.update_one({'_id': dino_id}, 
-                         {'$set': {'status': 'pass'}})
+def end_journey(dino_id: ObjectId):
+    data = journey_task.find_one({'dino_id': dino_id})
+    if data:
+        for i in data['items']: AddItemToUser(data['sended'], i)
+        users.update_one({'userid': data['sended']}, {'$inc': {'coins': data['coins']}})
 
-    if send_notif: await dino_notification(dino_id, 'journey_end')
+        journey_task.delete_one({'dino_id': dino_id})
+        dinosaurs.update_one({'_id': dino_id}, 
+                            {'$set': {'status': 'pass'}})
 
 def start_collecting(dino_baseid: ObjectId, owner_id: int, coll_type: str, max_count: int):
     """Запуск активности "сбор пищи". 
