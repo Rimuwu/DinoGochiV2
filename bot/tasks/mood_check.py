@@ -16,7 +16,6 @@ async def mood_check():
     upd_data = {}
 
     for mood_data in res:
-        print(mood_data)
         dino_id = mood_data['dino_id']
 
         if mood_data['type'] in ['mood_edit', 'mood_while']:
@@ -37,7 +36,7 @@ async def mood_check():
 
             upd_data[dino_id]['while'].append(while_data)
 
-        if mood_data['type'] in ['breakdown', 'inspiration']:
+        if mood_data['type'] in ['breakdown', 'inspiration', 'unrestrained_play']:
             upd_data[dino_id]['events'].append(
                  {'_id': mood_data['_id'], 
                   'cancel_mood': mood_data['cancel_mood'],
@@ -52,9 +51,6 @@ async def mood_check():
                 if mood_data['action'] == 'hysteria':
                     dinosaurs.update_one({'_id': dino_id}, 
                                          {'$set': {'status': 'pass'}})
-
-    print(9)
-    print(upd_data)
 
     for dino_id, data in upd_data.items():
         dino = dinosaurs.find_one({'_id': dino_id})
@@ -81,8 +77,6 @@ async def mood_check():
                 if event_data['type'] == 'inspiration':
                     if dino['stats']['mood'] <= event_data['cancel_mood']:
                         dino_mood.delete_one({'_id': event_data['_id']})
-    
-    print(upd_data)
 
 if __name__ != '__main__':
     if conf.active_tasks:
