@@ -126,10 +126,10 @@ async def dino_breakdown(dino: ObjectId):
     >> unrestrained_play - динозавр начнёт играть на протяжении 3-ёх часов
     >> downgrade - немного ломает случайный активный предмет
     """
-    
+
     action = choice(list(breakdowns.keys()))
     duration_s = breakdowns[action]['duration_time']
-    
+
     if duration_s:
         duration = randint(*duration_s)
         cancel_mood = breakdowns[action]['cancel_mood']
@@ -148,11 +148,11 @@ async def dino_breakdown(dino: ObjectId):
     elif action == 'unrestrained_play': start_game(dino, 10800, 0.4)
     elif action == 'downgrade':
         dino_cl = Dino(dino)
-        
+
         allowed = []
         for i in ['game', 'collecting', 'journey', 'sleep', 'armor', 'weapon', 'backpack']:
             if dino_cl.activ_items[i]: allowed.append(i)
-            
+
         if allowed:
             await downgrade_accessory(dino_cl, choice(allowed))
 
