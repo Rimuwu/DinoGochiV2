@@ -168,8 +168,7 @@ async def dino_handler(message: Message):
 
     await ChooseDinoState(transition, userid, message.chat.id, lang) 
 
-@bot.callback_query_handler(func=lambda call: call.data.startswith('dino_profile'), 
-                            nothing_state=True)
+@bot.callback_query_handler(func=lambda call: call.data.startswith('dino_profile'))
 async def answer_edit(call: types.CallbackQuery):
     dino_data = call.data.split()[1]
 
