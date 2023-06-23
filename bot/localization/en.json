@@ -61,7 +61,7 @@
                 "events": "🎋 Events",
                 "put_to_bed": "🌙 Put to bed",
                 "awaken": "🌙 Awaken",
-                "collecting": "🍕 Gathering food",
+                "collecting": "🍕 Collecting",
                 "progress": "🍕 Progress",
                 "dino_button": "🦖 Dinosaur:"
             },
@@ -75,7 +75,7 @@
             "about": {
                 "team": "🤼 Team",
                 "support": "💸 Support",
-                "faq": "❗ Handbook",
+                "faq": "❗ FAQ",
                 "links": "🔗 Links"
             },
             "referal": {
@@ -664,7 +664,7 @@
             "need_energy": {
                 "replics": [
                     "✨ *{dino_name}*: *{owner_name}*, I want to sleep... ({unit}%)",
-                    "✨ *{Dino_name}*: *{Owner_name}*, I'm very tired, let's go to bed? ({unit}%)",
+                    "✨ *{dino_name}*: *{owner_name}*, I'm very tired, let's go to bed? ({unit}%)",
                     "✨ *{dino_name}*: *{owner_name}*, I'm tired of something... ({unit}%)"
                 ],
                 "inline_menu": "dino_profile"
@@ -757,7 +757,7 @@
             },
             "dino_rename": {
                 "text": "💬 | Give a name",
-                "callback": "rename_dino {Dino_alt_id_markup}"
+                "callback": "rename_dino {dino_alt_id_markup}"
             },
             "send_request": {
                 "text": "💎 | Send an inquiry",
@@ -870,10 +870,10 @@
                 "faq accessories": "🧵 Accessories",
                 "faq dungeon": "🗻 Dungeon"
             },
-            "general": "🎈 *rarities * \n Events and dinosaurs are divided as a rarity. \n The more rare, the sweeter the reward. \n\n  1. Ordinary - 50% \n  2. Unusual - 25% \n  3. Rare - 15% \n  4. Mystical - 9% \n  5. Legendary - 1% \n\n 🕹 *Interactions * \n To interact with dinosarva, go to `🕹 action`. \n\n  1. In order to feed the dinosaur, you need to get food, click on `🕹 action`>` 🍕 Collection of food` and follow the instructions. \n\n  2. In order to feed the dinosaur, click on `🕹 action`>` 🍣 feed` and choose the right food. \n\n  3. In `🎮 Entertainment` you can choose the game and entertain the dinosaur to raise his mood. \n\n  4. In `🎑 Journey` you can find different objects, meet friends and see a lot of interesting things! \n\n  5. `🌙 Place the dinosaur to sleep daily sleep, do not forget to put it to bed! \n\n 🎮 *profile * \n  To see the inventory or find out your statistics, go to `👁‍🗨 Profile` \n\n 🔧 *settings * \n In the settings, you can rename the dinosaur, turn off the notifications or switch the tongue. \n\n 🛒 *market * \n On the market you can sell or purchase the things you need. \n\n 👥 *Friends * \n In the menu of friends, you can control your friends and referral system. The more friends, the more opportunities to get some bonuses. Also inviting a friend through the referral system, you and your friend will receive pleasant bonuses. \n\n 🦕 *The number of dinosaurs * \n Each 20 level of dinosaurs increases by 1. \n  The 20th level is 2 dinosaur. \n  40th level - 3 dinosaur ...",
+            "general": "🎈 *Rarities*\npSevents and dinosaurs are divided into rarities.The greater the rarity, the sweeter the reward.\n\n 1. Ordinary - 50%\n 2. Unusual - 25%\n 3. Rare - 15%\n 4. Mystical - 9%\n 5. Legendary - 1%\n\n🕹 *Interactions*\nto interact with the dinozarv, go to `🕹 Actions`.\n\n 1. In order to feed the dinosaur, you need to get food, click on `🕹 Actions` > `🍕 Food Collection` and follow the instructions.\n\n 2. To feed the dinosaur, click on `🕹 Actions` > `🍣 Feed` and choose the appropriate food.\n\n 3. In `🎮 Entertainment`, you can choose a game and entertain the dinosaur to cheer him up.\n\n 4. In the `🎑 Journey` you can find different items, meet friends and see a lot of interesting things!\n\n 5. `🌙 Put to bed` the dinosaur needs sleep every day, do not forget to put him to bed!\n\n🎮 *Profile*\n To view inventory or find out your statistics, go to `👁‍🗨 Profile`\n\n🔧 *Settings*\n iN the settings you can rename the dinosaur, disable notifications or switch the language.\n\n🛒 *Market*\nThe market can sell or buy the things you need.\n\n👥 *Friends*\n In the Friends menu, you can manage your friends and the referral system. The more friends there are, the more opportunities there are to get some bonuses. Also, by inviting a friend through the referral system, you and your friend will receive pleasant bonuses.\n\n🦕 *Number of dinosaurs* Every 20th level the number of dinosaurs increases by 1. 20th level - 2 dinosaurs.The 40th level is 3 dinosaurs...\n\n",
             "eat": "🥙 *What does my dinosaur eat?*\nLook at the profile of your dinosaur, dinosaurs live in their native environment.\n\nHerbivores where there are a lot of grasses, predators in forests / jungles, and those who love fish fly in the clouds.\n\n🍕 *Sweets*\n🍯 A jar of honey, Sweet pancakes - dinosaurs love sweets and regardless of their kind, 🥞 they will gladly eat them!\n\nAlso, this food gives bonuses to mood / health, etc.\n\nYou can find out all the information about the item in the inventory!",
             "accessories": "🏓 *Accessories*\nAccessories open up additional opportunities or speed up the type of activity. \nAccessories can be installed while the dinosaur is doing nothing by using it in the inventory.\nAccessories can be found in travels or dungeons.\n\n🎲 *Here are some of them...*\n 🧸 Teddy bear - allows you to select a sleep mode.\n 🛠 Tools - speed up the collection of food.",
-            "dungeon": "📜 *quests * \n\n In the tavern you can get a quest (just expect it in it), quests give interesting bonuses for the most common actions! \n\n 🗻 *dungeons * \n Go to an exciting adventure with your friends! Adventures, bosses, unique objects! \n To get into the dungeon you need only 200 coins! \n No initial equipment is needed, and your dinosaurs cannot die in it. \n\n 🍺 *di-taverna * \n Look at `Alexander ', there you can find out information from visitors, find other players. And also get quests!"
+            "dungeon": "📜 *Quests*\n\nIn the tavern you can get a quest (just wait in it), quests give interesting bonuses for the most common actions!\n\n🗻 *Dungeons*\nEmbark on an exciting adventure with your friends! Adventures, bosses, unique items!\nTo get into the dungeon, you only need 200 coins!You don't need any initial equipment, and your dinosaurs can't die in it.\n\n🍺 *Dino tavern*\n Look in `🍺 Dino tavern`, there you can find out information from visitors, find other players. And also get quests!"
         },
         "not_set": {
             "info": "❗ Interaction with notifications setting up, select notification activity>",
@@ -1011,13 +1011,13 @@
                     "80": "*├* With a full tummy",
                     "40": "*├* hyt",
                     "20": "*├* hungry",
-                    "0": "*├* __ I am dying of hunger! __"
+                    "0": "*├* __I am dying of hunger!__"
                 },
                 "game": {
                     "80": "*├* I'm Spider-Man!",
                     "40": "*├* I don't want to play",
                     "20": "*├* I miss you...",
-                    "0": "*├* __ High from boredom! __"
+                    "0": "*├* __High from boredom!__"
                 },
                 "mood": {
                     "80": "*├* Wanna do good",
@@ -1029,7 +1029,7 @@
                     "80": "*└* I'm ready to move mountains!",
                     "40": "*└* Full of energy!",
                     "20": "*└* I have strength",
-                    "0": "*└* __ is madly tired: (__"
+                    "0": "*└* __is madly tired :(__"
                 }
             },
             "profile_text": "{em_name}*┌* Name: {dino_name}\n{em_status}*├* Status: {status}\n{em_rare}*├* Rare: {qual}\n{em_age}*└* Age: {age}",
@@ -1037,21 +1037,21 @@
                 "text": "*┌* Travel\n >"
             },
             "game": {
-                "text": "{em_game_act} *┌* Game",
-                "game_end": "🎟 *├* Terminate after {end}",
-                "game_duration": "⏳ *└* has passed {duraction}"
+                "text": "\n\n{em_game_act} *┌* Game",
+                "game_end": "\n🎟 *├* Terminate after {end}",
+                "game_duration": "\n⏳ *└* has passed {duration}"
             },
             "collecting": {
-                "text": "{Em_coll_act} *┌* Food collection",
+                "text": "\n\n{em_coll_act} *┌* Food collection\n",
                 "progress": {
-                    "collecting": "🌿 *└* Dinosaur collected {Now} / {max_count} herbs.",
-                    "hunt": "🍖 *└* Dinosaur collected {Now} / {max_count}.",
+                    "collecting": "🌿 *└* Dinosaur collected {now} / {max_count} herbs.",
+                    "hunt": "🍖 *└* Dinosaur collected {now} / {max_count}.",
                     "fishing": "🍤 *└* Dinosaur fished {now} / {max_count} fish.",
-                    "all": "🥗 *└* Dinosaur collected {Now} / {max_count}."
+                    "all": "🥗 *└* Dinosaur collected {now} / {max_count}."
                 }
             },
             "no_item": "Nothing",
-            "accs": "{em_game}*┌* Travel: {Journey}\n{em_coll}*├* Poest collection: {Collecting}\n{em_jour}*├* Game: {Game}\n{em_sleep}*└* dream: {Sleep}",
+            "accs": "{em_game}*┌* Travel: {Journey}\n{em_coll}*├* Collecting collection: {collecting}\n{em_jour}*├* Game: {game}\n{em_sleep}*└* dream: {sleep}",
             "return": "🔮Return to the main menu!",
             "inline_menu": {
                 "reset_activ_item": {
@@ -1851,8 +1851,8 @@
             }
         },
         "mood_log": {
-            "info": "🎠 General mood modifier: `{result}`",
-            "event_info": "🎋 Состояние: {action} ({event_time})\n",
+            "info": "🎠 General mood modifier: `{result}`\n",
+            "event_info": "🎋 Condition: {action} ({event_time})\n",
             "breakdown": {
                 "seclusion": "💥 solitude",
                 "hysteria": "😭Hysterics",
@@ -2261,7 +2261,7 @@
             ]
         },
         "quest": {
-            "had": "📜 *|* *{name}*\n\n📌  *Заказал*: {author}",
+            "had": "📜 *|* *{name}*\n\n📌  *Оrdered*: {author}",
             "complexity": "🎭 *Complexity*: {complexity}",
             "comp_element": "⭐",
             "type": "🎨 *Target*: {qtype}",
@@ -2315,22 +2315,22 @@
             "add_collecting": "🌿 The herbs shone with different colors, you can definitely find amazing grass there!",
             "add_all": "🍭 There were problems in the general search mode, candies are falling from the sky!",
             "new_year": "🎄 It's time to celebrate and give gifts to friends!",
-            "info": "🎨 | Active Events"
+            "info": "🎨 | Active Events\n\n"
         },
         "daily_award": {
-            "info": "🎋 *|* *Daily Reward*\nBy logging in every day, you can get nice bonuses\n\n🏮 *|* *Level 1*: *Player* - Nice login bonuses, hereWhat you can get: _{lvl_1} 🪙 _\n\n🎏 *Level 2*: *Trainer*",
-            "bonus_text": "🎍 *|* *Additional*: - If you add *DinoGochi* to your name, then the daily reward will be added: _{bonus}_ 🪙\n\n🎍 ExampleAdd:\n{name_dino}",
-            "lvl_now": "👑 At the moment, you will receive a level reward",
+            "info": "🎋 *|* *Daily Reward*\nBy logging in every day, you can get nice bonuses\n\n🏮 *|* *Level 1*: *Player* - Nice login bonuses, hereWhat you can get: _{lvl_1} 🪙 _\n\n🎏 *Level 2*: *Trainer* - Nice bonuses for logging in and subscribing to the channel, that's what you can get by clicking on the button: {lvl_2} 🪙",
+            "bonus_text": "\n\n🎍 *|* *Additional*: - If you add *DinoGochi* to your name, then the daily reward will be added: _{bonus}_ 🪙\n\n🎍 Example add:\n{name_dino}",
+            "lvl_now": "\n\n👑 At the moment, you will receive a level reward\n",
             "1": "*🏮 Player*",
             "2": "*🎏 Trainer*",
-            "bonus": "* 🎍 Extras. Name bonus*",
+            "bonus": "+ *🎍 Extras. Name bonus*",
             "buttons": {
                 "channel_url": "🗝️ Subscribe",
                 "rename": "🦕 Change name",
                 "activate": "🎋 Collect the reward"
             },
             "in_base": "🎋 You have already taken the daily reward today, come back for it tomorrow!",
-            "use": "👑 The daily reward has been received, don't forget to get it again via {time}!🌸 Today you received: {items}, {coins} 👑"
+            "use": "👑 The daily reward has been received, don't forget to get it again via {time}!\n\n🌸 Today you received: {items}, {coins} 🪙"
         },
         "journey": {
             "positive": {
@@ -2959,6 +2959,7 @@
             "book_desert": [],
             "book_mountains": [],
             "book_magic-forest": []
-        }
+        },
+        "not_found_key": "❌ | The language key of the command was not detected, some error may have occurred, or you have changed the language of the application. Enter /start to enter the main menu."
     }
 }
