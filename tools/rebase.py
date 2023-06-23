@@ -16,7 +16,7 @@ dino_owners = client.connections.dino_owners
 referals = client.connections.referals
 
 
-with open('bot/json/items.json', encoding='utf-8') as f: 
+with open('../bot/json/items.json', encoding='utf-8') as f: 
     ITEMS = json.load(f)
 
 

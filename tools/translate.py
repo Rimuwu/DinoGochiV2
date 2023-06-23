@@ -9,10 +9,10 @@ DetectorFactory.seed = 0
 from_l = 'ru'
 ro_l = 'en'
 
-with open(f'{from_l}.json', encoding='utf-8') as f: 
+with open(f'../bot/localization/{from_l}.json', encoding='utf-8') as f: 
     main_lang = json.load(f) # type: dict
 
-with open(f'{ro_l}.json', encoding='utf-8') as f: 
+with open(f'../bot/localization/{ro_l}.json', encoding='utf-8') as f: 
     add_lang = json.load(f) # type: dict
 
 def trs(text: str, trs='bing'):
