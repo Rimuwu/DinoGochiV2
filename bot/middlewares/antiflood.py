@@ -27,6 +27,5 @@ class AntifloodMiddleware(BaseMiddleware):
 
     async def post_process(self, message, data, exception):
         users.update_one({'userid': message.from_user.id}, {'$set': {'last_message_time': message.date}})
-        await bot.send_chat_action(message.chat.id, 'typing', 1)
 
 bot.setup_middleware(AntifloodMiddleware())
