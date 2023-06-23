@@ -968,15 +968,15 @@
                 ]
             ],
             "choice": "🌙| Choose a kind of sleep for the dinosaur&gt;",
-            "choice_time": "🌙 | Indicate the time of quick sleep (the dream goes 2 times faster than a long one) in minutes>"
+            "choice_time": "🌙 | Indicate the time of quick sleep (the dream goes 2 times faster than a long one) in minutes >"
         },
         "awaken": {
-            "down_mood": "🌙 Your dinosaur has awakened. He is not very pleased that you woke him! \n ⌛ Dinosaurus slept {time_end}.",
+            "down_mood": "🌙 Your dinosaur has awakened. He is not very pleased that you woke him!\n⌛ Dinosaurus slept {time_end}.",
             "not_sleep": "🌙Dinosaur does not sleep!"
         },
         "p_profile": {
-            "no_dinos_eggs": "🦕 | You have no dinosaurs, no incubated eggs!",
-            "choose_dino": "🦕 | Knock out the dinosaur/egg:",
+            "no_dinos_eggs": "🦕 | You have no dinosaurs, no incubated eggs! Check inventory!",
+            "choose_dino": "🦕 | Knock out the dinosaur / egg:",
             "text_info": "Information",
             "text_ost": "Left:",
             "rare_name": "Rarity:",
@@ -1629,8 +1629,8 @@
                 "golf": "⛳ Golf"
             },
             "game_text": {
-                "m0": "─ | How interesting it is to play {Game}!",
-                "m1": "😃 | Again {Game}? Well, it seems that it's interesting.",
+                "m0": "😊 | How interesting it is to play {game}!",
+                "m1": "😃 | Again {game}? Well, it seems that it's interesting.",
                 "m2": "😐| As if we have nothing but {game}...",
                 "m3": "😣| Why do I only play {game} all the time?",
                 "penalty": "❗ | The percentage of pleasure is {percent}%"
@@ -2959,6 +2959,12 @@
             "book_mountains": [],
             "book_magic-forest": []
         },
-        "not_found_key": "❌ | The language key of the command was not detected, some error may have occurred, or you have changed the language of the application. Enter /start to enter the main menu."
+        "not_found_key": "❌ | The language key of the command was not detected, some error may have occurred, or you have changed the language of the application. Enter /start to enter the main menu.",
+        "journey_last_event": {
+            "info": "🍱 | Dinosaur Journey\n🏮 Location: {location}\n⌛ Travels {journey_time}\n🍭 Events: {col}",
+            "last_event": "📦 | Last event\n{last_event}",
+            "button": "🦕 Return"
+        },
+        "journey_log": "🎋 | Dinosaur {name} returned from a trip\n⏳ Traveled: {time}\n🍭 Events: {col}\n\n🪙 Coins: {coins}\n🗝️ Items: {items}"
     }
 }
