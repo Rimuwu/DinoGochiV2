@@ -5,7 +5,8 @@ from bot.config import mongo_client
 from bot.modules.data_format import random_dict
 from bot.modules.dinosaur import end_journey, mutate_dino_stat
 from bot.modules.user import get_frineds
-from bot.modules.localization import t
+from bot.modules.localization import t, get_data
+from bot.modules.item import counts_items
 
 journey = mongo_client.tasks.journey
 dinosaurs = mongo_client.bot.dinosaurs
@@ -174,7 +175,7 @@ events = {
 
     ## Совместные, только если есть совместный дино. Положительные
     # 'joint_event' - оторбажать у совместного дино
-    # 'location_jriend' - отображать у случайного друга в локации
+    # 'location_friend' - отображать у случайного друга в локации
     "joint_event": {
         "conditions": ['have_friend'],
         'actions': ['random_event', 'joint_event'] # Любое событие
@@ -190,9 +191,17 @@ events = {
     }, # Влияет на харрактеристики обоих динозавров (Игра, Настроение, Здоровье, Энергия)
     "meeting_friend": {
         "actions": [ # Заранее заготовленные ействия
-            'location_jriend', {'type': 'random_event', 'data': 
+            'location_friend', {'type': 'random_event', 'data': 
             ['influences_game', 'influences_mood', 'influences_energy']}
-            ]
+        ],
+        'buffs': { # Эффекты на динозавра
+            'game': {
+                'positive': {"min": 1, "max": 10, "type": "random"}
+            }
+        },
+        'mood_keys': { # Добавляемые ключи настроения
+            'positive': []
+        }
     }, # Встрева с другом в той же локации, отображается у обоих
 
     ## Нельзя получить в обычной среде
@@ -463,8 +472,8 @@ async def activate_event(dinoid, event: dict, friend_dino = None):
 
             if 'edit_location' in actions:
                 new_loc = choice(list(locations.keys()))
-                journey_base['location'] = new_loc
                 journey_base.update_one({'location': new_loc})
+                journey_base['old_location'] = new_loc
 
             if 'joint_event' in actions:
                 if 'friend' in journey_base:
@@ -518,12 +527,53 @@ async def activate_event(dinoid, event: dict, friend_dino = None):
         return True
     return False
 
-def generate_quest_message(record_log: dict, lang: str):
-    location = record_log['location']
-    event_type = record_log['type']
-    worldview = record_log['worldview']
+def generate_event_message(event: dict, lang: str):
+    location = event['location']
+    event_type = event['type']
+    worldview = event['worldview']
 
-    text = t(f'journey.{worldview}.{event_type}', lang)
-    print(text)
-    
-    
+    # print(event_type)
+
+    signs = get_data('journey.signs', lang)
+    text_list = get_data(f'journey.{worldview}.{event_type}', lang)
+    text = choice(text_list)
+    add = ''
+
+    if 'coins' in event: add += f'{event["coins"]} {signs["coins"]}'
+    if 'dino_edit' in event:
+        for i in ['heal', 'game', 'energy', 'eat']:
+            if i in event['dino_edit']:
+                if worldview == 'positive': add = '+'
+                add += f'{event["dino_edit"][i]} {signs[i]} '
+        add += ' '
+
+    if 'items' in event:
+        if worldview == 'positive': add = '+'
+        else: add = ' -'
+
+        add += counts_items(event['items'], lang) + ' '
+
+    if 'old_location' in event:
+        loc = event['old_location']
+        loc_now = get_data(f'journey_start.locations.{location}', lang)['name']
+        old_loc = get_data(f'journey_start.locations.{loc}', lang)['name']
+
+        add += f'{old_loc} -> {loc_now}'
+
+    if add: text += f' <code>{add}</code>'
+    return text
+
+def all_log(logs: list, lang: str):
+    text, n, n_message = '', 0, 0
+    messages = ['']
+
+    for event in logs:
+        n += 1
+        text = f'{n}. {generate_event_message(event, lang)}\n\n'
+
+        if len(messages[n_message]) >= 1500:
+            messages.append('')
+            n_message += 1
+        messages[n_message] += text
+
+    return messages
