@@ -7,6 +7,7 @@ from bot.modules.dinosaur import end_journey, mutate_dino_stat
 from bot.modules.user import get_frineds
 from bot.modules.localization import t, get_data
 from bot.modules.item import counts_items
+from time import time
 
 journey = mongo_client.tasks.journey
 dinosaurs = mongo_client.bot.dinosaurs
@@ -364,7 +365,8 @@ rarity_lvl = [0, 'com', 'unc', 'rar', 'mys', 'leg']
 
 def create_event(location: str, worldview: str = '', rarity: int = 0,
                  event: str = ''):
-
+    """ Подготавляивает данные, рандомизируя их
+    """
     # Случайная позитивность
     if not worldview:
         if randint(1, 3) == 2:
@@ -421,6 +423,8 @@ def create_event(location: str, worldview: str = '', rarity: int = 0,
 
 async def random_event(dinoid, location: str, ignored_events: list=[], 
                        friend_dino = None):
+    """ Создаёт рандомное событие
+    """
     event, res = {}, None
 
     for _ in range(15):
@@ -431,13 +435,16 @@ async def random_event(dinoid, location: str, ignored_events: list=[],
             res = await activate_event(dinoid, event, friend_dino)
             if res: 
                 if event['type'] == 'exit': 
-                    await end_journey(dinoid)
-                break 
+                    end_journey(dinoid)
+                    journey.update_one({'dino_id': dinoid}, {'journey_end': int(time())})
+                break
 
     if res: return True
     return False
 
 async def activate_event(dinoid, event: dict, friend_dino = None):
+    """ При соответствии условий, создаёт событие
+    """
     journey_base = journey.find_one({'dino_id': dinoid}) 
 
     event_data = events[event['type']]
@@ -528,23 +535,23 @@ async def activate_event(dinoid, event: dict, friend_dino = None):
     return False
 
 def generate_event_message(event: dict, lang: str):
+    """ Генерирует сообщение события в путешествие
+    """
     location = event['location']
     event_type = event['type']
     worldview = event['worldview']
-
-    # print(event_type)
 
     signs = get_data('journey.signs', lang)
     text_list = get_data(f'journey.{worldview}.{event_type}', lang)
     text = choice(text_list)
     add = ''
 
-    if 'coins' in event: add += f'{event["coins"]} {signs["coins"]}'
+    if 'coins' in event: add += f'{event["coins"]}{signs["coins"]}'
     if 'dino_edit' in event:
         for i in ['heal', 'game', 'energy', 'eat']:
             if i in event['dino_edit']:
                 if worldview == 'positive': add = '+'
-                add += f'{event["dino_edit"][i]} {signs[i]} '
+                add += f'{event["dino_edit"][i]}{signs[i]} '
         add += ' '
 
     if 'items' in event:
@@ -564,6 +571,8 @@ def generate_event_message(event: dict, lang: str):
     return text
 
 def all_log(logs: list, lang: str):
+    """ Генерирует весь лог событий, возвращает список с сообщениям макс ~1500 символов
+    """
     text, n, n_message = '', 0, 0
     messages = ['']
 
