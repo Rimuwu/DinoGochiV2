@@ -12,6 +12,8 @@ from bot.const import GAME_SETTINGS
 dino_mood = mongo_client.connections.dino_mood
 dinosaurs = mongo_client.bot.dinosaurs
 
+max_stack = 5
+
 keys = [
     'good_sleep', 'end_game', 'multi_games', 'multi_heal', 
     'multi_eat', 'multi_energy', 'dream', 'good_eat', 'playing_together', 
@@ -69,10 +71,11 @@ def add_mood(dino: ObjectId, key: str, unit: int, duration: int,
              stacked: bool = False):
     """ Добавляет в лог dino событие по key, которое влияет на настроение в размере unit в течении time секунд
     """
+    res = dino_mood.find({'dino_id': dino, 'action': key, 'type': 'mood_edit'})
 
-    if not stacked:
-        res = dino_mood.find_one({'dino_id': dino, 'action': key, 'type': 'mood_edit'})
-        if res: return
+    if not stacked and res: return
+    else:
+        if len(list(res)) >= max_stack: return
 
     if key in keys:
         data = {
