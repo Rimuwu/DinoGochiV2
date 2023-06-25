@@ -2,7 +2,7 @@ import json
 from random import choice, choices, randint
 
 from bot.config import mongo_client
-from bot.modules.data_format import random_dict
+from bot.modules.data_format import random_dict, encoder_text
 from bot.modules.dinosaur import end_journey, mutate_dino_stat
 from bot.modules.user import get_frineds
 from bot.modules.localization import t, get_data
@@ -534,7 +534,7 @@ async def activate_event(dinoid, event: dict, friend_dino = None):
         return True
     return False
 
-def generate_event_message(event: dict, lang: str):
+def generate_event_message(event: dict, lang: str, encode: bool = False):
     """ Генерирует сообщение события в путешествие
     """
     location = event['location']
@@ -544,6 +544,9 @@ def generate_event_message(event: dict, lang: str):
     signs = get_data('journey.signs', lang)
     text_list = get_data(f'journey.{worldview}.{event_type}', lang)
     text = choice(text_list)
+    
+    if encode: text = encoder_text(text, 4)
+
     add = ''
 
     if 'coins' in event: add += f'{event["coins"]}{signs["coins"]}'
@@ -586,3 +589,4 @@ def all_log(logs: list, lang: str):
         messages[n_message] += text
 
     return messages
+
