@@ -223,7 +223,7 @@ def quest_process(userid: int, quest_type: str, unit: int = 0, items: list = [])
                         quests_data.update_one({'_id': quest['_id']}, 
                                                {"$inc": {f'data.items.{i}.1': 1}})
 
-def check_quest(quest: dict) -> bool:
+def check_quest(quest: dict):
     """ Проверяет квест на выполнение, если тип квеста "get" то в случае выполнения удалит предметы
     """
     if quest['type'] == 'get': 
