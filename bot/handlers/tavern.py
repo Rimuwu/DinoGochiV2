@@ -123,7 +123,7 @@ async def daily_award(callback: CallbackQuery):
         coins = award_data[key]['coins']
         if add_bonus:
             items += award_data['bonus']['items']
-            coins += award_data['coins']['coins']
+            coins += award_data['bonus']['coins']
 
         str_items = counts_items(items, lang)
         strtime = seconds_to_str(sec - int(time()))
