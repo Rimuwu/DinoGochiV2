@@ -83,11 +83,11 @@ async def quest_managment():
         elif int(time()) >= quest['time_end']:
             quest_resampling(quest['_id'])
 
-async def daily_reward_old():
+async def daily_award_old():
     data = daily_data.find({'time_end': {'$lte': int(time())}})
     for i in list(data): daily_data.delete_one({'_id': i['_id']})
 
-async def daily_reward_notif():
+async def daily_award_notif():
     users_ids = users.find({}, {'userid': 1})
 
     for uid in users_ids:
@@ -96,7 +96,7 @@ async def daily_reward_notif():
 
 if __name__ != '__main__':
     if conf.active_tasks:
-        add_task(daily_reward_notif, 36000.0, 10800.0)
-        add_task(daily_reward_old, 7200.0, 1.0)
+        add_task(daily_award_notif, 36000.0, 10800.0)
+        add_task(daily_award_old, 7200.0, 1.0)
         add_task(tavern_life, 180.0, 10.0)
         add_task(quest_managment, 240.0, 10.0)
