@@ -31,9 +31,10 @@ def add_if_not(data: dict, userid: int, chatid: int, lang: str):
 
 async def ChooseDinoState(function, userid: int, chatid: int, 
         lang: str, add_egg: bool=True, all_dinos: bool=True,
-        transmitted_data=None):
+        transmitted_data=None, send_error: bool = True):
     """ Устанавливает состояние ожидания динозавра
         all_dinos - Если False то не будет совместных динозавров 
+        send_error - Если True то будет уведомлять о том, что нет динозавров / яиц
 
        В function передаёт 
        >>> element: Dino | Egg, transmitted_data: dict
@@ -50,9 +51,10 @@ async def ChooseDinoState(function, userid: int, chatid: int,
     ret_data = get_answer_keyboard(elements, lang)
 
     if ret_data['case'] == 0:
-        await bot.send_message(userid, 
-            t('p_profile.no_dinos_eggs', lang),
-            reply_markup=m(userid, 'last_menu', lang))
+        if send_error:
+            await bot.send_message(userid, 
+                t('css.no_dino', lang),
+                reply_markup=m(userid, 'last_menu', lang))
         return False, 'cancel'
 
     elif ret_data['case'] == 1: #1 динозавр / яйцо, передаём инфу в функцию
@@ -68,8 +70,10 @@ async def ChooseDinoState(function, userid: int, chatid: int,
             data['dino_names'] = ret_data['data_names']
             data['transmitted_data'] = transmitted_data
 
-        await bot.send_message(user.userid, t('p_profile.choose_dino', lang), reply_markup=ret_data['keyboard'])
+        await bot.send_message(user.userid, t('css.dino', lang), reply_markup=ret_data['keyboard'])
         return True, 'dino'
+
+    else: return False, 'error'
 
 async def ChooseIntState(function, userid: int, 
                 chatid: int, lang: str,
