@@ -118,16 +118,9 @@ class Dino:
                 if item: AddItemToUser(owner['owner_id'], item['item_id'])
 
             if user:
-                col_dinos = dino_owners.find_one(
-                    {'onwer_id': owner['owner_id']})
-
-                col_eggs = incubations.find_one(
-                    {'onwer_id': owner['owner_id'], 'type': owner})
-
-                if user['lvl'] <= GS['dead_dialog_max_lvl'] and not col_dinos and not col_eggs:
+                if dead_check(owner['owner_id']):
                     way = 'not_independent_dead'
-                    AddItemToUser(user['userid'], GS['dead_dialog_item'])
-                else:
+                else: 
                     way = 'independent_dead'
                     AddItemToUser(user['userid'], GS['dead_dino_item'])
 
@@ -530,3 +523,17 @@ def set_status(dino_id: ObjectId, new_status: str, now_status: str = ''):
 
     if now_status in ['sleep', 'game', 'journey', 'collecting'] and new_status != 'pass' or new_status != now_status:
         dinosaurs.update_one({'_id': dino_id}, {'$set': {'status': new_status}})
+
+def dead_check(userid: int):
+    """ False - не соответствует условиям выдачи диалога
+        True - отправить диалог
+    """
+    user = users.find_one({"userid": userid})
+    if user:
+        col_dinos = dino_owners.find_one(
+                        {'onwer_id': userid, 'type': 'owner'})
+        col_eggs = incubations.find_one({'onwer_id': userid})
+        lvl = user['lvl'] <= GS['dead_dialog_max_lvl']
+
+        if all([not col_dinos, not col_eggs, lvl]): return True
+    return False
