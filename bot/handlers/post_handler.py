@@ -28,10 +28,10 @@ async def not_authorized(message: types.Message):
     text = t('not_authorized', lang)
     await bot.send_message(chatid, text)
 
-@bot.message_handler()
-async def not_found_text(message: types.Message):
-    lang = message.from_user.language_code
-    chatid = message.chat.id
+# @bot.message_handler()
+# async def not_found_text(message: types.Message):
+#     lang = message.from_user.language_code
+#     chatid = message.chat.id
 
-    text = t('not_found_key', lang)
-    await bot.send_message(chatid, text)
+#     text = t('not_found_key', lang)
+#     await bot.send_message(chatid, text)
