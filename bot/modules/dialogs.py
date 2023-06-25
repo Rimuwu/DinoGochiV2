@@ -9,6 +9,7 @@ from bot.modules.item import get_item_dict, item_code
 from bot.modules.item_tools import AddItemToUser
 from bot.modules.localization import get_data, t
 from bot.modules.user import get_eggs, max_dino_col
+from bot.modules.dinosaur import dead_check
 
 users = mongo_client.bot.users
 items = mongo_client.bot.items
@@ -66,9 +67,8 @@ async def dead_last_dino(userid: int, name: str, lang: str,
     
     user = users.find_one({'userid': userid})
     if user:
-        col_dinos = max_dino_col(user['lvl'], userid)
-    
-        if user['lvl'] <= GS['dead_dialog_max_lvl'] and col_dinos['standart']['now'] == 0 and not get_eggs(userid):
+
+        if dead_check(userid):
             status = True
 
             end_status, text, markup, end_key = dialog_system(
@@ -84,6 +84,7 @@ async def dead_last_dino(userid: int, name: str, lang: str,
                     {'coins': -coins}})
                 items.delete_many({'owner_id': userid})
 
+                AddItemToUser(userid, GS['dead_dialog_item'])
                 itm_data = get_item_dict(GS['dead_dialog_item'])
 
                 buttons = {}
