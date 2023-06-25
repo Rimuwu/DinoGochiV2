@@ -123,8 +123,11 @@ class User:
         """Удаление юзера и всё с ним связанное из базы.
         """
 
-        for collection in [items, products, dead_dinos, incubations, referals]:
+        for collection in [items, products, dead_dinos, incubations, daily_award_data]:
             collection.delete_many({'owner_id': self.userid})
+
+        for collection in [referals]:
+            collection.delete_many({'userid': self.userid})
 
         """ При полном удалении есть возможность, что у динозавра
             есть другие владельцы, значит мы должны передать им полные права
@@ -527,3 +530,4 @@ def daily_award_con(userid: int):
         }
         daily_award_data.insert_one(data)
         return int(tomorrow.timestamp())
+    
