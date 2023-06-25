@@ -76,8 +76,7 @@ def list_to_keyboard(buttons: list, row_width: int = 3, resize_keyboard: bool = 
         try:
             if type(line) == list:
                 markup.add(*[i for i in line])
-            else:
-                markup.add(line)
+            else: markup.add(line)
         except Exception as e:
             print('list_to_keyboard', line, type(line), e)
 
@@ -249,3 +248,20 @@ def chunk_pages(options: dict, horizontal: int=2, vertical: int=3):
     else: pages = [[]]
     pages = filling_with_emptiness(pages, horizontal, vertical)
     return pages
+
+def encoder_text(text: str, each: int = 5):
+    text_list, a = text.split(' '), 0
+
+    for word in text_list:
+        if len(word) > 1:
+            a += 1
+            if a >= each:
+                a = 0
+                if random.randint(0, 1):
+                    text_list[text_list.index(word)] = f'<span class="tg-spoiler">{word}</span>'
+                else: text_list[text_list.index(word)] = '###'
+
+    ret_text = ''
+    for i in text_list: ret_text += i + ' '
+
+    return str(ret_text)
