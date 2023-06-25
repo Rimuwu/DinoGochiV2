@@ -619,7 +619,7 @@
                     "🎮 *{dino_name}*: *{owner_name}*, I've played!",
                     "🎮 *{dino_name}*: *{owner_name}*, I've had enough!"
                 ],
-                "inline_menu": "Dino_profile"
+                "inline_menu": "dino_profile"
             },
             "end_collecting": {
                 "text": "🍱 | {dino_name} finished gathering food.\n\n🍡 | Collected items: {items_names}",
@@ -975,8 +975,8 @@
             "not_sleep": "🌙Dinosaur does not sleep!"
         },
         "p_profile": {
-            "no_dinos_eggs": "🦕 | You have no dinosaurs, no incubated eggs! Check inventory!",
-            "choose_dino": "🦕 | Knock out the dinosaur / egg:",
+            "no_dino_no_egg": "🦕 | You don't have dinosaurs/ eggs to view! Check the inventory, there should be an egg there.",
+            "dialog": "🍭 You have a letter from the corporation, it will be about dinosaurs...",
             "text_info": "Information",
             "text_ost": "Left:",
             "rare_name": "Rarity:",
@@ -1356,7 +1356,7 @@
             "dino": ""
         },
         "about_menu": {
-            "team": "<b>🎭 | Bot command</b>\n<i>We all do a lot of things at once, but everyone has a role to play...</i>\n\n💻 @AS1AW - Developer\n💻 @magecode - Developer\n\n🎨 @unknown_cat13 - Designer\n🧸 @myasoyakich - Community Creator\n\n<b>🗝 | Author of localization</b>\n<i>Everyone can translate the bot into their native language.\n\n</i>{lang_name} - {author}",
+            "team": "<b>🎭 | Bot command</b>\n<i>We all do a lot of things at once, but everyone has a role to play...</i>\n\n💻 @AS1AW - Developer\n💻 @magecode - Developer\n💽 @KatranLife - Providing a host\n\n🎨 @unknown_cat13 - Designer\n🧸 @myasoyakich - Community Creator\n\n<b>🗝 | Author of localization</b>\n<i>Everyone can translate the bot into their native language.\nDo you want to help with the translation? Contact @AS1AW\n\n</i>{lang_name} - {author}",
             "links": "**🔗 | The Great Connection**\nHorror dinosaurs are everywhere!\n\n📢 News Channel - @DinoGochi\n\n👥 Forum - @DinoForum\n\n🧧 YouTube - [@DinoGochi](https://www.youtube.com/@dinogochi)"
         },
         "support_command": {
@@ -2588,19 +2588,27 @@
                     "The dinosaurus accidentally found the key to what is happening in the forest of giant trees and found an important piece of information.",
                     "The dinosaur found treasures and the forest of giant trees, which have been looking for other dinosaurs for many years."
                 ],
-                "quest": []
+                "quest": ["quest positive"]
             },
             "negative": {
-                "influences_mood": [],
-                "without_influence": [],
-                "influences_eat": [],
-                "influences_energy": [],
-                "coins": [],
-                "joint_event": [],
-                "meeting_friend": [],
-                "item": [],
-                "quest": [],
-                "edit_location": []
+                "influences_mood": ["influences_mood negative"],
+                "without_influence": ["without_influence negative"],
+                "influences_eat": ["influences_eat negative"],
+                "influences_energy": ["influences_energy negative"],
+                "coins": ["coins negative negative"],
+                "joint_event": ["joint_event negative"],
+                "meeting_friend": ["meeting_friend negative"],
+                "item": ["item negative"],
+                "quest": ["quest negative"],
+                "edit_location": ["edit_location negative"]
+            },
+
+            "signs": {
+                "coins": "🪙",
+                "heal": "❤",
+                "energy": "⚡",
+                "game": "🎮",
+                "eat": "🍕"
             }
         },
         "mobs": {
