@@ -28,7 +28,6 @@ async def end_journey_time():
         if dino:
             end_journey(i['dino_id'])
             lang = await get_dino_language(i['dino_id'])
-
             await send_logs(i['sended'], lang, i, dino['name'])
 
 async def events():
