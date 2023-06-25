@@ -7,15 +7,17 @@ from bot.config import mongo_client
 from bot.const import GAME_SETTINGS
 from bot.exec import bot
 from bot.modules.accessory import check_accessory
-from bot.modules.data_format import near_key_number, seconds_to_str, user_name, list_to_keyboard
-from bot.modules.dinosaur import Dino, Egg
+from bot.modules.data_format import (list_to_keyboard, near_key_number,
+                                     seconds_to_str, user_name)
+from bot.modules.dinosaur import Dino, Egg, dead_check
 from bot.modules.events import get_event
-from bot.modules.inline import dino_profile_markup
-from bot.modules.item import get_name, AddItemToUser
+from bot.modules.inline import dino_profile_markup, inline_menu
+from bot.modules.item import AddItemToUser, get_name
 from bot.modules.localization import get_data, t
 from bot.modules.markup import confirm_markup
 from bot.modules.markup import markups_menu as m
-from bot.modules.states_tools import ChooseConfirmState, ChooseDinoState, ChooseOptionState
+from bot.modules.states_tools import (ChooseConfirmState, ChooseDinoState,
+                                      ChooseOptionState)
 from bot.modules.user import User
 
 users = mongo_client.bot.users
@@ -24,6 +26,7 @@ game_task = mongo_client.tasks.game
 dino_mood = mongo_client.connections.dino_mood
 dinosaurs = mongo_client.bot.dinosaurs
 dino_owners = mongo_client.connections.dino_owners
+incubations = mongo_client.tasks.incubation
 
 async def dino_profile(userid: int, dino: Dino, lang: str, custom_url: str):
     text = ''
@@ -152,10 +155,10 @@ async def transition(element, transmitted_data: dict):
     lang = transmitted_data['lang']
     user = User(userid)
     custom_url = ''
- 
+
     if user and user.premium and 'custom_url' in user.settings:
         custom_url = user.settings['custom_url']
-    
+
     if type(element) == Dino:
         await dino_profile(userid, element, lang, custom_url)
     elif type(element) == Egg:
@@ -166,7 +169,13 @@ async def dino_handler(message: Message):
     userid = message.from_user.id
     lang = message.from_user.language_code
 
-    await ChooseDinoState(transition, userid, message.chat.id, lang) 
+    bstatus, status = await ChooseDinoState(transition, userid, message.chat.id, lang, send_error=False) 
+
+    if not bstatus and status == 'cancel':
+        if dead_check(userid):
+            await bot.send_message(userid, t(f'p_profile.dialog', lang), reply_markup=inline_menu('dead_dialog', lang))
+        else:
+            await bot.send_message(userid, t(f'p_profile.no_dino_no_egg', lang))
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('dino_profile'))
 async def answer_edit(call: types.CallbackQuery):
