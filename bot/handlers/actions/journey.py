@@ -100,7 +100,6 @@ async def journey_com(message: Message):
     userid = message.from_user.id
     lang = message.from_user.language_code
     chatid = message.chat.id
-    return 
 
     await start_journey(userid, chatid, lang)
 
@@ -133,7 +132,7 @@ async def events(message: Message):
             col = len(journey_data['journey_log'])
 
             if journey_data['journey_log']:
-                last_event = generate_event_message(journey_data['journey_log'][-1], lang)
+                last_event = generate_event_message(journey_data['journey_log'][-1], lang, True)
 
             text = t('journey_last_event.info', lang, journey_time=journey_time, location=loc_name, col=col, last_event=last_event)
             button_name = t('journey_last_event.button', lang)
