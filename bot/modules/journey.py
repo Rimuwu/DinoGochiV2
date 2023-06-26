@@ -8,6 +8,7 @@ from bot.modules.user import get_frineds
 from bot.modules.localization import t, get_data
 from bot.modules.item import counts_items
 from time import time
+from bot.modules.mood import add_mood
 
 journey = mongo_client.tasks.journey
 dinosaurs = mongo_client.bot.dinosaurs
@@ -46,8 +47,8 @@ events = {
     ## Любая позитивность
     "influences_mood": {
         'mood_keys': { # Добавляемые ключи настроения
-            'positive': [],
-            'negative': []
+            'positive': ['journey_event'],
+            'negative': ['journey_event']
         }
     },
     "influences_eat": {
@@ -126,8 +127,8 @@ events = {
             }
         },
         'mood_keys': { # Добавляемые ключи настроения
-            'positive': [],
-            'negative': []
+            'positive': ['journey_event'],
+            'negative': ['journey_event']
         }
     }, # Вызывает бой, исход зависит от результат
     "quest": {
@@ -187,7 +188,7 @@ events = {
         'actions': ['random_event', 'joint_event'], # Выбирает из указаных событий если указаны
 
         'mood_keys': { # Добавляемые ключи настроения
-            'positive': []
+            'positive': ['journey_event']
         }
     }, # Влияет на харрактеристики обоих динозавров (Игра, Настроение, Здоровье, Энергия)
     "meeting_friend": {
@@ -201,7 +202,7 @@ events = {
             }
         },
         'mood_keys': { # Добавляемые ключи настроения
-            'positive': []
+            'positive': ['journey_event']
         }
     }, # Встрева с другом в той же локации, отображается у обоих
 
@@ -232,9 +233,9 @@ locations = {
             'com': ['influences_mood', 'without_influence', 
                   'influences_eat'],
             'unc': ['influences_energy', 'coins'],
-            'rar': ['joint_event', 'meeting_friend'],
-            'mys': ['item', 'coins'],
-            'leg': ['quest', 'edit_location']
+            'rar': ['influences_game', 'coins'],
+            'mys': ['item', 'coins', 'edit_location'],
+            'leg': ['quest', 'forced_exit']
         }
     },
     "lost-islands": {
@@ -403,13 +404,15 @@ def create_event(location: str, worldview: str = '', rarity: int = 0,
 
     if 'items' in event_data:
         items_col = event_data['items'][worldview]['col'][str(rarity)]
-        data['items'] = []
-        for _ in range(items_col):
-            if 'weight' in event_data['items'][worldview]:
-                item_rar = choices(list(chance.keys()), list(event_data['items'][worldview]['weight']))[0]
-            else:
-                item_rar = choices(list(chance.keys()), list(chance.values()))[0]
-            data['items'].append(choice(loc_data['items'][item_rar]))
+        if worldview == 'positive':
+            data['items'] = []
+            for _ in range(items_col):
+                if 'weight' in event_data['items'][worldview]:
+                    item_rar = choices(list(chance.keys()), list(event_data['items'][worldview]['weight']))[0]
+                else:
+                    item_rar = choices(list(chance.keys()), list(chance.values()))[0]
+                data['items'].append(choice(loc_data['items'][item_rar]))
+        else: data['remove_item'] = items_col
 
     if 'mobs' in event_data:
         ...
@@ -439,10 +442,8 @@ async def random_event(dinoid, location: str, ignored_events: list=[],
                 res = await activate_event(dinoid, event, friend_dino)
                 if res: 
                     if event['type'] == 'exit': 
-                        end_journey(dinoid)
                         journey.update_one({'dino_id': dinoid}, {'journey_end': int(time())})
-                    stop = True
-                    break
+                    return True
         else: break
 
     if res: return True
@@ -452,9 +453,13 @@ async def activate_event(dinoid, event: dict, friend_dino = None):
     """ При соответствии условий, создаёт событие
     """
     journey_base = journey.find_one({'dino_id': dinoid}) 
-
+    active_consequences = True
     event_data = events[event['type']]
+    data = {'type': event['type'], 'location': event['location'], 
+            'worldview': event['worldview']}
     if journey_base:
+        if 'friend' in event: data['friend'] = event['friend']
+
         if 'conditions' in event_data:
             conditions = event_data['conditions']
 
@@ -470,12 +475,35 @@ async def activate_event(dinoid, event: dict, friend_dino = None):
         if 'actions' in event_data:
             actions = event_data['actions']
 
+            if 'joint_event' in actions:
+                if 'friend' in journey_base:
+                    if not friend_dino:
+                        friend_dino = journey_base['friend']
+
+            if 'location_friend' in actions:
+                friends = get_frineds(journey_base['sended'])['friends']
+                in_loc = []
+                for friend_id in friends:
+                    res = journey.find({'sended': friend_id, 'location': journey_base['location']})
+                    for i in list(res): in_loc.append(i['dino_id'])
+
+                if not in_loc: return True
+                else: 
+                    if not friend_dino:
+                        friend_dino = choice(in_loc)
+
             for act_dct in actions:
                 if type(act_dct) == dict:
 
                     if act_dct['type'] == 'random_action':
                         rand_list = choice(act_dct['data'])
                         for i in rand_list: actions.append(i)
+                    
+                    if act_dct['type'] == 'random_event':
+                        rand_list = choice(act_dct['data'])
+                        new_event = create_event(data['location'], data['worldview'], event=rand_list)
+                        await activate_event(dinoid, new_event, friend_dino)
+                        return True
 
             if 'delete_items' in actions:
                 if 'items' in event: del event['items']
@@ -485,58 +513,66 @@ async def activate_event(dinoid, event: dict, friend_dino = None):
 
             if 'edit_location' in actions:
                 new_loc = choice(list(locations.keys()))
-                journey_base.update_one({'location': new_loc})
-                journey_base['old_location'] = new_loc
-
-            if 'joint_event' in actions:
-                if 'friend' in journey_base:
-                    if not friend_dino:
-                        friend_dino = journey_base['friend']
+                journey.update_one({'_id': journey_base['_id']}, 
+                                   {'$set': {'location': new_loc}})
+                data['old_location'] = new_loc
 
             if 'random_event' in actions:
                 await random_event(dinoid, journey_base['location'], ['joint_event', 'joint_activity', 'meeting_friend'], friend_dino)
                 return True
 
-            if 'location_friend' in actions:
-                friends = get_frineds(journey_base['sended'])['friends']
-                in_loc = []
-                for friend_id in friends:
-                    res = journey.find({'sended': friend_id, 'location': journey_base['location']})
-                    for i in list(res): in_loc.append(i['dino_id'])
+        if 'dino_edit' in event and not event['dino_edit']: 
+            del event['dino_edit']
 
-                if not in_loc: return False
-                else: 
-                    if not friend_dino:
-                        friend_dino = choice(in_loc)
+        if friend_dino: data['friend'] = friend_dino
 
-        if not event['dino_edit']: del event['dino_edit']
-        data = {'type': event['type'], 'location': event['location'], 'worldview': event['worldview']}
+        if active_consequences:
+            if 'coins' in event:
+                journey_base['coins'] += event['coins']
+                data['coins'] = event['coins']
+                if journey_base['coins'] < 0: journey_base['coins'] = 0
 
-        if 'coins' in event:
-            journey_base['coins'] += event['coins']
-            data['coins'] = event['coins']
-            if journey_base['coins'] < 0: journey_base['coins'] = 0
-
-            journey.update_one({'_id': journey_base['_id']}, 
-                                   {'$set': {'coins': journey_base['coins']}})
-
-        if 'dino_edit' in event:
-            data['dino_edit'] = event['dino_edit']
-            for key, value in event['dino_edit'].items():
-
-                dino = dinosaurs.find_one({'_id': dinoid})
-                if dino: await mutate_dino_stat(dino, key, value)
-
-        if 'items' in event:
-            data['items'] = event['items'] 
-            for i in data['items']:
                 journey.update_one({'_id': journey_base['_id']}, 
-                                   {'$push': {'items': i}})
+                                    {'$set': {'coins': journey_base['coins']}})
+
+            if 'dino_edit' in event:
+                data['dino_edit'] = event['dino_edit']
+                for key, value in event['dino_edit'].items():
+
+                    dino = dinosaurs.find_one({'_id': dinoid})
+                    if dino: await mutate_dino_stat(dino, key, value)
+
+            if 'items' in event:
+                data['items'] = event['items'] 
+                for i in data['items']:
+                    journey.update_one({'_id': journey_base['_id']}, 
+                                    {'$push': {'items': i}})
+
+            if 'mood_keys' in event:
+                for i in event['mood_keys']: add_mood(dinoid, i, 1, 1800)
+
+            if 'remove_item' in event:
+                col = event['remove_item']
+                items: list = journey_base['items']
+                data['items'] = []
+
+                for _ in range(col):
+                    if items: 
+                        it = choice(items)
+                        items.remove(it)
+                        data['items'].append(it)
+                    else: break
+
+                journey.update_one({'_id': journey_base['_id']}, 
+                                    {'$set': {'items': items}})
+
+        else: data['cancel'] = True
 
         journey.update_one({'_id': journey_base['_id']}, 
                            {'$push': {'journey_log': data}})
         if friend_dino:
-            await activate_event(friend_dino, event, journey_base['dino_id'])
+            event['friend'] = dinoid
+            await activate_event(friend_dino, event)
         return True
     return False
 
@@ -552,7 +588,6 @@ def generate_event_message(event: dict, lang: str, encode: bool = False):
     text = choice(text_list)
     
     if encode: text = encoder_text(text, 4)
-
     add = ''
 
     if 'coins' in event: add += f'{event["coins"]}{signs["coins"]}'
@@ -564,19 +599,26 @@ def generate_event_message(event: dict, lang: str, encode: bool = False):
         add += ' '
 
     if 'items' in event:
-        if worldview == 'positive': add = '+'
+        if worldview == 'positive': add = ' +'
         else: add = ' -'
 
         add += counts_items(event['items'], lang) + ' '
 
     if 'old_location' in event:
         loc = event['old_location']
-        loc_now = get_data(f'journey_start.locations.{location}', lang)['name']
-        old_loc = get_data(f'journey_start.locations.{loc}', lang)['name']
+        old_loc = get_data(f'journey_start.locations.{location}', lang)['name']
+        loc_now = get_data(f'journey_start.locations.{loc}', lang)['name']
 
         add += f'{old_loc} -> {loc_now}'
 
-    if add: text += f' <code>{add}</code>'
+    if 'friend' in event:
+        friend_dino = dinosaurs.find_one({'_id': event['friend']})
+        if friend_dino: add += f'🦕 {friend_dino["name"]} '
+
+    if 'cancel' in event: add += t('journey.cancel', lang)
+
+    if add: text += f'\n<code>{add}</code>'
+    # text += f'{location}_{event_type}_{worldview}'
     return text
 
 def all_log(logs: list, lang: str):
