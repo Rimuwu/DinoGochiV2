@@ -27,7 +27,7 @@ from bot.modules.states_tools import ChoosePagesState, ChooseStepState, prepare_
 from bot.modules.user import User, max_dino_col
 from bot.modules.statistic import get_now_statistic
 from bot.modules.quests import create_quest, quest_ui, save_quest
-from bot.modules.journey import create_event, random_event
+from bot.modules.journey import create_event, random_event, activate_event
 
 dinosaurs = mongo_client.bot.dinosaurs
 
@@ -243,6 +243,52 @@ async def ev(message):
         for i in range(10):
             status = await random_event(dino._id, 'forest')
             print(status)
+
+@bot.message_handler(commands=['all_events'])
+async def ev(message):
+    
+    userid = message.from_user.id
+    chatid = message.chat.id
+    lang = message.from_user.language_code
+    
+    user = User( message.from_user.id)
+    dino = user.get_last_dino()
+    
+    # positive = {
+    #         'com': ['influences_mood', 'without_influence', 
+    #               'influences_eat', 'influences_game'],
+    #         'unc': ['influences_health', 'influences_energy',
+    #                'joint_activity'],
+    #         'rar': ['coins', 'joint_event', 'meeting_friend'],
+    #         'mys': ['trade_item', 'item'],
+    #         'leg': ['quest', 'coins']
+    #     }
+    # negative = {
+    #     'com': ['influences_mood', 'without_influence', 
+    #             'influences_eat'],
+    #     'unc': ['influences_energy', 'coins'],
+    #     'rar': ['influences_game', 'coins'],
+    #     'mys': ['item', 'coins'],
+    #     'leg': ['quest', 'edit_location']
+    # }
+    
+    # if dino:
+    #     for key in positive:
+    #         for eve in positive[key]:
+    #             event = create_event('forest', 'positive', 0, eve)
+    #             await activate_event(dino._id, event)
+    #         # status = await random_event(dino._id, 'forest')
+    #         # print(status)
+    
+    # if dino:
+    #     for key in negative:
+    #         for eve in negative[key]:
+    #             event = create_event('forest', 'negative', 0, eve)
+    #             await activate_event(dino._id, event)
+    
+    for eve in ['meeting_friend']:
+        event = create_event('forest', 'positive', 0, eve)
+        await activate_event(dino._id, event)
 
 # @bot.message_handler(commands=['names'])
 # async def names(message):
