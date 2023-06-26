@@ -567,8 +567,24 @@
                 "description": "Net trap for hunting animals."
             },
             "book_forest": {
-                "name": "📔 A book about the forest",
+                "name": "📔 Book forest",
                 "description": "A book long forgotten by an adventurer. Tells about the forest."
+            },
+            "book_lost-islands": {
+                "name": "📔 Book islands",
+                "description": "The book of a long-forgotten adventurer. Tells about the lost islands."
+            },
+            "book_desert": {
+                "name": "📔 Book desert",
+                "description": "A book long forgotten by an adventurer."
+            },
+            "book_mountains": {
+                "name": "📔 Book mountains",
+                "description": "A book long forgotten by an adventurer."
+            },
+            "book_magic-forest": {
+                "name": "📔 Book magic-forest",
+                "description": "A book long forgotten by an adventurer."
             }
         },
         "notifications": {
@@ -990,7 +1006,7 @@
             ],
             "incubation_text": "🥚 | The egg is incubated, remaining: {time_end}",
             "stats": {
-                "pass": "I don't do 💭 anything",
+                "pass": "I don't do anything 💭",
                 "sleep": "Sleep 🌙",
                 "game": "I play 🎮",
                 "journey": "Travels 🎴",
@@ -1278,7 +1294,7 @@
                         "book": "📕 Read"
                     },
                     "delete": "🗑 Throw away",
-                    "exchange": "🔁 Pass",
+                    "exchange": "🔁 Transfer",
                     "created_item": "🛠 Item to create: {item}"
                 }
             },
