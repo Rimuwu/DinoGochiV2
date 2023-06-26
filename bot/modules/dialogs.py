@@ -84,8 +84,10 @@ async def dead_last_dino(userid: int, name: str, lang: str,
                     {'coins': -coins}})
                 items.delete_many({'owner_id': userid})
 
-                AddItemToUser(userid, GS['dead_dialog_item'], 1, {'interact': False})
-                itm_data = get_item_dict(GS['dead_dialog_item'])
+                AddItemToUser(userid, GS['dead_dialog_item'], 1, 
+                              {'interact': False})
+                itm_data = get_item_dict(GS['dead_dialog_item'], 
+                                         {'interact': False})
 
                 buttons = {}
                 image, eggs = create_eggs_image()
