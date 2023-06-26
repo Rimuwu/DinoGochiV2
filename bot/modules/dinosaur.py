@@ -115,14 +115,14 @@ class Dino:
             dead_dinos.insert_one(save_data)
 
             for key, item in self.activ_items.items():
-                if item: AddItemToUser(owner['owner_id'], item['item_id'])
+                if item: AddItemToUser(owner['owner_id'], item['item_id'], 1)
 
             if user:
                 if dead_check(owner['owner_id']):
                     way = 'not_independent_dead'
                 else: 
                     way = 'independent_dead'
-                    AddItemToUser(user['userid'], GS['dead_dino_item'])
+                    AddItemToUser(user['userid'], GS['dead_dino_item'], 1, {'interact': False})
 
                 asyncio.run_coroutine_threadsafe(
                     user_notification(owner['owner_id'], way, 
