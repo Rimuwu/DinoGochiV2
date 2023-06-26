@@ -33,13 +33,15 @@ def inline_menu(markup_data, lang: str = 'en', **kwargs):
 def item_info_markup(item: dict, lang):
     item_data = get_item_data(item['item_id'])
     loc_data = get_loc_data('item_info.static.buttons', lang)
+    code = item_code(item)
     buttons_dict = {}
 
     if item_data['type'] not in ['material', 'ammunition', 'dummy']:
-        buttons_dict[loc_data['use'][item_data['type']]] = f"item use {item_code(item)}"
-    
-    buttons_dict[loc_data['delete']] = f"item delete {item_code(item)}"
-    buttons_dict[loc_data['exchange']] = f"item exchange {item_code(item)}"
+        buttons_dict[loc_data['use'][item_data['type']]] = f"item use {code}"
+
+    if not('abilities' in item and 'interact' in item['abilities'] and not(item['abilities']['interact'])):
+        buttons_dict[loc_data['delete']] = f"item delete {code}"
+        buttons_dict[loc_data['exchange']] = f"item exchange {code}"
 
     markup_inline = list_to_inline([buttons_dict], 2)
 
@@ -62,7 +64,7 @@ def item_info_markup(item: dict, lang):
             bt_text += counts_items(cr_dct["create"], lang)
             
             markup_inline.add(InlineKeyboardButton(text=bt_text,
-                            callback_data=f"ns_craft {item_code(item)} {cr_dct_id} {cr_dct_id}"))
+                            callback_data=f"ns_craft {code} {cr_dct_id} {cr_dct_id}"))
     
     return markup_inline
 
