@@ -64,7 +64,7 @@ def get_name(itemid: str, lang: str='en', endurance: int=0) -> str:
                 name = items_names[itemid][lang]['alternative_name'][endurance]
             else: 
                 name = items_names[itemid][lang]['name']
-        else: 
+        else:
             name = items_names[itemid][lang]['name']
     return name
 
@@ -115,6 +115,8 @@ def get_item_dict(itemid: str, preabil: dict = {}) -> dict:
 
                     elif type(preabil[ak]) == dict:
                         d_it['abilities'][ak] = random_dict(preabil[ak]) #type: ignore
+        else: 
+            d_it['abilities'] = preabil #type: ignore
 
     return d_it
 
@@ -128,8 +130,7 @@ def is_standart(item: dict) -> bool:
     """
     data = get_data(item['item_id'])
 
-    if list(item.keys()) == ['item_id']:
-        return True
+    if list(item.keys()) == ['item_id']: return True
     else:
         if 'abilities' in item.keys():
             if item['abilities']:
@@ -151,7 +152,7 @@ def AddItemToUser(userid: int, itemid: str, count: int = 1, preabil: dict = {}):
     find_res = items.find_one({'owner_id': userid, 'items_data': item}, {'_id': 1})
     
     if find_res: action = 'plus_count'
-    if 'abilities' in item: action = 'new_edited_item'
+    if 'abilities' in item or preabil: action = 'new_edited_item'
     else: action = 'new_item'
 
     if action == 'plus_count' and find_res:
@@ -367,7 +368,9 @@ def item_code(item: dict, v_id: bool = True) -> str:
             if v_id:
                 text += f".{key[:2]}{item}"
             else:
-                text += str(item)
+                if type(item) == bool:
+                    text += str(int(item))
+                else: text += str(item)
     return text
 
 def decode_item(code: str) -> dict:
@@ -376,19 +379,23 @@ def decode_item(code: str) -> dict:
     split = code.split('.')
     ids = {
         'us': 'uses', 'en': 'endurance',
-        'ma': 'mana', 'st': 'stack'
+        'ma': 'mana', 'st': 'stack',
+        'in': 'interact'
     }
     data = {}
 
     for part in split:
         scode = part[:2]
         value = part[2:]
-        
-        if scode == 'id':
-            data['item_id'] = value
+
+        if scode == 'id': data['item_id'] = value
         else:
             if 'abilities' not in data.keys(): data['abilities'] = {}
-            data['abilities'][ ids[scode] ] = int(value)
+            if value in ['True', 'False']:
+                if value == 'True': value = True
+                else: value = False
+                data['abilities'][ ids[scode] ] = value
+            else: data['abilities'][ ids[scode] ] = int(value)
     return data
 
 def sort_materials(not_sort_list: list, lang: str, 
