@@ -107,7 +107,7 @@ async def friend_list(message: Message):
     userid = message.from_user.id
     lang = message.from_user.language_code
     
-    await bot.send_message(chatid, t('friend_list.wait'))
+    await bot.send_message(chatid, t('friend_list.wait', lang))
     await start_friend_menu(None, userid, chatid, lang, False)
 
 
@@ -179,7 +179,7 @@ async def requests_list(message: Message):
     userid = message.from_user.id
     lang = message.from_user.language_code
 
-    await bot.send_message(chatid, t('requests.wait'))
+    await bot.send_message(chatid, t('requests.wait', lang))
     await request_open(userid, chatid, lang)
     
 @bot.callback_query_handler(func=lambda call: 
@@ -189,7 +189,7 @@ async def requests_callback(call: CallbackQuery):
     user_id = call.from_user.id
     lang = call.from_user.language_code
     
-    await bot.send_message(chatid, t('requests.wait'))
+    await bot.send_message(chatid, t('requests.wait', lang))
     await request_open(user_id, chatid, lang)
 
 async def delete_friend(_: bool, transmitted_data: dict):
