@@ -426,18 +426,24 @@ async def random_event(dinoid, location: str, ignored_events: list=[],
     """ Создаёт рандомное событие
     """
     event, res = {}, None
+    stop = False
 
     for _ in range(15):
-        for _ in range(10):
-            event = create_event(location)
-            if event['type'] not in ignored_events: break
-        if event:
-            res = await activate_event(dinoid, event, friend_dino)
-            if res: 
-                if event['type'] == 'exit': 
-                    end_journey(dinoid)
-                    journey.update_one({'dino_id': dinoid}, {'journey_end': int(time())})
-                break
+        if not stop:
+            for _ in range(10):
+                event = create_event(location)
+                if event['type'] not in ignored_events: 
+                    stop = True
+                    break
+            if event:
+                res = await activate_event(dinoid, event, friend_dino)
+                if res: 
+                    if event['type'] == 'exit': 
+                        end_journey(dinoid)
+                        journey.update_one({'dino_id': dinoid}, {'journey_end': int(time())})
+                    stop = True
+                    break
+        else: break
 
     if res: return True
     return False
