@@ -214,11 +214,11 @@ locations = {
     "forest": {
         "danger": 1.0,
         "items": {
-            'com': ['jar_honey', 'cookie', 'blank_piece_paper', 'slice_pizza'],
-            'unc': ['timer', 'therapeutic_mixture', 'sweet_pancakes', 'fish_oil', 'twigs_tree', 'skin'],
+            'com': ['jar_honey', 'cookie', 'blank_piece_paper'],
+            'unc': ['timer', 'therapeutic_mixture', 'sweet_pancakes'],
             'rar': ['bento_recipe', 'candy_recipe', 'drink_recipe'],
-            'mys': ['salad_recipe', 'torch_recipe', 'popcorn_recipe', 'curry_recipe', 'bread_recipe'],
-            'leg': ['soup_recipe', 'gourmet_herbs', 'taco_recipe', 'sandwich_recipe', 'hot_chocolate_recipe']
+            'mys': ['salad_recipe', 'torch_recipe', 'popcorn_recipe'],
+            'leg': ['soup_recipe', 'gourmet_herbs']
         },
         "positive": {
             'com': ['influences_mood', 'without_influence', 
@@ -235,36 +235,39 @@ locations = {
             'unc': ['influences_energy', 'coins'],
             'rar': ['influences_game', 'coins'],
             'mys': ['item', 'coins', 'edit_location'],
-            'leg': ['quest', 'forced_exit']
+            'leg': ['quest']
         }
     },
     "lost-islands": {
         "danger": 1.1,
         'mobs': {
-            'mobs_hp': {},
-            'mobs_damage': {},
+            'mobs_hp': {"min": 1, "max": 3, "type": "random"},
+            'mobs_damage': {"min": 0, "max": 1, "type": "random"},
             'mobs': ['dolphin', 'lobster', 'narwhal', 'orca', 'otter_pup', 'pelican', 'swan', 'whale', 'toucan', 'squid', 'seahorse', 'shark', 'octopus', 'wombat', 'turtle', 'snail', 'sloth', 'skunk', 'sheep', 'seagull', 'rooster', 'pigeon', 'peacock', 'parrot', 'ostrich', 'opossum', 'monkey', 'kangaroo', 'jaguar']
         },
         "items": {
-            'com': [],
+            'com': ['slice_pizza', 'fish_oil', 'twigs_tree', 'skin'],
             'unc': [],
-            'rar': [],
+            'rar': ['curry_recipe', 'bread_recipe'],
             'mys': [],
-            'leg': []
+            'leg': ['taco_recipe', 'sandwich_recipe', 'hot_chocolate_recipe']
         },
         "positive": {
-            'com': [],
-            'unc': [],
-            'rar': [],
-            'mys': [],
-            'leg': []
+            'com': ['influences_mood', 'without_influence', 
+                  'influences_eat', 'influences_game'],
+            'unc': ['influences_health', 'influences_energy',
+                   'joint_activity'],
+            'rar': ['coins', 'joint_event', 'meeting_friend', 'battle'],
+            'mys': ['trade_item', 'item'],
+            'leg': ['quest', 'coins']
         },
         "negative": {
-            'com': [],
-            'unc': [],
-            'rar': [],
-            'mys': [],
-            'leg': []
+            'com': ['influences_mood', 'without_influence', 
+                  'influences_eat'],
+            'unc': ['influences_energy', 'coins'],
+            'rar': ['influences_game', 'battle'],
+            'mys': ['item', 'coins', 'edit_location'],
+            'leg': ['quest', 'forced_exit']
         }
     },
     "desert": {
@@ -277,8 +280,8 @@ locations = {
             'leg': []
         },
         'mobs': {
-            'mobs_hp': {},
-            'mobs_damage': {},
+            'mobs_hp': {"min": 1, "max": 5, "type": "random"},
+            'mobs_damage': {"act": 1, "type": "static"},
             'mobs': ['lion', 'tiger', 'crocodile', 'snake', 'rhino', 'elephant', 'gorilla', 'camel', 'puma', 'hyena', 'hippo', 'panther', 'coyote', 'giraffe', 'jackal', 'leopard', 'lynx', 'meerkat', 'zebra', 'rattlesnake', 'scorpion']
         },
         "positive": {
@@ -306,8 +309,8 @@ locations = {
             'leg': []
         },
         'mobs': {
-            'mobs_hp': {},
-            'mobs_damage': {},
+            'mobs_hp': {"min": 2, "max": 6, "type": "random"},
+            'mobs_damage': {"min": 1, "max": 2, "type": "random"},
             'mobs': ['walrus', 'seal', 'reindeer', 'polar_bear', 'penguin', 'moose', 'komodo_dragon', 'goat', 'eagle', 'bear_cub', 'wolf', 'bear', 'owl', 'rabbit', 'weasel', 'grizzly', 'cougar']
         },
         "positive": {
@@ -335,8 +338,8 @@ locations = {
             'leg': []
         },
         'mobs': {
-            'mobs_hp': {},
-            'mobs_damage': {},
+            'mobs_hp': {"min": 1, "max": 10, "type": "random"},
+            'mobs_damage': {"min": 1, "max": 3, "type": "random"},
             'mobs': ['spider', 'fox', 'raccoon', 'deer', 'bat', 'dragon', 'falcon', 'fennec_fox', 'hamster', 'hedgehog', 'lemur', 'lobster', 'meerkat', 'mole', 'red_panda', 'porcupine']
         },
         "positive": {
@@ -415,7 +418,17 @@ def create_event(location: str, worldview: str = '', rarity: int = 0,
         else: data['remove_item'] = items_col
 
     if 'mobs' in event_data:
-        ...
+        col = event_data['mobs']['col'][str(rarity)]
+        data['mobs'] = []
+        for _ in range(col):
+            mob = choice(loc_data['mobs']['mobs'])
+            hp = random_dict(loc_data['mobs']['mobs_hp'])
+            damage = random_dict(loc_data['mobs']['mobs_damage'])
+            loot = JOURNEY['mobs'][mob]['loot']
+
+            data['mobs'].append(
+                {'key': mob, 'hp': hp, 'damage': damage, 'loot': loot}
+            )
 
     if 'coins' in event_data:
         data['coins'] = random_dict(event_data['coins'][worldview][str(rarity)])
