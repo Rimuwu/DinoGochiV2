@@ -125,7 +125,8 @@ async def item_callback(call: CallbackQuery):
     userid = call.from_user.id
     lang = call.from_user.language_code
     item = decode_item(call_data[2])
-    
+    preabil = {}
+
     if item:
         if call_data[1] == 'info':
             await send_item_info(item, {'chatid': chatid, 'lang': lang}, False)
@@ -137,6 +138,8 @@ async def item_callback(call: CallbackQuery):
             await exchange_item(userid, chatid, item, lang)
         elif call_data[1] == 'egg':
             ret_data = CheckItemFromUser(userid, item)
+            if 'abilities' in item:
+                preabil = item['abilities']
 
             if ret_data['status']:
                 egg_id = call_data[3]
@@ -144,12 +147,12 @@ async def item_callback(call: CallbackQuery):
                 end_time = seconds_to_str(item_data['incub_time'], lang)
                 i_name = get_name(item['item_id'], lang)
 
-                await bot.send_message(chatid, 
+                if RemoveItemFromUser(userid, item['item_id'], 1, preabil):
+                    await bot.send_message(chatid, 
                         t('item_use.egg.incubation', lang, 
                           item_name = i_name, end_time=end_time),  
                           reply_markup=m(userid, 'last_menu', lang))
-                
-                if RemoveItemFromUser(userid, item['item_id'], 1):
+                    
                     incubation_egg(int(egg_id), userid, item_data['incub_time'], item_data['inc_type'])
                 
                     new_text = t('item_use.egg.edit_content', lang)
