@@ -22,6 +22,7 @@ dinosaurs = mongo_client.bot.dinosaurs
 incubations = mongo_client.tasks.incubation
 dino_owners = mongo_client.connections.dino_owners
 dead_dinos = mongo_client.bot.dead_dinos
+dino_mood = mongo_client.connections.dino_mood
 
 game_task = mongo_client.tasks.game
 sleep_task = mongo_client.tasks.sleep
@@ -94,7 +95,7 @@ class Dino:
         """
         dinosaurs.delete_one({'_id': self._id})
         for collection in [game_task, sleep_task, journey_task, 
-                           collecting_task, dino_owners]:
+                           collecting_task, dino_owners, dino_mood]:
             collection.delete_many({'dino_id': self._id})
 
     def dead(self):
