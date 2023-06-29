@@ -16,11 +16,11 @@ max_stack = 5
 
 keys = [
     'good_sleep', 'end_game', 'multi_games', 'multi_heal', 
-    'multi_eat', 'multi_energy', 'dream', 'good_eat', 'playing_together',
+    'multi_eat', 'multi_energy', 'dream', 'good_eat', 'playing_together', 'sunshine', 'breeze', 'meeting_friend'
     # Положительное 
 
     'bad_sleep', 'stop_game', 'little_game', 'little_heal',
-    'little_eat', 'little_energy', 'bad_dream', 'bad_eat', 'repeat_eat', 
+    'little_eat', 'little_energy', 'bad_dream', 'bad_eat', 'repeat_eat', 'rain', 'cold_wind'
     # Отрицательное
     
     'journey_event' 
@@ -74,9 +74,11 @@ def add_mood(dino: ObjectId, key: str, unit: int, duration: int,
              stacked: bool = False):
     """ Добавляет в лог dino событие по key, которое влияет на настроение в размере unit в течении time секунд
     """
-    res = dino_mood.find({'dino_id': dino, 'action': key, 'type': 'mood_edit'})
+    res = list(dino_mood.find({'dino_id': dino, 'action': key, 'type': 'mood_edit'}))
 
-    if not stacked and res: return
+    if not stacked and res: 
+        dino_mood.update_one({'_id': res[0]['_id']}, {'$set': {'end_time': int(time()) + duration}})
+        return
     else:
         if len(list(res)) >= max_stack: return
 
