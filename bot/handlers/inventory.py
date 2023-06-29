@@ -256,14 +256,13 @@ async def filter_callback(call: CallbackQuery):
 async def book(call: CallbackQuery):
     call_data = call.data.split()
     chatid = call.message.chat.id
-    userid = call.from_user.id
     lang = call.from_user.language_code
     
     book_id = call_data[1]
     page = int(call_data[2])
     text, markup = book_page(book_id, page, lang)
     try:
-        await bot.edit_message_text(text, chatid, call.message.id, reply_markup=markup)
+        await bot.edit_message_text(text, chatid, call.message.id, reply_markup=markup, parse_mode='Markdown')
     except: pass
 
 @bot.callback_query_handler(func=lambda call: call.data.split()[0] == 'ns_craft')
