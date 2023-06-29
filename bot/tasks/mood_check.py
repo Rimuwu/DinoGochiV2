@@ -81,6 +81,7 @@ async def mood_check():
                 if event_data['type'] == 'inspiration':
                     if dino['stats']['mood'] <= event_data['cancel_mood']:
                         dino_mood.delete_one({'_id': event_data['_id']})
+        else: dino_mood.delete_many({'dino_id': dino_id})
 
 if __name__ != '__main__':
     if conf.active_tasks:
