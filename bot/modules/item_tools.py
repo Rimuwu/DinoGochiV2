@@ -121,30 +121,24 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
                 add_mood(dino._id, 'bad_eat', -1, 1200)
             quest_process(userid, 'feed', items=[item_id] * count)
 
-    elif type_item in ['game_ac', "journey_ac", "collecting_ac", "sleep_ac", 'weapon', 'armor', 'backpack'] and dino:
-        action_to_type = {
-            'game_ac': 'game', 'journey_ac': 'journey', 
-            'collecting_ac': 'collecting', 'sleep_ac': 'sleep',
-            'weapon': 'weapon', 'armor': 'armor', 'backpack': 'backpack'
-        }
-        accessory_type = action_to_type[type_item]
+    elif type_item in ['game', "journey", "collecting", "sleep", 'weapon', 'armor', 'backpack'] and dino:
 
-        if dino.status == accessory_type:
+        if dino.status == type_item:
             # Запрещает менять активный предмет во время совпадающий с его типом активности
             return_text = t('item_use.accessory.no_change', lang)
             use_status = False
         else:
-            if dino.activ_items[accessory_type]:
+            if dino.activ_items[type_item]:
                 AddItemToUser(userid, 
-                              dino.activ_items[accessory_type]['item_id'], 1, 
-                              dino.activ_items[accessory_type]['abilities'])
+                              dino.activ_items[type_item]['item_id'], 1, 
+                              dino.activ_items[type_item]['abilities'])
             if is_standart(item):
                 # Защита от вечных аксессуаров
                 dino_update_list.append({
-                    '$set': {f'activ_items.{accessory_type}': get_item_dict(item['item_id'])}})
+                    '$set': {f'activ_items.{type_item}': get_item_dict(item['item_id'])}})
             else:
                 dino_update_list.append({
-                    '$set': {f'activ_items.{accessory_type}': item}})
+                    '$set': {f'activ_items.{type_item}': item}})
             
             return_text = t('item_use.accessory.change', lang)
 
@@ -420,8 +414,8 @@ async def data_for_use_item(item: dict, userid: int, chatid: int, lang: str, con
                 {"type": 'dino', "name": 'dino', "data": {"add_egg": False}, 
                     'message': None}
             ]
-        elif type_item in ['game_ac', 'sleep_ac', 
-                           'journey_ac', 'collecting_ac', 
+        elif type_item in ['game', 'sleep', 
+                           'journey', 'collecting', 
                            'weapon', 'backpack', 'armor']:
             steps = [
                 {"type": 'dino', "name": 'dino', "data": {"add_egg": False}, 
