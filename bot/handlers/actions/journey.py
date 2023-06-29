@@ -173,5 +173,6 @@ async def send_logs(chatid: int, lang: str, data: dict, dino_name: str):
     j_time = seconds_to_str(int(time()) - data['journey_start'], lang)
 
     if items: items_text = counts_items(items, lang)
-    text = t('journey_log', lang, coins=coins, items=items_text, time=j_time, col=len(logs), name=dino_name)
+    text = t('journey_log', lang, coins=coins, 
+             items=items_text, time=j_time, col=len(logs), name=dino_name)
     await bot.send_message(chatid, text, reply_markup=m(chatid, 'actions_menu', lang, True))
