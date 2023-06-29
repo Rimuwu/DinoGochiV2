@@ -14,9 +14,9 @@ def inline_menu(markup_data, lang: str = 'en', **kwargs):
     text, callback = '-', '-'
     standart_keys = get_loc_data('inline_menu', lang)
     # 'dino_profile', 'dino_rename' # dino_alt_id_markup
-    
+
     if type(markup_data) == str: markup_data = [markup_data]
-    
+
     for markup_key in markup_data:
         if markup_key in standart_keys:
             text = t(f'inline_menu.{markup_key}.text', lang, **kwargs)
@@ -25,7 +25,7 @@ def inline_menu(markup_data, lang: str = 'en', **kwargs):
         else:
             log(prefix='InlineMarkup', 
                 message=f'not_found_key Data: {markup_key}', lvl=2)
-        
+
         markup_inline.add(
             InlineKeyboardButton(text=text, callback_data=callback))
     return markup_inline
@@ -64,7 +64,7 @@ def item_info_markup(item: dict, lang):
             bt_text += counts_items(cr_dct["create"], lang)
             
             markup_inline.add(InlineKeyboardButton(text=bt_text,
-                            callback_data=f"ns_craft {code} {cr_dct_id} {cr_dct_id}"))
+                            callback_data=f"ns_craft {code} {cr_dct_id}"))
     
     return markup_inline
 
