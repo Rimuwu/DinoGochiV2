@@ -138,16 +138,19 @@ def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_vie
        stats - словарь с харрактеристиками динозавра ( {'heal': 0, 'eat': 0, 'sleep': 0, 'game': 0, 'mood': 0} )
     """
 
+    # Получение данных
     dino_data = DINOS['elements'][str(dino_id)]
     img = Image.open(
             f'images/remain/backgrounds/{dino_data["class"].lower()}.png')
+
+    # Получение кастом картинки
     if custom_url:
         try:
             response = requests.get(custom_url, stream = True)
             response = Image.open(io.BytesIO(response.content)).convert("RGBA")
             img = response.resize((900, 350), Image.Resampling.LANCZOS)
         except: custom_url = ''
-        
+
     if profile_view != 4:
         panel_i = Image.open(
             f'images/remain/panels/v{profile_view}_{quality}.png')
@@ -156,7 +159,7 @@ def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_vie
     dino_image = Image.open(f'images/{dino_data["image"]}')
     dino_image = dino_image.resize((1024, 1024), Image.Resampling.LANCZOS)
     idraw = ImageDraw.Draw(img)
-    
+
     if profile_view != 4:
         p_data = positions[profile_view]
         line = FONTS[p_data['line']]
@@ -172,10 +175,10 @@ def create_dino_image(dino_id: int, stats: dict, quality: str='com', profile_vie
         sz, x, y = horizontal_resizing(age, 450, randint(170, 550), randint(-180, -100))
         if randint(0, 1):
             dino_image = dino_image.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
-    
+
     # Рисует квадрат границы динозавра
     # idraw.rectangle((y + x, y, sz + y + x, sz + y), outline=(255, 0, 0))
-    
+
     dino_image = dino_image.resize((sz, sz), Image.Resampling.LANCZOS)
     img = trans_paste(dino_image, img, 1.0, (y + x, y, sz + y + x, sz + y))
 
