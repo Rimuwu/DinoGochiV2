@@ -105,8 +105,7 @@ async def dino_profile(userid: int, dino: Dino, lang: str, custom_url: str):
     # Генерация блока с аксессуарами
     add_blok = False
     acsess = {
-        'em_game': tem['ac_game'], 'em_coll': tem['ac_collecting'],
-        'em_jour': tem['ac_journey'], 'em_sleep': tem['ac_sleep']
+        'em_game': tem['ac_game'], 'em_coll': tem['ac_collecting'], 'em_jour': tem['ac_journey'], 'em_sleep': tem['ac_sleep'], 'em_weapon': tem['ac_weapon'], "em_armor": tem['ac_armor'], 'em_backpack': tem['ac_backpack']
     }
     for key, item in dino.activ_items.items():
         if not item:
@@ -121,7 +120,7 @@ async def dino_profile(userid: int, dino: Dino, lang: str, custom_url: str):
     menu = dino_profile_markup(add_blok, lang, dino.alt_id, joint_dino, my_joint, user.premium)
     if add_blok:
         text += t('p_profile.accs', lang, formating=False).format(**acsess)
-    
+
     # затычка на случай если не сгенерируется изображение
     generate_image = open(f'images/remain/no_generate.png', 'rb')
     msg = await bot.send_photo(userid, generate_image, text,
