@@ -24,8 +24,7 @@ def load() -> None:
 
 def alternative_language(lang: str):
     languages = {
-        'ua': 'ru',
-        'ru': 'en'
+        'ua': 'ru'
     }
     if lang in languages: return languages[lang]
     return lang
