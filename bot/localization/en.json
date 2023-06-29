@@ -251,7 +251,7 @@
             "rope": {
                 "name": "🎗 Rope"
             },
-            "stylus": {
+            "feather": {
                 "name": "🐦 Feather"
             },
             "twigs_tree": {
@@ -262,7 +262,7 @@
             },
             "leather_clothing": {
                 "name": "🧤 Leather clothing",
-                "description": "Cancels the penalty for the event fight."
+                "description": "Warms the dinosaur."
             },
             "clothing_recipe": {
                 "name": "📜 Clothing recipe",
@@ -270,7 +270,7 @@
             },
             "torch": {
                 "name": "🔥 Torch",
-                "description": "While gathering, there is a chance to find more refined herbs."
+                "description": "While collecting food, there is a chance to find more refined herbs."
             },
             "torch_recipe": {
                 "name": "📜 Torch recipe",
@@ -585,6 +585,45 @@
             "book_magic-forest": {
                 "name": "📔 Book magic-forest",
                 "description": "A book long forgotten by an adventurer."
+            },
+            "bag_goodies": {
+                "name": "👜 A bag of goodies",
+                "description": "Storage for goodies on a trip."
+            },
+            "rubik_cube": {
+                "name": "🎲 Rubik's Cube",
+                "description": "The dinosaur always has his favorite game with him."
+            },
+            "lock_bag": {
+                "name": "👜 Bag with lock",
+                "description": "A more secure travel bag."
+            },
+            "skinning_knife": {
+                "name": "🔪 Skinning knife",
+                "description": "It helps to more accurately collect the skin from animals, without losing its parts."
+            },
+            "flour": {
+                "name": "🌫 Flour"
+            },
+            "flour_recipe": {
+                "name": "📜 Flour recipe",
+                "description": "The recipe for creating a bag for sweets."
+            },
+            "croissant": {
+                "name": "🥐 Croissant"
+            },
+            "croissant_recipe": {
+                "name": "📜 Croissant recipe",
+                "description": "Recipe for creating a hot and delicious croissant."
+            },
+            "carrot": {
+                "name": "🥕 Carrot"
+            },
+            "tomato": {
+                "name": "🍅 Tomato"
+            },
+            "potato": {
+                "name": "🥔 Potato"
             }
         },
         "notifications": {
@@ -841,7 +880,7 @@
             "start_game": "🥚 | Choose an egg with a dinosaur!\n\n🦖 | No matter which egg you choose, you will get a cute dinosaur.",
             "end_answer": {
                 "edited_text": "🥚 | Congratulations, your egg is incubating!",
-                "send_text": "🧸 | Congratulations, you have your first dinosaur!\n\n🍱 | At the moment, the egg is incubated, and through '{inc_time}' a dinosaur will hatch from it!\n\n🎋 | For up-to-date egg information, click on the 'Dinosaur' 🦖 button!\n\n📔 | While you wait, study the interface, read the FAQ, customize the bot for yourself!"
+                "send_text": "🧸 | Congratulations, you have your first dinosaur!\n\n🍱 | At the moment, the egg is incubated, and through `{inc_time}` a dinosaur will hatch from it!\n\n🎋 | For up-to-date egg information, click on the `🦖 Dinosaur` button!\n\n📔 | While you wait, study the interface, read the FAQ, customize the bot for yourself!"
             }
         },
         "help_command": {
@@ -857,7 +896,7 @@
             "create_promo": {
                 "format": "Input Format:\nNumber of uses: number/inf\nTime: 1m / 2h / 3d / inf\nCoins: number",
                 "not_item": "Item {i} not found, cancellation.",
-                "create": "🔮 Promo code created!\n\nPromo code: '{pr_code}'\nActivity: ❌\nUsages: {col_use}\nEnding via: {txt_time}\nCoins: {money}\n\nItems: {i_names}",
+                "create": "🔮 Promo code created!\n\nPromo code: `{pr_code}`\nActivity: ❌\nUsages: {col_use}\nEnding via: {txt_time}\nCoins: {money}\n\nItems: {i_names}",
                 "buttons": [
                     "✅ Activate",
                     "🗑 Delete",
@@ -1067,7 +1106,7 @@
                 }
             },
             "no_item": "Nothing",
-            "accs": "{em_game}*┌* Travel: {Journey}\n{em_coll}*├* Collecting collection: {collecting}\n{em_jour}*├* Game: {game}\n{em_sleep}*└* dream: {sleep}",
+            "accs": "\n{em_game}*┌* Travel: {journey}\n{em_coll}*├* Collecting food: {collecting}\n{em_jour}*├* Game: {game}\n{em_sleep}*├* Sleep: {sleep}\n{em_weapon}*├* Weapon: {weapon}\n{em_armor}*├* Protection: {armor}\n{em_backpack}*└* Storage: {backpack}\n",
             "return": "🔮Return to the main menu!",
             "inline_menu": {
                 "reset_activ_item": {
@@ -1112,10 +1151,10 @@
                 "k63d": {
                     "name": "💍",
                     "keys": [
-                        "game_ac",
-                        "journey_ac",
-                        "collecting_ac",
-                        "sleep_ac"
+                        "game",
+                        "journey",
+                        "collecting",
+                        "sleep"
                     ]
                 },
                 "jd34": {
@@ -1200,19 +1239,19 @@
                     "type_name": "🥚 Dinosaurian egg",
                     "add_text": "*├* incubation: {inc_time}\n*└* Rare eggs: {rarity}"
                 },
-                "game_ac": {
+                "game": {
                     "type_name": "🎮 Active Item",
                     "add_text": "*└* {item_description}"
                 },
-                "sleep_ac": {
+                "sleep": {
                     "type_name": "🌙 Active Item",
                     "add_text": "*└* {item_description}"
                 },
-                "journey_ac": {
+                "journey": {
                     "type_name": "🎍Active Item",
                     "add_text": "*└* {item_description}"
                 },
-                "collecting_ac": {
+                "collecting": {
                     "type_name": "🕸 Active Item",
                     "add_text": "*└* {item_description}"
                 },
@@ -1267,7 +1306,7 @@
                 "null": "➖ No"
             },
             "static": {
-                "cap": "*┌* * Item Information* 🎴",
+                "cap": "*┌* *🎴 Item Information*",
                 "name": "*├* Name: {name}",
                 "rank": "*├* Rank: {rank}",
                 "type": "*├* Type: {type}",
@@ -1275,21 +1314,21 @@
                 "endurance": "*├* Durability: 💎 {0} / {1}",
                 "mana": "*├* Mana: 🔮 {0} / {1}",
                 "stack": "*├* In the set: 🧊 {stack} pcs.",
-                "add_bonus": "\n\n*┌* * Additional bonuses* 🍡\n",
-                "add_penaltie": "\n\n*┌* * Additional fines* 📌\n",
+                "add_bonus": "\n\n*┌* *🍡 Additional bonuses*\n",
+                "add_penaltie": "\n\n*┌* *📌 Additional fines*\n",
                 "buttons": {
                     "use": {
                         "eat": "🍔 Feed",
                         "egg": "🥚 Incubate",
-                        "game_ac": "👒 Clothe",
-                        "sleep_ac": "👒 Clothe",
-                        "journey_ac": "👒 Clothe",
-                        "collecting_ac": "👒 put on",
+                        "game": "👒 Clothe",
+                        "sleep": "👒 Clothe",
+                        "journey": "👒 Clothe",
+                        "collecting": "👒 Put on",
                         "recipe": "⚒ Create",
                         "weapon": "🛡 Equip",
                         "backpack": "🛡 Equip",
                         "armor": "🛡 Equip",
-                        "case": "📦Open",
+                        "case": "📦 Open",
                         "special": "🔮 Use",
                         "book": "📕 Read"
                     },
@@ -1897,7 +1936,13 @@
             "little_energy": "Tired",
             "bad_dream": "I dreamed of a nightmare",
             "bad_eat": "Slocked food",
-            "repeat_eat": "Repeated food"
+            "repeat_eat": "Repeated food",
+            "journey_event": "Travel events",
+            "sunshine": "Sunny weather",
+            "breeze": "Pleasant breeze",
+            "rain": "Got caught in the rain",
+            "cold_wind": "A cold wind blew",
+            "meeting_friend": "Met friends"
         },
         "journey_start": {
             "ask_loc": "🌳| Choose where the dinosaur will go this time",
@@ -2643,7 +2688,15 @@
                     "Helping the local blacksmiths, the dinosaur found rare ores and received a reward for his help.",
                     "The dinosaur took medications to the local hospital, and in gratitude, from a caring nurse, received useful objects as a reward.",
                     "Protecting the village from the attack of several wild animals, the dinosaur received a reward from grateful locals."
-                ]
+                ],
+                "battle": [
+                    "The dinosaur survived a duel with wild animals that hunted him.",
+                    "A huge lizard reached the river, second only to crocodiles and other predators.",
+                    "On the arid plains, the dinosaur managed to defend its territory from a pack of hungry wolves.",
+                    "Having met a formidable bear on its way, the dinosaur did not run away - attacked first and beat the beast.","In a cave far away in the mountains, a dinosaur faced an evil bear - and won.","Having descended to the seashore, the dinosaur filled his stomach to the top with ducks who could not escape from his huge teeth.","Clearing the way through a long shell bay, the dinosaur managed to push a large shell turtle ashore.",
+                    "A lonely dinosaur living in the wilderness surprised the residents of a local village with his strength: he easily overcame any the beasts who dared to enter his territory.","A very dangerous fight took place in the arena when the dinosaur did not give his opponent a chance - with impressive strength he hoisted the animal to the ground.",
+                    "An impressive sight was the fight between a dinosaur and several bears in the deep forests - in the end, a giant reptile won."
+            ]
             },
             "negative": {
                 "influences_mood": [
@@ -2788,8 +2841,8 @@
                     "The dinosaur received the task of pursuing the enemy, but accidentally missed him, which led to a fine.",
                     "To complete the assignment, the dinosaur needed a certain tool, but because of his forgetfulness, he forgot to take it and was punished with a fine."
                 ],
-                "edit_location": [
-                    "The dinosaur was tired of traveling in this location, so he decided to go another road."
+                "edit_location": ["The dinosaur got tired of traveling in this location, so he decided to go another way.","Changing course, the dinosaur went to another area where there was more food and less danger.","The dinosaur continued to travel, but not through these forests - he decided to explore another area.","A strong storm forced the dinosaur to settle on another territory for a while, where he stayed for a long time.", "Feeling lonely, the dinosaur went in search of a new community of his relatives in another part of the forest.","The dinosaur could not find enough food, living in the current area, and was forced to move in search of new green spaces.","Swinging from the unbearable heat in a forest clearing, the dinosaur found a cool shelter in the shade of mountain peaks.","Other dinosaurs on their territory did not perceive him friendly, therefore, the dinosaur decided to go to another corner of the forest.","The dinosaur went in search of new adventures, exploring new and unexplored areas of the forest.","Having studied the surroundings, the dinosaur decided to change its habitat in order to provide itself with better living conditions."],
+                "battle": ["The dinosaur was forced to escape from a fight with wild bears in the forest to save his life.","Despite its strength, the dinosaur could not defeat a group of predators entering its territory.", "The dinosaur heading for the river was attacked by large large birds of prey and did not emerge victorious from the fight.","Having met a herd of fast gazelles, the dinosaur decided to catch one of them, but in the end it turned out to be the bared teeth of a pack of cheetahs.","A brave dinosaur tried to overcome a flock of lizards on the open plains, but it was stopped by a faster and more agile opponent.","A single dinosaur was attacked from trees by hunting spiders and as a result the victory was on the side of insects.","A dinosaur exploring the coastline resisted a strong sea wave, but eventually succumbed to the force of the elements.","During a morning hunt on the territory a pack of hungry wolves appeared, which turned out to be stronger than him.","Having met a rival of his size, the dinosaur grappled with him in a duel, but in the end was defeated.","A huge dinosaur accidentally collided with an evil bear, and in the fight the animals were equal, but it took only one successful blow to win - and the bear struck it."
                 ]
             },
 
@@ -2798,7 +2851,13 @@
                 "heal": "❤",
                 "energy": "⚡",
                 "game": "🎮",
-                "eat": "🍕"
+                "eat": "🍕",
+                "sunshine": "☀ It's sunny",
+                "breeze": "🍃 Breeze",
+
+                "rain": "🌧 It rained","anti_rain": "☂ Not wet from the rain",
+
+                "cold_wind": "❄ Cold wind","anti_cold_wind": "🧤 Didn't freeze thanks to clothes"
             }
         },
         "mobs": {
@@ -3163,6 +3222,10 @@
             "last_event": "📦 | Last event\n{last_event}",
             "button": "🦕 Return"
         },
-        "journey_log": "🎋 | Dinosaur {name} returned from a trip\n⏳ Traveled: {time}\n🍭 Events: {col}\n\n🪙 Coins: {coins}\n🗝️ Items: {items}"
+        "journey_log": "🎋 | Dinosaur {name} returned from a trip\n⏳ Traveled: {time}\n🍭 Events: {col}\n\n🪙 Coins: {coins}\n🗝️ Items: {items}",
+        "ns_craft": {
+            "not_materials": "❌ | You don't have enough materials!",
+            "create": "🍩 | Item(s) {items} created(s)!"
+        }
     }
 }
