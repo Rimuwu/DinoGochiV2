@@ -329,7 +329,7 @@ async def edit_craft(return_data: dict, transmitted_data: dict):
         await end_craft(transmitted_data)
 
 async def adapter(return_data: dict, transmitted_data: dict):
-    del return_data['confirm']
+    if 'confirm' in return_data: del return_data['confirm']
     userid = transmitted_data['userid']
     chatid = transmitted_data['chatid']
     lang = transmitted_data['lang']
@@ -340,7 +340,6 @@ async def adapter(return_data: dict, transmitted_data: dict):
         await bot.send_message(chatid, return_text, parse_mode='Markdown', reply_markup=markups_menu(userid, 'last_menu', lang))
 
 async def pre_adapter(return_data: dict, transmitted_data: dict):
-    return_data['confirm'] = True
     return_data['dino'] = transmitted_data['dino']
 
     await adapter(return_data, transmitted_data)
@@ -373,10 +372,13 @@ async def eat_adapter(return_data: dict, transmitted_data: dict):
 
 def book_page(book_id: str, page: int, lang: str):
     pages = get_loca_data(f'books.{book_id}', lang)
+    name = get_name(book_id, lang)
     if page >= len(pages): page = 0
     elif page < 0: page = len(pages) - 1
 
     text = pages[page]
+    text += f'\n\n{page+1} | {len(pages)}\n_{name}_'
+    
     markup = list_to_inline(
         [{'◀': f'book {book_id} {page-1}', '▶': f'book {book_id} {page+1}'}, 
          {'🗑': 'delete_message'}]
@@ -461,7 +463,7 @@ async def data_for_use_item(item: dict, userid: int, chatid: int, lang: str, con
         elif type_item == 'book':
             text, markup = book_page(item_id, 0, lang)
 
-            await bot.send_message(chatid, text, reply_markup=markup)
+            await bot.send_message(chatid, text, reply_markup=markup, parse_mode='Markdown')
             return
         else:
             ok = False
