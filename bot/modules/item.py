@@ -57,8 +57,7 @@ def get_name(itemid: str, lang: str='en', endurance: int=0) -> str:
     name = ''
 
     if itemid in items_names:
-        if lang not in items_names[itemid]:
-            lang = 'en'
+        if lang not in items_names[itemid]: lang = 'en'
         if endurance and 'alternative_name' in items_names[itemid][lang]:
             if str(endurance) in items_names[itemid][lang]['alternative_name']:
                 name = items_names[itemid][lang]['alternative_name'][endurance]
@@ -150,9 +149,9 @@ def AddItemToUser(userid: int, itemid: str, count: int = 1, preabil: dict = {}):
 
     item = get_item_dict(itemid, preabil)
     find_res = items.find_one({'owner_id': userid, 'items_data': item}, {'_id': 1})
-    
+
     if find_res: action = 'plus_count'
-    if 'abilities' in item or preabil: action = 'new_edited_item'
+    elif 'abilities' in item or preabil: action = 'new_edited_item'
     else: action = 'new_item'
 
     if action == 'plus_count' and find_res:
@@ -527,7 +526,7 @@ def item_info(item: dict, lang: str):
         dp_text += loc_d['type_info'][
             type_loc]['add_text'].format(act=data_item['act'])
     # Аксы
-    elif type_item in ['game_ac', 'sleep_ac', 'journey_ac', 'collecting_ac']:
+    elif type_item in ['game', 'sleep', 'journey', 'collecting']:
         dp_text += loc_d['type_info'][
             type_loc]['add_text'].format(
                 item_description=get_description(item_id, lang))
