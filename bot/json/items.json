@@ -1029,7 +1029,7 @@
                 "type": "delete"
             },
             {
-                "item": "bone",
+                "item": "rope",
                 "type": "delete"
             }
         ],
@@ -2977,5 +2977,131 @@
         ],
         "rank": "rare",
         "type": "recipe"
+    },
+    "basket_recipe": {
+        "abilities": {
+            "uses": 1
+        },
+        "create": [
+            {
+                "item": "basket",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "twigs_tree",
+                "type": "delete"
+            },
+            {
+                "item": "twigs_tree",
+                "type": "delete"
+            },
+            {
+                "item": "twigs_tree",
+                "type": "delete"
+            },
+            {
+                "item": "rope",
+                "type": "delete"
+            },
+            {
+                "item": "rope",
+                "type": "delete"
+            }
+        ],
+        "rank": "rare",
+        "type": "recipe"
+    },
+    "net_recipe": {
+        "abilities": {
+            "uses": 1
+        },
+        "create": [
+            {
+                "item": "net",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "rope",
+                "type": "delete"
+            },
+            {
+                "item": "rope",
+                "type": "delete"
+            },
+            {
+                "item": "rope",
+                "type": "delete"
+            },
+            {
+                "item": "rope",
+                "type": "delete"
+            },
+            {
+                "item": "rope",
+                "type": "delete"
+            }
+        ],
+        "rank": "rare",
+        "type": "recipe"
+    },
+    "rod_recipe": {
+        "abilities": {
+            "uses": 1
+        },
+        "create": [
+            {
+                "item": "rod",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "rope",
+                "type": "delete"
+            },
+            {
+                "item": "rope",
+                "type": "delete"
+            },
+            {
+                "item": "twigs_tree",
+                "type": "delete"
+            }
+        ],
+        "rank": "rare",
+        "type": "recipe"
+    },
+    "carrot": {
+        "act": 16,
+        "class": "Herbivore",
+        "image": "null",
+        "rank": "common",
+        "type": "eat"
+    },
+    "tomato": {
+        "act": 21,
+        "class": "Herbivore",
+        "image": "null",
+        "rank": "common",
+        "type": "eat"
+    },
+    "potato": {
+        "act": 22,
+        "class": "Herbivore",
+        "image": "null",
+        "rank": "common",
+        "type": "eat"
+    },
+    "meow_book": {
+        "image": "book",
+        "rank": "legendary",
+        "type": "book"
     }
 }
