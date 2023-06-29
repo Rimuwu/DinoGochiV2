@@ -265,3 +265,12 @@ def encoder_text(text: str, each: int = 5):
     for i in text_list: ret_text += i + ' '
 
     return str(ret_text)
+
+def count_elements(lst: list) -> str:
+    dct = {}
+    for i in lst: dct[i] = dct.get(i, 0) + 1
+
+    text_list = []
+    for key, value in dct.items(): text_list.append(f'{key} x{value}')
+    return ', '.join(text_list)
+
