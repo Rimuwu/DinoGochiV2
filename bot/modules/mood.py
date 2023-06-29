@@ -16,16 +16,18 @@ max_stack = 5
 
 keys = [
     'good_sleep', 'end_game', 'multi_games', 'multi_heal', 
-    'multi_eat', 'multi_energy', 'dream', 'good_eat', 'playing_together', 'sunshine', 'breeze', 'meeting_friend'
+    'multi_eat', 'multi_energy', 'dream', 'good_eat', 'playing_together', 'sunshine', 'breeze', 'meeting_friend', 'magic_animal', 'magic_light'
     # Положительное 
 
     'bad_sleep', 'stop_game', 'little_game', 'little_heal',
-    'little_eat', 'little_energy', 'bad_dream', 'bad_eat', 'repeat_eat', 'rain', 'cold_wind'
+    'little_eat', 'little_energy', 'bad_dream', 'bad_eat', 'repeat_eat', 'rain', 'cold_wind', 'snowfall', 'drought'
     # Отрицательное
     
     'journey_event' 
     # Любое
 ]
+
+
 
 breakdowns = {
     'seclusion': {
@@ -78,9 +80,9 @@ def add_mood(dino: ObjectId, key: str, unit: int, duration: int,
 
     if not stacked and res: 
         dino_mood.update_one({'_id': res[0]['_id']}, {'$set': {'end_time': int(time()) + duration}})
-        return
+        return False
     else:
-        if len(list(res)) >= max_stack: return
+        if len(list(res)) >= max_stack: return False
 
     if key in keys:
         data = {
@@ -93,6 +95,8 @@ def add_mood(dino: ObjectId, key: str, unit: int, duration: int,
         }
         print('add_mood', dino, key, unit, duration)
         dino_mood.insert_one(data)
+        return True
+    return False
 
 def mood_while_if(dino: ObjectId, key: str, characteristic: str, 
                   min_unit: int, max_unit: int, unit: int):
