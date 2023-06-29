@@ -224,10 +224,13 @@ async def add_all(message):
     userid = message.from_user.id
     chatid = message.chat.id
     lang = message.from_user.language_code
+    user = User( message.from_user.id)
+    dino = user.get_last_dino()
     
     for _ in range(10):
-        f = create_event('forest', event='item')
-        print(f)
+        event = create_event('lost-islands', event='battle')
+        await activate_event(dino._id, event)
+        # print(f)
     print('----------------------')
 
 @bot.message_handler(commands=['event'])
@@ -240,9 +243,14 @@ async def ev(message):
     user = User( message.from_user.id)
     dino = user.get_last_dino()
     if dino:
-        for i in range(10):
-            status = await random_event(dino._id, 'forest')
-            print(status)
+        for i in range(5):
+            event = create_event('forest', 'positive', 0, 'influences_mood')
+            await activate_event(dino._id, event)
+        for i in range(5):
+            event = create_event('forest', 'negative', 0, 'influences_mood')
+            await activate_event(dino._id, event)
+
+
 
 @bot.message_handler(commands=['all_events'])
 async def ev(message):
