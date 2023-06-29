@@ -10,9 +10,13 @@ from bot.modules.inventory_tools import (InventoryStates, back_button,
                                          filter_menu, forward_button,
                                          search_menu, send_item_info,
                                          start_inv, swipe_page)
-from bot.modules.item import CheckItemFromUser, decode_item, get_name, RemoveItemFromUser
+from bot.modules.item import (CheckItemFromUser, RemoveItemFromUser,
+                              counts_items, decode_item)
 from bot.modules.item import get_data as get_item_data
-from bot.modules.item_tools import data_for_use_item, delete_item_action, exchange_item, book_page
+from bot.modules.item import get_name, RemoveItemFromUser
+from bot.modules.item_tools import (AddItemToUser, CheckItemFromUser,
+                                    book_page, data_for_use_item,
+                                    delete_item_action, exchange_item)
 from bot.modules.localization import get_data, t
 from bot.modules.markup import markups_menu as m
 
@@ -261,3 +265,37 @@ async def book(call: CallbackQuery):
     try:
         await bot.edit_message_text(text, chatid, call.message.id, reply_markup=markup)
     except: pass
+
+@bot.callback_query_handler(func=lambda call: call.data.split()[0] == 'ns_craft')
+async def ns_craft(call: CallbackQuery):
+    call_data = call.data.split()
+    chatid = call.message.chat.id
+    userid = call.from_user.id
+    lang = call.from_user.language_code
+
+    item_ns = decode_item(call_data[1])
+    item = get_item_data(item_ns['item_id'])
+    ns_id = call_data[2]
+
+    nd_data = item['ns_craft'][ns_id]
+    materials = {}
+    for i in nd_data['materials']: materials[i] = materials.get(i, 0) + 1
+
+    check_lst = []
+    for key, value in materials.items():
+        item_data = get_item_data(key)
+        res = CheckItemFromUser(userid, item_data, value)
+        check_lst.append(res['status'])
+
+    if all(check_lst):
+        for iid in item['ns_craft'][ns_id]['create']:
+            AddItemToUser(userid, iid)
+
+        for iid in item['ns_craft'][ns_id]['materials']:
+            RemoveItemFromUser(userid, iid)
+
+        text =  t('ns_craft.create', lang, 
+                  items = counts_items(item['ns_craft'][ns_id]['create'], lang))
+        await bot.send_message(chatid, text)
+    else:
+        await bot.send_message(chatid, t('ns_craft.not_materials', lang))
