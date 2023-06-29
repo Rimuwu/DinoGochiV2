@@ -3,7 +3,7 @@
         "buffs": {
             "heal": 15
         },
-        "act": 10,
+        "act": 4,
         "class": "ALL",
         "image": "item1",
         "rank": "common",
@@ -13,7 +13,7 @@
         "buffs": {
             "mood": 10
         },
-        "act": 5,
+        "act": 4,
         "class": "ALL",
         "image": "item2",
         "ns_craft": {
@@ -56,10 +56,10 @@
         },
         "image": "item4",
         "rank": "uncommon",
-        "type": "game_ac"
+        "type": "game"
     },
     "wild_boar_meat": {
-        "act": 25,
+        "act": 17,
         "class": "Carnivore",
         "image": "item5",
         "ns_craft": {
@@ -76,7 +76,7 @@
         "type": "eat"
     },
     "bunch_herbs": {
-        "act": 25,
+        "act": 18,
         "class": "Herbivore",
         "image": "item6",
         "ns_craft": {
@@ -93,7 +93,7 @@
         "type": "eat"
     },
     "fish": {
-        "act": 25,
+        "act": 19,
         "class": "Flying",
         "image": "item7",
         "ns_craft": {
@@ -119,7 +119,7 @@
         "type": "eat"
     },
     "wolf_meat": {
-        "act": 15,
+        "act": 11,
         "class": "Carnivore",
         "image": "item8",
         "ns_craft": {
@@ -137,7 +137,7 @@
         "type": "eat"
     },
     "grasses_from_fields": {
-        "act": 15,
+        "act": 12,
         "class": "Herbivore",
         "image": "item9",
         "ns_craft": {
@@ -163,7 +163,7 @@
         "type": "eat"
     },
     "seafood": {
-        "act": 15,
+        "act": 13,
         "class": "Flying",
         "image": "item10",
         "ns_craft": {
@@ -181,7 +181,7 @@
         "type": "eat"
     },
     "berries": {
-        "act": 20,
+        "act": 16,
         "class": "Herbivore",
         "image": "item11",
         "ns_craft": {
@@ -207,7 +207,7 @@
         "type": "eat"
     },
     "chicken_leg": {
-        "act": 20,
+        "act": 14,
         "class": "Carnivore",
         "image": "item12",
         "ns_craft": {
@@ -233,7 +233,7 @@
         "type": "eat"
     },
     "small_fish": {
-        "act": 20,
+        "act": 16,
         "class": "Flying",
         "image": "item13",
         "ns_craft": {
@@ -264,7 +264,7 @@
         },
         "image": "item14",
         "rank": "uncommon",
-        "type": "journey_ac"
+        "type": "journey"
     },
     "tooling": {
         "abilities": {
@@ -273,7 +273,7 @@
         "act": 10,
         "image": "item15",
         "rank": "uncommon",
-        "type": "collecting_ac"
+        "type": "collecting"
     },
     "bear": {
         "abilities": {
@@ -281,7 +281,7 @@
         },
         "image": "item16",
         "rank": "uncommon",
-        "type": "sleep_ac"
+        "type": "sleep"
     },
     "therapeutic_mixture": {
         "buffs": {
@@ -295,9 +295,9 @@
     },
     "slice_pizza": {
         "buffs": {
-            "mood": 15
+            "mood": 13
         },
-        "act": 25,
+        "act": 8,
         "class": "ALL",
         "image": "item18",
         "ns_craft": {
@@ -325,7 +325,7 @@
         "buffs": {
             "mood": 20
         },
-        "act": 20,
+        "act": 16,
         "class": "ALL",
         "image": "item19",
         "rank": "common",
@@ -468,7 +468,7 @@
         },
         "image": "item29",
         "rank": "uncommon",
-        "type": "journey_ac"
+        "type": "journey"
     },
     "clothing_recipe": {
         "abilities": {
@@ -512,7 +512,7 @@
         },
         "image": "item31",
         "rank": "uncommon",
-        "type": "collecting_ac"
+        "type": "collecting"
     },
     "torch_recipe": {
         "abilities": {
@@ -607,7 +607,7 @@
         "type": "recipe"
     },
     "gourmet_herbs": {
-        "act": 45,
+        "act": 30,
         "class": "Herbivore",
         "image": "item35",
         "rank": "rare",
@@ -697,7 +697,7 @@
         "type": "recipe"
     },
     "salad": {
-        "act": 70,
+        "act": 53,
         "class": "Herbivore",
         "image": "item40",
         "rank": "rare",
@@ -777,7 +777,7 @@
         },
         "image": "item44",
         "rank": "uncommon",
-        "type": "game_ac"
+        "type": "game"
     },
     "hiking_bag": {
         "abilities": {
@@ -785,7 +785,7 @@
         },
         "image": "item45",
         "rank": "rare",
-        "type": "journey_ac"
+        "type": "journey"
     },
     "pouch_recipe": {
         "abilities": {
@@ -835,7 +835,7 @@
         "abilities": {
             "uses": 15
         },
-        "act": 6,
+        "act": 5,
         "class": "ALL",
         "image": "item47",
         "rank": "uncommon",
@@ -848,7 +848,7 @@
         "abilities": {
             "uses": 9
         },
-        "act": 25,
+        "act": 10,
         "class": "ALL",
         "image": "item48",
         "rank": "uncommon",
@@ -866,7 +866,7 @@
         "buffs": {
             "mood": 40
         },
-        "act": 75,
+        "act": 65,
         "class": "ALL",
         "image": "item50",
         "rank": "rare",
@@ -1308,7 +1308,7 @@
         "buffs": {
             "energy": 5
         },
-        "act": 10,
+        "act": 8,
         "class": "ALL",
         "image": "item68",
         "rank": "common",
@@ -1353,7 +1353,7 @@
         "type": "recipe"
     },
     "maize": {
-        "act": 10,
+        "act": 7,
         "class": "Herbivore",
         "image": "item71",
         "rank": "common",
@@ -1363,7 +1363,7 @@
         "buffs": {
             "mood": 25
         },
-        "act": 20,
+        "act": 17,
         "class": "ALL",
         "image": "item72",
         "rank": "uncommon",
@@ -1431,7 +1431,7 @@
     },
     "spices": {
         "buffs": {
-            "heal": -2
+            "heal": 1
         },
         "act": 5,
         "class": "Herbivore",
@@ -1440,7 +1440,7 @@
         "type": "eat"
     },
     "spicy_steak": {
-        "act": 50,
+        "act": 39,
         "class": "Carnivore",
         "image": "item77",
         "rank": "rare",
@@ -1480,14 +1480,14 @@
         "type": "recipe"
     },
     "banana": {
-        "act": 15,
+        "act": 11,
         "class": "Herbivore",
         "image": "item79",
         "rank": "common",
         "type": "eat"
     },
     "crab": {
-        "act": 50,
+        "act": 46,
         "class": "Flying",
         "image": "item80",
         "rank": "rare",
@@ -1507,9 +1507,9 @@
     "mushroom": {
         "buffs": {
             "heal": -2,
-            "mood": 10
+            "mood": 12
         },
-        "act": 15,
+        "act": 13,
         "class": "Herbivore",
         "image": "item82",
         "rank": "uncommon",
@@ -1519,7 +1519,7 @@
         "buffs": {
             "heal": 10
         },
-        "act": 50,
+        "act": 38,
         "class": "ALL",
         "image": "item83",
         "rank": "rare",
@@ -1665,7 +1665,7 @@
                 "type": "delete"
             },
             {
-                "item": "chocolate",
+                "item": "flour",
                 "type": "delete"
             },
             {
@@ -1705,7 +1705,7 @@
         "type": "recipe"
     },
     "curry": {
-        "act": 50,
+        "act": 46,
         "class": "ALL",
         "image": "item92",
         "rank": "rare",
@@ -1761,7 +1761,7 @@
         "type": "eat"
     },
     "bread": {
-        "act": 30,
+        "act": 27,
         "class": "ALL",
         "image": "item96",
         "rank": "uncommon",
@@ -1780,11 +1780,7 @@
         "image": "recipe",
         "materials": [
             {
-                "item": "grain",
-                "type": "delete"
-            },
-            {
-                "item": "grain",
+                "item": "flour",
                 "type": "delete"
             }
         ],
@@ -1805,7 +1801,7 @@
         "buffs": {
             "energy": 10
         },
-        "act": 60,
+        "act": 50,
         "class": "Flying",
         "image": "item99",
         "rank": "uncommon",
@@ -1815,7 +1811,7 @@
         "buffs": {
             "heal": 10
         },
-        "act": 60,
+        "act": 50,
         "class": "Carnivore",
         "image": "item100",
         "rank": "uncommon",
@@ -1834,11 +1830,7 @@
         "image": "recipe",
         "materials": [
             {
-                "item": "grain",
-                "type": "delete"
-            },
-            {
-                "item": "grain",
+                "item": "flour",
                 "type": "delete"
             },
             {
@@ -1866,11 +1858,7 @@
         "image": "recipe",
         "materials": [
             {
-                "item": "grain",
-                "type": "delete"
-            },
-            {
-                "item": "grain",
+                "item": "flour",
                 "type": "delete"
             },
             {
@@ -1898,11 +1886,7 @@
         "image": "recipe",
         "materials": [
             {
-                "item": "grain",
-                "type": "delete"
-            },
-            {
-                "item": "grain",
+                "item": "flour",
                 "type": "delete"
             },
             {
@@ -1918,7 +1902,7 @@
         "type": "recipe"
     },
     "bacon": {
-        "act": 30,
+        "act": 14,
         "class": "Carnivore",
         "image": "item104",
         "rank": "uncommon",
@@ -1929,6 +1913,10 @@
             "uses": 10
         },
         "create": [
+            {
+                "item": "bacon",
+                "type": "create"
+            },
             {
                 "item": "bacon",
                 "type": "create"
@@ -1992,7 +1980,7 @@
         "type": "recipe"
     },
     "sandwich": {
-        "act": 50,
+        "act": 31,
         "class": "ALL",
         "image": "item108",
         "rank": "rare",
@@ -2795,7 +2783,7 @@
         },
         "image": "item113",
         "rank": "rare",
-        "type": "collecting_ac"
+        "type": "collecting"
     },
     "stone_resurrection": {
         "image": "item113",
@@ -2821,56 +2809,173 @@
         "abilities": {
             "endurance": 100
         },
-        "image": "recipe",
+        "image": "item115",
         "rank": "rare",
-        "type": "collecting_ac"
+        "type": "collecting"
     },
     "basket": {
         "abilities": {
             "endurance": 100
         },
-        "image": "recipe",
+        "image": "basket",
         "rank": "rare",
-        "type": "collecting_ac"
+        "type": "collecting"
     },
     "rope": {
-        "image": "recipe",
+        "image": "rope",
         "rank": "common",
         "type": "material"
     },
     "wool": {
-        "image": "recipe",
+        "image": "wool",
         "rank": "common",
         "type": "material"
     },
-    "stylus": {
-        "image": "recipe",
+    "feather": {
+        "image": "feather",
         "rank": "common",
         "type": "material"
     },
     "book_forest": {
-        "image": "recipe",
+        "image": "book",
         "rank": "mystical",
         "type": "book"
     },
     "book_lost-islands": {
-        "image": "recipe",
+        "image": "book",
         "rank": "mystical",
         "type": "book"
     },
     "book_desert": {
-        "image": "recipe",
+        "image": "book",
         "rank": "mystical",
         "type": "book"
     },
     "book_mountains": {
-        "image": "recipe",
+        "image": "book",
         "rank": "mystical",
         "type": "book"
     },
     "book_magic-forest": {
-        "image": "recipe",
+        "image": "book",
         "rank": "mystical",
         "type": "book"
+    },
+    "bag_goodies": {
+        "abilities": {
+            "endurance": 100
+        },
+        "image": "bag_goodies",
+        "rank": "uncommon",
+        "type": "journey"
+    },
+    "rubik_cube": {
+        "abilities": {
+            "endurance": 100
+        },
+        "image": "rubik_cube",
+        "rank": "uncommon",
+        "type": "journey"
+    },
+    "lock_bag": {
+        "abilities": {
+            "endurance": 100
+        },
+        "image": "lock_bag",
+        "rank": "uncommon",
+        "type": "journey"
+    },
+    "skinning_knife": {
+        "abilities": {
+            "endurance": 100
+        },
+        "image": "skinning_knife",
+        "rank": "uncommon",
+        "type": "journey"
+    },
+    "flour": {
+        "image": "flour",
+        "rank": "uncommon",
+        "type": "material"
+    },
+    "flour_recipe": {
+        "abilities": {
+            "uses": 5
+        },
+        "create": [
+            {
+                "item": "flour",
+                "type": "create"
+            },
+            {
+                "item": "flour",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "grain",
+                "type": "delete"
+            },
+            {
+                "item": "grain",
+                "type": "delete"
+            },
+            {
+                "item": "grain",
+                "type": "delete"
+            },
+            {
+                "item": "grain",
+                "type": "delete"
+            }
+        ],
+        "rank": "rare",
+        "type": "recipe"
+    },
+    "croissant": {
+        "buffs": {
+            "energy": 3,
+            "mood": 19
+        },
+        "act": 17,
+        "class": "ALL",
+        "image": "null",
+        "rank": "rare",
+        "type": "eat"
+    },
+    "croissant_recipe": {
+        "abilities": {
+            "uses": 5
+        },
+        "create": [
+            {
+                "item": "croissant",
+                "type": "create"
+            }
+        ],
+        "image": "recipe",
+        "materials": [
+            {
+                "item": "flour",
+                "type": "delete"
+            },
+            {
+                "item": "chocolate",
+                "type": "delete"
+            },
+            {
+                "item": "chocolate",
+                "type": "delete"
+            },
+            {
+                "act": 10,
+                "item": "torch",
+                "type": "endurance"
+            }
+        ],
+        "rank": "rare",
+        "type": "recipe"
     }
 }
