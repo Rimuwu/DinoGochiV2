@@ -34,7 +34,7 @@ dinosaurs = mongo_client.bot.dinosaurs
 async def func(*args):
     print(args)
 
-@bot.message_handler(commands=['test'])
+@bot.message_handler(commands=['test'], is_admin=True)
 async def test_command(message: Message):
     user_id = message.from_user.id
     
@@ -47,7 +47,7 @@ async def test_command(message: Message):
     
     await ChooseStepState(func, user_id, user_id, 'ru', steps)
 
-@bot.message_handler(commands=['add_item', 'item_add'])
+@bot.message_handler(commands=['add_item', 'item_add'], is_admin=True)
 async def command(message):
     user = message.from_user
     if user.id in conf.bot_devs:
@@ -68,7 +68,7 @@ async def command(message):
         print(user.id, 'not in devs')
 
 
-@bot.message_handler(commands=['img_test'])
+@bot.message_handler(commands=['img_test'], is_admin=True)
 async def img(message):
     user = User( message.from_user.id)
     
@@ -82,7 +82,7 @@ async def img(message):
         print('end')
         
 
-@bot.message_handler(commands=['stress'])
+@bot.message_handler(commands=['stress'], is_admin=True)
 async def stress(message):
     user = User( message.from_user.id)
     dino = user.get_last_dino()
@@ -106,7 +106,7 @@ async def stress(message):
     print(statistics.mean(data))
     
     
-@bot.message_handler(commands=['egg'])
+@bot.message_handler(commands=['egg'], is_admin=True)
 async def egg(message):
     user = User( message.from_user.id)
     dino = user.get_last_dino()
@@ -115,7 +115,7 @@ async def egg(message):
     await bot.send_photo(message.from_user.id, img, '', 
                          )
     
-@bot.message_handler(commands=['auto'])
+@bot.message_handler(commands=['auto'], is_admin=True)
 async def test_options_pages(message):
     userid = message.from_user.id
     chatid = message.chat.id
@@ -126,12 +126,12 @@ async def test_options_pages(message):
     if dino:
         await notification_manager(dino._id, 'heal', 50)
 
-@bot.message_handler(commands=['st'])
+@bot.message_handler(commands=['st'], is_admin=True)
 async def st(message):
     
     get_now_statistic()
     
-@bot.message_handler(commands=['eat'])
+@bot.message_handler(commands=['eat'], is_admin=True)
 async def eat(message):
     
     text = ''
@@ -183,7 +183,7 @@ def upd(transmitted_data):
 async def ret(return_data, transmitted_data):
     print(return_data)
 
-@bot.message_handler(commands=['inv'])
+@bot.message_handler(commands=['inv'], is_admin=True)
 async def top_inv(message):
     
     userid = message.from_user.id
@@ -205,7 +205,7 @@ async def top_inv(message):
 
     await ChooseStepState(ret, userid, chatid, lang, steps)
 
-@bot.message_handler(commands=['add_all'])
+@bot.message_handler(commands=['add_all'], is_admin=True)
 async def add_all(message):
     
     userid = message.from_user.id
@@ -218,7 +218,7 @@ async def add_all(message):
     print('sedf')
     
 
-@bot.message_handler(commands=['journey'])
+@bot.message_handler(commands=['journey'], is_admin=True)
 async def add_all(message):
     
     userid = message.from_user.id
@@ -233,7 +233,7 @@ async def add_all(message):
         # print(f)
     print('----------------------')
 
-@bot.message_handler(commands=['event'])
+@bot.message_handler(commands=['event'], is_admin=True)
 async def ev(message):
     
     userid = message.from_user.id
@@ -252,7 +252,7 @@ async def ev(message):
 
 
 
-@bot.message_handler(commands=['all_events'])
+@bot.message_handler(commands=['all_events'], is_admin=True)
 async def ev(message):
     
     userid = message.from_user.id
