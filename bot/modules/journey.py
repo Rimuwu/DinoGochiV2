@@ -1,14 +1,15 @@
 import json
 from random import choice, choices, randint
+from time import time
 
 from bot.config import mongo_client
-from bot.modules.data_format import random_dict, encoder_text
-from bot.modules.dinosaur import end_journey, mutate_dino_stat
-from bot.modules.user import get_frineds
-from bot.modules.localization import t, get_data
+from bot.modules.data_format import encoder_text, random_dict, count_elements
+from bot.modules.dinosaur import Dino, end_journey, mutate_dino_stat
 from bot.modules.item import counts_items
-from time import time
+from bot.modules.localization import get_data, t
 from bot.modules.mood import add_mood
+from bot.modules.user import get_frineds, experience_enhancement
+from bot.modules.accessory import check_accessory, weapon_damage, armor_protection, downgrade_accessory
 
 journey = mongo_client.tasks.journey
 dinosaurs = mongo_client.bot.dinosaurs
@@ -49,7 +50,8 @@ events = {
         'mood_keys': { # Добавляемые ключи настроения
             'positive': ['journey_event'],
             'negative': ['journey_event']
-        }
+        },
+        'location_events': {"act": 1, "type": "static"}
     },
     "influences_eat": {
         'buffs': { # Эффекты на динозавра
@@ -129,7 +131,7 @@ events = {
         'mood_keys': { # Добавляемые ключи настроения
             'positive': ['journey_event'],
             'negative': ['journey_event']
-        }
+        },
     }, # Вызывает бой, исход зависит от результат
     "quest": {
         'actions': [
@@ -188,7 +190,7 @@ events = {
         'actions': ['random_event', 'joint_event'], # Выбирает из указаных событий если указаны
 
         'mood_keys': { # Добавляемые ключи настроения
-            'positive': ['journey_event']
+            'positive': ['meeting_friend']
         }
     }, # Влияет на харрактеристики обоих динозавров (Игра, Настроение, Здоровье, Энергия)
     "meeting_friend": {
@@ -202,7 +204,7 @@ events = {
             }
         },
         'mood_keys': { # Добавляемые ключи настроения
-            'positive': ['journey_event']
+            'positive': ['meeting_friend']
         }
     }, # Встрева с другом в той же локации, отображается у обоих
 
@@ -236,6 +238,11 @@ locations = {
             'rar': ['influences_game', 'coins'],
             'mys': ['item', 'coins', 'edit_location'],
             'leg': ['quest']
+        },
+
+        "location_events": {
+            "positive": ['sunshine', 'breeze'],
+            "negative": ['rain', 'cold_wind']
         }
     },
     "lost-islands": {
@@ -268,6 +275,11 @@ locations = {
             'rar': ['influences_game', 'battle'],
             'mys': ['item', 'coins', 'edit_location'],
             'leg': ['quest', 'forced_exit']
+        },
+
+        "location_events": {
+            "positive": ['sunshine', 'breeze'],
+            "negative": ['rain', 'cold_wind']
         }
     },
     "desert": {
@@ -297,6 +309,10 @@ locations = {
             'rar': [],
             'mys': [],
             'leg': ['forced_exit']
+        },
+        "location_events": {
+            "positive": [],
+            "negative": []
         }
     },
     "mountains": {
@@ -326,6 +342,10 @@ locations = {
             'rar': [],
             'mys': [],
             'leg': ['forced_exit']
+        },
+        "location_events": {
+            "positive": [],
+            "negative": []
         }
     },
     "magic-forest": {
@@ -355,6 +375,10 @@ locations = {
             'rar': [],
             'mys': [],
             'leg': ['forced_exit']
+        },
+        "location_events": {
+            "positive": [],
+            "negative": []
         }
     },
 }
@@ -367,8 +391,7 @@ chance = {
 rarity_lvl = [0, 'com', 'unc', 'rar', 'mys', 'leg']
 
 
-def create_event(location: str, worldview: str = '', rarity: int = 0,
-                 event: str = ''):
+def create_event(location: str, worldview: str = '', rarity: int = 0, event: str = ''):
     """ Подготавляивает данные, рандомизируя их
     """
     # Случайная позитивность
@@ -389,8 +412,7 @@ def create_event(location: str, worldview: str = '', rarity: int = 0,
     # формирование данны квеста для дальнейшей обработки
     event_data = events[event]
     danger = loc_data['danger']
-    data = {'type': event, 'worldview': worldview, 'dino_edit': {}, 
-            'location': location}
+    data = {'type': event, 'worldview': worldview, 'dino_edit': {}, 'location': location}
 
     if 'buffs' in event_data:
         for key in event_data['buffs']:
@@ -427,7 +449,8 @@ def create_event(location: str, worldview: str = '', rarity: int = 0,
             loot = JOURNEY['mobs'][mob]['loot']
 
             data['mobs'].append(
-                {'key': mob, 'hp': hp, 'damage': damage, 'loot': loot}
+                {'key': mob, 'hp': hp, 'damage': damage, 
+                 'loot': loot}
             )
 
     if 'coins' in event_data:
@@ -435,10 +458,18 @@ def create_event(location: str, worldview: str = '', rarity: int = 0,
         data['coins'] = data['coins'] + int(
             (data['coins'] / 2) * (danger - 1.0))
 
+    if 'location_events' in event_data:
+        data['location_events'] = []
+        col = random_dict(
+            event_data['location_events'])
+
+        for _ in range(col):
+            ev = choice(loc_data['location_events'][worldview])
+            data['location_events'].append(ev)
+
     return data
 
-async def random_event(dinoid, location: str, ignored_events: list=[], 
-                       friend_dino = None):
+async def random_event(dinoid, location: str, ignored_events: list=[], friend_dino = None):
     """ Создаёт рандомное событие
     """
     event, res = {}, None
@@ -465,14 +496,22 @@ async def random_event(dinoid, location: str, ignored_events: list=[],
 async def activate_event(dinoid, event: dict, friend_dino = None):
     """ При соответствии условий, создаёт событие
     """
-    journey_base = journey.find_one({'dino_id': dinoid}) 
+    journey_base = journey.find_one({'dino_id': dinoid})
+    dino = Dino(dinoid)
     active_consequences = True
     event_data = events[event['type']]
+
     data = {'type': event['type'], 'location': event['location'], 
             'worldview': event['worldview']}
     if journey_base:
-        if 'friend' in event: data['friend'] = event['friend']
+        end_time = journey_base['journey_end'] - int(time())
 
+        # Занесение статичных данных
+        if 'friend' in event: data['friend'] = event['friend']
+        if 'location_events' in event: 
+            data['location_events'] = event['location_events']
+
+        # Условия и действия.
         if 'conditions' in event_data:
             conditions = event_data['conditions']
 
@@ -511,7 +550,7 @@ async def activate_event(dinoid, event: dict, friend_dino = None):
                     if act_dct['type'] == 'random_action':
                         rand_list = choice(act_dct['data'])
                         for i in rand_list: actions.append(i)
-                    
+
                     if act_dct['type'] == 'random_event':
                         rand_list = choice(act_dct['data'])
                         new_event = create_event(data['location'], data['worldview'], event=rand_list)
@@ -534,12 +573,65 @@ async def activate_event(dinoid, event: dict, friend_dino = None):
                 await random_event(dinoid, journey_base['location'], ['joint_event', 'joint_activity', 'meeting_friend'], friend_dino)
                 return True
 
-        if 'dino_edit' in event and not event['dino_edit']: 
-            del event['dino_edit']
-
         if friend_dino: data['friend'] = friend_dino
 
+        # Проверка на аксессуары
+        if 'location_events' in event and \
+                event['worldview'] == 'negative':
+            eve_list = event['location_events']
+
+            if 'rain' in eve_list:
+                acs_res = await check_accessory(dino, 'cloak', True)
+                if acs_res:
+                    event['location_events'].remove('rain')
+                    event['location_events'].append('anti_rain')
+
+            if 'cold_wind' in eve_list:
+                acs_res = await check_accessory(dino, 'leather_clothing', True)
+                if acs_res:
+                    event['location_events'].remove('cold_wind')
+                    event['location_events'].append('anti_cold_wind')
+
+        # Блок выполнения изменений, монеты, предметы и тд
         if active_consequences:
+            if 'mobs' in event:
+                dino_hp, loot, status = 0, [], True
+                data['mobs'] = []
+
+                damage = await weapon_damage(dino, True)
+                have_acs = await check_accessory(dino, 'skinning_knife', True)
+                protection = await armor_protection(dino, False)
+
+                for mob in event['mobs']:
+                    dam_col = mob['hp'] // damage
+                    data['mobs'].append(mob['key'])
+
+                    if (dam_col * mob['damage']) > 0:
+                        await downgrade_accessory(dino, 'armor')
+                        dino_hp -= (dam_col * mob['damage']) - protection
+
+                    if dino.stats['heal'] - dino_hp > 10:
+                        if have_acs: chance = 1, 3
+                        else: chance = 1, 2
+
+                        for it in mob['loot']:
+                            if randint(*chance) == 2:
+                                loot.append(it)
+                    else:
+                        status = False
+                        break
+
+                if status:
+                    event['worldview'] = 'positive'
+                    if 'items' in event:
+                        for i in loot: event['items'].append(i)
+                    else: event['items'] = loot
+                    event['dino_edit']['heal'] = dino_hp
+
+                else: 
+                    event['worldview'] = 'negative'
+                    event['dino_edit']['heal'] = dino.stats['heal'] - 10
+
             if 'coins' in event:
                 journey_base['coins'] += event['coins']
                 data['coins'] = event['coins']
@@ -551,29 +643,41 @@ async def activate_event(dinoid, event: dict, friend_dino = None):
             if 'dino_edit' in event:
                 data['dino_edit'] = event['dino_edit']
                 for key, value in event['dino_edit'].items():
+                    edit = True
 
-                    dino = dinosaurs.find_one({'_id': dinoid})
-                    if dino: await mutate_dino_stat(dino, key, value)
+                    if key == 'game' and await check_accessory(dino, 'rubik_cube', True) and event['worldview'] == 'negative': edit = False
+
+                    if key == 'eat' and await check_accessory(dino, 'bag_goodies', True) and event['worldview'] == 'negative': edit = False
+
+                    if dino and edit: 
+                        await mutate_dino_stat(dino.__dict__, key, value)
 
             if 'items' in event:
                 data['items'] = event['items'] 
                 for i in data['items']:
-                    journey.update_one({'_id': journey_base['_id']}, 
-                                    {'$push': {'items': i}})
+                    journey.update_one({'_id': journey_base['_id']}, {'$push': {'items': i}})
 
             if 'mood_keys' in event:
-                for i in event['mood_keys']: add_mood(dinoid, i, 1, 1800)
+                if data['worldview'] == 'positive':
+                    unit = 1
+                else: unit = -1
+                if 'location_events' in event:
+                    for i in event['location_events']:
+                        add_mood(dinoid, i, unit, end_time)
+                else:
+                    for i in event['mood_keys']: 
+                        add_mood(dinoid, i, unit, end_time)
 
             if 'remove_item' in event:
                 col = event['remove_item']
                 items: list = journey_base['items']
-                data['items'] = []
+                data['remove_items'] = []
 
                 for _ in range(col):
                     if items: 
                         it = choice(items)
                         items.remove(it)
-                        data['items'].append(it)
+                        data['remove_items'].append(it)
                     else: break
 
                 journey.update_one({'_id': journey_base['_id']}, 
@@ -601,41 +705,59 @@ def generate_event_message(event: dict, lang: str, encode: bool = False):
     text = choice(text_list)
     
     if encode: text = encoder_text(text, 4)
-    add = ''
+    add_list = []
 
-    if 'coins' in event: add += f'{event["coins"]}{signs["coins"]}'
+    if 'coins' in event:
+        if event['coins'] != 0: add_list.append(f'{event["coins"]}{signs["coins"]}')
+
     if 'dino_edit' in event:
         for i in ['heal', 'game', 'energy', 'eat']:
             if i in event['dino_edit']:
-                if worldview == 'positive': add = '+'
-                add += f'{event["dino_edit"][i]}{signs[i]} '
-        add += ' '
+                if event["dino_edit"][i] != 0:
+                    if worldview == 'positive': add = '+'
+                    else: add = ''
+                    add_list.append(f'{add}{event["dino_edit"][i]}{signs[i]}')
+
+    if 'location_events' in event:
+        for i in event['location_events']:
+            add_list.append(f'{signs[i]}')
 
     if 'items' in event:
-        if worldview == 'positive': add = ' +'
-        else: add = ' -'
-
-        add += counts_items(event['items'], lang) + ' '
+        if event['items']:
+            add_list.append('+' + counts_items(event['items'], lang))
+    
+    if 'remove_items' in event:
+        if event['remove_items']:
+            add_list.append('-' + counts_items(event['items'], lang))
 
     if 'old_location' in event:
         loc = event['old_location']
         old_loc = get_data(f'journey_start.locations.{location}', lang)['name']
         loc_now = get_data(f'journey_start.locations.{loc}', lang)['name']
 
-        add += f'{old_loc} -> {loc_now}'
+        add_list.append(f'{old_loc} -> {loc_now}')
 
     if 'friend' in event:
         friend_dino = dinosaurs.find_one({'_id': event['friend']})
-        if friend_dino: add += f'🦕 {friend_dino["name"]} '
+        if friend_dino: add_list.append(f'🦕 {friend_dino["name"]}')
 
-    if 'cancel' in event: add += t('journey.cancel', lang)
+    if 'mobs' in event:
+        md = get_data('mobs', lang)
+        mobs_names = []
+        for i in event['mobs']:
+            mobs_names.append(f'{md[i]["emoji"]} {md[i]["name"]}')
+        add_list.append(count_elements(mobs_names))
 
-    if add: text += f'\n<code>{add}</code>'
+    if 'cancel' in event: add_list.append(t('journey.cancel', lang))
+
+    if add_list: 
+        add_text = ', '.join(add_list)
+        text += f'\n<code>{add_text}</code>'
     # text += f'{location}_{event_type}_{worldview}'
     return text
 
 def all_log(logs: list, lang: str):
-    """ Генерирует весь лог событий, возвращает список с сообщениям макс ~1500 символов
+    """ Генерирует весь лог событий, возвращает список с сообщениям макс ~1700 символов
     """
     text, n, n_message = '', 0, 0
     messages = ['']
@@ -644,7 +766,7 @@ def all_log(logs: list, lang: str):
         n += 1
         text = f'{n}. {generate_event_message(event, lang)}\n\n'
 
-        if len(messages[n_message]) >= 1500:
+        if len(messages[n_message]) >= 1700:
             messages.append('')
             n_message += 1
         messages[n_message] += text
