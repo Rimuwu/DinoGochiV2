@@ -126,6 +126,8 @@
 
                 "ac_sleep": "🌙", "ac_game": "🎮",
                 "ac_collecting": "🌿", "ac_journey": "🎍",
+                "ac_weapon": "⚔", "ac_armor": "🛡", 
+                "ac_backpack": "🎒",
 
                 "activ_journey": "📙", "activ_game": "🏀",
                 "activ_hunting": "🎯"
@@ -141,6 +143,8 @@
 
                 "ac_sleep": "🕯", "ac_game": "✨",
                 "ac_collecting": "🌿",  "ac_journey": "🌨",
+                "ac_weapon": "⚔", "ac_armor": "🛡", 
+                "ac_backpack": "🎒",
 
                 "activ_journey": "📙", "activ_game": "🏀",
                 "activ_hunting": "🎯"
@@ -156,6 +160,8 @@
 
                 "ac_sleep": "🌙", "ac_game": "🌾",
                 "ac_collecting": "🌻", "ac_journey": "🏔",
+                "ac_weapon": "⚔", "ac_armor": "🛡", 
+                "ac_backpack": "🎒",
 
                 "activ_journey": "📙", "activ_game": "🏀",
                 "activ_hunting": "🎯"
@@ -171,6 +177,8 @@
 
                 "ac_sleep": "🎗", "ac_game": "🌾",
                 "ac_collecting": "🫐",  "ac_journey": "🏔",
+                "ac_weapon": "⚔", "ac_armor": "🛡", 
+                "ac_backpack": "🎒",
 
                 "activ_journey": "📙", "activ_game": "🏀",
                 "activ_hunting": "🎯"
@@ -186,6 +194,8 @@
 
                 "ac_sleep": "🍂", "ac_game": "🍁",
                 "ac_collecting": "🍊", "ac_journey": "🏔",
+                "ac_weapon": "⚔", "ac_armor": "🛡", 
+                "ac_backpack": "🎒",
 
                 "activ_journey": "📙", "activ_game": "🏀",
                 "activ_hunting": "🎯"
