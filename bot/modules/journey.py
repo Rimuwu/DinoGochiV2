@@ -216,11 +216,11 @@ locations = {
     "forest": {
         "danger": 1.0,
         "items": {
-            'com': ['jar_honey', 'cookie', 'blank_piece_paper'],
+            'com': ['jar_honey', 'cookie', 'blank_piece_paper', 'feather'],
             'unc': ['timer', 'therapeutic_mixture', 'sweet_pancakes'],
-            'rar': ['bento_recipe', 'candy_recipe', 'drink_recipe'],
+            'rar': ['bento_recipe', 'candy_recipe', 'drink_recipe', 'tooling'],
             'mys': ['salad_recipe', 'torch_recipe', 'popcorn_recipe'],
-            'leg': ['soup_recipe', 'gourmet_herbs']
+            'leg': ['soup_recipe', 'gourmet_herbs', 'board_games', 'book_forest', 'flour_recipe']
         },
         "positive": {
             'com': ['influences_mood', 'without_influence', 
@@ -254,10 +254,10 @@ locations = {
         },
         "items": {
             'com': ['slice_pizza', 'fish_oil', 'twigs_tree', 'skin'],
-            'unc': [],
-            'rar': ['curry_recipe', 'bread_recipe'],
-            'mys': [],
-            'leg': ['taco_recipe', 'sandwich_recipe', 'hot_chocolate_recipe']
+            'unc': ['tooling', 'therapeutic_mixture', 'sweet_pancakes'],
+            'rar': ['curry_recipe', 'bread_recipe', 'tea_recipe', 'flour_recipe', 'timer', 'blank_piece_paper'],
+            'mys': ['bear', 'clothing_recipe', 'meat_recipe'],
+            'leg': ['taco_recipe', 'sandwich_recipe', 'hot_chocolate_recipe', 'book_lost-islands']
         },
         "positive": {
             'com': ['influences_mood', 'without_influence', 
@@ -274,7 +274,7 @@ locations = {
             'unc': ['influences_energy', 'coins'],
             'rar': ['influences_game', 'battle'],
             'mys': ['item', 'coins', 'edit_location'],
-            'leg': ['quest', 'forced_exit']
+            'leg': ['quest']
         },
 
         "location_events": {
@@ -285,11 +285,11 @@ locations = {
     "desert": {
         "danger": 1.4,
         "items": {
-            'com': [],
-            'unc': [],
-            'rar': [],
-            'mys': [],
-            'leg': []
+            'com': ['chocolate', 'candy', 'dango', 'flour_recipe', 'rope'],
+            'unc': ['juice_recipe', 'hot_chocolate_recipe', 'cake_recipe', 'tooling'],
+            'rar': ['pouch_recipe', 'sword_recipe', 'onion_recipe', 'arrow_recipe'],
+            'mys': ['backpack_recipe', 'shield_recipe', 'pickaxe_recipe'],
+            'leg': ['steak_recipe', 'broth_recipe', 'sushi_recipe', 'book_desert']
         },
         'mobs': {
             'mobs_hp': {"min": 1, "max": 5, "type": "random"},
@@ -297,32 +297,35 @@ locations = {
             'mobs': ['lion', 'tiger', 'crocodile', 'snake', 'rhino', 'elephant', 'gorilla', 'camel', 'puma', 'hyena', 'hippo', 'panther', 'coyote', 'giraffe', 'jackal', 'leopard', 'lynx', 'meerkat', 'zebra', 'rattlesnake', 'scorpion']
         },
         "positive": {
-            'com': [],
-            'unc': [],
-            'rar': [],
-            'mys': [],
-            'leg': []
+            'com': ['influences_mood', 'without_influence', 
+                  'influences_eat', 'influences_game'],
+            'unc': ['influences_health', 'influences_energy',
+                   'joint_activity'],
+            'rar': ['coins', 'joint_event', 'meeting_friend', 'battle'],
+            'mys': ['trade_item', 'item'],
+            'leg': ['quest', 'coins']
         },
         "negative": {
-            'com': [],
-            'unc': [],
-            'rar': [],
-            'mys': [],
-            'leg': ['forced_exit']
+            'com': ['influences_mood', 'without_influence', 
+                  'influences_eat'],
+            'unc': ['influences_energy', 'coins'],
+            'rar': ['influences_game', 'battle'],
+            'mys': ['item', 'coins', 'edit_location'],
+            'leg': ['forced_exit', 'quest']
         },
         "location_events": {
-            "positive": [],
-            "negative": []
+            "positive": ['breeze'],
+            "negative": ['drought']
         }
     },
     "mountains": {
         "danger": 1.8,
         "items": {
-            'com': [],
-            'unc': [],
-            'rar': [],
-            'mys': [],
-            'leg': []
+            'com': ['sandwich', 'dango', 'mushroom', 'therapeutic_mixture'],
+            'unc': ['bacon_recipe', 'bento_recipe', 'sandwich_recipe'],
+            'rar': ['berry_pie_recipe', 'fish_pie_recipe', 'meat_pie_recipe'],
+            'mys': ['basket_recipe', 'net_recipe', 'rod_recipe'],
+            'leg': ['mysterious_egg', 'unusual_egg', 'rare_egg', 'mystic_egg', 'legendary_egg', 'book_mountains']
         },
         'mobs': {
             'mobs_hp': {"min": 2, "max": 6, "type": "random"},
@@ -330,32 +333,34 @@ locations = {
             'mobs': ['walrus', 'seal', 'reindeer', 'polar_bear', 'penguin', 'moose', 'komodo_dragon', 'goat', 'eagle', 'bear_cub', 'wolf', 'bear', 'owl', 'rabbit', 'weasel', 'grizzly', 'cougar']
         },
         "positive": {
-            'com': [],
-            'unc': [],
-            'rar': [],
-            'mys': [],
-            'leg': []
+            'com': ['influences_mood', 'without_influence', 
+                  'influences_eat', 'influences_game'],
+            'unc': ['influences_health', 'influences_energy',
+                   'joint_activity', 'battle'],
+            'rar': ['coins', 'joint_event', 'meeting_friend', 'battle', 'item'],
+            'mys': ['trade_item', 'item'],
+            'leg': ['quest', 'coins']
         },
         "negative": {
-            'com': [],
-            'unc': [],
-            'rar': [],
-            'mys': [],
-            'leg': ['forced_exit']
+            'com': ['influences_mood', 'influences_eat'],
+            'unc': ['influences_energy', 'coins'],
+            'rar': ['influences_game', 'battle'],
+            'mys': ['item', 'coins', 'edit_location'],
+            'leg': ['forced_exit', 'quest']
         },
         "location_events": {
-            "positive": [],
-            "negative": []
+            "positive": ['sunshine'],
+            "negative": ['snowfall', 'cold_wind']
         }
     },
     "magic-forest": {
         "danger": 2.0,
         "items": {
-            'com': [],
-            'unc': [],
-            'rar': [],
-            'mys': [],
-            'leg': []
+            'com': ['tea', 'tooling', 'bear', 'rope', 'gourmet_herbs'],
+            'unc': ['croissant_recipe', 'therapeutic_mixture'],
+            'rar': ['bag_goodies', 'rubik_cube', 'lock_bag', 'skinning_knife'],
+            'mys': ['chest_food', 'recipe_chest', 'magic_stone'],
+            'leg': ['mysterious_egg', 'unusual_egg', 'rare_egg', 'mystic_egg', 'legendary_egg', 'book_magic-forest']
         },
         'mobs': {
             'mobs_hp': {"min": 1, "max": 10, "type": "random"},
@@ -363,22 +368,24 @@ locations = {
             'mobs': ['spider', 'fox', 'raccoon', 'deer', 'bat', 'dragon', 'falcon', 'fennec_fox', 'hamster', 'hedgehog', 'lemur', 'lobster', 'meerkat', 'mole', 'red_panda', 'porcupine']
         },
         "positive": {
-            'com': [],
-            'unc': [],
-            'rar': [],
-            'mys': [],
-            'leg': []
+            'com': ['influences_mood', 'without_influence', 
+                  'influences_eat', 'influences_game'],
+            'unc': ['influences_health', 'influences_energy',
+                   'joint_activity', 'battle'],
+            'rar': ['coins', 'joint_event', 'meeting_friend', 'battle', 'item'],
+            'mys': ['trade_item', 'item', 'quest'],
+            'leg': ['quest', 'coins']
         },
         "negative": {
-            'com': [],
-            'unc': [],
-            'rar': [],
-            'mys': [],
-            'leg': ['forced_exit']
+            'com': ['influences_mood', 'influences_eat'],
+            'unc': ['influences_energy', 'edit_location', 'coins'],
+            'rar': ['influences_game', 'battle'],
+            'mys': ['item', 'coins', 'edit_location'],
+            'leg': ['forced_exit', 'quest']
         },
         "location_events": {
-            "positive": [],
-            "negative": []
+            "positive": ['magic_light', 'breeze', 'sunshine', 'magic_animal'],
+            "negative": ['rain', 'cold_wind']
         }
     },
 }
@@ -663,7 +670,10 @@ async def activate_event(dinoid, event: dict, friend_dino = None):
                 else: unit = -1
                 if 'location_events' in event:
                     for i in event['location_events']:
-                        add_mood(dinoid, i, unit, end_time)
+                        mood_res = add_mood(dinoid, i, unit, end_time)
+                        if not mood_res:
+                            mood_res = add_mood(dinoid, 'journey_event', 
+                                                unit, end_time)
                 else:
                     for i in event['mood_keys']: 
                         add_mood(dinoid, i, unit, end_time)
