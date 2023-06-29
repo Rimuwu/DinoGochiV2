@@ -624,6 +624,22 @@
             },
             "potato": {
                 "name": "🥔 Potato"
+            },
+            "basket_recipe": {
+                "name": " 📜 Basket recipe",
+                "description": "Recipe for creating a basket for collecting food."
+            },
+            "net_recipe": {
+                "name": "📜 Network recipe",
+                "description": "Recipe for creating a network for hunting."
+            },
+            "rod_recipe":  {
+                "name": "📜 Fishing rod recipe",
+                "description": "Recipe for creating fishing rods."
+            },
+            "meow_book": {
+                "name": "📔 Meow edition",
+                "description": "Meow meow, meow meow meow... Meow!"
             }
         },
         "notifications": {
@@ -1036,11 +1052,11 @@
             "text_ost": "Left:",
             "rare_name": "Rarity:",
             "time_position": [
-                465,
+                350,
                 220
             ],
             "rare_position": [
-                465,
+                400,
                 280
             ],
             "incubation_text": "🥚 | The egg is incubated, remaining: {time_end}",
@@ -1051,9 +1067,9 @@
                 "journey": "Travels 🎴",
                 "collecting": "I collect food 🥞",
                 "dungeon": "I conquer the dungeon 🗻",
-                "freezing": "I am frozen❄",
-                "kindergarten": "In kindergarten🏡",
-                "hysteria": "I am hysterics!💥"
+                "freezing": "I am frozen ❄",
+                "kindergarten": "In kindergarten 🏡",
+                "hysteria": "I am hysterics! 💥"
             },
             "replics": {
                 "heal": {
@@ -1942,7 +1958,11 @@
             "breeze": "Pleasant breeze",
             "rain": "Got caught in the rain",
             "cold_wind": "A cold wind blew",
-            "meeting_friend": "Met friends"
+            "meeting_friend": "Met friends",
+            "drought": "Dry air",
+            "snowfall": "Got caught in a snowfall",
+            "magic_light": "Saw the magic light",
+            "magic_animal": "Saw a magical animal"
         },
         "journey_start": {
             "ask_loc": "🌳| Choose where the dinosaur will go this time",
@@ -3208,13 +3228,16 @@
         },
         "books": {
             "book_forest": [
-                "Recipes Book, page 1",
-                "Recipes Book page 2"
-            ],
-            "book_lost-islands": [],
-            "book_desert": [],
-            "book_mountains": [],
-            "book_magic-forest": []
+                "An ancient and mighty forest with giant trees, so they say about this forest...\n, Fredrik Al Johnson will check it myself!",
+                "26.08.3--7 15:38: I just went into the forest, it looks like just a forest, except for huge trees!",
+                "26.08.3--7 19:12: Saw a beautiful sunset, went to look for a place to rest.\n\n26.08.2--7 21:01: During the whole day I didn't see any dangerous animals, only trees, trees, trees.",
+                "27.08.3--7 13:59: Crossed a stormy river, almost lost all his belongings.\n\n27.08.3--7: I lost my watch somewhere, now I can't write the time, but it's getting dark.\n\n27.08.3--7: I see a light in the distance, I'll try to get closer.", "27.08.3--7: I can't believe my eyes, this is what... Dinosaurs?! Am I sure I'm not crazy?", "I'm writing fast, one of them felt me, I'm running away.", "_Null_", "_Null_", "_Ink drops_", "28.08 +- 2 days: I do not know how long I've been sitting here, someone is constantly walking over me, I haven't replenished for a long time supplies of water and food, I'll have to jump soon. I'm not sure I can resist the DINOSAURS (YES, IT'S DEFINITELY THEM!)", "I'll leave him lying here, I hope I'll come back here.", "_Null_", "_Null_", "_Null_", "_Null_", "_Null_"
+                ],
+            "book_lost-islands": ["Empty"],
+            "book_desert": ["Empty"],
+            "book_mountains": ["Empty"],
+            "book_magic-forest": ["Empty"],
+            "meow_book": ["Meow meow, meow meow meow. Meow?", "Meow! Meooow, meow, meow. Meow, meow, meow.", "Meow, meow, meow. Meow meow, meow meow meow. Meow? Meow! Meooow, meow, meow. Meow, meow, meow.", "Meow meow, meow meow meow. Meow? Meow! Meooow, meow, meow.", "Meow, meow, meow. Meow meow, meow meow meow. Meow? Meow! Meooow, meow, meow. Meow, meow, meow.", "meow", "Meow meow, meow meow meow. Meow?", "Meow! Meooow, meow, meow. Meow, meow, meow.", "Meow, meow, meow. Meow meow, meow meow meow. Meow? Meow! Meooow, meow, meow. Meow, meow, meow.", "meow...", "Meow meow, meow meow meow. Meow? Meow! Meooow, meow, meow.", "Meow, meow, meow. Meow meow, meow meow meow. Meow? Meow! Meooow, meow, meow. Meow, meow, meow.", "Meow meow, meow meow meow. Meow?", "Meow! Meooow, meow, meow. Meow, meow, meow.", "Meow meow, meow meow meow. Meow? Meow! Meooow, meow, meow.", "Meow, meow, meow. Meow meow, meow meow meow. Meow? Meow! Meooow, meow, meow. Meow, meow, meow.", "Meow, meow, meow. Meow meow, meow meow meow. Meow? Meow! Meooow, meow, meow. Meow, meow, meow.", "Meow meow, meow meow meow. Meow?", "Meow! Meooow, meow, meow. Meow, meow, meow.", "meow", "Meow meow, meow meow meow. Meow? Meow! Meooow, meow, meow.", "Meow, meow, meow. Meow meow, meow meow meow. Meow? Meow! Meooow, meow, meow. Meow, meow, meow.", "Meow meow, meow meow meow. Meow?", "Meow! Meooow, meow, meow. Meow, meow, meow.", "Meow meow, meow meow meow. Meow? Meow! Meooow, meow, meow.", "Meow, meow, meow. Meow meow, meow meow meow. Meow? Meow! Meooow, meow, meow. Meow, meow, meow.", "Meow meow, meow meow meow. Meow?", "Meow! Meooow, meow, meow. Meow, meow, meow.", "Meow meow, meow meow meow. Meow? Meow! Meooow, meow, meow.", "Meow, meow, meow. Meow meow, meow meow meow. Meow? Meow! Meooow, meow, meow. Meow, meow, meow.", "meow", "meow", "meow", "meow", "Special for Cat`s"]
         },
         "not_found_key": "❌ | The language key of the command was not detected, some error may have occurred, or you have changed the language of the application. Enter /start to enter the main menu.",
         "journey_last_event": {
