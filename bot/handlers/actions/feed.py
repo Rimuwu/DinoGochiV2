@@ -27,7 +27,7 @@ async def adapter_function(return_dict, transmitted_data):
     
     if send_status:
         await bot.send_message(chatid, return_text, parse_mode='Markdown', reply_markup=m(userid, 'last_menu', lang))
-        
+
 async def inventory_adapter(item, transmitted_data):
     userid = transmitted_data['userid']
     chatid = transmitted_data['chatid']
@@ -35,12 +35,13 @@ async def inventory_adapter(item, transmitted_data):
     dino: Dino = transmitted_data['dino']
 
     transmitted_data['item'] = item
-    
+
     limiter = 100 # Ограничение по количеству использований за раз
     item_data = get_item_data(item['item_id'])
     item_name = get_name(item['item_id'], lang)
-    
+
     base_item = items.find_one({'owner_id': userid, 'items_data': item})
+
     if base_item:
         if 'abilities' in item.keys() and 'uses' in item['abilities']:
             max_count = base_item['count'] * base_item['items_data']['abilities']['uses']
