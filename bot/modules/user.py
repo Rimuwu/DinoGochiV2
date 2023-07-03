@@ -110,7 +110,7 @@ class User:
 
         print(f'userid: {self.userid}')
         print(f'DATA: {self.__dict__}')
-    
+
     def update(self, update_data) -> None:
         """
         {"$set": {'coins': 12}} - установить
@@ -123,7 +123,7 @@ class User:
         """Удаление юзера и всё с ним связанное из базы.
         """
 
-        for collection in [items, products, dead_dinos, incubations, daily_award_data]:
+        for collection in [items, products, dead_dinos, incubations]:
             collection.delete_many({'owner_id': self.userid})
 
         for collection in [referals]:

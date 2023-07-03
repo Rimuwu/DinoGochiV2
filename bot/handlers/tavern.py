@@ -119,6 +119,7 @@ async def daily_award(callback: CallbackQuery):
         key, add_bonus = 'lvl1', check_name(callback.from_user)
         if res: key = 'lvl2'
 
+        items = []
         items = award_data[key]['items']
         coins = award_data[key]['coins']
         if add_bonus:
@@ -126,7 +127,7 @@ async def daily_award(callback: CallbackQuery):
             coins += award_data['bonus']['coins']
 
         str_items = counts_items(items, lang)
-        strtime = seconds_to_str(sec - int(time()))
+        strtime = seconds_to_str(sec - int(time()), lang)
 
         text = t('daily_award.use', lang, time=strtime, 
                  items=str_items, coins=coins)
