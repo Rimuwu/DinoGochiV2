@@ -3,7 +3,7 @@ from telebot.types import (CallbackQuery, InlineKeyboardButton,
 
 from bot.config import mongo_client
 from bot.exec import bot
-from bot.modules.localization import get_data, t
+from bot.modules.localization import get_data, t, get_lang
 from bot.modules.currency import get_all_currency, get_products
 from bot.modules.item import counts_items
 from bot.modules.data_format import seconds_to_str
@@ -13,9 +13,9 @@ users = mongo_client.bot.users
 @bot.message_handler(text='commands_name.about.team', 
                      is_authorized=True)
 async def team(message: Message):
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
     chatid = message.chat.id
-    
+
     lang_text = t('language_name', lang)
     author_loc = t('localization_author', lang)
     
@@ -27,7 +27,7 @@ async def team(message: Message):
 @bot.message_handler(text='commands_name.about.links', 
                      is_authorized=True)
 async def links(message: Message):
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
     chatid = message.chat.id
 
     await bot.send_message(chatid, t('about_menu.links', lang), parse_mode='Markdown')
@@ -51,15 +51,15 @@ def main_support_menu(lang: str):
             text=key, 
             callback_data=name
         ) for key, name in buttons.items()])
-    
+
     return image, text, markup_inline
 
 @bot.message_handler(text='commands_name.about.support', 
                      is_authorized=True)
 async def support(message: Message):
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
     chatid = message.chat.id
-    
+
     image, text, markup_inline = main_support_menu(lang)
     
     await bot.send_photo(chatid, image, text, reply_markup=markup_inline, parse_mode='Markdown')
@@ -67,9 +67,9 @@ async def support(message: Message):
 @bot.message_handler(text='commands_name.about.faq', 
                      is_authorized=True)
 async def faq(message: Message):
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
     chatid = message.chat.id
-    
+
     faq_data = get_data('faq', lang)
     buttons = faq_data['inline_buttons']
 
@@ -87,11 +87,11 @@ async def faq(message: Message):
 async def faq_buttons(call: CallbackQuery):
     data = call.data.split()[1]
     chatid = call.message.chat.id
-    lang = call.from_user.language_code
-    
+    lang = get_lang(call.from_user.id)
+
     text = t(f'faq.{data}', lang)
     await bot.send_message(chatid, text, parse_mode='Markdown')
-    
+
 @bot.callback_query_handler(func=lambda call: 
     call.data.startswith('support'))
 async def support_buttons(call: CallbackQuery):
@@ -102,9 +102,9 @@ async def support_buttons(call: CallbackQuery):
 
     chatid = call.message.chat.id
     user_id = call.from_user.id
-    lang = call.from_user.language_code
+    lang = get_lang(call.from_user.id)
     messageid = call.message.id
-    
+
     if action == "main":
         image, text, markup_inline = main_support_menu(lang)
         
