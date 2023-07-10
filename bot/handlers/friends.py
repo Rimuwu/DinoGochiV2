@@ -85,7 +85,7 @@ async def add_friend_end(friendid: int, transmitted_data: dict):
         await user_notification(friendid, 'send_request', lang, user_name=user_name)
 
 @bot.callback_query_handler(func=lambda call: 
-    call.data.startswith('add_friend'), nothing_state_str=True)
+    call.data.startswith('add_friend'), nothing_state=True)
 async def add_friend_callback(call: CallbackQuery):
     chatid = call.message.chat.id
     user_id = call.from_user.id
