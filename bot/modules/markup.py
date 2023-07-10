@@ -107,14 +107,14 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
             ['notification', 'inventory'],
             ['dino_name'],
             ['dino_profile', 'delete_me'],
-            ['settings_page_2', "noprefix.buttons_name.back"]
+            ['noprefix.buttons_name.back', 'settings_page_2']
         ]
 
     elif markup_key == 'settings2_menu':
         prefix = 'commands_name.settings2.'
         add_back_button = True
         buttons = [
-            ['my_name'],
+            ['my_name', 'lang'],
         ]
         
         if premium(userid): buttons[0].append('custom_profile')
@@ -168,7 +168,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
         # Меню рефералов
         prefix = 'commands_name.referal.'
         add_back_button = True
-        
+
         referal = get_user_code(userid)
         friend_code = get_user_sub(userid)
         buttons = [
@@ -176,9 +176,8 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
             ]
         if referal:
             my_code = referal['code']
-            
             buttons[0][0] = f'notranslate.{t("commands_name.referal.my_code", language_code)} {my_code}'
-            
+
         if friend_code:
             buttons[0][1] = f'notranslate.{t("commands_name.referal.friend_code", language_code)} {friend_code["code"]}'
 
@@ -196,7 +195,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
         if col_dinos == 1:
             dino = user.get_dinos()[0]
             dp_buttons = get_buttons(dino)
-            
+
             buttons = [
                 ["feed"],
                 [dp_buttons[3], dp_buttons[0]],
