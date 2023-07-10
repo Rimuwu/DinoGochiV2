@@ -6,6 +6,7 @@ from bot.modules.data_format import user_name
 from bot.modules.dinosaur import insert_dino
 from bot.modules.notifications import user_notification
 from bot.taskmanager import add_task
+from bot.modules.localization import get_lang
 
 incubations = mongo_client.tasks.incubation
 
@@ -29,8 +30,9 @@ async def incubation():
 
         if user:
             name = user_name(user)
+            lang = get_lang(user.id)
             await user_notification(egg['owner_id'], 
-                        'incubation_ready', user.language_code, 
+                        'incubation_ready', lang, 
                         user_name=name, dino_alt_id_markup=alt_id) 
     
 if __name__ != '__main__':

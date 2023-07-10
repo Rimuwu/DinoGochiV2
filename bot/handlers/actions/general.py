@@ -8,7 +8,7 @@ from bot.modules.data_format import list_to_inline
 from bot.modules.dinosaur import Dino
 from bot.modules.friend_tools import start_friend_menu
 from bot.modules.friends import send_action_invite
-from bot.modules.localization import t
+from bot.modules.localization import t, get_lang
 from bot.modules.markup import markups_menu as m
 from bot.modules.states_tools import ChooseDinoState
 from bot.modules.user import User
@@ -29,6 +29,7 @@ async def edit_dino_buttom(message: Message):
     user = User(user_id)
     dinos = user.get_dinos()
     data_names = {}
+    lang = get_lang(message.from_user.id)
 
     for element in dinos:
         txt = f'🦕 {element.name}'
@@ -36,7 +37,7 @@ async def edit_dino_buttom(message: Message):
     
     inline = list_to_inline([data_names], 2)
     await bot.send_message(user_id, 
-                           t('edit_dino_button.edit', message.from_user.language_code), 
+                           t('edit_dino_button.edit', lang), 
                            reply_markup=inline)
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('edit_dino'))
@@ -44,7 +45,7 @@ async def answer_edit(callback: CallbackQuery):
     """ Изменение последнего динозавра (кнопка)
     """
     user_id = callback.from_user.id
-    lang = callback.from_user.language_code
+    lang = get_lang(callback.from_user.id)
     user = User(user_id)
 
     message = callback.message
@@ -72,11 +73,11 @@ async def invite_adp(friend, transmitted_data: dict):
 @bot.callback_query_handler(func=
                             lambda call: call.data.startswith('invite_to_action'))
 async def invite_to_action(callback: CallbackQuery):
-    lang = callback.from_user.language_code
+    lang = get_lang(callback.from_user.id)
     chatid = callback.message.chat.id
     userid = callback.from_user.id
     data = callback.data.split()
-    
+
     transmitted_data = {
         'action': data[1],
         'dino_alt': data[2]
@@ -117,7 +118,7 @@ async def join_adp(dino: Dino, transmitted_data):
 @bot.callback_query_handler(func=
                             lambda call: call.data.startswith('join_to_action'))
 async def join(callback: CallbackQuery):
-    lang = callback.from_user.language_code
+    lang = get_lang(callback.from_user.id)
     chatid = callback.message.chat.id
     userid = callback.from_user.id
     data = callback.data.split()

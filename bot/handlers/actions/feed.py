@@ -12,6 +12,7 @@ from bot.modules.markup import feed_count_markup
 from bot.modules.markup import markups_menu as m
 from bot.modules.states_tools import ChooseStepState
 from bot.modules.user import User
+from bot.modules.localization import get_lang
 
 items = mongo_client.bot.items
 
@@ -68,7 +69,7 @@ async def inventory_adapter(item, transmitted_data):
 @bot.message_handler(text='commands_name.actions.feed')
 async def feed(message: Message):
     userid = message.from_user.id
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
     chatid = message.chat.id
     user = User(userid)
     

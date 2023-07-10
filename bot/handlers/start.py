@@ -9,7 +9,7 @@ from bot.handlers.states import cancel
 from bot.modules.data_format import list_to_keyboard, seconds_to_str, user_name
 from bot.modules.dinosaur import incubation_egg
 from bot.modules.images import create_eggs_image
-from bot.modules.localization import get_data, t
+from bot.modules.localization import get_data, t, get_lang
 from bot.modules.markup import markups_menu as m
 from bot.modules.user import insert_user
 from bot.modules.referals import connect_referal
@@ -23,20 +23,20 @@ async def start_command_auth(message: types.Message):
     stickers = await bot.get_sticker_set('Stickers_by_DinoGochi_bot')
     sticker = choice(list(stickers.stickers)).file_id
 
-    langue_code = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
     await bot.send_sticker(message.chat.id, sticker, 
-                           reply_markup=m(message.from_user.id, language_code=langue_code))
+                           reply_markup=m(message.from_user.id, language_code=lang))
 
     await cancel(message, '')
-    
+
     content = str(message.text).split()
     if len(content) > 1: 
         referal = str(content[1])
         await check_code(referal, 
                          {'userid': message.from_user.id,
                           'chatid': message.chat.id,
-                          'lang': message.from_user.language_code})
-    
+                          'lang': get_lang(message.from_user.id)})
+
 @bot.message_handler(text='commands_name.start_game', is_authorized=False)
 async def start_game(message: types.Message, referal: str = ''):
 
@@ -107,9 +107,9 @@ async def egg_answer_callback(callback: types.CallbackQuery):
                            reply_markup=m(callback.from_user.id, language_code=lang))
 
     # Создание юзера и добавляем динозавра в инкубацию
-    insert_user(callback.from_user.id)
+    insert_user(callback.from_user.id, lang)
     incubation_egg(egg_id, callback.from_user.id, quality=GAME_SETTINGS['first_egg_rarity'])
-    
+
     if len(callback.data.split()) > 2:
         referal = callback.data.split()[2]
         connect_referal(referal, callback.from_user.id)

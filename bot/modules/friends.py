@@ -3,7 +3,7 @@
 from bot.config import mongo_client
 from bot.exec import bot
 from bot.modules.data_format import list_to_inline, user_name
-from bot.modules.localization import get_data, t
+from bot.modules.localization import t, get_lang
 
 friends = mongo_client.connections.friends
 game_task = mongo_client.tasks.game
@@ -76,7 +76,7 @@ async def send_action_invite(userid: int, friendid: int, action: str, dino_alt: 
 
     try:
         chat2_user = await bot.get_chat_member(friendid, friendid)
-        friend_lang = chat2_user.user.language_code
+        friend_lang = get_lang(chat2_user.user.id)
     except: friend_lang = lang
 
     send_text = t(f'send_action.{action}.send', friend_lang, 

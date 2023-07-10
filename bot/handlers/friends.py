@@ -5,7 +5,7 @@ from bot.exec import bot
 from bot.modules.data_format import list_to_inline
 from bot.modules.friend_tools import start_friend_menu
 from bot.modules.friends import get_frineds, insert_friend_connect
-from bot.modules.localization import get_data, t
+from bot.modules.localization import get_data, t, get_lang
 from bot.modules.markup import cancel_markup, confirm_markup, count_markup
 from bot.modules.markup import markups_menu as m
 from bot.modules.notifications import user_notification
@@ -22,7 +22,7 @@ dino_owners = mongo_client.connections.dino_owners
 @bot.message_handler(text='commands_name.friends.add_friend')
 async def add_friend(message: Message):
     chatid = message.chat.id
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
     
     text = t('add_friend.var', lang)
     buttons = get_data('add_friend.var_buttons', lang)
@@ -85,18 +85,18 @@ async def add_friend_end(friendid: int, transmitted_data: dict):
         await user_notification(friendid, 'send_request', lang, user_name=user_name)
 
 @bot.callback_query_handler(func=lambda call: 
-    call.data.startswith('add_friend'), nothing_state=True)
+    call.data.startswith('add_friend'), nothing_state_str=True)
 async def add_friend_callback(call: CallbackQuery):
     chatid = call.message.chat.id
     user_id = call.from_user.id
-    lang = call.from_user.language_code
-    
+    lang = get_lang(call.from_user.id)
+
     code = call.data.split()[1]
     transmitted_data = {'code': code, 'user_name': user_name(call.from_user)}
-    
+
     text = t(f'add_friend.var_messages.{code}', lang)
     await bot.send_message(chatid, text, reply_markup=cancel_markup(lang))
-    
+
     await ChooseCustomState(add_friend_end, friend_add_handler, 
                             user_id, chatid, lang, 
                             transmitted_data)
@@ -105,8 +105,8 @@ async def add_friend_callback(call: CallbackQuery):
 async def friend_list(message: Message):
     chatid = message.chat.id
     userid = message.from_user.id
-    lang = message.from_user.language_code
-    
+    lang = get_lang(message.from_user.id)
+
     await bot.send_message(chatid, t('friend_list.wait', lang))
     await start_friend_menu(None, userid, chatid, lang, False)
 
@@ -177,7 +177,7 @@ async def request_open(userid: int, chatid: int, lang: str):
 async def requests_list(message: Message):
     chatid = message.chat.id
     userid = message.from_user.id
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
 
     await bot.send_message(chatid, t('requests.wait', lang))
     await request_open(userid, chatid, lang)
@@ -187,8 +187,8 @@ async def requests_list(message: Message):
 async def requests_callback(call: CallbackQuery):
     chatid = call.message.chat.id
     user_id = call.from_user.id
-    lang = call.from_user.language_code
-    
+    lang = get_lang(call.from_user.id)
+
     await bot.send_message(chatid, t('requests.wait', lang))
     await request_open(user_id, chatid, lang)
 
@@ -222,7 +222,7 @@ async def adp_delte(friendid: int, transmitted_data: dict):
 async def remove_friend(message: Message):
     chatid = message.chat.id
     userid = message.from_user.id
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
 
     requests = get_frineds(userid)['friends']
     options = {}
@@ -277,7 +277,7 @@ async def joint(return_data: dict,
 @bot.callback_query_handler(func=lambda call: 
     call.data.startswith('joint_dinosaur'))
 async def joint_dinosaur(call: CallbackQuery):
-    lang = call.from_user.language_code
+    lang = get_lang(call.from_user.id)
     chatid = call.message.chat.id
     userid = call.from_user.id
     data = call.data.split()
@@ -301,7 +301,7 @@ async def joint_dinosaur(call: CallbackQuery):
 @bot.callback_query_handler(func=lambda call: 
     call.data.startswith('take_dino'))
 async def take_dino(call: CallbackQuery):
-    lang = call.from_user.language_code
+    lang = get_lang(call.from_user.id)
     chatid = call.message.chat.id
     userid = call.from_user.id
     data = call.data.split()
@@ -339,7 +339,7 @@ async def take_dino(call: CallbackQuery):
 @bot.callback_query_handler(func=lambda call: 
     call.data.startswith('take_money'))
 async def take_money(call: CallbackQuery):
-    lang = call.from_user.language_code
+    lang = get_lang(call.from_user.id)
     chatid = call.message.chat.id
     userid = call.from_user.id
     data = call.data.split()

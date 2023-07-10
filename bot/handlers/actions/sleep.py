@@ -8,7 +8,7 @@ from bot.modules.accessory import check_accessory
 from bot.modules.data_format import list_to_keyboard, seconds_to_str
 from bot.modules.dinosaur import Dino, end_sleep, start_sleep
 from bot.modules.inline import inline_menu
-from bot.modules.localization import get_data, t
+from bot.modules.localization import get_data, t, get_lang
 from bot.modules.markup import markups_menu as m
 from bot.modules.mood import add_mood
 from bot.modules.states_tools import ChooseIntState, ChooseOptionState
@@ -28,7 +28,7 @@ async def short_sleep(number: int, transmitted_data: dict):
     lang = transmitted_data['lang']
     chatid = transmitted_data['chatid']
     dino = transmitted_data['last_dino']
-    
+
     res_dino_status = dinosaurs.find_one({"_id": dino._id}, {'status': 1})
     if res_dino_status:
         if res_dino_status['status'] != 'pass':
@@ -45,7 +45,7 @@ async def short_sleep(number: int, transmitted_data: dict):
 async def long_sleep(dino: Dino, userid: int, lang: str):
     """ Отправляем дино в длинный сон
     """
-    
+
     res_dino_status = dinosaurs.find_one({"_id": dino._id}, {'status': 1})
     if res_dino_status:
         if res_dino_status['status'] != 'pass':
@@ -65,7 +65,7 @@ async def end_choice(option: str, transmitted_data: dict):
     lang = transmitted_data['lang']
     chatid = transmitted_data['chatid']
     last_dino = transmitted_data['last_dino']
-    
+
     if last_dino.status == 'pass':
         if option == 'short':
             # Если короткий, то спрашиваем сколько дино должен спать
@@ -77,10 +77,10 @@ async def end_choice(option: str, transmitted_data: dict):
             await bot.send_message(userid, 
                                 t('put_to_bed.choice_time', lang), 
                                 reply_markup=buttons)
-        
+
         elif option == 'long':
             await long_sleep(last_dino, userid, lang)
-    
+
     else:
         await bot.send_message(userid, t('alredy_busy', lang),
             reply_markup=inline_menu('dino_profile', lang, 
@@ -91,7 +91,7 @@ async def put_to_bed(message: Message):
     """Уложить спать динозавра
     """
     userid = message.from_user.id
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
     chatid = message.chat.id
 
     user = User(userid)
@@ -134,7 +134,7 @@ async def awaken(message: Message):
     """Пробуждение динозавра
     """
     userid = message.from_user.id
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
     chatid = message.chat.id
 
     user = User(userid)
@@ -156,11 +156,10 @@ async def awaken(message: Message):
                         # Если динозавр в долгом сне проспал меньше 6-ми часов, то штраф
                         add_mood(last_dino._id, 'bad_sleep', -1, 10800)
                         await end_sleep(last_dino._id, sleeper['_id'], send_notif=False)
-                        
+
                         await bot.send_message(chatid, 
                                                t('awaken.down_mood', lang, 
-                                                 time_end=seconds_to_str(sleep_time, lang)
-                                                ),
+                                                 time_end=seconds_to_str(sleep_time, lang)),
                                                reply_markup=m(userid, 'last_menu', lang))
                 elif sleeper['sleep_type'] == 'short':
                     sleep_time = sleeper['sleep_end'] - sleeper['sleep_start']

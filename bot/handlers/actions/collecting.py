@@ -9,7 +9,7 @@ from bot.modules.dinosaur import Dino, end_collecting
 from bot.modules.images import dino_collecting
 from bot.modules.inline import inline_menu
 from bot.modules.item import counts_items
-from bot.modules.localization import get_data, t
+from bot.modules.localization import get_data, t, get_lang
 from bot.modules.markup import count_markup
 from bot.modules.markup import markups_menu as m
 from bot.modules.states_tools import ChooseStepState
@@ -61,14 +61,16 @@ async def collecting_adapter(return_data, transmitted_data):
                                         )
 
 
-@bot.message_handler(text='commands_name.actions.collecting', dino_pass=True)
+@bot.message_handler(text='commands_name.actions.collecting', 
+                     dino_pass=True, nothing_state_str=True)
 async def collecting_button(message: Message):
     userid = message.from_user.id
-    lang = message.from_user.language_code
     chatid = message.chat.id
+
     user = User(userid)
+    lang = user.lang
     last_dino = user.get_last_dino()
-    
+
     if last_dino:
             if user.premium:
                 max_count = GAME_SETTINGS['premium_max_collecting']
@@ -90,7 +92,7 @@ async def collecting_button(message: Message):
                  "data": {"max_int": max_count}, 
                  "translate_message": True,
                     'message': {'text': 'collecting.wait_count', 
-                    'reply_markup': count_markup(max_count)}
+                    'reply_markup': count_markup(max_count, lang)}
                     }
                         ]
             await ChooseStepState(collecting_adapter, userid, chatid, 
@@ -101,10 +103,10 @@ async def collecting_button(message: Message):
 @bot.message_handler(text='commands_name.actions.progress')
 async def collecting_progress(message: Message):
     userid = message.from_user.id
-    lang = message.from_user.language_code
     chatid = message.chat.id
-    
+
     user = User(userid)
+    lang = user.lang
     last_dino = user.get_last_dino()
     if last_dino:
         
@@ -133,9 +135,9 @@ async def collecting_progress(message: Message):
 async def collecting_callback(callback: CallbackQuery):
     dino_data = callback.data.split()[2]
     action = callback.data.split()[1]
-    
-    lang = callback.from_user.language_code
-    
+
+    lang = get_lang(callback.from_user.id)
+
     dino = Dino(dino_data) #type: ignore
     data = collecting_task.find_one({'dino_id': dino._id})
     if data and dino:

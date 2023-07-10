@@ -6,6 +6,7 @@ from bot.modules.data_format import seconds_to_str
 from bot.modules.notifications import user_notification
 from bot.taskmanager import add_task
 from bot.modules.donation import check_donations
+from bot.modules.localization import get_lang
 
 subscriptions = mongo_client.tasks.subscriptions
 users = mongo_client.bot.users
@@ -17,7 +18,7 @@ async def subscription_notification():
     for sub in data:
         try:
             chat_user = await bot.get_chat_member(sub['userid'], sub['userid'])
-            lang = chat_user.user.language_code
+            lang = get_lang(chat_user.user.id)
         except: lang = 'en'
 
         await user_notification(sub['userid'], 'donation', lang, 
@@ -34,7 +35,7 @@ async def subscription_check():
 
         try:
             chat_user = await bot.get_chat_member(sub['userid'], sub['userid'])
-            lang = chat_user.user.language_code
+            lang = get_lang(chat_user.user.id)
         except: lang = 'en'
         await user_notification(sub['userid'], 'donation', lang, 
                                 add_way='subscription_end'

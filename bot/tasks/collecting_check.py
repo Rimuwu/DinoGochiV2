@@ -1,17 +1,17 @@
 import random
 from random import randint
-from bot.exec import bot
 
 from bot.config import conf, mongo_client
-from bot.modules.user import experience_enhancement
-from bot.taskmanager import add_task
 from bot.const import GAME_SETTINGS
-from bot.modules.dinosaur import end_collecting
-from bot.modules.item import counts_items
+from bot.exec import bot
 from bot.modules.accessory import check_accessory
-from bot.modules.dinosaur import Dino, mutate_dino_stat
+from bot.modules.dinosaur import Dino, end_collecting, mutate_dino_stat
+from bot.modules.item import counts_items
+from bot.modules.localization import get_lang
 from bot.modules.mood import check_inspiration
 from bot.modules.quests import quest_process
+from bot.modules.user import experience_enhancement
+from bot.taskmanager import add_task
 
 collecting_task = mongo_client.tasks.collecting
 dinosaurs = mongo_client.bot.dinosaurs
@@ -26,7 +26,7 @@ COLLECTING_CHANCE = 0.2 * REPEAT_MINUTS
 async def stop_collect(coll_data):
     try:
         chat_user = await bot.get_chat_member(coll_data['sended'], coll_data['sended'])
-        lang = chat_user.user.language_code
+        lang = get_lang(chat_user.user.id)
     except: lang = 'en'
     
     items_list = []

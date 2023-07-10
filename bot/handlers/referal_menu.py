@@ -5,7 +5,7 @@ from bot.const import GAME_SETTINGS as GS
 from bot.exec import bot
 from bot.modules.data_format import escape_markdown, list_to_inline
 from bot.modules.item import counts_items
-from bot.modules.localization import get_data, t
+from bot.modules.localization import get_data, t, get_lang
 from bot.modules.markup import cancel_markup
 from bot.modules.markup import markups_menu as m
 from bot.modules.referals import connect_referal, create_referal
@@ -18,7 +18,7 @@ referals = mongo_client.connections.referals
 @bot.message_handler(text='commands_name.referal.code', is_authorized=True)
 async def code(message: Message):
     userid = message.from_user.id
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
     chatid = message.chat.id
 
     if not referals.find_one({'ownerid': userid}):
@@ -82,7 +82,7 @@ async def custom_handler(message: Message, transmitted_data: dict):
 async def generate_code(call: CallbackQuery):
     chatid = call.message.chat.id
     userid = call.from_user.id
-    lang = call.from_user.language_code
+    lang = get_lang(call.from_user.id)
     action = call.data.split()[1]
     
     if not referals.find_one({'ownerid': userid}):
@@ -110,7 +110,7 @@ async def my_code(message: Message):
     """ Кнопка - мой код ...
     """
     userid = message.from_user.id
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
     chatid = message.chat.id
     
     referal = referals.find_one({'userid': userid})
@@ -145,7 +145,7 @@ async def check_code(code: str, transmitted_data: dict):
 @bot.message_handler(text='commands_name.referal.enter_code', is_authorized=True)
 async def enter_code(message: Message):
     userid = message.from_user.id
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
     chatid = message.chat.id
 
     ref = referals.find_one({'userid': userid, 'type': 'sub'})

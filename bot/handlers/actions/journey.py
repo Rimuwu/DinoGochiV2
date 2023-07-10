@@ -1,7 +1,8 @@
 
 from time import time
 
-from telebot.types import CallbackQuery, InputMedia, Message, InlineKeyboardMarkup
+from telebot.types import (CallbackQuery, InlineKeyboardMarkup, InputMedia,
+                           Message)
 
 from bot.config import mongo_client
 from bot.exec import bot
@@ -10,9 +11,10 @@ from bot.modules.dinosaur import Dino, end_journey
 from bot.modules.dinosaur import start_journey as action_journey
 from bot.modules.images import dino_journey
 from bot.modules.item import counts_items
-from bot.modules.journey import generate_event_message, all_log
-from bot.modules.localization import get_data, t
+from bot.modules.journey import all_log, generate_event_message
+from bot.modules.localization import get_data, t, get_lang
 from bot.modules.markup import markups_menu as m
+from bot.modules.quests import quest_process
 from bot.modules.states_tools import ChooseStepState
 from bot.modules.user import User
 
@@ -95,10 +97,11 @@ async def start_journey(userid: int, chatid: int, lang: str,
     await ChooseStepState(journey_start_adp, userid, chatid, lang, steps, 
                           {'last_dino': last_dino, "edit_message": True, 'friend': friend, 'delete_steps': True})
 
-@bot.message_handler(text='commands_name.actions.journey')
+@bot.message_handler(text='commands_name.actions.journey', 
+                     nothing_state_str=True)
 async def journey_com(message: Message):
     userid = message.from_user.id
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
     chatid = message.chat.id
 
     await start_journey(userid, chatid, lang)
@@ -106,7 +109,7 @@ async def journey_com(message: Message):
 @bot.callback_query_handler(func=
                             lambda call: call.data.startswith('journey_complexity'))
 async def journey_complexity(callback: CallbackQuery):
-    lang = callback.from_user.language_code
+    lang = get_lang(callback.from_user.id)
     chatid = callback.message.chat.id
     
     text = t('journey_complexity', lang)
@@ -115,7 +118,7 @@ async def journey_complexity(callback: CallbackQuery):
 @bot.message_handler(text='commands_name.actions.events')
 async def events(message: Message):
     userid = message.from_user.id
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
     chatid = message.chat.id
 
     user = User(userid)
@@ -132,7 +135,7 @@ async def events(message: Message):
             col = len(journey_data['journey_log'])
 
             if journey_data['journey_log']:
-                last_event = generate_event_message(journey_data['journey_log'][-1], lang, True)
+                last_event = generate_event_message(journey_data['journey_log'][-1], lang, journey_data['_id'], True)
 
             text = t('journey_last_event.info', lang, journey_time=journey_time, location=loc_name, col=col, last_event=last_event)
             button_name = t('journey_last_event.button', lang)
@@ -148,7 +151,7 @@ async def events(message: Message):
 @bot.callback_query_handler(func=
                             lambda call: call.data.startswith('journey_stop'))
 async def journey_stop(callback: CallbackQuery):
-    lang = callback.from_user.language_code
+    lang = get_lang(callback.from_user.id)
     chatid = callback.message.chat.id
     code = callback.data.split()[1]
 
@@ -159,12 +162,13 @@ async def journey_stop(callback: CallbackQuery):
         data = journey_task.find_one({'dino_id': dino['_id']})
         end_journey(dino['_id'])
         if data:
+            quest_process(data['sended'], 'journey', data['journey_end'] - data['journey_start'])
             await send_logs(data['sended'], lang, data, dino['name'])
 
 async def send_logs(chatid: int, lang: str, data: dict, dino_name: str):
     logs = data['journey_log']
     if logs:
-        for i in all_log(logs, lang):
+        for i in all_log(logs, lang, data['_id']):
             await bot.send_message(chatid, i, parse_mode='html')
 
     items_text = '-'

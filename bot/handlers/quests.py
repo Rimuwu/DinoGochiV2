@@ -8,7 +8,7 @@ from bot.config import mongo_client
 from bot.exec import bot
 from bot.modules.data_format import list_to_inline, seconds_to_str
 from bot.modules.item import AddItemToUser
-from bot.modules.localization import get_data, t
+from bot.modules.localization import get_data, t, get_lang
 from bot.modules.quests import quest_resampling, quest_ui, check_quest
 from bot.modules.user import take_coins
 
@@ -18,28 +18,29 @@ users = mongo_client.bot.users
 @bot.message_handler(text='commands_name.dino_tavern.quests', is_authorized=True)
 async def check_quests(message: Message):
     userid = message.from_user.id
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
     chatid = message.chat.id
-    
+
     user = users.find_one({'userid': userid})
-    quests = list(quests_data.find({'owner_id': userid}))
+    if user:
+        quests = list(quests_data.find({'owner_id': userid}))
 
-    text = t('quest.quest_menu', lang, 
-             end=user['dungeon']['quest_ended'], act=len(quests))
-    await bot.send_message(chatid, text)
+        text = t('quest.quest_menu', lang, 
+                end=user['dungeon']['quest_ended'], act=len(quests))
+        await bot.send_message(chatid, text)
 
-    for quest in quests:
-        text, mark = quest_ui(quest, lang, quest['alt_id'])
-        await bot.send_message(
-                        chatid, text, reply_markup=mark, parse_mode='Markdown')
-        await sleep(0.3)
+        for quest in quests:
+            text, mark = quest_ui(quest, lang, quest['alt_id'])
+            await bot.send_message(
+                            chatid, text, reply_markup=mark, parse_mode='Markdown')
+            await sleep(0.3)
 
 @bot.callback_query_handler(func=lambda call: 
     call.data.startswith('quest'))
 async def quest(call: CallbackQuery):
     chatid = call.message.chat.id
     userid = call.from_user.id
-    lang = call.from_user.language_code
+    lang = get_lang(call.from_user.id)
     message = call.message
 
     data = call.data.split()

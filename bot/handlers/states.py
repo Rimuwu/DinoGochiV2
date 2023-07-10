@@ -4,16 +4,17 @@ from telebot.types import Message, CallbackQuery
 from bot.const import GAME_SETTINGS as gs
 from bot.exec import bot
 from bot.modules.data_format import list_to_keyboard, chunk_pages
-from bot.modules.localization import get_data, t
+from bot.modules.localization import get_data, t, get_lang
 from bot.modules.logs import log
 from bot.modules.markup import markups_menu as m
 from bot.modules.states_tools import GeneralStates
 
 
 async def cancel(message, text:str = "❌"):
+    lang = get_lang(message.from_user.id)
     if text:
         await bot.send_message(message.chat.id, text, 
-            reply_markup=m(message.from_user.id, 'last_menu', message.from_user.language_code))
+            reply_markup=m(message.from_user.id, 'last_menu', lang))
     await bot.delete_state(message.from_user.id, message.chat.id)
     await bot.reset_data(message.from_user.id,  message.chat.id)
 
@@ -46,7 +47,7 @@ async def ChooseDino(message: Message):
     """Общая функция для выбора динозавра
     """
     userid = message.from_user.id
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
 
     async with bot.retrieve_data(userid, message.chat.id) as data:
         ret_data = data['dino_names']
@@ -55,7 +56,7 @@ async def ChooseDino(message: Message):
 
     if message.text in ret_data.keys():
         await bot.delete_state(userid, message.chat.id)
-        await bot.reset_data(message.from_user.id,  message.chat.id)
+        await bot.reset_data(message.from_user.id, message.chat.id)
         if 'steps' in transmitted_data:
             transmitted_data['steps'][len(transmitted_data['return_data'])]['umessageid'] = message.id
 
@@ -69,7 +70,7 @@ async def ChooseInt(message: Message):
     """Общая функция для ввода числа
     """
     userid = message.from_user.id
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
     number = 0
 
     async with bot.retrieve_data(userid, message.chat.id) as data:
@@ -110,7 +111,7 @@ async def ChooseString(message: Message):
     """Общая функция для ввода сообщения
     """
     userid = message.from_user.id
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
 
     async with bot.retrieve_data(userid, message.chat.id) as data:
         max_len: int = data['max_len']
@@ -142,7 +143,7 @@ async def ChooseConfirm(message: Message):
     """Общая функция для подтверждения
     """
     userid = message.from_user.id
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
     content = str(message.text)
 
     async with bot.retrieve_data(userid, message.chat.id) as data:
@@ -179,7 +180,7 @@ async def ChooseOption(message: Message):
     """Общая функция для выбора из предложенных вариантов
     """
     userid = message.from_user.id
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
 
     async with bot.retrieve_data(userid, message.chat.id) as data:
         options: dict = data['options']
@@ -224,7 +225,7 @@ async def ChooseOptionPages(message: Message):
     """
     userid = message.from_user.id
     chatid = message.chat.id
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
 
     async with bot.retrieve_data(userid, message.chat.id) as data:
         func = data['function']

@@ -4,9 +4,11 @@ import json
 import os
 from typing import Any
 from bot.modules.logs import log
+from bot.config import conf, mongo_client
 
 languages = {}
 available_locales = []
+langs = mongo_client.connections.lang
 
 def load() -> None:
     """Загрузка локализации"""
@@ -29,7 +31,7 @@ def alternative_language(lang: str):
     if lang in languages: return languages[lang]
     return lang
 
-def get_data(key: str, locale: str = "en") -> Any:
+def get_data(key: str, locale: str) -> Any:
     """Возвращает данные локализации
 
     Args:
@@ -42,7 +44,7 @@ def get_data(key: str, locale: str = "en") -> Any:
     locale = alternative_language(locale)
     if locale not in available_locales:
         locale = 'en' # Если язык не найден, установить тот что точно есть
-    
+
     localed_data = languages[locale]
 
     for way_key in key.split('.'):
@@ -54,7 +56,7 @@ def get_data(key: str, locale: str = "en") -> Any:
         else:
             log(f'Ключ {key} ({locale}) не найден!', 4)
             return languages[locale]["no_text_key"].format(key=key)
-        
+
     return localed_data
 
 
@@ -147,7 +149,15 @@ def get_all_locales(key: str, **kwargs) -> dict:
 
     return locales_dict
 
+def get_lang(userid: int, alternative: str = 'en') -> str:
+    """ Получает язык пользователя
+    """
+    lang = alternative
+    data = langs.find_one({'userid': userid})
+
+    if data: lang = data['lang']
+    return lang
+
 if __name__ == '__main__':
     raise Exception("This file cannot be launched on its own!")
-else:
-    load()
+else: load()

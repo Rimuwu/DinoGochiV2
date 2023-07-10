@@ -11,6 +11,7 @@ from bot.modules.logs import log
 from bot.modules.notifications import user_notification
 from bot.modules.item import AddItemToUser
 from bot.modules.user import award_premium
+from bot.modules.localization import get_lang
 
 users = mongo_client.bot.users
 
@@ -42,13 +43,13 @@ def OpenDonatData() -> dict:
     return processed_donations
 
 async def get_donations() -> list:
-    """Получает донаты
+    """ Получает донаты
     """
     async with aiohttp.ClientSession() as session:
         async with session.get('https://www.donationalerts.com/api/v1/alerts/donations', headers=headers) as response:
             data = dict(await response.json())
             try: return data['data']
-            except: return {}
+            except: return []
 
 def save_donation(userid, amount, status, product, 
             issued_reward, time_data, col):
@@ -78,7 +79,7 @@ async def send_donat_notification(userid:int, message_key:str, **kwargs):
     try:
         chat_user = await bot.get_chat_member(userid, userid)
         user = chat_user.user
-        lang = user.language_code
+        lang = get_lang(user.id)
     except Exception as e:
         log(prefix='send_donat_notification', message=f'Error {e}', lvl=3)
         lang = 'en'

@@ -13,7 +13,7 @@ from bot.modules.dinosaur import Dino, Egg, dead_check
 from bot.modules.events import get_event
 from bot.modules.inline import dino_profile_markup, inline_menu
 from bot.modules.item import AddItemToUser, get_name
-from bot.modules.localization import get_data, t
+from bot.modules.localization import get_data, t, get_lang
 from bot.modules.markup import confirm_markup
 from bot.modules.markup import markups_menu as m
 from bot.modules.states_tools import (ChooseConfirmState, ChooseDinoState,
@@ -166,7 +166,7 @@ async def transition(element, transmitted_data: dict):
 @bot.message_handler(text='commands_name.dino_profile', is_authorized=True)
 async def dino_handler(message: Message):
     userid = message.from_user.id
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
 
     bstatus, status = await ChooseDinoState(transition, userid, message.chat.id, lang, send_error=False) 
 
@@ -181,14 +181,14 @@ async def answer_edit(call: types.CallbackQuery):
     dino_data = call.data.split()[1]
 
     userid = call.from_user.id
-    lang = call.from_user.language_code
+    lang = get_lang(call.from_user.id)
     trans_data = {
         'userid': userid,
         'lang': lang
     }
     dino = Dino(dino_data) #type: ignore
     await transition(dino, trans_data)
-    
+
 @bot.callback_query_handler(func=lambda call: call.data.startswith('dino_menu'))
 async def dino_menu(call: types.CallbackQuery):
     split_d = call.data.split()
@@ -197,7 +197,7 @@ async def dino_menu(call: types.CallbackQuery):
 
     userid = call.from_user.id
     chatid = call.message.chat.id
-    lang = call.from_user.language_code
+    lang = get_lang(call.from_user.id)
 
     dino = dinosaurs.find_one({'alt_id': alt_key})
     if dino:

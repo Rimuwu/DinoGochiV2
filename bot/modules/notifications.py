@@ -8,7 +8,7 @@ from bot.config import mongo_client
 from bot.exec import bot
 from bot.modules.data_format import seconds_to_str
 from bot.modules.inline import inline_menu
-from bot.modules.localization import get_data, t
+from bot.modules.localization import get_data, t, get_lang
 from bot.modules.logs import log
 from bot.modules.item import get_name
 
@@ -86,7 +86,7 @@ async def dino_notification(dino_id: ObjectId, not_type: str, **kwargs):
         for owner in owners:
             try:
                 chat_user = await bot.get_chat_member(owner["owner_id"], owner["owner_id"])
-                lang = chat_user.user.language_code
+                lang = get_lang(chat_user.user.id)
             except: lang = 'en'
 
             user = users.find_one({'userid': owner['owner_id']})
@@ -180,7 +180,7 @@ async def user_notification(user_id: int, not_type: str,
     if not lang:
         try:
             chat_user = await bot.get_chat_member(user_id, user_id)
-            lang = chat_user.user.language_code
+            lang = get_lang(chat_user.user.id)
         except: lang = 'en'
 
     if not_type in standart_notification:

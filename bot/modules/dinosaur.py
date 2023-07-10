@@ -13,7 +13,7 @@ from bot.exec import bot
 from bot.modules.data_format import random_code, random_quality
 from bot.modules.images import create_dino_image, create_egg_image
 from bot.modules.item import AddItemToUser
-from bot.modules.localization import log
+from bot.modules.localization import log, get_lang
 from bot.modules.notifications import (dino_notification, notification_manager,
                                        user_notification)
 
@@ -481,14 +481,9 @@ def get_owner(dino_id: ObjectId):
 
 async def get_dino_language(dino_id: ObjectId) -> str:
     lang = 'en'
-    
-    owner = dino_owners.find_one({'dino_id': dino_id})
-    if owner:
-        try:
-            chat_user = await bot.get_chat_member(owner['owner_id'], owner['owner_id'])
-            lang = chat_user.user.language_code
-        except: lang = 'en'
 
+    owner = dino_owners.find_one({'dino_id': dino_id})
+    if owner: lang = get_lang(owner['owner_id'])
     return lang
 
 def set_status(dino_id: ObjectId, new_status: str, now_status: str = ''):

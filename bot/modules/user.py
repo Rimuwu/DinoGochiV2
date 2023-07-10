@@ -12,7 +12,7 @@ from bot.modules.friends import get_frineds
 from bot.modules.item import AddItemToUser
 from bot.modules.item import get_data as get_item_data
 from bot.modules.item import get_name
-from bot.modules.localization import get_data, t
+from bot.modules.localization import get_data, t, get_lang, available_locales
 from bot.modules.logs import log
 from bot.modules.notifications import user_notification
 from bot.modules.referals import get_code_owner, get_user_sub
@@ -30,6 +30,7 @@ friends = mongo_client.connections.friends
 subscriptions = mongo_client.tasks.subscriptions
 referals = mongo_client.connections.referals
 daily_award_data = mongo_client.connections.daily_award
+langs = mongo_client.connections.lang
 
 class User:
 
@@ -104,6 +105,9 @@ class User:
 
     @property
     def premium(self) -> bool: return premium(self.userid)
+    
+    @property
+    def lang(self) -> str: return get_lang(self.userid)
 
     def view(self):
         """ Отображает все данные объекта."""
@@ -126,7 +130,7 @@ class User:
         for collection in [items, products, dead_dinos, incubations]:
             collection.delete_many({'owner_id': self.userid})
 
-        for collection in [referals]:
+        for collection in [referals, langs]:
             collection.delete_many({'userid': self.userid})
 
         """ При полном удалении есть возможность, что у динозавра
@@ -184,10 +188,14 @@ class User:
         return max_dino_col(self.lvl, self.userid, self.premium)
 
 
-def insert_user(userid: int):
+def insert_user(userid: int, lang: str):
     """Создание пользователя"""
     log(prefix='InsertUser', message=f'User: {userid}', lvl=0)
-    return users.insert_one(User(userid).__dict__)
+
+    if not users.find_one({'userid': userid}):
+        if lang not in available_locales: lang = 'en'
+        langs.insert_one({'userid': userid, 'lang': lang})
+        return users.insert_one(User(userid).__dict__)
 
 def get_dinos(userid: int, all_dinos: bool = True) -> list:
     """Возвращает список с объектами динозавров."""
@@ -333,7 +341,7 @@ async def experience_enhancement(userid: int, xp: int):
 
         try:
             chat_user = await bot.get_chat_member(userid, userid)
-            lang = chat_user.user.language_code
+            lang = get_lang(chat_user.user.id)
             name = user_name(chat_user.user)
         except: 
             lang = 'en'

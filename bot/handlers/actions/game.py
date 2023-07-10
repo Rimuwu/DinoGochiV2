@@ -10,7 +10,7 @@ from bot.modules.data_format import list_to_inline
 from bot.modules.dinosaur import Dino, end_game
 from bot.modules.friends import send_action_invite
 from bot.modules.images import dino_game
-from bot.modules.localization import get_data, t
+from bot.modules.localization import get_data, t, get_lang
 from bot.modules.markup import cancel_markup
 from bot.modules.markup import markups_menu as m
 from bot.modules.mood import add_mood, check_breakdown, check_inspiration
@@ -171,10 +171,10 @@ async def game_start(return_data: dict,
         ])
         await bot.send_message(chatid, text, reply_markup=markup)
 
-@bot.message_handler(text='commands_name.actions.entertainments', dino_pass=True)
+@bot.message_handler(text='commands_name.actions.entertainments', dino_pass=True, nothing_state_str=True)
 async def entertainments(message: Message):
     userid = message.from_user.id
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
     chatid = message.chat.id
 
     user = User(userid)
@@ -184,9 +184,9 @@ async def entertainments(message: Message):
 @bot.message_handler(text='commands_name.actions.stop_game')
 async def stop_game(message: Message):
     userid = message.from_user.id
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
     chatid = message.chat.id
-    
+
     user = User(userid)
     last_dino = user.get_last_dino()
     if last_dino:
@@ -227,13 +227,11 @@ async def stop_game(message: Message):
                 else:
                     # Невозможно оторвать от игры
                     text = t('stop_game.dont_tear', lang)
-
                 await bot.send_message(chatid, text, reply_markup=m(userid, 'last_menu', lang, True))
-                
+
             else:
                 if last_dino.status == 'game':
                     last_dino.update({'$set': {'status': 'pass'}})
-
                 await bot.send_message(chatid, '❌', reply_markup=m(userid, 'last_menu', lang, True))
         else:
             await bot.send_message(chatid, t('stop_game.unrestrained_play', lang))
