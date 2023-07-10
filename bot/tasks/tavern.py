@@ -21,9 +21,17 @@ async def tavern_quest(user):
 
     if quests_data.count_documents({'owner_id': user['userid']}) < 5:
         if free_quests and not randint(0, 3):
-            quest_id = choice(free_quests)['_id']
+            ran_quest = choice(free_quests)
+            free_quests.remove(ran_quest)
+
+            quest_id = ran_quest['_id']
+
+            new_time = ran_quest['time_end'] - ran_quest['time_start']
             quests_data.update_one({'_id': quest_id}, {"$set": {
-                'owner_id': user['userid']}})
+                'owner_id': user['userid'], 
+                'time_start': int(time()), 
+                'end_time': int(time()) + new_time}})
+
             text = t('quest.resаmpling', lang)
         else:
             compl = choices([2, 1], [0.25, 0.5])[0]
