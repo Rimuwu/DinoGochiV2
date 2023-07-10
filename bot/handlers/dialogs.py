@@ -4,6 +4,7 @@ from telebot.types import CallbackQuery, InlineKeyboardMarkup
 from bot.exec import bot
 from bot.modules.data_format import user_name
 from bot.modules.dialogs import dialogs
+from bot.modules.localization import get_lang
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('dialog'),   
@@ -11,13 +12,13 @@ from bot.modules.dialogs import dialogs
 async def rename_button(callback: CallbackQuery):
     dialog_key = callback.data.split()[1]
     dialog_action = callback.data.split()[2]
-    lang = callback.from_user.language_code
+    lang = get_lang(callback.from_user.id)
     userid = callback.from_user.id
     chatid = callback.message.chat.id
     message = callback.message
-    
+
     name = user_name(callback.from_user)
-    
+
     status, text, markup = await dialogs[dialog_key](userid, name, lang, dialog_action)
     if status:
 
@@ -30,5 +31,5 @@ async def rename_button(callback: CallbackQuery):
                 content = text
             else: 
                 content = str(message.text) + '\n\n' + text
-            
+
             await bot.edit_message_text(content, chatid, message.id, reply_markup=markup, parse_mode='Markdown')
