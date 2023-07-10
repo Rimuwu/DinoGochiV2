@@ -161,6 +161,8 @@ async def ChooseOptionState(function, userid: int,
         В function передаёт 
         >>> answer: ???, transmitted_data: dict
         
+        options - {"кнопка": данные}
+
         Return:
          Возвращает True если был создано состояние, False если завершилось автоматически (1 вариант выбора)
     """
