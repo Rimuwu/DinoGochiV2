@@ -69,9 +69,10 @@ async def rayting_call(callback: CallbackQuery):
 
     if rayt_data:
         add_my_rivals, text = False, ''
-        markup = None
+        markup, my_place = None, 0
 
-        my_place = rayt_data['ids'].index(userid) + 1
+        if userid in rayt_data['ids']:
+            my_place = rayt_data['ids'].index(userid) + 1
         top_10 = rayt_data['data'][min_ind:max_ind]
         if my_place > 10: add_my_rivals = True
 
