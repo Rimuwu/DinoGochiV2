@@ -29,7 +29,8 @@
             },
             "settings2": {
                 "my_name": "🎠 Call Me",
-                "custom_profile": "🌟 Dinosaur background"
+                "custom_profile": "🌟 Dinosaur background",
+                "lang": "👅 Language"
             },
             "profile": {
                 "information": "📜 Information",
@@ -1026,8 +1027,15 @@
         "rayting": {
             "info": "👁‍🗨 | What rating are you interested in?",
             "lvl": "🎢 Level",
-            "money": "🗝 coins",
-            "dungeon": "🗻 dungeon"
+            "coins": "🗝 coins",
+            "dungeon": "🗻 dungeon",
+            "no_rayting": "❌Rating is not available yet...",
+            "place": "*├* Your place in the rating: #{place}",
+            "my_place": "🦕 My rivals",
+            "lvl_text": "*└* Level: {lvl} Experience: {xp}",
+            "coins_text": "*└* Coins: {coins}",
+            "rayting_lvl": "*┌* 🎢 Level rating:",
+            "rayting_coins": "*┌* 🎢 Coin rating:"
         },
         "put_to_bed": {
             "dont_want": "🌙 The dinosaur doesn't want to sleep!",
@@ -1038,7 +1046,7 @@
                     "🛌 Short sleep"
                 ]
             ],
-            "choice": "🌙| Choose a kind of sleep for the dinosaur&gt;",
+            "choice": "🌙 | Choose a kind of sleep for the dinosaur ->",
             "choice_time": "🌙 | Indicate the time of quick sleep (the dream goes 2 times faster than a long one) in minutes >"
         },
         "awaken": {
@@ -1134,11 +1142,11 @@
                     "data": "dino_menu mood_log {dino}"
                 },
                 "joint_dino": {
-                    "text": "❌ Return",
+                    "text": "❌ Refuse",
                     "data": "dino_menu joint_cancel {dino}"
                 },
                 "my_joint": {
-                    "text": "❌ Return",
+                    "text": "❌ Shared access",
                     "data": "dino_menu my_joint_cancel {dino}"
                 },
                 "kindergarten": {
@@ -1415,7 +1423,7 @@
                 "+energy": "⚡| Dinosaur restored {unit}% energy!",
                 "-energy": "⚡ | The dinosaur has lost {unit}% of energy!",
                 "+heal": "❤ | The dinosaur has restored {unit}% of health!",
-                "-heal": "❤| Your dinosaur has lost {unit}% health!"
+                "-heal": "❤ | Your dinosaur has lost {unit}% health!"
             }
         },
         "css": {
@@ -1424,7 +1432,7 @@
             "confirm": "🛠 Confirm the use of {name}",
             "combine": "⚒ Select the subject for combining with {name} ->",
             "delete": "🗑 Confirm the deletion of {name}",
-            "dino": ""
+            "dino": "🦕 Select a dinosaur/ egg from the list"
         },
         "about_menu": {
             "team": "<b>🎭 | Bot command</b>\n<i>We all do a lot of things at once, but everyone has a role to play...</i>\n\n💻 @AS1AW - Developer\n💻 @magecode - Developer\n💽 @KatranLife - Providing a host\n\n🎨 @unknown_cat13 - Designer\n🧸 @myasoyakich - Community Creator\n\n<b>🗝 | Author of localization</b>\n<i>Everyone can translate the bot into their native language.\nDo you want to help with the translation? Contact @AS1AW\n\n</i>{lang_name} - {author}",
@@ -1481,19 +1489,19 @@
                 "owner": "My",
                 "noowner": "Joint"
             },
-            "friends": "*┌*👥 *ғʀɪᴇɴᴅs*\n*├* *Friends:* {friends_col}\n*└* *Requests:* {requests_col}",
+            "friends": "*┌* 👥 *ғʀɪᴇɴᴅs*\n*├* *Friends:* {friends_col}\n*└* *Requests:* {requests_col}",
             "inventory": "*┌* 🎈 *ɪɴᴠᴇɴᴛᴏʀʏ*\n*└* *Items:* {items_col}",
             "no_premium": "❌",
             "stats": {
-                "pass": "💭Resting",
+                "pass": "💭 Resting",
                 "sleep": "🌙 Sleeps",
                 "game": "🎮 Plays",
-                "journey": "🎴 travels",
+                "journey": "🎴 Travels",
                 "collecting": "🥞 Collects food",
-                "dungeon": "🗻 conquers the dungeon",
-                "freezing": "Frozen ❄",
-                "kindergarten": "In kindergarten 🏡",
-                "hysteria": "In hysterics 💥"
+                "dungeon": "🗻 Conquers the dungeon",
+                "freezing": "❄ Frozen",
+                "kindergarten": "🏡 In kindergarten",
+                "hysteria": "💥 In hysterics"
             }
         },
         "custom_profile": {
@@ -1684,26 +1692,26 @@
             "Walking into a tavern lit by lights, you will find a lively crowd yelling loudly and banging bottles in gratitude to the hospitable bartenders and good cuisine."
         ],
         "entertainments": {
-            "answer_game": "🎮| Choose what the dinosaur will play&gt;\n\n⌛| Last thing the dinosaur played: {last_game}",
+            "answer_game": "🎮| Choose what the dinosaur will play ->\n\n⌛| Last thing the dinosaur played: {last_game}",
             "game": {
-                "console": "🎮 console",
-                "snake": "🪁 snake",
+                "console": "🎮 Console",
+                "snake": "🪁 Snake",
                 "pin-pong": "🏓 Ping Pong",
-                "ball": "🏐Ball",
+                "ball": "🏐 Ball",
                 "puzzles": "🧩 Puzzles",
                 "chess": "♟ Chess",
-                "jenga": "🧱 jenga",
+                "jenga": "🧱 Jenga",
                 "dnd": "🎲 D&D",
                 "monopolia": "🎩 Monopoly",
-                "bowling": "🎳Bowling",
-                "darts": "🎯Darts",
+                "bowling": "🎳 Bowling",
+                "darts": "🎯 Darts",
                 "golf": "⛳ Golf"
             },
             "game_text": {
                 "m0": "😊 | How interesting it is to play {game}!",
                 "m1": "😃 | Again {game}? Well, it seems that it's interesting.",
-                "m2": "😐| As if we have nothing but {game}...",
-                "m3": "😣| Why do I only play {game} all the time?",
+                "m2": "😐 | As if we have nothing but {game}...",
+                "m3": "😣 | Why do I only play {game} all the time?",
                 "penalty": "❗ | The percentage of pleasure is {percent}%"
             },
             "answer_text": "🎮 Indicate the period of the permitted time of the game, and the dinosaur will choose how much he will play>",
@@ -1741,7 +1749,7 @@
                 "text": "🦕 | Dinosaurs are much more interested in playing with friends, why not invite them?",
                 "button": "🎩 Invite"
             },
-            "dino_join": "🦕Dinosaur {dinoname} joined the game!",
+            "dino_join": "🦕 Dinosaur {dinoname} joined the game!",
             "join_end": "🦕 The dinosaur has already stopped playing!",
             "zero": "🎮 The dinosaur himself will choose in this interval how much he will play.\n\n⏲ If a dinosaur has a timer in active items, you can find out in your profile how much is left until the end of the game."
         },
@@ -1753,30 +1761,30 @@
             "unrestrained_play": "🎮 | Dinosaur in a state of nervous breakdown, it is better not to touch it."
         },
         "collecting": {
-            "way": "🌴| Choose where the dinosaur will go to get food&gt;",
+            "way": "🌴 | Choose where the dinosaur will go to get food ->",
             "result": {
                 "collecting": "🌿 | {dino_name} went to collect berries and herbs. \n 🎲 | Purpose: {count} 🥬",
-                "hunt": "🍖| {dino_name} went hunting.\n🎲| Target: {count}🥩",
+                "hunt": "🍖 | {dino_name} went hunting.\n🎲| Target: {count}🥩",
                 "fishing": "🍤 | {dino_name} went to fish. \n 🎲 | Purpose: {Count} 🐟",
-                "all": "🥗| {dino_name} went to the general food collection.\n🎲| Target: {count}🍟"
+                "all": "🥗 | {dino_name} went to the general food collection.\n🎲| Target: {count}🍟"
             },
             "buttons": {
                 "collecting": "🌿 Fields",
-                "hunt": "🍖Forests",
-                "fishing": "🍤Lakes",
+                "hunt": "🍖 Forests",
+                "fishing": "🍤 Lakes",
                 "all": "🥗 All together"
             },
             "wait_count": "📅 Enter how much dinosaur must be assembled>",
             "stop_button": {
                 "collecting": "❌ Stop the collection",
-                "hunt": "❌Stop hunting",
+                "hunt": "❌ Stop hunting",
                 "fishing": "❌ Stop fishing",
                 "all": "❌ Stop the collection"
             },
             "progress": {
                 "collecting": "🌿 | The dinosaur collected {now} / {max_count} herbs.",
                 "hunt": "🍖 | The dinosaur collected {now} / {max_count}.",
-                "fishing": "🍤| Dinosaur fished {now} / {max_count} fish.",
+                "fishing": "🍤 | Dinosaur fished {now} / {max_count} fish.",
                 "all": "🥗 | The dinosaur collected {now} / {max_count}."
             },
             "max_count": "❌| Your inventory is bursting with food, now there are {eat_count} pieces of food!"
@@ -1788,22 +1796,22 @@
             "have_code": "🎲 You already have a generated code!",
             "generate": "👥 | How do you want to generate the code?\n\n🎲 random - the bot generates the code from random characters.\n👛 Cost: Free\n\n🎩 Yours - enter any word and it will become your code.\n👛 Cost: {price} coins",
             "var_buttons": {
-                "generate_referal random": "🎲 random",
-                "generate_referal custom": "🎩Your"
+                "generate_referal random": "🎲 Random",
+                "generate_referal custom": "🎩 Your"
             },
-            "code": "🎲Your code was entered into the database, do not forget to share it with your friends!\n\n🎩Code: `{code}`\n\n🔗Link: `{url}`",
-            "my_code": "🎩Code: `{code}`\n\n🔗Link: `{url}`\n\n🥕Uses: `{uses}`",
+            "code": "🎲 Your code was entered into the database, do not forget to share it with your friends!\n\n🎩 Code: `{code}`\n\n🔗 Link: `{url}`",
+            "my_code": "🎩 Code: `{code}`\n\n🔗 Link: `{url}`\n\n🥕 Uses: `{uses}`",
             "custom_code": {
-                "start": "🎩Enter any word without using special characters no longer than 10 characters ->",
-                "max_len": "🎩Your code is more than 10 characters, try again!",
+                "start": "🎩 Enter any word without using special characters no longer than 10 characters ->",
+                "max_len": "🎩 Your code is more than 10 characters, try again!",
                 "min_len": "🎩 Do not use special characters and try again!",
-                "found_code": "🎩This code is already busy, try again!",
+                "found_code": "🎩 This code is already busy, try again!",
                 "no_coins": "🎩 You do not have enough coins to create a code, try to create a random code!"
             },
             "enter_code": {
-                "start": "🔗Enter friend code ->",
-                "True": "🎩The friends code has been activated!\n🎁Your reward: {coins}, {items}",
-                "False": "❌Friend code not found or is your same code!",
+                "start": "🔗 Enter friend code ->",
+                "True": "🎩 The friends code has been activated!\n🎁 Your reward: {coins}, {items}",
+                "False": "❌ Friend code not found or is your same code!",
                 "have_code": "👤 You already have a friend code activated!"
             }
         },
@@ -3249,6 +3257,8 @@
         "ns_craft": {
             "not_materials": "❌ | You don't have enough materials!",
             "create": "🍩 | Item(s) {items} created(s)!"
-        }
+        },
+        "lang_set": "🎏 You can see the information about the translation in the section about the bot.\n🎍 Select the language of the bot ->",
+        "new_lang": "🎏 New language is installed!"
     }
 }
