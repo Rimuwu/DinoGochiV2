@@ -17,7 +17,7 @@ class DinoPassStatus(AdvancedCustomFilter):
         last_dino = user.get_last_dino()
 
         chatid = message.chat.id
-        lang = message.from_user.language_code
+        lang = user.lang
 
         if last_dino:
             if last_dino.status == 'pass': return True
