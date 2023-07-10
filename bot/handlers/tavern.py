@@ -12,7 +12,7 @@ from bot.modules.dinosaur import Dino, create_dino_connection
 from bot.modules.friend_tools import start_friend_menu
 from bot.modules.friends import get_frineds, insert_friend_connect
 from bot.modules.item import counts_items
-from bot.modules.localization import get_data, t
+from bot.modules.localization import get_data, t, get_lang
 from bot.modules.markup import cancel_markup, confirm_markup, count_markup
 from bot.modules.markup import markups_menu as m
 from bot.modules.notifications import user_notification
@@ -26,7 +26,7 @@ events = mongo_client.tasks.events
 
 @bot.message_handler(text='commands_name.dino_tavern.events', is_authorized=True)
 async def events_c(message: Message):
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
     chatid = message.chat.id
 
     text = t('events.info', lang)
@@ -43,7 +43,6 @@ async def events_c(message: Message):
         text += f'{a}. {event_text}\n\n'
 
     await bot.send_message(chatid, text)
-    
 
 async def bonus_message(user, message, lang):
     userid = message.from_user.id
@@ -58,7 +57,7 @@ async def bonus_message(user, message, lang):
     lvl2 = counts_items(award_data['lvl2']['items'], lang) \
         + f', ' + str(award_data['lvl2']['coins'])
 
-    res = await user_in_chat(userid, conf.bot_group_id)
+    res = await user_in_chat(userid, -1001673242031)
     res2 = check_name(message.from_user)
 
     if res: add_text += t('daily_award.2', lang)
@@ -84,9 +83,9 @@ async def bonus_message(user, message, lang):
         rename = t('daily_award.buttons.rename', lang)
         markup_inline.add(InlineKeyboardButton(text=rename, 
                             url='tg://settings/edit_profile'))
-    
+
     markup_inline.add(InlineKeyboardButton(text=award, 
-                        callback_data='daily_award'))
+                            callback_data='daily_award'))
 
     photo = open('images/remain/taverna/dino_reward.png', 'rb')
     await bot.send_photo(message.chat.id, photo, 
@@ -94,7 +93,7 @@ async def bonus_message(user, message, lang):
 
 @bot.message_handler(text='commands_name.dino_tavern.daily_award', is_authorized=True)
 async def bonus(message: Message):
-    lang = message.from_user.language_code
+    lang = get_lang(message.from_user.id)
     user = message.from_user
     await bonus_message(user, message, lang)
 
@@ -102,7 +101,7 @@ async def bonus(message: Message):
     call.data == 'daily_message', is_authorized=True)
 async def daily_message(callback: CallbackQuery):
     user = callback.from_user
-    lang = user.language_code
+    lang = get_lang(callback.from_user.id)
     message = callback.message
     await bonus_message(user, message, lang)
 
@@ -110,11 +109,11 @@ async def daily_message(callback: CallbackQuery):
 async def daily_award(callback: CallbackQuery):
     chatid = callback.message.chat.id
     userid = callback.from_user.id
-    lang = callback.from_user.language_code
+    lang = get_lang(callback.from_user.id)
 
     if sec := daily_award_con(userid):
         award_data = GS['daily_award']
-        res = await user_in_chat(userid, conf.bot_group_id)
+        res = await user_in_chat(userid, -1001673242031)
 
         key, add_bonus = 'lvl1', check_name(callback.from_user)
         if res: key = 'lvl2'
