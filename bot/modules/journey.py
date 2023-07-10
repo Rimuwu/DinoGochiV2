@@ -2,6 +2,8 @@ import json
 from random import choice, choices, randint
 from time import time
 
+from bson.objectid import ObjectId
+
 from bot.config import mongo_client
 from bot.modules.data_format import encoder_text, random_dict, count_elements
 from bot.modules.dinosaur import Dino, end_journey, mutate_dino_stat
@@ -510,6 +512,7 @@ async def activate_event(dinoid, event: dict, friend_dino = None):
 
     data = {'type': event['type'], 'location': event['location'], 
             'worldview': event['worldview']}
+
     if journey_base:
         end_time = journey_base['journey_end'] - int(time())
 
@@ -571,7 +574,10 @@ async def activate_event(dinoid, event: dict, friend_dino = None):
                 if 'coins' in event: del event['coins']
 
             if 'edit_location' in actions:
-                new_loc = choice(list(locations.keys()))
+                ran_locs = list(locations.keys())
+                ran_locs.remove(data['location'])
+
+                new_loc = choice(ran_locs)
                 journey.update_one({'_id': journey_base['_id']}, 
                                    {'$set': {'location': new_loc}})
                 data['old_location'] = new_loc
@@ -703,7 +709,7 @@ async def activate_event(dinoid, event: dict, friend_dino = None):
         return True
     return False
 
-def generate_event_message(event: dict, lang: str, encode: bool = False):
+def generate_event_message(event: dict, lang: str, journey_id: ObjectId, encode: bool = False):
     """ Генерирует сообщение события в путешествие
     """
     location = event['location']
@@ -712,9 +718,19 @@ def generate_event_message(event: dict, lang: str, encode: bool = False):
 
     signs = get_data('journey.signs', lang)
     text_list = get_data(f'journey.{worldview}.{event_type}', lang)
-    text = choice(text_list)
-    
-    if encode: text = encoder_text(text, 4)
+
+    if 'replic' not in event:
+        # Сохраняем id репликии
+        text = choice(text_list)
+        repl_id = text_list.index(text)
+        journey_data = journey.find_one({'_id': journey_id})
+        if journey_data and journey_data['journey_log']:
+            log_index = journey_data['journey_log'].index(event)
+            journey.update_one({'_id': journey_id}, 
+                        {'$set': {f'journey_log.{log_index}.replic': repl_id}})
+    else: text = text_list[event['replic']]
+
+    if encode: text = encoder_text(text, 3)
     add_list = []
 
     if 'coins' in event:
@@ -763,10 +779,9 @@ def generate_event_message(event: dict, lang: str, encode: bool = False):
     if add_list: 
         add_text = ', '.join(add_list)
         text += f'\n<code>{add_text}</code>'
-    # text += f'{location}_{event_type}_{worldview}'
     return text
 
-def all_log(logs: list, lang: str):
+def all_log(logs: list, lang: str, journey_id: ObjectId):
     """ Генерирует весь лог событий, возвращает список с сообщениям макс ~1700 символов
     """
     text, n, n_message = '', 0, 0
@@ -774,7 +789,7 @@ def all_log(logs: list, lang: str):
 
     for event in logs:
         n += 1
-        text = f'{n}. {generate_event_message(event, lang)}\n\n'
+        text = f'{n}. {generate_event_message(event, lang, journey_id)}\n\n'
 
         if len(messages[n_message]) >= 1700:
             messages.append('')

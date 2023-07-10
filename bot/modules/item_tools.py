@@ -272,7 +272,7 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
                          data_item['buffs'][bonus] * count)
 
             return_text += t(f'item_use.buff.{bonus_name}', lang, 
-                            unit=data_item['buffs'][bonus])
+                            unit=data_item['buffs'][bonus] * count)
 
     if dino_update_list and dino:
         # Обновляем данные, не связанные с харрактеристиками, например активные предметы
