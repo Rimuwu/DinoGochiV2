@@ -1,8 +1,9 @@
 {   
     "collections": {
-        "bot": ["users", "dinosaurs", "items", "products", "management", "dead_dinos", "quests"],
+        "bot": ["users", "dinosaurs", "items", "management", "dead_dinos", "quests"],
         "tasks": ["game", "incubation", "journey", "sleep", "collecting", "subscriptions", "statistic", "events"],
-        "connections": ["referals", "friends", "dino_owners", "dino_mood", "tavern", "daily_award", "dungeon_statistic"]
+        "connections": ["referals", "friends", "dino_owners", "dino_mood", "tavern", "daily_award", "dungeon_statistic", "lang"],
+        "market": ["products", "sellers"]
     },
 
     "please_create_this": {
@@ -15,6 +16,20 @@
                 {
                     "_id": "advertisement",
                     "data": {}
+                },
+                {
+                    "_id": "rayting_coins",
+                    "data": [],
+                    "ids": []
+                },
+                {
+                    "_id": "rayting_lvl",
+                    "data": [],
+                    "ids": []
+                },
+                {
+                    "_id": "rayt_update",
+                    "time": 0
                 }
             ]
         }
