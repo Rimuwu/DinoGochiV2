@@ -93,7 +93,7 @@ def add_mood(dino: ObjectId, key: str, unit: int, duration: int,
             'start_time': int(time()),
             'type': 'mood_edit'
         }
-        print('add_mood', dino, key, unit, duration)
+        # print('add_mood', dino, key, unit, duration)
         dino_mood.insert_one(data)
         return True
     return False
@@ -123,8 +123,8 @@ def mood_while_if(dino: ObjectId, key: str, characteristic: str,
                 'start_time': int(time()),
                 'type': 'mood_while'
             }
-            
-            print('mood_while_if', dino, key, characteristic, min_unit, max_unit)
+
+            # print('mood_while_if', dino, key, characteristic, min_unit, max_unit)
             dino_mood.insert_one(data)
 
 async def dino_breakdown(dino: ObjectId):
@@ -165,7 +165,7 @@ async def dino_breakdown(dino: ObjectId):
         if allowed:
             await downgrade_accessory(dino_cl, choice(allowed))
 
-    print('dino_nervous_breakdown', action, duration_s)
+    # print('dino_nervous_breakdown', action, duration_s)
     return action
 
 def dino_inspiration(dino: ObjectId): 
@@ -188,7 +188,7 @@ def dino_inspiration(dino: ObjectId):
         'action': action
     }
 
-    print('dino_inspiration', duration, cancel_mood, action)
+    # print('dino_inspiration', duration, cancel_mood, action)
     dino_mood.insert_one(data)
     return action
 
