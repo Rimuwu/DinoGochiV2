@@ -1318,6 +1318,10 @@
                 "book": {
                     "type_name": "📚Records",
                     "add_text": "*└* {item_description}"
+                },
+                "special": {
+                    "type_name": "🐠 A unique item",
+                    "add_text": "*└* {item_description}"
                 }
             },
             "rank": {
@@ -1415,6 +1419,13 @@
                 "combination": "🛠 | The items were connected!",
                 "comb_err": "❌ | An error occurred during the combination, contact the developer!"
             },
+            "special": {
+                "reborn": {
+                    "ok": "🦕 The dinosaur is reborn!",
+                    "limit": "🦕 | At the moment you can only have a {limit} dinosaur(a). Look in the reference for more information.",
+                    "no_dinos": "🦕 | You are such a wonderful person, the world does not remember your lost dinosaurs!"
+                }
+            },
             "buff": {
                 "+mood": "😀 | The dinosaur received +{unit}% to the mood!",
                 "-mood": "😥 | The dinosaur got -{unit}% to the mood!",
@@ -1432,7 +1443,8 @@
             "confirm": "🛠 Confirm the use of {name}",
             "combine": "⚒ Select the subject for combining with {name} ->",
             "delete": "🗑 Confirm the deletion of {name}",
-            "dino": "🦕 Select a dinosaur/ egg from the list"
+            "dino": "🦕 Select a dinosaur/ egg from the list",
+            "friend": "🎮 Chose friend ->"
         },
         "about_menu": {
             "team": "<b>🎭 | Bot command</b>\n<i>We all do a lot of things at once, but everyone has a role to play...</i>\n\n💻 @AS1AW - Developer\n💻 @magecode - Developer\n💽 @KatranLife - Providing a host\n\n🎨 @unknown_cat13 - Designer\n🧸 @myasoyakich - Community Creator\n\n<b>🗝 | Author of localization</b>\n<i>Everyone can translate the bot into their native language.\nDo you want to help with the translation? Contact @AS1AW\n\n</i>{lang_name} - {author}",
@@ -1765,7 +1777,7 @@
             "result": {
                 "collecting": "🌿 | {dino_name} went to collect berries and herbs. \n 🎲 | Purpose: {count} 🥬",
                 "hunt": "🍖 | {dino_name} went hunting.\n🎲| Target: {count}🥩",
-                "fishing": "🍤 | {dino_name} went to fish. \n 🎲 | Purpose: {Count} 🐟",
+                "fishing": "🍤 | {dino_name} went to fish. \n 🎲 | Purpose: {count} 🐟",
                 "all": "🥗 | {dino_name} went to the general food collection.\n🎲| Target: {count}🍟"
             },
             "buttons": {
@@ -2882,10 +2894,14 @@
                 "eat": "🍕",
                 "sunshine": "☀ It's sunny",
                 "breeze": "🍃 Breeze",
-
-                "rain": "🌧 It rained","anti_rain": "☂ Not wet from the rain",
-
-                "cold_wind": "❄ Cold wind","anti_cold_wind": "🧤 Didn't freeze thanks to clothes"
+                "rain": "🌧 It rained",
+                "anti_rain": "☂ Not wet from the rain",
+                "cold_wind": "❄ Cold wind",
+                "anti_cold_wind": "🧤 Didn't freeze thanks to clothes",
+                "drought": "🏜 Засуха",
+                "snowfall": "🌨 Snowfall",
+                "magic_light": "🌳 Magic light",
+                "magic_animal": "🦁 Magic animal"
             }
         },
         "mobs": {
@@ -3259,6 +3275,9 @@
             "create": "🍩 | Item(s) {items} created(s)!"
         },
         "lang_set": "🎏 You can see the information about the translation in the section about the bot.\n🎍 Select the language of the bot ->",
-        "new_lang": "🎏 New language is installed!"
+        "new_lang": "🎏 New language is installed!",
+        "exchange": "🦄 | Unicorn courier brought a parcel\n\n🖼 Sender: {username}\n👑 Items: {items}",
+        "exchange_me": "🦄 Items transferred!",
+        "confirm_exchange": "🛠 Confirm the transfer {name}"
     }
 }
