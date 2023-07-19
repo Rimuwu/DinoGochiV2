@@ -71,7 +71,8 @@ def horizontal_resizing(age: int, max_size, max_x, max_y, days = 30):
     y = int(age * ((max_y-100) / days)+100)
     return f, x, y
 
-def trans_paste(fg_img, bg_img, alpha=10.0, box=(0, 0)):
+def trans_paste(fg_img: Image.Image, bg_img: Image.Image, 
+                alpha=10.0, box=(0, 0)):
     """Накладывает одно изображение на другое.
     """
     fg_img_trans = Image.new('RGBA', fg_img.size)
