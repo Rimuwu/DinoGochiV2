@@ -2786,7 +2786,7 @@
         "type": "collecting"
     },
     "stone_resurrection": {
-        "image": "item113",
+        "image": "null",
         "rank": "legendary",
         "type": "special",
         "class": "reborn",
