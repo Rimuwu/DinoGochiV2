@@ -287,6 +287,7 @@ def DowngradeItem(userid: int, item: dict, characteristic: str, unit: int):
 def CheckItemFromUser(userid: int, item_data: dict, count: int = 1) -> dict:
     """Проверяет есть ли count предметов у человека
     """
+    
     find_res = items.find_one({'owner_id': userid, 
                                'items_data': item_data,
                                'count': {'$gte': count}
@@ -488,24 +489,24 @@ def item_info(item: dict, lang: str):
     Returns:
         Str, Image
     """
-    standart = ['special', 'dummy', 'material']
+    standart = ['dummy', 'material']
     image = None
-    
+
     item_id: str = item['item_id']
     data_item: dict = get_data(item_id)
     item_name: str = get_name(item_id, lang)
     rank_item: str = data_item['rank']
     type_item: str = data_item['type']
-    
-    if 'class' in data_item:
+    loc_d = get_loc_data('item_info', lang)
+
+    if 'class' in data_item and data_item['class'] in loc_d['type_info']:
         type_loc: str = data_item['class']
     else:
         type_loc: str = data_item['type']
-    
-    loc_d = get_loc_data('item_info', lang)
+
     text = ''
     dp_text = ''
-    
+
     # Шапка и название
     text += loc_d['static']['cap'] + '\n'
     text += loc_d['static']['name'].format(name=item_name) + '\n'
@@ -517,7 +518,7 @@ def item_info(item: dict, lang: str):
     # Тип предмета
     type_name = loc_d['type_info'][type_loc]['type_name']
     text += loc_d['static']['type'].format(type=type_name) + '\n'
-    
+
     # Быстрая обработка предметов без фич
     if type_item in standart:
         dp_text += loc_d['type_info'][type_loc]['add_text']
@@ -533,6 +534,12 @@ def item_info(item: dict, lang: str):
 
     # Книга
     elif type_item == 'book':
+        dp_text += loc_d['type_info'][
+            type_loc]['add_text'].format(
+                item_description=get_description(item_id, lang))
+    
+    # Специальные предметы
+    elif type_item == 'special':
         dp_text += loc_d['type_info'][
             type_loc]['add_text'].format(
                 item_description=get_description(item_id, lang))
@@ -637,5 +644,5 @@ def item_info(item: dict, lang: str):
             image = open(f"images/items/{data_item['image']}.png", 'rb')
         except:
             log(f'Item {item_id} image incorrect', 4)
-    
+
     return text, image
