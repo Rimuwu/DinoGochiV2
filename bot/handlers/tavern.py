@@ -9,7 +9,6 @@ from bot.const import GAME_SETTINGS as GS
 from bot.exec import bot
 from bot.modules.data_format import list_to_inline, seconds_to_str
 from bot.modules.dinosaur import Dino, create_dino_connection
-from bot.modules.friend_tools import start_friend_menu
 from bot.modules.friends import get_frineds, insert_friend_connect
 from bot.modules.item import counts_items
 from bot.modules.localization import get_data, t, get_lang
@@ -118,9 +117,9 @@ async def daily_award(callback: CallbackQuery):
         key, add_bonus = 'lvl1', check_name(callback.from_user)
         if res: key = 'lvl2'
 
-        items = []
-        items = award_data[key]['items']
-        coins = award_data[key]['coins']
+        items, coins = [], 0
+        items += award_data[key]['items']
+        coins += award_data[key]['coins']
         if add_bonus:
             items += award_data['bonus']['items']
             coins += award_data['bonus']['coins']
