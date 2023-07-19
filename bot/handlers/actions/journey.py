@@ -162,7 +162,7 @@ async def journey_stop(callback: CallbackQuery):
         data = journey_task.find_one({'dino_id': dino['_id']})
         end_journey(dino['_id'])
         if data:
-            quest_process(data['sended'], 'journey', data['journey_end'] - data['journey_start'])
+            quest_process(data['sended'], 'journey', (int(time()) - data['journey_start']) // 60)
             await send_logs(data['sended'], lang, data, dino['name'])
 
 async def send_logs(chatid: int, lang: str, data: dict, dino_name: str):

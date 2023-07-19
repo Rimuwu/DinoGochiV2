@@ -28,7 +28,7 @@ async def end_journey_time():
         dino = dinosaurs.find_one({'_id': i['dino_id']})
         if dino:
             end_journey(i['dino_id'])
-            quest_process(i['sended'], 'journey', i['journey_end'] - i['journey_start'])
+            quest_process(i['sended'], 'journey', (int(time()) - i['journey_start']) // 60)
 
             lang = await get_dino_language(i['dino_id'])
             await send_logs(i['sended'], lang, i, dino['name'])
