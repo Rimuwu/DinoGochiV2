@@ -19,6 +19,7 @@ from bot.modules.item_tools import (AddItemToUser, CheckItemFromUser,
                                     delete_item_action, exchange_item)
 from bot.modules.localization import get_data, t, get_lang
 from bot.modules.markup import markups_menu as m
+from bot.modules.data_format import user_name
 
 users = mongo_client.bot.users
 
@@ -140,7 +141,8 @@ async def item_callback(call: CallbackQuery):
         elif call_data[1] == 'delete':
             await delete_item_action(userid, chatid, item, lang)
         elif call_data[1] == 'exchange':
-            await exchange_item(userid, chatid, item, lang)
+            await exchange_item(userid, chatid, item, lang, 
+                                user_name(call.from_user))
         elif call_data[1] == 'egg':
             ret_data = CheckItemFromUser(userid, item)
             if 'abilities' in item:
