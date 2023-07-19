@@ -160,7 +160,7 @@ def quest_ui(quest: dict, lang: str, quest_id: str=''):
     if quest['reward']['items']:
         text = counts_items(quest['reward']['items'], lang)
 
-    time_end = quest['time_end'] - quest['time_start']
+    time_end = quest['time_end'] - int(time())
     text += '\n\n' + t('quest.time_end', lang, time_end=seconds_to_str(time_end, lang))
 
     buttons = {}
@@ -237,9 +237,13 @@ def check_quest(quest: dict):
 
         # Проверяем на наличие
         for key, value in count_items.items():
-            result = items.find_one({"items_data.item_id": key,
-                                     "count": {"$gte": value}})
+            result = items.find({"items_data.item_id": key, "owner_id": quest['owner_id']})
+
             if not result: return False
+            else:
+                max_count = 0
+                for i in result: max_count += i['count']
+                if value > max_count: return False
 
         # Удаляем предметы
         for key, value in count_items.items():
