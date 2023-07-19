@@ -12,6 +12,7 @@ from bot.modules.localization import get_data, t
 from bot.modules.mood import add_mood
 from bot.modules.user import get_frineds, experience_enhancement
 from bot.modules.accessory import check_accessory, weapon_damage, armor_protection, downgrade_accessory
+from bot.modules.logs import log
 
 journey = mongo_client.tasks.journey
 dinosaurs = mongo_client.bot.dinosaurs
@@ -789,7 +790,11 @@ def all_log(logs: list, lang: str, journey_id: ObjectId):
 
     for event in logs:
         n += 1
-        text = f'{n}. {generate_event_message(event, lang, journey_id)}\n\n'
+        try:
+            text = f'{n}. {generate_event_message(event, lang, journey_id)}\n\n'
+        except:
+            text = f'error generation - {event}'
+            log(text, 2, 'log generation')
 
         if len(messages[n_message]) >= 1700:
             messages.append('')
