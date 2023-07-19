@@ -179,6 +179,7 @@ async def dino_handler(message: Message):
 @bot.callback_query_handler(func=lambda call: call.data.startswith('dino_profile'))
 async def answer_edit(call: types.CallbackQuery):
     dino_data = call.data.split()[1]
+    await bot.delete_state(call.from_user.id, call.message.chat.id)
 
     userid = call.from_user.id
     lang = get_lang(call.from_user.id)
