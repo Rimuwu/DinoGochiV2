@@ -458,6 +458,10 @@ def edited_stats(before: int, unit: int):
 def get_age(dinoid: ObjectId):
     """.seconds .days
     """
+    if type(dinoid) != str:
+        dino = dinosaurs.find_one({'alt_id': dinoid})
+        if dino: dinoid = dino['_id']
+
     dino_create = dinoid.generation_time
     now = datetime.now(timezone.utc)
     delta = now - dino_create
