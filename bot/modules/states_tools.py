@@ -3,12 +3,13 @@ from telebot.types import InlineKeyboardMarkup
 
 from bot.config import mongo_client
 from bot.exec import bot
-from bot.modules.data_format import chunk_pages, list_to_keyboard
+from bot.modules.data_format import (chunk_pages, list_to_inline,
+                                     list_to_keyboard)
 from bot.modules.inventory_tools import start_inv
-from bot.modules.localization import t
+from bot.modules.localization import get_data, t
 from bot.modules.markup import down_menu, get_answer_keyboard
 from bot.modules.markup import markups_menu as m
-from bot.modules.user import User
+from bot.modules.user import User, get_frineds, user_info, user_name
 
 items = mongo_client.bot.items
 
@@ -160,7 +161,7 @@ async def ChooseOptionState(function, userid: int,
 
         В function передаёт 
         >>> answer: ???, transmitted_data: dict
-        
+
         options - {"кнопка": данные}
 
         Return:
@@ -296,6 +297,49 @@ async def ChoosePagesState(function, userid: int,
         await function(element, transmitted_data)
         return False, pages
 
+
+async def friend_handler(friend, transmitted_data: dict):
+    lang = transmitted_data['lang']
+    chatid = transmitted_data['chatid']
+
+    text = user_info(friend, lang)
+    buttons = {}
+    
+    for key, text_b in get_data('friend_list.buttons', lang).items():
+        buttons[text_b] = f'{key} {friend.id}'
+    markup = list_to_inline([buttons], 2)
+
+    photos = await bot.get_user_profile_photos(friend.id, limit=1)
+    if photos.photos:
+        photo_id = photos.photos[0][0].file_id #type: ignore
+        await bot.send_photo(chatid, photo_id, text, parse_mode='Markdown', reply_markup=markup)
+    else:
+        await bot.send_message(chatid, text, parse_mode='Markdown', reply_markup=markup)
+
+async def start_friend_menu(function, 
+                userid: int, chatid: int, lang: str, 
+                one_element: bool=False,
+                transmitted_data = None):
+    friends = get_frineds(userid)['friends']
+    options = {}
+
+    if function == None: function = friend_handler
+
+    for friend_id in friends:
+        try:
+            chat_user = await bot.get_chat_member(friend_id, friend_id)
+            friend = chat_user.user
+        except: friend = None
+        if friend: options[user_name(friend, False)] = friend
+
+    await ChoosePagesState(
+        function, userid, chatid, lang, options, 
+        horizontal=2, vertical=3,
+        autoanswer=False, one_element=one_element,  
+        transmitted_data=transmitted_data)
+    return True, 'friend'
+
+
 chooses = {
     'dino': ChooseDinoState,
     'int': ChooseIntState,
@@ -305,7 +349,8 @@ chooses = {
     'inline': ChooseInlineState,
     'custom': ChooseCustomState,
     'pages': ChoosePagesState,
-    'inv': start_inv
+    'inv': start_inv,
+    'friend': start_friend_menu
 }
 
 def prepare_steps(steps: list, userid: int, chatid: int, lang: str):
