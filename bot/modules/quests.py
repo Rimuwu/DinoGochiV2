@@ -42,7 +42,7 @@ def create_quest(complexity: int, qtype: str='', lang: str = 'en'):
     assert 1 <= complexity <= 5, f"1 <= {complexity} <= 5"
 
     if not qtype:
-        types = ['feed', 'collecting', 'fishing', 'journey', 'game', 'get']
+        types = ['feed', 'collecting', 'fishing', 'journey', 'game', 'get', 'hunt']
         # 'kill', 
         qtype = choice(types)
 
