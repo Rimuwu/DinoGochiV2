@@ -6,7 +6,7 @@ from bot.exec import bot
 from bot.handlers.actions.game import start_game_ent
 from bot.modules.data_format import list_to_inline
 from bot.modules.dinosaur import Dino
-from bot.modules.friend_tools import start_friend_menu
+from bot.modules.states_tools import start_friend_menu
 from bot.modules.friends import send_action_invite
 from bot.modules.localization import t, get_lang
 from bot.modules.markup import markups_menu as m
