@@ -3,8 +3,9 @@ from random import randint, shuffle
 from bot.config import mongo_client
 from bot.const import GAME_SETTINGS
 from bot.exec import bot
-from bot.modules.data_format import list_to_inline, random_dict
-from bot.modules.dinosaur import Dino, edited_stats
+from bot.modules.data_format import (list_to_inline, list_to_keyboard,
+                                     random_dict)
+from bot.modules.dinosaur import Dino, edited_stats, insert_dino
 from bot.modules.images import create_eggs_image
 from bot.modules.item import (AddItemToUser, CalculateDowngradeitem,
                               CheckItemFromUser, EditItemFromUser,
@@ -21,11 +22,62 @@ from bot.modules.states_tools import ChooseStepState
 from bot.modules.user import User, experience_enhancement, get_dead_dinos
 
 users = mongo_client.bot.users
+dinosaurs = mongo_client.bot.dinosaurs
 items = mongo_client.bot.items
+dead_dinos = mongo_client.bot.dead_dinos
 
-async def exchange_item(userid: int, chatid:int, item: dict, lang: str):
-    print(userid, chatid, item, lang)
-    ...
+
+async def exchange(return_data: dict, transmitted_data: dict):
+    item = transmitted_data['item']
+    friend = return_data['friend']
+    count = return_data['count']
+    userid = transmitted_data['userid']
+    chatid = transmitted_data['chatid']
+    lang = transmitted_data['lang']
+    username = transmitted_data['username']
+
+    preabil = {}
+    if 'abilities' in item: preabil = item['abilities']
+
+    status = RemoveItemFromUser(userid, item['item_id'], count, preabil)
+    if status:
+        AddItemToUser(friend.id, item['item_id'], count, preabil)
+
+        await bot.send_message(friend.id, t('exchange', lang, 
+                            items=counts_items([item['item_id']]*count, lang),username=username))
+
+        await bot.send_message(chatid, t('exchange_me', lang),
+                               reply_markup=markups_menu(userid, 'last_menu', lang))
+
+
+async def exchange_item(userid: int, chatid: int, item: dict,
+                        lang: str, username: str):
+    items_data = items.find({'items_data': item, "owner_id": userid})
+    max_count = 0
+
+    for i in items_data: max_count += i['count']
+
+    if items_data:
+        item_name = get_name(item['item_id'], lang)
+
+        steps = [
+            {"type": 'bool', "name": 'confirm', "data": {'cancel': True}, 
+             'message': {'text': t('confirm_exchange', lang, name=item_name), 
+                         'reply_markup': confirm_markup(lang)}},
+
+            {"type": 'int', "name": 'count', "data": {
+                "max_int": max_count, 'autoanswer': False}, 
+            'message': {'text': t('css.wait_count', lang), 
+                        'reply_markup': count_markup(max_count, lang)}},
+
+            {"type": 'friend', 'name': 'friend', 'data': {'one_element': True},
+             "message": None
+             }
+        ]
+
+        transmitted_data = {'item': item, 'username': username}
+        await ChooseStepState(exchange, userid, 
+                                      chatid, lang, steps, transmitted_data)
 
 async def end_craft(transmitted_data: dict):
     """ Завершает крафт удаляя и создавая предметы (не понижает прочность предметов и не удаляет сам рецепт)
@@ -37,10 +89,10 @@ async def end_craft(transmitted_data: dict):
     delete_item = transmitted_data['delete_item']
     count = transmitted_data['count']
     lang = transmitted_data['lang']
-    
+
     # Удаление рецепта
     UseAutoRemove(userid, delete_item, count)
-    
+
     # Удаление материалов
     for iteriable_item in materials['delete']:
         item_id = iteriable_item['item_id']
@@ -51,7 +103,7 @@ async def end_craft(transmitted_data: dict):
         if create_data['type'] == 'create':
             preabil = create_data.get('abilities', {}) # Берёт характеристики если они есть
             AddItemToUser(userid, create_data['item'], 1, preabil)
-    
+
     # Вычисление опыта за крафт
     if 'rank' in data_item.keys():
         xp = GAME_SETTINGS['xp_craft'][data_item['rank']] * count
@@ -60,18 +112,17 @@ async def end_craft(transmitted_data: dict):
 
     # Начисление опыта за крафт
     await experience_enhancement(userid, xp)
-    
+
     # Создание сообщения
     created_items = []
     for i in data_item['create']:
         created_items.append(i['item'])
-    
+
     await bot.send_message(chatid, t('item_use.recipe.create', lang, 
                                      items=counts_items(created_items*count, lang)), 
                            parse_mode='Markdown', reply_markup=markups_menu(userid, 'last_menu', lang))
 
-async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1, 
-             dino=None, combine_item: dict = {}):
+async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1, dino=None, combine_item: dict = {}):
     return_text = ''
     dino_update_list = []
     use_status, send_status, use_baff_status = True, True, True
@@ -259,6 +310,26 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
             return_text = t('item_use.egg.egg_limit', lang, 
                             limit=dino_limit['limit'])
     
+    elif data_item['type'] == 'special':
+        user = User(userid)
+
+        if data_item['class'] == 'reborn':
+            dino_limit = user.max_dino_col()['standart']
+
+            if dino_limit['now'] < dino_limit['limit']:
+                res, alt_id = insert_dino(userid, dino['data_id'], # type: ignore
+                                          dino['quality']) # type: ignore
+                if res:
+                    dinosaurs.update_one({'_id': res.inserted_id}, {'$set': {'name': dino['name']}}) # type: ignore
+                    dead_dinos.delete_one({'_id': dino['_id']}) # type: ignore
+                    return_text = t('item_use.special.reborn.ok', lang, 
+                            limit=dino_limit['limit'])
+                else: use_status = False
+            else:
+                return_text = t('item_use.special.reborn.limit', lang, 
+                            limit=dino_limit['limit'])
+                use_status = False
+
     if data_item.get('buffs', []) and use_status and use_baff_status and dino:
         # Применяем бонусы от предметов
         return_text += '\n\n'
@@ -278,7 +349,7 @@ async def use_item(userid: int, chatid: int, lang: str, item: dict, count: int=1
         # Обновляем данные, не связанные с харрактеристиками, например активные предметы
         for i in dino_update_list: dino.update(i)
 
-    if dino:
+    if dino and type(dino) == Dino:
         # Обновляем данные харрактеристик
         upd_values = {}
         dino_now: Dino = Dino(dino._id)
@@ -447,19 +518,32 @@ async def data_for_use_item(item: dict, userid: int, chatid: int, lang: str, con
 
             if data_item['class'] in ['freezing', 'defrosting']:
                 ...
-            elif  data_item['class'] in ['reborn']:
-
+            elif data_item['class'] in ['reborn']:
                 dead = get_dead_dinos(userid)
-            #     dinos_dict = {}
-            #     for i_dino in dead:
-            #         crop_name = '🦕' + crop_text(i_dino['name'])
-            #         dinos_dict[crop_name] = i_dino['_id']
-                
-            # steps = [
-            #     {"type": 'pages', "name": 'dino', "data": {'options': dinos_dict}, 
-            #         'message': {'text': t('css.wait_count', lang)}}
-            # ]
-        
+                options, markup = {}, []
+
+                if dead:
+                    a = 0
+                    for i in dead:
+                        a += 1
+                        name = f'{a}🦕 {i["name"]}'
+                        markup.append(name)
+                        options[name] = i
+
+                    markup.append([t('buttons_name.cancel', lang)])
+
+                    steps = [
+                        {"type": 'option', "name": 'dino', "data": 
+                            {"options": options}, 
+                            'message': {'text': t('css.dino', lang), 
+                                        'reply_markup': list_to_keyboard(markup, 2)}}
+                    ]
+
+                else:
+                    await bot.send_message(chatid, 
+                                           t('item_use.special.reborn.no_dinos', lang))
+                    return
+
         elif type_item == 'book':
             text, markup = book_page(item_id, 0, lang)
 
