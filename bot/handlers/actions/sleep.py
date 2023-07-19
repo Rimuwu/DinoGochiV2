@@ -71,8 +71,11 @@ async def end_choice(option: str, transmitted_data: dict):
             # Если короткий, то спрашиваем сколько дино должен спать
             cancel_button = t('buttons_name.cancel', lang)
             buttons = list_to_keyboard([cancel_button])
+            transmitted_data = { 
+                    'last_dino': last_dino
+                }
             await ChooseIntState(short_sleep, userid, 
-                                chatid, lang, min_int=5, max_int=480)
+                                chatid, lang, min_int=5, max_int=480, transmitted_data=transmitted_data)
 
             await bot.send_message(userid, 
                                 t('put_to_bed.choice_time', lang), 

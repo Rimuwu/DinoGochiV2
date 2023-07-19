@@ -63,7 +63,7 @@ async def check_notification():
     for sleeper in data:
         dino = dinosaurs.find_one({'_id': sleeper['dino_id']})
         if dino:
-            await end_sleep(sleeper['dino_id'], sleeper['_id'], 
+            await end_sleep(sleeper['dino_id'],
                             sleeper['sleep_end'] - sleeper['sleep_start'])
             if sleeper['sleep_type'] == 'short':
                 mood_time = (int(time()) - sleeper['sleep_start']) // 2
