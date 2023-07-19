@@ -105,11 +105,15 @@ async def send_item_info(item: dict, transmitted_data: dict, mark: bool=True):
     if mark: markup = item_info_markup(item, lang)
     else: markup = None
 
-    if image is None:
+    if not image:
         await bot.send_message(chatid, text, 'Markdown',
                             reply_markup=markup)
     else:
-        await bot.send_photo(chatid, image, text, 'Markdown', 
+        try:
+            await bot.send_photo(chatid, image, text, 'Markdown', 
+                            reply_markup=markup)
+        except: 
+             await bot.send_message(chatid, text,
                             reply_markup=markup)
 
 async def swipe_page(userid: int, chatid: int):
