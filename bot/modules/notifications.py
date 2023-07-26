@@ -84,13 +84,10 @@ async def dino_notification(dino_id: ObjectId, not_type: str, **kwargs):
 
     async def send_not(text, markup_inline):
         for owner in owners:
-            try:
-                chat_user = await bot.get_chat_member(owner["owner_id"], owner["owner_id"])
-                lang = get_lang(chat_user.user.id)
-            except: lang = 'en'
+            lang = get_lang(owner["owner_id"])
 
             user = users.find_one({'userid': owner['owner_id']})
-            if user and user['settings']['notifications']:
+            if user:
 
                 # Добавление переменных в данные
                 if kwargs.get('add_time_end', False):
