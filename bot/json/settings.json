@@ -3,7 +3,7 @@
         "bot": ["users", "dinosaurs", "items", "management", "dead_dinos", "quests"],
         "tasks": ["game", "incubation", "journey", "sleep", "collecting", "subscriptions", "statistic", "events"],
         "connections": ["referals", "friends", "dino_owners", "dino_mood", "tavern", "daily_award", "dungeon_statistic", "lang"],
-        "market": ["products", "sellers"]
+        "market": ["products", "sellers", "preferential", "puhs"]
     },
 
     "please_create_this": {
