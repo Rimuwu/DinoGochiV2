@@ -29,7 +29,13 @@ from bot.modules.statistic import get_now_statistic
 from bot.modules.quests import create_quest, quest_ui, save_quest
 from bot.modules.journey import create_event, random_event, activate_event
 
+from bot.modules.market import (add_product, create_seller,
+                                generate_sell_pages, product_ui, seller_ui)
+
 dinosaurs = mongo_client.bot.dinosaurs
+products = mongo_client.market.products
+sellers = mongo_client.market.sellers
+puhs = mongo_client.market.puhs
 
 async def func(*args):
     print(args)
@@ -120,11 +126,10 @@ async def test_options_pages(message):
     userid = message.from_user.id
     chatid = message.chat.id
     lang = message.from_user.language_code
-    
+
     user = User( message.from_user.id)
     dino = user.get_last_dino()
-    if dino:
-        await notification_manager(dino._id, 'heal', 50)
+    if dino: await notification_manager(dino._id, 'heal', 50)
 
 @bot.message_handler(commands=['st'], is_admin=True)
 async def st(message):
@@ -239,7 +244,7 @@ async def ev(message):
     userid = message.from_user.id
     chatid = message.chat.id
     lang = message.from_user.language_code
-    
+
     user = User( message.from_user.id)
     dino = user.get_last_dino()
     if dino:
@@ -313,3 +318,38 @@ async def ev(message):
             
     
 #     print('\n43')
+
+@bot.message_handler(commands=['qqq'], is_admin=True)
+async def add_all(message):
+    
+    userid = message.from_user.id
+    chatid = message.chat.id
+    lang = message.from_user.language_code
+    user = User( message.from_user.id)
+    dino = user.get_last_dino()
+    
+    quest = create_quest(1, 'journey', lang=lang)
+    save_quest(quest, userid)
+
+
+
+@bot.message_handler(commands=['product'], is_admin=True)
+async def product(message):
+    
+    userid = message.from_user.id
+    chatid = message.chat.id
+    
+    product = products.find_one({'alt_id': '1191252229_m1Sgp0GN'})
+    text, markup = product_ui('ru', product['_id'], False)
+    
+    await bot.send_message(chatid, text, 
+                           reply_markup=markup, parse_mode='Markdown')
+
+@bot.message_handler(commands=['ttt'], is_admin=True)
+async def ttt(message):
+    
+    userid = message.from_user.id
+    chatid = message.chat.id
+    
+    text = seconds_to_str(1000, 'ru', False, 'hour')
+    print(text)
