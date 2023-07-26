@@ -13,6 +13,7 @@ from . import referal_menu
 from . import dialogs
 from . import quests
 from . import tavern
+from . import market
 
 from . import actions
 
