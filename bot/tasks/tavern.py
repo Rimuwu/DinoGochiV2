@@ -96,11 +96,12 @@ async def daily_award_old():
     for i in list(data): daily_data.delete_one({'_id': i['_id']})
 
 async def daily_award_notif():
-    users_ids = users.find({}, {'userid': 1})
+    users_ids = users.find({}, {'userid': 1, 'settings': 1})
 
     for uid in users_ids:
         if not daily_data.find_one({'owner_id': uid['userid']}):
-            await user_notification(uid['userid'], 'daily_award')
+            if uid['settings']['notifications']:
+                await user_notification(uid['userid'], 'daily_award')
 
 if __name__ != '__main__':
     if conf.active_tasks:
