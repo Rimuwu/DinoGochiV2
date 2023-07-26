@@ -211,6 +211,7 @@ async def start_inv(function, userid: int, chatid: int, lang: str,
                     type_filter: list = [], item_filter: list = [], 
                     exclude_ids: list = [],
                     start_page: int = 0, changing_filters: bool = True,
+                    inventory: list = [],
                     transmitted_data = None):
     """ Функция запуска инвентаря
         type_filter - фильтр типов предметов
@@ -219,9 +220,10 @@ async def start_inv(function, userid: int, chatid: int, lang: str,
         exclude_ids - исключаемые id
         changing_filters - разрешено ли изменять фильтры
         one_time_pages - сколько генерировать страниц за раз, все если 0
+        inventory - Возможность закинуть уже обработанный инвентарь, если пусто - сам сгенерирует инвентарь
     """
     if not transmitted_data: transmitted_data = {}
-    
+
     if 'userid' not in transmitted_data: transmitted_data['userid'] = userid
     if 'chatid' not in transmitted_data: transmitted_data['chatid'] = chatid
     if 'lang' not in transmitted_data: transmitted_data['lang'] = lang
@@ -229,9 +231,10 @@ async def start_inv(function, userid: int, chatid: int, lang: str,
     user_settings = users.find_one({'userid': userid}, {'settings': 1})
     if user_settings: inv_view = user_settings['settings']['inv_view']
     else: inv_view = [2, 3]
-    
-    invetory, count = get_inventory(userid, exclude_ids)
-    pages, row, items_data, names = inventory_pages(invetory, lang, inv_view, type_filter, item_filter)
+
+    if not inventory:
+        inventory, count = get_inventory(userid, exclude_ids)
+    pages, row, items_data, names = inventory_pages(inventory, lang, inv_view, type_filter, item_filter)
 
     if not pages:
         await bot.send_message(chatid, t('inventory.null', lang))
@@ -241,7 +244,7 @@ async def start_inv(function, userid: int, chatid: int, lang: str,
             async with bot.retrieve_data(userid, chatid) as data:
                 old_function = data['function']
                 old_transmitted_data = data['transmitted_data']
-            
+
             if old_function: function = old_function
             if old_transmitted_data: transmitted_data = old_transmitted_data
         except: 
@@ -264,6 +267,7 @@ async def start_inv(function, userid: int, chatid: int, lang: str,
             data['function'] = function
             data['transmitted_data'] = transmitted_data
 
+        print(9)
         await swipe_page(userid, chatid)
         return True, 'inv'
 
