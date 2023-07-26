@@ -255,7 +255,7 @@ async def filter_callback(call: CallbackQuery):
 
             await filter_menu(userid, chatid)
 
-@bot.callback_query_handler(func=lambda call: call.data.split()[0] == 'book')
+@bot.callback_query_handler(func=lambda call: call.data.startswith('book'))
 async def book(call: CallbackQuery):
     call_data = call.data.split()
     chatid = call.message.chat.id
@@ -268,7 +268,7 @@ async def book(call: CallbackQuery):
         await bot.edit_message_text(text, chatid, call.message.id, reply_markup=markup, parse_mode='Markdown')
     except: pass
 
-@bot.callback_query_handler(func=lambda call: call.data.split()[0] == 'ns_craft')
+@bot.callback_query_handler(func=lambda call: call.data.startswith('ns_craft'))
 async def ns_craft(call: CallbackQuery):
     call_data = call.data.split()
     chatid = call.message.chat.id
