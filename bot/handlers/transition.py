@@ -230,3 +230,11 @@ async def buy_ale(callback: CallbackQuery):
     else:
         text = t('buy_ale.no_coins', lang)
         await bot.send_message(friend, text)
+
+@bot.message_handler(text='commands_name.market.seller_profile', is_authorized=True)
+async def seller_profile(message: Message):
+    userid = message.from_user.id
+    lang = get_lang(message.from_user.id)
+
+    await bot.send_message(message.chat.id, t('menu_text.seller', lang), 
+                           reply_markup=m(userid, 'seller_menu', lang))
