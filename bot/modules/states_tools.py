@@ -392,7 +392,7 @@ async def ChooseStepState(function, userid: int,
 
         ТОЛЬКО ДЛЯ Inline
           delete_markup  (bool, optional) - удаляет клавиатуру после завершения
-        
+
         delete_user_message (boll, optional) - удалить сообщение пользователя на следующем этапе
         delete_message (boll, optional) - удалить сообщения бота на следующем этапе
 
@@ -431,6 +431,19 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
         Для edit_message требуется добавление message_data в transmitted_data.temp
         (Использовать только для inline состояний, не подойдёт для MessageSteps)
     """
+    
+    async def exit_chose(transmitted_data):
+        await bot.delete_state(userid, chatid)
+        await bot.reset_data(userid, chatid)
+
+        return_function = transmitted_data['return_function']
+        return_data = transmitted_data['return_data']
+        del transmitted_data['return_function']
+        del transmitted_data['return_data']
+        del transmitted_data['process']
+
+        await return_function(return_data, transmitted_data)
+
     userid = transmitted_data['userid']
     chatid = transmitted_data['chatid']
     lang = transmitted_data['lang']
@@ -469,15 +482,20 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
 
         if ret_data['type'] == 'update_data':
             # Обработчик данных между запросами
-            # Не может стоять последней, для этого есть return_function
+            # Теперь может быть последним!
             if 'async' in ret_data and ret_data['async']:
                 transmitted_data, answer = await ret_data['function'](transmitted_data)
             else:
                 transmitted_data, answer = ret_data['function'](transmitted_data)
+            steps = transmitted_data['steps']
 
-            transmitted_data['return_data'][ret_data['name']] = answer
+            if ret_data['name']:
+                transmitted_data['return_data'][ret_data['name']] = answer
             transmitted_data['process'] += 1
-            ret_data = steps[transmitted_data['process']]
+            if transmitted_data['process'] < len(steps):
+                ret_data = steps[transmitted_data['process']]
+            else: # Заверщение
+                return await exit_chose(transmitted_data)
 
         # Очистка данных
         if 'delete_steps' in transmitted_data and transmitted_data['delete_steps'] and transmitted_data['process'] != 0:
@@ -545,13 +563,5 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
                 data['transmitted_data'] = transmitted_data
 
     else: #Все данные получены
-        await bot.delete_state(userid, chatid)
-        await bot.reset_data(userid, chatid)
+        return await exit_chose(transmitted_data)
 
-        return_function = transmitted_data['return_function']
-        return_data = transmitted_data['return_data']
-        del transmitted_data['return_function']
-        del transmitted_data['return_data']
-        del transmitted_data['process']
-
-        await return_function(return_data, transmitted_data)
