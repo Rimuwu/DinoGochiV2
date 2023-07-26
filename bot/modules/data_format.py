@@ -206,8 +206,15 @@ def seconds_to_str(seconds: int, lang: str='en', mini: bool=False, max_lvl='seco
                 result += f'{unit} {ending_w(tp, unit)} '
         if max_lvl == tp: break
     
+    
+
     if result[:-1]: return result[:-1]
-    else: return '0'
+    else: 
+        result = '0'
+        if max_lvl != 'seconds': 
+            return f'0 {time_format[max_lvl][3]}'
+        return result
+
 
 def near_key_number(n: int, data: dict, alternative: int=1):
     """ Находит ближайшее меньшее число среди ключей.
