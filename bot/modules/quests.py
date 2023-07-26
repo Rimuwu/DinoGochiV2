@@ -214,7 +214,7 @@ def quest_process(userid: int, quest_type: str, unit: int = 0, items: list = [])
             else: plus = unit
             if plus:
                 quests_data.update_one({'_id': quest['_id']}, 
-                                       {"$inc": {'data.count.1': plus}})
+                                       {"$inc": {'data.count.1': plus+1}})
 
         elif quest_type == 'feed':
             for i in items:
