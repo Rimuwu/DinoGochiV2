@@ -205,8 +205,6 @@ def seconds_to_str(seconds: int, lang: str='en', mini: bool=False, max_lvl='seco
             else:
                 result += f'{unit} {ending_w(tp, unit)} '
         if max_lvl == tp: break
-    
-    
 
     if result[:-1]: return result[:-1]
     else: 
