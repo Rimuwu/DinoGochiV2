@@ -43,7 +43,7 @@ async def get_state(message: Message):
     except: pass
 
 @bot.message_handler(state=GeneralStates.ChooseDino, is_authorized=True)
-async def ChooseDino(message: Message):
+async def ChoseDino(message: Message):
     """Общая функция для выбора динозавра
     """
     userid = message.from_user.id
@@ -58,7 +58,7 @@ async def ChooseDino(message: Message):
         await bot.delete_state(userid, message.chat.id)
         await bot.reset_data(message.from_user.id, message.chat.id)
         if 'steps' in transmitted_data:
-            transmitted_data['steps'][len(transmitted_data['return_data'])]['umessageid'] = message.id
+            transmitted_data['steps'][transmitted_data['process']]['umessageid'] = message.id
 
         await func(ret_data[message.text], transmitted_data=transmitted_data)
     else:
@@ -102,7 +102,7 @@ async def ChooseInt(message: Message):
         await bot.delete_state(userid, message.chat.id)
         await bot.reset_data(message.from_user.id,  message.chat.id)
         if 'steps' in transmitted_data:
-            transmitted_data['steps'][len(transmitted_data['return_data'])]['umessageid'] = message.id
+            transmitted_data['steps'][transmitted_data['process']]['umessageid'] = message.id
 
         await func(number, transmitted_data=transmitted_data)
 
@@ -134,7 +134,7 @@ async def ChooseString(message: Message):
         await bot.delete_state(userid, message.chat.id)
         await bot.reset_data(message.from_user.id,  message.chat.id)
         if 'steps' in transmitted_data:
-            transmitted_data['steps'][len(transmitted_data['return_data'])]['umessageid'] = message.id
+            transmitted_data['steps'][transmitted_data['process']]['umessageid'] = message.id
 
         await func(content, transmitted_data=transmitted_data)
 
@@ -167,7 +167,7 @@ async def ChooseConfirm(message: Message):
             await bot.delete_state(userid, message.chat.id)
             await bot.reset_data(message.from_user.id,  message.chat.id)
             if 'steps' in transmitted_data:
-                transmitted_data['steps'][len(transmitted_data['return_data'])]['umessageid'] = message.id
+                transmitted_data['steps'][transmitted_data['process']]['umessageid'] = message.id
 
             await func(buttons_data[content], transmitted_data=transmitted_data)
 
@@ -189,7 +189,7 @@ async def ChooseOption(message: Message):
 
     if message.text in options.keys():
         if 'steps' in transmitted_data:
-            transmitted_data['steps'][len(transmitted_data['return_data'])]['umessageid'] = message.id
+            transmitted_data['steps'][transmitted_data['process']]['umessageid'] = message.id
 
         await bot.delete_state(userid, message.chat.id)
         await bot.reset_data(message.from_user.id,  message.chat.id)
@@ -213,7 +213,7 @@ async def ChooseCustom(message: Message):
     
     if result:
         if 'steps' in transmitted_data:
-            transmitted_data['steps'][len(transmitted_data['return_data'])]['umessageid'] = message.id
+            transmitted_data['steps'][transmitted_data['process']]['umessageid'] = message.id
 
         await bot.delete_state(userid, message.chat.id)
         await bot.reset_data(message.from_user.id,  message.chat.id)
@@ -248,7 +248,7 @@ async def ChooseOptionPages(message: Message):
         transmitted_data['options'] = options
         transmitted_data['key'] = message.text
         if 'steps' in transmitted_data:
-            transmitted_data['steps'][len(transmitted_data['return_data'])]['umessageid'] = message.id
+            transmitted_data['steps'][transmitted_data['process']]['umessageid'] = message.id
 
         res = await func(
             options[message.text], transmitted_data=transmitted_data)
@@ -262,7 +262,7 @@ async def ChooseOptionPages(message: Message):
             # Обновить все данные
             elif res['status'] == 'update' and 'options' in res:
                 pages = chunk_pages(res['options'], settings['horizontal'], settings['vertical'])
-                
+
                 if 'page' in res: page = res['page']
                 if page >= len(pages) - 1: page = 0
 
