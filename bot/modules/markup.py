@@ -14,6 +14,7 @@ dinosaurs = mongo_client.bot.dinosaurs
 management = mongo_client.bot.management
 referals = mongo_client.connections.referals
 tavern = mongo_client.connections.tavern
+sellers = mongo_client.market.sellers
 
 def back_menu(userid) -> str:
     """Возвращает предыдущее меню
@@ -21,7 +22,7 @@ def back_menu(userid) -> str:
     markup_key = 'main_menu'
     menus_list = ['main_menu', 'settings_menu', 'settings2_menu',
                   'main_menu', 'actions_menu', 
-                  'main_menu', 'profile_menu', 'market_menu',
+                  'main_menu', 'profile_menu', 'market_menu', 'seller_menu',
                   'main_menu', 'profile_menu', 'about_menu',
                   'main_menu', 'friends_menu', 'referal_menu',
                   'main_menu', 'dino_tavern_menu', 'dungeon_menu'
@@ -152,8 +153,23 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
         add_back_button = True
         buttons = [
             ['random', 'find'],
-            ['add_product', 'product_list', 'remove_product'],
+            ['seller_profile'],
         ]
+
+    elif markup_key == 'seller_menu':
+        # Меню магазина
+        prefix = 'commands_name.seller_profile.'
+        add_back_button = True
+        
+        if sellers.find_one({'owner_id': userid}):
+            buttons = [
+                ['add_product', 'remove_product'],
+                ['my_market'],
+            ]
+        else:
+            buttons = [
+                ['create_market']
+            ]
 
     elif markup_key == 'dino_tavern_menu':
         # Меню таверны
@@ -331,7 +347,18 @@ def confirm_markup(lang: str='en') -> ReplyKeyboardMarkup:
         [t('buttons_name.confirm', lang)], 
         [t('buttons_name.cancel', lang)]]
     )
-    
+
+def answer_markup(lang: str='en') -> ReplyKeyboardMarkup:
+    """Создаёт клавиатуру для выбора да / нет
+
+    Args:
+        lang (str, optional):  Язык кнопок
+    """
+    return list_to_keyboard([
+        [t('buttons_name.yes', lang), t('buttons_name.no', lang)], 
+        [t('buttons_name.cancel', lang)]]
+    )
+
 def cancel_markup(lang: str='en') -> ReplyKeyboardMarkup:
     """Создаёт клавиатуру для отмены
 
