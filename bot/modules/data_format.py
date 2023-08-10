@@ -15,6 +15,7 @@ def escape_markdown(content: str) -> str:
 
     parse = re.sub(r"([_*\[\]()~`>\#\+\-=|\!\{\}])", r"", content)
     reparse = re.sub(r"\\\\([_*\[\]()~`>\#\+\-=|!\{\}])", r"", parse)
+    if not reparse: reparse = 'noname'
     return reparse 
 
 def chunks(lst: list, n: int) -> list:
@@ -139,12 +140,12 @@ def seconds_to_time(seconds: int) -> dict:
     """ Преобразует число в словарь
     """
     time_calculation = {
-        'weekly': 604800,
+        'month': 2_592_000, 'weekly': 604800,
         'day': 86400, 'hour': 3600, 
         'minute': 60, 'second': 1
     }
     time_dict = {
-        'weekly': 0,
+        'month': 0, 'weekly': 0,
         'day': 0, 'hour': 0, 
         'minute': 0, 'second': 0
     }
