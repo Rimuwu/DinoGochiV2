@@ -9,4 +9,5 @@ from . import mood_check
 from . import data_reupdat
 from . import tavern
 from . import events_check
+from . import market_check
 from . import journey_check
