@@ -76,11 +76,14 @@ def inventory_pages(items: list, lang: str = 'en',
         name = get_name(item['item_id'], lang)
         standart = is_standart(item)
 
+        count_name = f' x{count}'
+        if count == 1: count_name = ''
+
         if standart: 
-            end_name = f"{name} x{count}"
+            end_name = f"{name}{count_name}"
         else:
             code = item_code(item, False)
-            end_name = f"{name} ({code}) x{count}"
+            end_name = f"{name} ({code}){count_name}"
         items_data[end_name] = item
 
     items_names = list(items_data.keys())
@@ -94,7 +97,7 @@ def inventory_pages(items: list, lang: str = 'en',
 
     # Нужно, чтобы стрелки корректно отображались
     if horizontal < 3 and len(pages) > 1: horizontal = 3
-    return pages, horizontal, items_data, items_names
+    return pages, horizontal, items_data
     
 async def send_item_info(item: dict, transmitted_data: dict, mark: bool=True):
     lang = transmitted_data['lang']
@@ -234,7 +237,7 @@ async def start_inv(function, userid: int, chatid: int, lang: str,
 
     if not inventory:
         inventory, count = get_inventory(userid, exclude_ids)
-    pages, row, items_data, names = inventory_pages(inventory, lang, inv_view, type_filter, item_filter)
+    pages, row, items_data = inventory_pages(inventory, lang, inv_view, type_filter, item_filter)
 
     if not pages:
         await bot.send_message(chatid, t('inventory.null', lang))
@@ -256,7 +259,6 @@ async def start_inv(function, userid: int, chatid: int, lang: str,
             data['pages'] = pages
             data['max_page'] = len(pages)
             data['items_data'] = items_data
-            data['names'] = names
             data['filters'] = type_filter
             data['items'] = item_filter
 
@@ -267,7 +269,6 @@ async def start_inv(function, userid: int, chatid: int, lang: str,
             data['function'] = function
             data['transmitted_data'] = transmitted_data
 
-        print(9)
         await swipe_page(userid, chatid)
         return True, 'inv'
 
