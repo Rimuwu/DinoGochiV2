@@ -87,7 +87,7 @@ async def inventory(result: list, transmitted_data: dict):
 
     text = t(f'inv_set_pages.accept', lang, 
              gr = result[0], vr = result[1]
-             )
+            )
     await bot.send_message(chatid, text, 
                     reply_markup=m(userid, 'last_menu', lang))
     users.update_one({'userid': userid}, {"$set": {'settings.inv_view': result}})
@@ -163,10 +163,9 @@ async def custom_profile_adapter(content: str, transmitted_data: dict):
     text = t('custom_profile.ok', lang)
     await bot.send_message(chatid, text, 
                            reply_markup=m(userid, 'last_menu', lang))
-    
+
     users.update_one({'userid': userid}, 
                      {'$set': {'settings.custom_url': content}})
-    
 
 @bot.message_handler(text='commands_name.settings2.custom_profile', 
                      is_authorized=True)
@@ -181,16 +180,16 @@ async def custom_profile(message: Message):
         await bot.send_message(userid, text, reply_markup=markup)
         await ChooseStringState(custom_profile_adapter, userid, chatid, lang, max_len=200)
     else:
-        text = t('custom_profile.no_premium', lang)
+        text = t('no_premium', lang)
         await bot.send_message(userid, text)
 
-@bot.callback_query_handler(func=lambda call: call.data.startswith('rename_dino'), is_authorized=True)
+@bot.callback_query_handler(func=lambda call: call.data.startswith('rename_dino'), is_authorized=True, private=True)
 async def rename_button(callback: CallbackQuery):
     dino_data = callback.data.split()[1]
     lang = get_lang(callback.from_user.id)
     userid = callback.from_user.id
     chatid = callback.message.chat.id
-    
+
     trans_data = {
         'userid': userid,
         'chatid': chatid,
@@ -203,17 +202,17 @@ async def adapter_delete(return_data, transmitted_data):
     chatid = transmitted_data['chatid']
     userid = transmitted_data['userid']
     lang = transmitted_data['lang']
-    
+
     if return_data['code'] != transmitted_data['code']:
         await bot.send_message(chatid, t('delete_me.incorrect_code', lang),     
                                parse_mode='Markdown', 
                                reply_markup=m(userid, 'last_menu', lang))
-    
+
     else:
         user = User(userid)
         user.full_delete()
         r = list_to_keyboard([t('commands_name.start_game', lang)])
-        
+
         await bot.send_message(chatid, t('delete_me.delete', lang),     
                                parse_mode='Markdown', 
                                reply_markup=r)
@@ -298,7 +297,6 @@ async def my_name(message: Message):
 
 async def lang_set(new_lang: str, transmitted_data: dict):
     userid = transmitted_data['userid']
-    lang = transmitted_data['lang']
     chatid = transmitted_data['chatid']
 
     langs.update_one({'userid': userid}, {'$set': {'lang': new_lang}})
