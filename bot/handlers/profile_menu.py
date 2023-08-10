@@ -4,7 +4,7 @@ from bot.config import mongo_client
 from bot.exec import bot
 from bot.modules.localization import get_lang, t, get_data
 from bot.modules.markup import markups_menu as m
-from bot.modules.user import user_info
+from bot.modules.user import user_info, premium
 from bot.modules.data_format import list_to_inline, seconds_to_str, user_name, escape_markdown
 from time import time
 from pprint import pprint
@@ -30,7 +30,6 @@ async def infouser(message: Message):
 @bot.message_handler(text='commands_name.profile.rayting', 
                      is_authorized=True)
 async def rayting(message: Message):
-    userid = message.from_user.id
     chatid = message.chat.id
     lang = get_lang(message.from_user.id)
     time_update_rayt = 0
@@ -80,7 +79,7 @@ async def rayting_call(callback: CallbackQuery):
         text += t("rayting.place", lang, place=my_place) + '\n\n'
 
         for user in top_10:
-            sign = '*├*'
+            sign, add_text = '*├*', ''
             if user == top_10[-1]: sign = '*└*'
 
             try:
@@ -94,7 +93,10 @@ async def rayting_call(callback: CallbackQuery):
             elif n == 2: n = '🥈'
             elif n == 3: n = '🥉'
 
-            add_text = t(f"rayting.{data[1]}_text", lang, **user)
+            if premium(user['userid']):
+                add_text += t(f"rayting.premium", lang)
+
+            add_text += t(f"rayting.{data[1]}_text", lang, **user)
             text += f'{sign} #{n} *{name}*\n     {add_text}\n'
 
         if add_my_rivals:
