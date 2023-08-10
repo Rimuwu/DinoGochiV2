@@ -82,6 +82,8 @@ async def dino_notification(dino_id: ObjectId, not_type: str, **kwargs):
     owners = list(dino_owners.find({'dino_id': dino_id}))
     text, markup_inline = not_type, InlineKeyboardMarkup()
 
+    if 'unit' in kwargs and kwargs['unit'] < 0: kwargs['unit'] = 0
+
     async def send_not(text, markup_inline):
         for owner in owners:
             lang = get_lang(owner["owner_id"])
@@ -162,18 +164,22 @@ async def dino_notification(dino_id: ObjectId, not_type: str, **kwargs):
 async def user_notification(user_id: int, not_type: str, 
                             lang: str='', **kwargs):
     """ Те уведомления которые в любом случае отправятся 1 раз
+
+        add_way - дополнительный аргумент, учитывает уведомление по not_type но текст в зависимости от аргумента add_way 
     """
     text, markup_inline = not_type, InlineKeyboardMarkup()
     standart_notification = [
-        'donation', 'lvl_up'
+        'donation', 'lvl_up', 
+        'product_delete' # необходим preview
     ]
     unstandart_notification = [
         'incubation_ready', # необходим dino_alt_id_markup, user_name
         'send_request', #необходим user_name
-        'not_independent_dead', 'independent_dead', 'daily_award'
+        'not_independent_dead', 'independent_dead', 'daily_award',
+        'product_buy' # необходим col, price, name, alt_id
     ]
     add_way = '.'+kwargs.get('add_way', '')
-    
+
     if not lang:
         try:
             chat_user = await bot.get_chat_member(user_id, user_id)
@@ -182,16 +188,16 @@ async def user_notification(user_id: int, not_type: str,
 
     if not_type in standart_notification:
         text = t(f'notifications.{not_type}{add_way}', lang, **kwargs)
-    
+
     elif not_type in unstandart_notification:
         data = get_data(f'notifications.{not_type}', lang)
         text = data['text'].format(**kwargs)
         markup_inline = inline_menu(data['inline_menu'], lang, **kwargs)
-    
+
     else:
         log(prefix='Notification not_type', 
-            message=f'User: {user_id}, Data: {not_type}', 
-            lvl=2)
+            message=f'Тип уведомления {not_type} не найден!', 
+            lvl=3)
 
     log(prefix='Notification', 
         message=f'User: {user_id}, Data: {not_type} Kwargs: {kwargs}', lvl=0)
