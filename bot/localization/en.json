@@ -47,11 +47,15 @@
                 "referal": "❤ Invite a friend"
             },
             "market": {
-                "random": "🛒 Random Products",
+                "random": "🛒 Random products",
                 "find": "🔍 Product search",
-                "add_product": "➕ Add a product",
-                "product_list": "📜 My Products",
-                "remove_product": "➖ Delete the product"
+                "seller_profile": "🛒 Store menu"
+            },
+            "seller_profile": {
+                "add_product": "☄ Add product",
+                "my_market": "📜 My store",
+                "my_products": "🌂 My products",
+                "create_market": "🛍 Create a store"
             },
             "actions": {
                 "no_dino": "🧵 You don't have a dinosaur",
@@ -160,6 +164,12 @@
                 "Week",
                 "Weeks",
                 "w."
+            ],
+            "month": [
+                "month",
+                "Moons",
+                "months",
+                "mon."
             ]
         },
         "owner": "Master",
@@ -645,7 +655,7 @@
         },
         "notifications": {
             "daily_award": {
-                "text": "🎩 | Don't forget to claim your daily bonus!",
+                "text": "🎩 | Don't forget to claim your daily bonus!\n\nDaily notifications can be disabled in the settings.",
                 "inline_menu": [
                     "daily_award"
                 ]
@@ -770,6 +780,11 @@
                     "😀 *{dino_name}*: *{owner_name}*, I'm ready to move mountains!\n\n_{message}_"
                 ],
                 "inline_menu": "dino_profile"
+            },
+            "product_delete": "🍟 This product ({preview}) has been removed from the market.",
+            "product_buy": {
+                "text": "🍜 Product ({preview}) was purchased {col} once for the amount of {price} Field, by the user {name}",
+                "inline_menu": "product_info"
             }
         },
         "breakdown": {
@@ -791,26 +806,31 @@
             "actions_menu": "🦕 Return to the activity menu",
             "dungeon_menu": "🗻 Return to the dungeon menu",
             "dino_tavern_menu": "🍻 Return to the tavern menu",
-            "settings_menu": "🔗 Settings menu (Page 1)"
+            "settings_menu": "🔗 Settings menu (Page 1)",
+            "market_menu": " 🛒 Return to the market menu"
         },
         "menu_text": {
             "actions": "🕹 | The action bar is open!",
             "profile": "👁‍🗨 | The profile panel is open!",
             "friends": "👥 | The friends panel is open!",
-            "settings": "🔧 | The settings menu is activated\n\n🔔 Notifications: {notif}\n🎞 Profile mode: {profile_view}\n📚 Inventory Mode: {inv_view}",
-            "market": "🛒 | The market panel is open!",
+            "settings": "🔧 | The settings menu is activated\n\n🔔 Daily Notifications: {notif}\n🎞 Profile mode: {profile_view}\n📚 Inventory Mode: {inv_view}",
+            "market": {
+                "info": "🛒 | The market panel is open!\n_Promoted goods may appear here_",
+                "products": "📯 And here are a few products that may be useful to you!"
+            },
             "dino_tavern": {
                 "info": "🍺 You've entered the dino tavern!\n\n📜 While in the tavern, you can get a quest or hear useful information!",
                 "friends": "🍺 Friends in the tavern: Search among the crowd...",
                 "friends2": "🍺 Friends in the tavern:",
                 "tavern_col": "🔮 Total in the tavern: {col}",
                 "went": "🍺 {name} went to the tavern...",
-                "button": "🍻 Buy ale (Price: 50)"
+                "button": "🍻 Buy ale for 50 🪙"
             },
             "about": "🤖 | Hello! I'm @{bot_name} and here's some information about me!\n\n🗝️ | Statistics: 👥 <code>{col_u}</code> 🦕 <code>{col_d}</code> 🔮 <code>{col_i}</code>\n<i>{update_time} back.</i>",
             "referal": "🤍 | Redirection to the referral system menu!\n\n💜 | *When you reach the {lvl}* level by your friend, you will receive {award_text}!\n\n❤️ | A friend will receive a bonus in the amount of: {coins} coins, {items}",
             "referal_separator": " or",
-            "settings2": "🔧 | Settings menu (Page 2)\n\n🦕 Handling: {my_name}"
+            "settings2": "🔧 | Settings menu (Page 2)\n\n🦕 Handling: {my_name}",
+            "seller": "🎇 Go to the store management menu"
         },
         "no_text_key": "❌ The text corresponding to the key {key} is not found, contact the developer @as1aw!",
         "edit_dino_button": {
@@ -858,6 +878,10 @@
             "daily_award": {
                 "text": "🎁 | Take away",
                 "callback": "daily_message"
+            },
+            "product_info":{
+                "text": "🍜 About the product",
+                "callback": "product_info info {alt_id}"
             }
         },
         "states": {
@@ -1035,7 +1059,8 @@
             "lvl_text": "*└* Level: {lvl} Experience: {xp}",
             "coins_text": "*└* Coins: {coins}",
             "rayting_lvl": "*┌* 🎢 Level rating:",
-            "rayting_coins": "*┌* 🎢 Coin rating:"
+            "rayting_coins": "*┌* 🎢 Coin rating:",
+            "premium": "*├* Subscriber ✨ DinoUltima"
         },
         "put_to_bed": {
             "dont_want": "🌙 The dinosaur doesn't want to sleep!",
@@ -1471,7 +1496,7 @@
                     "name": "⚡ DinoUltima",
                     "image": "images/remain/support/dinoultima.png",
                     "short": "Ultra Subscription for you and your dinosaurs!",
-                    "description": "🖼 The ability to install any picture instead of the background! \n 🍼 Look for my dinosaur - send a dinosaur to a kindergarten for any time! \n ✨ Display ultra status in all lists. \n 🧶 Increasing limits for food collection. \n 🏝 additional locations on the trip. \n 🎮 additional games. \n 🦕 +1 to the dinosaur limit."
+                    "description": "🖼 The ability to install any picture instead of the background!\n🍼 Look for my dinosaur - send a dinosaur to a kindergarten for any time!\n✨ Display ultra status in all lists.\n🧶 Increasing limits for food collection.\n🏝 additional locations on the trip.\n🎮 additional games.\n🦕 +1 to the dinosaur limit.\n🎠 Installation of any image for the store menu.\n🕹 Increase of limits on promotion."
                 },
                 "rescue_kit": {
                     "name": "❤ Rescue kit",
@@ -1518,7 +1543,6 @@
         },
         "custom_profile": {
             "manual": "🖼 | Enter the link that leads to the photo to install it on the background of the dinosaur's profile.\n\n🎏 | To remove the background, type \"-\"",
-            "no_premium": "✨ | You don't have a subscription to access this feature!",
             "ok": "✨ | The link is set if the background of the dinosaur profile has not changed, then the link does not lead to the photo."
         },
         "delete_me": {
@@ -3278,6 +3302,135 @@
         "new_lang": "🎏 New language is installed!",
         "exchange": "🦄 | Unicorn courier brought a parcel\n\n🖼 Sender: {username}\n👑 Items: {items}",
         "exchange_me": "🦄 Items transferred!",
-        "confirm_exchange": "🛠 Confirm the transfer {name}"
+        "confirm_exchange": "🛠 Confirm the transfer {name}",
+        "market_create": {
+            "name": "🎞 Enter the name of the store, no more than 50 characters long",
+            "description": "🧵 Enter the description of the store, no more than 500 characters long",
+            "create": "🎁 The store is created!",
+            "lvl": "🎭 To create a store, you need to have at least the 2nd level!"
+        },
+        "market_ui": {
+            "had": "🎏 |",
+            "owner": "🎃 Owner:",
+            "me_owner": "You",
+            "earned": "🎡 Earned:",
+            "needy": "(Poor)",
+            "stable": "(Stable)",
+            "rich": "(Rich)",
+            "conducted": "🎱 Transactions conducted:",
+            "products": "📯 Active transactions:",
+            "not_found": "🧨 Seller not detected",
+                        "my_option": "🎩 The bot can automatically send a notification about a new product to a group or channel, for more information, write `/push_info`",
+            "buttons": {
+                "market_products": "👜 Active transactions",
+                "no_products": "❌ No active transactions",
+                "combine": "❗ Complain",
+                "edit_image": "🖼 Background (⭐)",
+                "edit_text": "🎏 Description",
+                "edit_name": "🎃 Title",
+                "cancel_all": "🎫 Complete all transactions"
+                }
+        },
+        "add_product": {
+            "options_info": "🎠 | Select the type of transaction.\n\n🍕 ➡ 🪙 - Items for coins. You sell items, the buyer pays the coins you specified.\n\n🪙 ➡ 🍕 - Coins for items. You place an order for items, the buyer sells you items for the amount specified by you.\n\n🍕 ➡ 🍕 - Items on items. Exchange of items.\n\n🍕 ➡ ⏳ - Auction. You put up items, specify the starting price, the end time and the minimum bid. The winner of the auction takes the goods.",
+        "chose_item": {
+            "items_coins": "🎟 Select an item to add to the items being sold",
+            "coins_items": "🎟 Select an item to add to the order",
+            "items_items": "🎟 Select an item to add to the exchange",
+            "auction": "🎟 Select an item to add to the auction"
+        },
+        "trade_items": "🍷 Select the item you want to get in return",
+        "wait_count": "🎎 Enter quantity",
+        "add_item": "🎞 Do you want to add another item?",
+        "coins": {
+            "items_coins": "🎐 Specify the total price of the product",
+            "coins_items": "🎐 Specify how much you are willing to pay for all these items",
+            "auction": "🎐 Specify the initial price of the goods"
+        },
+        "stock": {
+            "items_coins": "🎨 Specify the quantity of the product in stock.\n\n_For example, you added 2 carrots and 1 tomato to the product, if you now enter 3, then 6 carrots and 3 tomatoes will be removed from your inventory, as well as 3 people will be able to purchase your product._",
+            "coins_items": "🎨 How many times can an order be executed\n\n_For example, if you specify 2, and in the oreder you want to exchange 2 carrots for 100 coins, then in general you will spend 400 coins for 4 carrots._",
+            "items_items": "🎨 Specify how many times you can exchange resources."
+        },
+        "time_end": "🎩 Specify the end time of the auction, you are required to specify the number of seconds. The maximum value is 2592000 (30 days).\n\n⏰ Write /timer (seconds) to translate it into an understandable value.",
+        "min_add": "☄ Specify the minimum bid, this is the number by which the minimum person must raise the price to participate in the auction.",
+        "few_coins": "❌ You don't have enough coins {coins} to place a purchase order!",
+        "all_good": "🎩 Your product is on the market!",
+        "no_items": "❌ Not all the items you sell are in the inventory!"
+        },
+        "product_ui": {
+            "cap":"*🎴 | Product Information*",
+            "type": "*🍷 Type:* {type}",
+            "in_stock": "*🎡 Bought:* {now} | {all}",
+            "types": {
+                "items_coins": "🍗 Sale of items",
+                "coins_items": "🔎 Oder for items",
+                "items_items": "📦 Exchange of items",
+                "auction": "⏰ Auction of items"
+        },
+        "text": {
+            "items_coins": "*🪙 Price:* {price} of coins.\n*🧵 Premdets for sale:*\n{items}",
+            "coins_items": "*🪙 Offered price:* {price} of coins.\n*🧵 Buying items:*\n{items}",
+            "items_items": "*🧵 The seller gives:* {items}\n*🎉 Wants to get in return:* {price}",
+            "auction": "*🧵 Auction for items:* {items}\n\n*🪙 Price at the moment:* {price} of coins.\n*⌚ Will end in:* {end_time}\n*💚 Minimum bid:* +{min_add}\n\n*〽 Top 3 contenders:*\n{users}"
+        },
+        "buttons": {
+            "edit_price": "🎩 Change price",
+            "add": "➕ Add stock",
+            "buy": "🛒 Buy",
+            "delete": "❌ Delete item",
+            "auction": "〽 Participate",
+            "view": "🔎 View",
+            "promotion": "👜 Promote",
+            "alredy_promotion": "💚 Is progressing",
+            "items_info": "🎈 State of items"
+        },
+        "owner_message": "_The commission from the sale is 2%, the product will be removed from the market in {time}_",
+        "no_action_users": "There is no one there"
+        },
+        "auction": {
+            "delete_auction": "🧵 The auction you participated in for items {items} has been deleted or completed. The funds have been refunded.",
+            "win": "🍡 Congratulations, you won the auction for items: {items}!"
+        },
+        "product_info": {
+            "delete": "🎍The product was deleted!",
+            "error": "🎞 The product was not found, it may have already been deleted or it was bought the maximum number of times.",
+            "new_price": "🪙 Specify the new price of the product",
+            "add_stock": "🌮 Specify the amount of additional stock",
+            "update_price": "🧵 The price of the product has been updated!",
+            "not_coins": "❌You don't have that many coins!",
+            "no_items": "💥 You don't have all the items to add to the stock",
+            "stock": "❣ The stock of the product has been updated!"
+        },
+        "seller": {
+            "confirm_delete_all": "🍚 Are you perpetuated that you want to remove all your products from the market?",
+            "error": "🍚 Seller not found!",
+            "delete_all": "⭐ All products have been removed from the market!",
+            "edit_name": "🎏 Enter a new name, or click cancel.",
+            "new_name": "🍚 Name changed!",
+            "edit_description": "🎏 Enter a new description of the store or click cancel.",
+            "new_description": "🍚 Description changed changed!",
+            "edit_image": "🖼 | Enter the link that leads to the photo to install it on the background of the dinosaur profile.\n\n🎏 | To remove the background, enter \"-\"",
+            "new_image": "🍚Custom image installed!",
+            "delete_image": "❌Custom image deleted!"
+        },
+        "no_premium": "✨ | You don't have a subscription to access this feature!",
+        "no_products": "❗ You don't have products!",
+        "buy": {
+            "common_buy": "☄ Choose how many times do you want to purchase this product?",
+            "auction": "🧵 Enter your bid, keep in mind that your bid must be greater than the last one by {unit}.",
+            "max_min": "❌ Error in specifying the maximum amount. Most likely you don't have enough coins to bet or the product has already been sold out.",
+            "erro_max_col": "🥞 The specified number is greater than the maximum amount of stock!",
+            "error_no_coins": "🍳 You don't have enough coins to buy!",
+            "error_no_items": "🥙 You don't have items to commit exchange!",
+            "ok": "🍣 Congratulations on your purchase!"
+        },
+            "promotion": {
+            "buy": "🍿 Enabling promotion will allow you to place this product for 12 hours in a random list of displayed products when entering the market.\n🥪 The cost is 1890 coins.",
+            "max": "🥓 You have the maximum number of promoted products!",
+            "ok": "🍠 The product has been added to the list of promoted products. Going to the store, players will see 3 random items from all promoted.",
+            "no_coins": "🥠 You don't have enough coins to enable promotion!",
+            "already": "🥩 The product has already been added to the promotion.\n🥪 Keep in mind, without a premium, you can simultaneously promote 5 products, with a premium - 10!"
+        }
     }
 }
