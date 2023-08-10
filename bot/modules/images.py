@@ -251,3 +251,13 @@ def dino_collecting(dino_id: int, col_type: str):
     img = trans_paste(dino_image, img, 1.0, 
                       (x + y, y, sz + x + y, sz + y))
     return pil_image_to_file(img)
+
+def market_image(custom_url, status):
+    try:
+        response = requests.get(custom_url, stream = True)
+        response = Image.open(io.BytesIO(response.content)).convert("RGBA")
+        img = response.resize((900, 350), Image.Resampling.LANCZOS)
+        img = pil_image_to_file(img)
+    except: 
+        img = open(f'images/remain/market/{status}.png', 'rb')
+    return img
