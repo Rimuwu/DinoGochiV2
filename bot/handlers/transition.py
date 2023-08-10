@@ -15,10 +15,13 @@ from bot.modules.markup import back_menu
 from bot.modules.markup import markups_menu as m
 from bot.modules.statistic import get_now_statistic
 from bot.modules.user import User, take_coins, user_name
+from bot.modules.market import preview_product
 
 users = mongo_client.bot.users
 management = mongo_client.bot.management
 tavern = mongo_client.connections.tavern
+preferential = mongo_client.market.preferential
+products = mongo_client.market.products
 
 @bot.message_handler(text='buttons_name.back', is_authorized=True)
 async def back_buttom(message: Message):
@@ -29,7 +32,7 @@ async def back_buttom(message: Message):
 
     text = t(f'back_text.{back_m}', lang)
     await bot.send_message(message.chat.id, text, 
-                           reply_markup=m(userid, back_m, lang) )
+                           reply_markup=m(userid, back_m, lang))
 
 @bot.message_handler(text='commands_name.settings_menu', is_authorized=True)
 async def settings_menu(message: Message):
@@ -89,8 +92,30 @@ async def market_menu(message: Message):
     userid = message.from_user.id
     lang = get_lang(message.from_user.id)
 
-    await bot.send_message(message.chat.id, t('menu_text.market', lang), 
-                           reply_markup=m(userid, 'market_menu', lang))
+    await bot.send_message(message.chat.id, t('menu_text.market.info', lang), 
+                           reply_markup=m(userid, 'market_menu', lang), parse_mode='Markdown')
+
+    products_pref = list(preferential.find({"owner_id": {"$ne": userid}})).copy()
+    rand_p = {}
+
+    if products_pref:
+        for _ in range(3):
+            if products_pref:
+                prd = choice(products_pref)
+                products_pref.remove(prd)
+
+                product = products.find_one({'_id': prd['product_id']})
+                if product:
+                    rand_p[
+                        preview_product(product['items'], product['price'], 
+                                        product['type'], lang)
+                    ] = f'product_info info {product["alt_id"]}'
+
+        if rand_p:
+            markup = list_to_inline([rand_p], 1)
+            await bot.send_message(message.chat.id, t('menu_text.market.products', lang), 
+                                reply_markup=markup, parse_mode='Markdown')
+
 
 @bot.message_handler(text='commands_name.actions_menu', is_authorized=True)
 async def actions_menu(message: Message):
