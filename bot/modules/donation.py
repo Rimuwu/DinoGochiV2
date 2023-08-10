@@ -164,7 +164,7 @@ async def check_donations():
                                         cost - donat['amount'], 
                                         rub_cost - donat['amount_in_user_currency']
                                         ]
-                                    
+
                                     await send_donat_notification(userid, error, 
                                                                 difference=donation_data['difference'][0],
                                                                 currency=donat['currency'],
