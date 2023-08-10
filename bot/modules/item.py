@@ -190,7 +190,7 @@ def RemoveItemFromUser(userid: int, itemid: str,
                             {'_id': 1, 'count': 1})
     find_list = list(find_items)
     
-    for iterable_item in find_list:  max_count += iterable_item['count']
+    for iterable_item in find_list: max_count += iterable_item['count']
     if count > max_count: return False
     else:
         for iterable_item in find_list:
@@ -302,6 +302,20 @@ def CheckItemFromUser(userid: int, item_data: dict, count: int = 1) -> dict:
         if find_res: difference = count - find_res['count']
         else: difference = count
         return {"status": False, "item": find_res, 'difference': difference}
+
+def CheckCountItemFromUser(userid: int, count: int, itemid: str, 
+                           preabil: dict = {}):
+    """ Проверяет не конкретный документ на count а всю базу, возвращая ответ на вопрос - Есть ли у человек count предметов
+    """
+    item = get_item_dict(itemid, preabil)
+    max_count = 0
+    find_items = items.find({'owner_id': userid, 'items_data': item}, 
+                            {'_id': 1, 'count': 1})
+    find_list = list(find_items)
+    
+    for iterable_item in find_list: max_count += iterable_item['count']
+    if count > max_count: return False
+    return True
 
 def EditItemFromUser(userid: int, now_item: dict, new_data: dict):
     """Функция ищет предмет по now_item и в случае успеха изменяет его данные на new_data.
@@ -537,7 +551,7 @@ def item_info(item: dict, lang: str):
         dp_text += loc_d['type_info'][
             type_loc]['add_text'].format(
                 item_description=get_description(item_id, lang))
-    
+
     # Специальные предметы
     elif type_item == 'special':
         dp_text += loc_d['type_info'][
@@ -611,7 +625,7 @@ def item_info(item: dict, lang: str):
     text += dp_text
     item_bonus = data_item.get('buffs', [])
     add_bonus, add_penaltie = [], []
-    
+
     for bonus in item_bonus:
         if item_bonus[bonus] > 0:
             add_bonus.append(loc_d['bonuses']['+' + bonus].format(
@@ -628,10 +642,10 @@ def item_info(item: dict, lang: str):
                 text += f'*└* {i}'
             else: 
                 text += f'*├* {i}\n'
-    
+
     if add_penaltie:
         text += loc_d['static']['add_penaltie']
-        
+
         for i in add_penaltie:
             if i == add_penaltie[-1]:
                 text += '*└* '
