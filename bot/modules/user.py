@@ -476,6 +476,8 @@ def premium(userid: int):
 def take_coins(userid: int, col: int, update: bool = False) -> bool:
     """Функция проверяет, можно ли отнять / добавить col монет у / к пользователя[ю]
        Если updatе - то обновляет данные
+       
+       ЕСЛИ ХОТИМ ОТНЯТЬ, НЕ ЗАБЫВАЕМ В COL УКАЗЫВАТЬ ОТРИЦАТЕЛЬНОЕ ЧИСЛО
     """
     user = users.find_one({'userid': userid})
     if user:
