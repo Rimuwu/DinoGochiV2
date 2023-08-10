@@ -388,7 +388,9 @@ def circle_data(userid, chatid, lang, items, option, prepare: bool = True):
     not_p_steps = [
         {
             "type": 'inv', "name": 'items', "data": {'inventory': items,
-                                                    'changing_filters': changing_filters}, 
+                                                    'changing_filters': changing_filters,
+                                                    'delete_search': True
+                                                    }, 
             "translate_message": True,
             'message': {'text': f'add_product.chose_item.{option}'}
         },
@@ -419,7 +421,9 @@ def trade_circle(userid, chatid, lang, items, prepare: bool = True):
     not_p_steps = [
         {
             "type": 'inv', "name": 'trade_items', "data": {'inventory': items,
-                                                    'changing_filters': True}, 
+                                                    'changing_filters': True,
+                                                    'delete_search': True
+                                                    }, 
             "translate_message": True,
             'message': {'text': f'add_product.trade_items'}
         },
