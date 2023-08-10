@@ -43,7 +43,7 @@ async def main_checks():
     for dino in dinos:
         if dino['status'] == 'inactive': continue
         is_sleeping = dino['status'] == 'sleep'
-        
+
         if dino['stats']['heal'] <= 0:
             Dino(dino['_id']).dead()
             continue
@@ -75,7 +75,7 @@ async def main_checks():
 
                 await mutate_dino_stat(dino, 'heal', randint(1, 4))
                 if randint(0, 1): await mutate_dino_stat(dino, 'eat', -1)
-                
+
         # =================== Настроение ========================== #
 
         # Если игры меньше 14, то накладывает условие на настроение
@@ -124,11 +124,11 @@ async def main_checks():
         if dino['stats']['heal'] <= 20:
             if random.uniform(0, 1) <= P_MOOD:
                 mood_while_if(dino['_id'], 'little_heal', 'heal', -1, 40, -1)
-        
+
         elif dino['stats']['heal'] >= 85:
             if random.uniform(0, 1) <= P_MOOD:
                 mood_while_if(dino['_id'], 'multi_heal', 'heal', 60, 101, 1)
-        
+
         if dino['stats']['mood'] >= 95:
             if random.randint(0, 5) == 3:
                 await calculation_points(dino, 'inspiration')
