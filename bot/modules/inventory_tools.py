@@ -146,6 +146,9 @@ async def swipe_page(userid: int, chatid: int):
         del buttons['⚙️']
         del buttons['🔎']
 
+    if 'delete_search' in settings and settings['delete_search']:
+        del buttons['🔎']
+
     if filters:
         if settings['changing_filters'] and settings['changing_filters']:
             buttons['🗑'] = 'inventory_menu clear_filters'
@@ -214,7 +217,7 @@ async def start_inv(function, userid: int, chatid: int, lang: str,
                     type_filter: list = [], item_filter: list = [], 
                     exclude_ids: list = [],
                     start_page: int = 0, changing_filters: bool = True,
-                    inventory: list = [],
+                    inventory: list = [], delete_search: bool = False,
                     transmitted_data = None):
     """ Функция запуска инвентаря
         type_filter - фильтр типов предметов
@@ -223,6 +226,7 @@ async def start_inv(function, userid: int, chatid: int, lang: str,
         exclude_ids - исключаемые id
         changing_filters - разрешено ли изменять фильтры
         one_time_pages - сколько генерировать страниц за раз, все если 0
+        delete_search - Убрать поиск
         inventory - Возможность закинуть уже обработанный инвентарь, если пусто - сам сгенерирует инвентарь
     """
     if not transmitted_data: transmitted_data = {}
@@ -264,7 +268,9 @@ async def start_inv(function, userid: int, chatid: int, lang: str,
 
             data['settings'] = {'view': inv_view, 'lang': lang, 
                                 'row': row, 'page': start_page,
-                                'changing_filters': changing_filters}
+                                'changing_filters': changing_filters,
+                                'delete_search': delete_search
+                                }
 
             data['function'] = function
             data['transmitted_data'] = transmitted_data
