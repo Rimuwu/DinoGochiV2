@@ -171,7 +171,7 @@ async def game_start(return_data: dict,
         ])
         await bot.send_message(chatid, text, reply_markup=markup)
 
-@bot.message_handler(text='commands_name.actions.entertainments', dino_pass=True, nothing_state_str=True)
+@bot.message_handler(text='commands_name.actions.entertainments', dino_pass=True, nothing_state=True)
 async def entertainments(message: Message):
     userid = message.from_user.id
     lang = get_lang(message.from_user.id)

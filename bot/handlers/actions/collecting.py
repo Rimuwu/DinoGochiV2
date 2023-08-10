@@ -62,7 +62,7 @@ async def collecting_adapter(return_data, transmitted_data):
 
 
 @bot.message_handler(text='commands_name.actions.collecting', 
-                     dino_pass=True, nothing_state_str=True)
+                     dino_pass=True, nothing_state=True)
 async def collecting_button(message: Message):
     userid = message.from_user.id
     chatid = message.chat.id
@@ -131,7 +131,7 @@ async def collecting_progress(message: Message):
     
 
 @bot.callback_query_handler(func=
-                            lambda call: call.data.startswith('collecting'), is_authorized=True)
+                            lambda call: call.data.startswith('collecting'), is_authorized=True, private=True)
 async def collecting_callback(callback: CallbackQuery):
     dino_data = callback.data.split()[2]
     action = callback.data.split()[1]

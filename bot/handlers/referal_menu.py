@@ -78,7 +78,7 @@ async def custom_handler(message: Message, transmitted_data: dict):
     return status, code
 
 @bot.callback_query_handler(func=lambda call: 
-    call.data.startswith('generate_referal'))
+    call.data.startswith('generate_referal'), private=True)
 async def generate_code(call: CallbackQuery):
     chatid = call.message.chat.id
     userid = call.from_user.id

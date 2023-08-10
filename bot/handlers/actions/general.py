@@ -71,7 +71,7 @@ async def invite_adp(friend, transmitted_data: dict):
     await bot.send_message(chatid, t('back_text.actions_menu', lang), reply_markup=m(userid, 'last_menu', lang))
 
 @bot.callback_query_handler(func=
-                            lambda call: call.data.startswith('invite_to_action'))
+                            lambda call: call.data.startswith('invite_to_action'), private=True)
 async def invite_to_action(callback: CallbackQuery):
     lang = get_lang(callback.from_user.id)
     chatid = callback.message.chat.id

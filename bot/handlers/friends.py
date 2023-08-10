@@ -85,7 +85,7 @@ async def add_friend_end(friendid: int, transmitted_data: dict):
         await user_notification(friendid, 'send_request', lang, user_name=user_name)
 
 @bot.callback_query_handler(func=lambda call: 
-    call.data.startswith('add_friend'), nothing_state=True)
+    call.data.startswith('add_friend'), nothing_state=True, private=True)
 async def add_friend_callback(call: CallbackQuery):
     chatid = call.message.chat.id
     user_id = call.from_user.id
@@ -183,7 +183,7 @@ async def requests_list(message: Message):
     await request_open(userid, chatid, lang)
     
 @bot.callback_query_handler(func=lambda call: 
-    call.data.startswith('requests'))
+    call.data.startswith('requests'), private=True)
 async def requests_callback(call: CallbackQuery):
     chatid = call.message.chat.id
     user_id = call.from_user.id
@@ -275,7 +275,7 @@ async def joint(return_data: dict,
     await bot.send_message(chatid, text, reply_markup=m(userid, 'last_menu', lang))
 
 @bot.callback_query_handler(func=lambda call: 
-    call.data.startswith('joint_dinosaur'))
+    call.data.startswith('joint_dinosaur'), private=True)
 async def joint_dinosaur(call: CallbackQuery):
     lang = get_lang(call.from_user.id)
     chatid = call.message.chat.id
@@ -299,7 +299,7 @@ async def joint_dinosaur(call: CallbackQuery):
     await ChooseStepState(joint, userid, chatid, lang, steps, {'friendid': int(data[1]), 'username': user_name(call.from_user)})
 
 @bot.callback_query_handler(func=lambda call: 
-    call.data.startswith('take_dino'))
+    call.data.startswith('take_dino'), private=True)
 async def take_dino(call: CallbackQuery):
     lang = get_lang(call.from_user.id)
     chatid = call.message.chat.id
@@ -337,7 +337,7 @@ async def take_dino(call: CallbackQuery):
                 if owner: await bot.send_message(owner, text_to_owner)
 
 @bot.callback_query_handler(func=lambda call: 
-    call.data.startswith('take_money'))
+    call.data.startswith('take_money'), private=True)
 async def take_money(call: CallbackQuery):
     lang = get_lang(call.from_user.id)
     chatid = call.message.chat.id

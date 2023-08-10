@@ -36,7 +36,7 @@ async def check_quests(message: Message):
             await sleep(0.3)
 
 @bot.callback_query_handler(func=lambda call: 
-    call.data.startswith('quest'))
+    call.data.startswith('quest'), private=True)
 async def quest(call: CallbackQuery):
     chatid = call.message.chat.id
     userid = call.from_user.id

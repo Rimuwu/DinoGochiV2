@@ -92,7 +92,7 @@ async def start_game_message(message: types.Message):
 
 
 @bot.callback_query_handler(is_authorized=False, 
-                            func=lambda call: call.data.startswith('start_egg'))
+                            func=lambda call: call.data.startswith('start_egg'), private=True)
 async def egg_answer_callback(callback: types.CallbackQuery):
     egg_id = int(callback.data.split()[1])
     lang = callback.from_user.language_code

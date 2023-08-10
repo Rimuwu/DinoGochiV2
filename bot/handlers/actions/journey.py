@@ -98,7 +98,7 @@ async def start_journey(userid: int, chatid: int, lang: str,
                           {'last_dino': last_dino, "edit_message": True, 'friend': friend, 'delete_steps': True})
 
 @bot.message_handler(text='commands_name.actions.journey', 
-                     nothing_state_str=True)
+                     nothing_state=True)
 async def journey_com(message: Message):
     userid = message.from_user.id
     lang = get_lang(message.from_user.id)
@@ -107,11 +107,11 @@ async def journey_com(message: Message):
     await start_journey(userid, chatid, lang)
 
 @bot.callback_query_handler(func=
-                            lambda call: call.data.startswith('journey_complexity'))
+                            lambda call: call.data.startswith('journey_complexity'), private=True)
 async def journey_complexity(callback: CallbackQuery):
     lang = get_lang(callback.from_user.id)
     chatid = callback.message.chat.id
-    
+
     text = t('journey_complexity', lang)
     await bot.send_message(chatid, text, parse_mode='Markdown')
 
@@ -143,8 +143,7 @@ async def events(message: Message):
                 text += '\n\n' + t('journey_last_event.last_event', lang, last_event=last_event)
 
             await bot.send_message(chatid, text, parse_mode='html', reply_markup=list_to_inline(
-                [{button_name: f'journey_stop {last_dino.alt_id}'}]
-            ))
+                [{button_name: f'journey_stop {last_dino.alt_id}'}]))
         else:
             await bot.send_message(chatid, '❌', reply_markup=m(userid, 'last_menu', lang))
 
