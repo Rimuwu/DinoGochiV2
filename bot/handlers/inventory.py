@@ -92,8 +92,9 @@ async def inv_callback(call: CallbackQuery):
 
     if call_data == 'search' and changing_filter:
         # Активирует поиск
-        await bot.set_state(userid, InventoryStates.InventorySearch, chatid)
-        await search_menu(chatid, chatid)
+        if not ('delete_search' in data['settings'] and data['settings']['delete_search']):
+            await bot.set_state(userid, InventoryStates.InventorySearch, chatid)
+            await search_menu(chatid, chatid)
 
     elif call_data == 'clear_search' and changing_filter:
         # Очищает поиск
