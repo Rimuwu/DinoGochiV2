@@ -13,7 +13,7 @@ def get_referal_award(userid: int):
     """
     coins = gs['referal']['coins']
     items = gs['referal']['items']
-    
+
     users.update_one({'userid': userid}, 
                         {'$inc': {'coins': coins}})
     for item in items: AddItemToUser(userid, item)
