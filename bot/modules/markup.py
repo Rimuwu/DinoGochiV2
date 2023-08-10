@@ -163,7 +163,7 @@ def markups_menu(userid: int, markup_key: str = 'main_menu',
         
         if sellers.find_one({'owner_id': userid}):
             buttons = [
-                ['add_product', 'remove_product'],
+                ['add_product', 'my_products'],
                 ['my_market'],
             ]
         else:
