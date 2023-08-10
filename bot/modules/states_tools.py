@@ -53,7 +53,7 @@ async def ChooseDinoState(function, userid: int, chatid: int,
 
     if ret_data['case'] == 0:
         if send_error:
-            await bot.send_message(userid, 
+            await bot.send_message(chatid, 
                 t('css.no_dino', lang),
                 reply_markup=m(userid, 'last_menu', lang))
         return False, 'cancel'
@@ -71,7 +71,7 @@ async def ChooseDinoState(function, userid: int, chatid: int,
             data['dino_names'] = ret_data['data_names']
             data['transmitted_data'] = transmitted_data
 
-        await bot.send_message(user.userid, t('css.dino', lang), reply_markup=ret_data['keyboard'])
+        await bot.send_message(chatid, t('css.dino', lang), reply_markup=ret_data['keyboard'])
         return True, 'dino'
 
     else: return False, 'error'
@@ -441,6 +441,7 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
         del transmitted_data['return_function']
         del transmitted_data['return_data']
         del transmitted_data['process']
+        del transmitted_data['steps']
 
         await return_function(return_data, transmitted_data)
 
@@ -479,14 +480,16 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
 
     if transmitted_data['process'] < len(steps): #Получение данных по очереди
         ret_data = steps[transmitted_data['process']]
+        add_data = {}
+        if 'data' in ret_data: add_data = ret_data['data']
 
         if ret_data['type'] == 'update_data':
             # Обработчик данных между запросами
             # Теперь может быть последним!
             if 'async' in ret_data and ret_data['async']:
-                transmitted_data, answer = await ret_data['function'](transmitted_data)
+                transmitted_data, answer = await ret_data['function'](transmitted_data, **add_data)
             else:
-                transmitted_data, answer = ret_data['function'](transmitted_data)
+                transmitted_data, answer = ret_data['function'](transmitted_data, **add_data)
             steps = transmitted_data['steps']
 
             if ret_data['name']:
