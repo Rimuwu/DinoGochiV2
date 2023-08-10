@@ -28,7 +28,7 @@ dinosaurs = mongo_client.bot.dinosaurs
 dino_owners = mongo_client.connections.dino_owners
 incubations = mongo_client.tasks.incubation
 
-async def dino_profile(userid: int, dino: Dino, lang: str, custom_url: str):
+async def dino_profile(userid: int, chatid:int, dino: Dino, lang: str, custom_url: str):
     text = ''
 
     text_rare = get_data('rare', lang)
@@ -123,16 +123,16 @@ async def dino_profile(userid: int, dino: Dino, lang: str, custom_url: str):
 
     # затычка на случай если не сгенерируется изображение
     generate_image = open(f'images/remain/no_generate.png', 'rb')
-    msg = await bot.send_photo(userid, generate_image, text,
+    msg = await bot.send_photo(chatid, generate_image, text,
                 parse_mode='Markdown', reply_markup=menu)
 
-    await bot.send_message(userid, t('p_profile.return', lang), 
+    await bot.send_message(chatid, t('p_profile.return', lang), 
                 reply_markup=m(userid, 'last_menu', lang))
     
     # изменение сообщения с уже нужным изображением
     image = dino.image(user.settings['profile_view'], custom_url)
     await bot.edit_message_media(
-        chat_id=userid,
+        chat_id=chatid,
         message_id=msg.id,
         media=types.InputMedia(
             type='photo', media=image, 
@@ -140,17 +140,18 @@ async def dino_profile(userid: int, dino: Dino, lang: str, custom_url: str):
         reply_markup=menu
         )
 
-async def egg_profile(userid: int, egg: Egg, lang: str):
+async def egg_profile(chatid: int, egg: Egg, lang: str):
     text = t('p_profile.incubation_text', lang, 
              time_end=seconds_to_str(
         egg.remaining_incubation_time(), lang)
         )
     img = egg.image(lang)
-    await bot.send_photo(userid, img, text, 
-                         reply_markup=m(userid, 'last_menu', language_code=lang))
+    await bot.send_photo(chatid, img, text, 
+                         reply_markup=m(chatid, 'last_menu', language_code=lang))
 
 async def transition(element, transmitted_data: dict):
     userid = transmitted_data['userid']
+    chatid = transmitted_data['chatid']
     lang = transmitted_data['lang']
     user = User(userid)
     custom_url = ''
@@ -159,9 +160,9 @@ async def transition(element, transmitted_data: dict):
         custom_url = user.settings['custom_url']
 
     if type(element) == Dino:
-        await dino_profile(userid, element, lang, custom_url)
+        await dino_profile(userid, chatid, element, lang, custom_url)
     elif type(element) == Egg:
-        await egg_profile(userid, element, lang)
+        await egg_profile(chatid, element, lang)
 
 @bot.message_handler(text='commands_name.dino_profile', is_authorized=True)
 async def dino_handler(message: Message):
@@ -182,15 +183,18 @@ async def answer_edit(call: types.CallbackQuery):
     await bot.delete_state(call.from_user.id, call.message.chat.id)
 
     userid = call.from_user.id
+    chatid = call.message.chat.id
     lang = get_lang(call.from_user.id)
+
     trans_data = {
         'userid': userid,
+        'chatid': chatid,
         'lang': lang
     }
     dino = Dino(dino_data) #type: ignore
     await transition(dino, trans_data)
 
-@bot.callback_query_handler(func=lambda call: call.data.startswith('dino_menu'))
+@bot.callback_query_handler(func=lambda call: call.data.startswith('dino_menu'), private=True)
 async def dino_menu(call: types.CallbackQuery):
     split_d = call.data.split()
     action = split_d[1]
