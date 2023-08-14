@@ -3332,7 +3332,7 @@
                 }
         },
         "add_product": {
-            "options_info": "🎠 | Select the type of transaction.\n\n🍕 ➡ 🪙 - Items for coins. You sell items, the buyer pays the coins you specified.\n\n🪙 ➡ 🍕 - Coins for items. You place an order for items, the buyer sells you items for the amount specified by you.\n\n🍕 ➡ 🍕 - Items on items. Exchange of items.\n\n🍕 ➡ ⏳ - Auction. You put up items, specify the starting price, the end time and the minimum bid. The winner of the auction takes the goods.",
+            "options_info": "🎠 | Select the type of transaction.\n\n🍕 ➞ 🪙 - Items for coins. You sell items, the buyer pays the coins you specified.\n\n🪙 ➞ 🍕 - Coins for items. You place an order for items, the buyer sells you items for the amount specified by you.\n\n🍕 ➞ 🍕 - Items on items. Exchange of items.\n\n🍕 ➞ ⏳ - Auction. You put up items, specify the starting price, the end time and the minimum bid. The winner of the auction takes the goods.",
         "chose_item": {
             "items_coins": "🎟 Select an item to add to the items being sold",
             "coins_items": "🎟 Select an item to add to the order",
@@ -3354,7 +3354,7 @@
         },
         "time_end": "🎩 Specify the end time of the auction, you are required to specify the number of seconds. The maximum value is 2592000 (30 days).\n\n⏰ Write /timer (seconds) to translate it into an understandable value.",
         "min_add": "☄ Specify the minimum bid, this is the number by which the minimum person must raise the price to participate in the auction.",
-        "few_coins": "❌ You don't have enough coins {coins} to place a purchase order!",
+        "few_coins": "❌ You don't have enough {coins} coins to place a purchase order!",
         "all_good": "🎩 Your product is on the market!",
         "no_items": "❌ Not all the items you sell are in the inventory!"
         },
@@ -3418,19 +3418,37 @@
         "no_products": "❗ You don't have products!",
         "buy": {
             "common_buy": "☄ Choose how many times do you want to purchase this product?",
-            "auction": "🧵 Enter your bid, keep in mind that your bid must be greater than the last one by {unit}.",
+            "auction": "🧵🧵 Enter your bid, keep in mind that your bid must be at least {unit} 🪙",
             "max_min": "❌ Error in specifying the maximum amount. Most likely you don't have enough coins to bet or the product has already been sold out.",
             "erro_max_col": "🥞 The specified number is greater than the maximum amount of stock!",
             "error_no_coins": "🍳 You don't have enough coins to buy!",
             "error_no_items": "🥙 You don't have items to commit exchange!",
-            "ok": "🍣 Congratulations on your purchase!"
+            "ok": "🍣 Congratulations on your purchase!",
+            "participant": "🎢 You have been added to the auction participants!"
         },
-            "promotion": {
+        "promotion": {
             "buy": "🍿 Enabling promotion will allow you to place this product for 12 hours in a random list of displayed products when entering the market.\n🥪 The cost is 1890 coins.",
             "max": "🥓 You have the maximum number of promoted products!",
             "ok": "🍠 The product has been added to the list of promoted products. Going to the store, players will see 3 random items from all promoted.",
             "no_coins": "🥠 You don't have enough coins to enable promotion!",
             "already": "🥩 The product has already been added to the promotion.\n🥪 Keep in mind, without a premium, you can simultaneously promote 5 products, with a premium - 10!"
+        },
+        "products": {
+            "search": "🎃 Select a product to view",
+            "null": "🧧 Looks like there is no one on the market today, come back later..."
+        },
+        "find_product": {
+            "choose": "🍳 Choose the item you want to find on the market",
+            "info": "🍡 Choose which type of transaction you are interested in:\n\n🍕 ➞ 🪙 - Buying items for coins\n🪙 ➞ 🍕 - Getting coins for items\n🍕 ➞ 🍕 - Exchanging items for items\n🍕 ➞ ⏳ - Auction of items.\n❌ - View all types of transactions.",
+            "not_found": "If no products with such search parameters were found on the market, try to set a different type of transaction or accept that such items are not sold on the market."
+        },
+        "push": {
+            "not_management": "🎏 The bot is in the channel/ group, but does not have the rights to send messages, give the bot the right \"Post messages\" to be able to send messages",
+            "not_admin": "🎏 The bot is in the channel / group, but the one who added it (you) do not have the right to administer the channel.",
+            "ok": "☄ Bot and you have all the necessary rights to create notifications about a new product in the channel. Confirm the connection.",
+            "new": "🍣 A new channel has been added to push, the push language is set as in the bot settings.",
+            "update": "🍜 Push data updated, channel and language updated.",
+            "push_info": "🎢 *Connecting notifications*\n\n🥓 The bot is able to send a notification to a channel or group when creating it on the market. To do this, add a bot with administrator rights with rights (Publishing messages) to a channel or group. Then follow the instructions.\n\n🧵 1 person can publish notifications to only 1 place, but as many people as you want can be published to 1 channel or group."
         }
     }
 }
