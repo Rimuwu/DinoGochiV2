@@ -1,5 +1,6 @@
 from . import commands
 from . import states
+from . import events
 
 from . import start
 from . import dino_profile
