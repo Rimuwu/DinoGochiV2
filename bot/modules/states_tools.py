@@ -91,7 +91,7 @@ async def ChooseIntState(function, userid: int,
         Return:
          Возвращает True если был создано состояние, False если завершилось автоматически (минимальный и максимальный вариант совпадают)
     """
-    
+
     if not transmitted_data: transmitted_data = {}
     transmitted_data = add_if_not(transmitted_data, userid, chatid, lang)
 
@@ -230,7 +230,7 @@ async def ChooseCustomState(function, custom_handler,
 async def update_page(pages: list, page: int, chat_id: int, lang: str):
     keyboard = list_to_keyboard(pages[page])
     keyboard = down_menu(keyboard, len(pages) > 1, lang)
-    
+
     await bot.send_message(chat_id, t('optionplus.update_page', lang), reply_markup=keyboard)
 
 async def ChoosePagesState(function, userid: int, 
@@ -245,7 +245,7 @@ async def ChoosePagesState(function, userid: int,
         options = {
             'button_name': data
         }
-        
+
         autoanswer - надо ли делать авто ответ, при 1-ом варианте
         horizontal, vertical - размер страницы
         one_element - будет ли завершаться работа после выбора одного элемента
@@ -522,13 +522,12 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
         if func_answer:
             # Отправка сообщения / фото из image, если None - ничего
             if ret_data['message']:
-                edit_message = False
-                last_message = None
+                edit_message, last_message = False, None
                 trans_d = {}
 
                 if 'edit_message' in transmitted_data:
                     edit_message = transmitted_data['edit_message']
-                
+
                 if 'message_data' in temp:
                     last_message = temp['message_data']
 
@@ -536,7 +535,7 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
                     if ret_data['translate_message']:
                         if 'translate_args' in ret_data:
                             trans_d = ret_data['translate_args']
-                        
+
                         if 'caption' in ret_data['message']:
                             ret_data['message']['caption'] = t(ret_data['message']['caption'], lang, **trans_d)
                         elif 'text' in ret_data['message']:
