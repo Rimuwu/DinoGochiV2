@@ -18,7 +18,6 @@ async def my_update(data: ChatMemberUpdated):
     userid = data.from_user.id
 
     if data.new_chat_member.status == 'administrator':
-        # user = data.from_user
         status = await user_in_chat(userid, data.chat.id)
         can_manage_chat = data.new_chat_member.can_manage_chat
         res = puhs.find_one({'owner_id': userid})
