@@ -22,6 +22,42 @@ class InventoryStates(StatesGroup):
     InventorySearch = State() # Состояние поиска в инвентаре
     InventorySetFilters = State() # Состояние настройки фильтров в инвентаре
 
+def generate(items_data: dict, horizontal: int, vertical: int):
+    items_names = list(items_data.keys())
+    items_names.sort()
+
+    # Создаёт список, со структурой инвентаря
+    pages = chunks(chunks(items_names, horizontal), vertical)
+
+    # Добавляет пустые панели для поддержания структуры
+    pages = filling_with_emptiness(pages, horizontal, vertical)
+
+    # Нужно, чтобы стрелки корректно отображались
+    if horizontal < 3 and len(pages) > 1: horizontal = 3
+    return pages, horizontal
+
+def filter_items_data(items: dict, type_filter: list = [], 
+                      item_filter: list = []):
+    new_items = items.copy()
+
+    for key, item in items.items():
+        add_item = False
+        data = get_data(item['item_id'])
+
+        if not (type_filter or item_filter):
+            # Фильтры пустые
+            add_item = True
+        else:
+            try:
+                if data['type'] in type_filter: add_item = True
+                if item['item_id'] in item_filter: add_item = True
+            except: log(str(data), 2)
+
+        # Если предмет показывается на страницах
+        if not add_item: del new_items[key]
+
+    return new_items
+
 def inventory_pages(items: list, lang: str = 'en', 
                     view: list = [2, 3], type_filter: list = [],
                     item_filter: list = []):
@@ -86,19 +122,9 @@ def inventory_pages(items: list, lang: str = 'en',
             end_name = f"{name} ({code}){count_name}"
         items_data[end_name] = item
 
-    items_names = list(items_data.keys())
-    items_names.sort()
-
-    # Создаёт список, со структурой инвентаря
-    pages = chunks(chunks(items_names, horizontal), vertical)
-
-    # Добавляет пустые панели для поддержания структуры
-    pages = filling_with_emptiness(pages, horizontal, vertical)
-
-    # Нужно, чтобы стрелки корректно отображались
-    if horizontal < 3 and len(pages) > 1: horizontal = 3
+    pages, horizontal = generate(items_data, horizontal, vertical)
     return pages, horizontal, items_data
-    
+
 async def send_item_info(item: dict, transmitted_data: dict, mark: bool=True):
     lang = transmitted_data['lang']
     chatid = transmitted_data['chatid']
@@ -147,7 +173,9 @@ async def swipe_page(userid: int, chatid: int):
         del buttons['🔎']
 
     if 'delete_search' in settings and settings['delete_search']:
-        del buttons['🔎']
+        try:
+            del buttons['🔎']
+        except: pass
 
     if filters:
         if settings['changing_filters'] and settings['changing_filters']:
@@ -261,7 +289,6 @@ async def start_inv(function, userid: int, chatid: int, lang: str,
         await bot.set_state(userid, InventoryStates.Inventory, chatid)
         async with bot.retrieve_data(userid, chatid) as data:
             data['pages'] = pages
-            data['max_page'] = len(pages)
             data['items_data'] = items_data
             data['filters'] = type_filter
             data['items'] = item_filter
