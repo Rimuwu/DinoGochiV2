@@ -4,22 +4,22 @@ from telebot.types import CallbackQuery, Message
 
 from bot.config import mongo_client
 from bot.exec import bot
-from bot.modules.data_format import seconds_to_str
+from bot.modules.data_format import seconds_to_str, user_name
 from bot.modules.dinosaur import incubation_egg
 from bot.modules.inventory_tools import (InventoryStates, back_button,
-                                         filter_menu, forward_button,
-                                         search_menu, send_item_info,
-                                         start_inv, swipe_page)
+                                         filter_items_data, filter_menu,
+                                         forward_button, generate,
+                                         inventory_pages, search_menu,
+                                         send_item_info, start_inv, swipe_page)
 from bot.modules.item import (CheckItemFromUser, RemoveItemFromUser,
                               counts_items, decode_item)
 from bot.modules.item import get_data as get_item_data
-from bot.modules.item import get_name, RemoveItemFromUser, get_item_dict
+from bot.modules.item import get_item_dict, get_name
 from bot.modules.item_tools import (AddItemToUser, CheckItemFromUser,
                                     book_page, data_for_use_item,
                                     delete_item_action, exchange_item)
-from bot.modules.localization import get_data, t, get_lang
+from bot.modules.localization import get_data, get_lang, t
 from bot.modules.markup import markups_menu as m
-from bot.modules.data_format import user_name
 
 users = mongo_client.bot.users
 
@@ -89,6 +89,8 @@ async def inv_callback(call: CallbackQuery):
 
     async with bot.retrieve_data(userid, chatid) as data:
         changing_filter = data['settings']['changing_filters']
+        sett = data['settings']
+        items = data['items_data']
 
     if call_data == 'search' and changing_filter:
         # Активирует поиск
@@ -98,7 +100,12 @@ async def inv_callback(call: CallbackQuery):
 
     elif call_data == 'clear_search' and changing_filter:
         # Очищает поиск
-        await start_inv(None, chatid, chatid, lang)
+        pages, _ = generate(items, *sett['view'])
+
+        async with bot.retrieve_data(userid, chatid) as data: 
+            data['pages'] = pages
+            data['items'] = []
+        await swipe_page(userid, chatid)
 
     elif call_data == 'filters' and changing_filter:
         # Активирует настройку филтров
@@ -111,17 +118,20 @@ async def inv_callback(call: CallbackQuery):
         async with bot.retrieve_data(userid, chatid) as data:
             pages = data['pages']
 
-        if call_data == 'first_page':
-            page = 0
-        elif call_data == 'end_page':
-            page = len(pages) - 1
+        if call_data == 'first_page': page = 0
+        elif call_data == 'end_page': page = len(pages) - 1
 
         async with bot.retrieve_data(userid, chatid) as data: data['settings']['page'] = page
         await swipe_page(chatid, chatid)
 
     elif call_data == 'clear_filters' and changing_filter:
         # Очищает фильтры
-        await start_inv(None, chatid, chatid, lang)
+        pages, _ = generate(items, *sett['view'])
+
+        async with bot.retrieve_data(userid, chatid) as data: 
+            data['pages'] = pages
+            data['filters'] = []
+        await swipe_page(userid, chatid)
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('item'), private=True)
 async def item_callback(call: CallbackQuery):
@@ -192,6 +202,7 @@ async def search_message(message: Message):
 
     async with bot.retrieve_data(userid, chatid) as data:
         items_data = data['items_data']
+        sett = data['settings']
     names = list(items_data.keys())
 
     for item in names:
@@ -205,10 +216,16 @@ async def search_message(message: Message):
                 searched.append(item_id)
 
     if searched:
-        await start_inv(None, userid, chatid, lang, item_filter=searched)
+        new_items = filter_items_data(items_data, item_filter=searched)
+        pages, _ = generate(new_items, *sett['view'])
+
+        await bot.set_state(userid, InventoryStates.Inventory, chatid)
+        async with bot.retrieve_data(userid, chatid) as data: 
+            data['pages'] = pages
+            data['items'] = searched
+        await swipe_page(userid, chatid)
     else:
         await bot.send_message(chatid, t('inventory.search_null', lang))
-
 
 #Фильтры
 @bot.callback_query_handler(state=InventoryStates.InventorySetFilters, func=lambda call: call.data.startswith('inventory_filter'), private=True)
@@ -222,17 +239,25 @@ async def filter_callback(call: CallbackQuery):
         # Данная функция не открывает новый инвентарь, а возвращает к меню
         async with bot.retrieve_data(userid, chatid) as data:
             filters = data['filters']
-            settings = data['settings']
-            
-        if 'edited_message' in settings:
-            await bot.delete_message(chatid, settings['edited_message'])
-            
-        await start_inv(None, userid, chatid, lang, filters)
-    
-    if call_data[1] == 'filter':
+            sett = data['settings']
+            items = data['items_data']
+            itm_fil = data['items']
+
+        if 'edited_message' in sett:
+            await bot.delete_message(chatid, sett['edited_message'])
+
+        new_items = filter_items_data(items, filters, itm_fil)
+        pages, _ = generate(new_items, *sett['view'])
+
+        await bot.set_state(userid, InventoryStates.Inventory, chatid)
+        async with bot.retrieve_data(userid, chatid) as data: 
+            data['pages'] = pages
+        await swipe_page(userid, chatid)
+
+    elif call_data[1] == 'filter':
         async with bot.retrieve_data(userid, chatid) as data:
             filters = data['filters']
-        
+
         filters_data = get_data('inventory.filters_data', lang)
         if call_data[2] == 'null':
             async with bot.retrieve_data(userid, chatid) as data:
