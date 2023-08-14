@@ -770,21 +770,23 @@ async def promotion(_: bool, transmitted_data: dict):
     message_id = transmitted_data['message_id']
 
     st, cd = check_preferential(userid, pid)
+    stat = True
 
     if cd == 1: text = t('promotion.max', lang)
     elif cd == 2: text = t('promotion.already', lang)
     elif not take_coins(userid, -1_890, True):
         text = t('promotion.no_coins', lang)
+        stat = False
     else: 
         text = t('promotion.ok', lang)
         create_preferential(pid, 43_200, userid)
-
-    m_text, markup = product_ui(lang, pid, True)
-    await bot.edit_message_reply_markup(chatid, message_id, 
-                                        reply_markup=markup)
-
+    
     await bot.send_message(chatid, text, 
                     reply_markup=m(userid, 'last_menu', lang))
+    if stat:
+        m_text, markup = product_ui(lang, pid, True)
+        await bot.edit_message_reply_markup(chatid, message_id, 
+                                            reply_markup=markup)
 
 async def promotion_prepare(userid: int, chatid: int, lang: str, product_id, message_id: int):
     """ Включение promotion
