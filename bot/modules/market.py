@@ -19,6 +19,12 @@ sellers = mongo_client.market.sellers
 puhs = mongo_client.market.puhs
 preferential = mongo_client.market.preferential
 
+def generation_code(owner_id):
+    code = f'{owner_id}_{random_code(8)}'
+    if products.find_one({'alt_id': code}):
+        code = generation_code(owner_id)
+    return code
+
 async def add_product(owner_id: int, product_type: str, items, price, in_stock: int = 1,
                 add_arg: dict = {}):
     """ Добавление продукта в базу данных
@@ -43,12 +49,7 @@ async def add_product(owner_id: int, product_type: str, items, price, in_stock: 
     """
     assert product_type in ['items_coins', 'coins_items', 'items_items', 'auction'], f'Тип ({product_type}) не совпадает c доступными'
 
-    def generation_code(owner_id):
-        code = f'{owner_id}_{random_code(8)}'
-        if products.find_one({'alt_id': code}):
-            code = generation_code(owner_id)
-        return code
-
+    items_id = []
     data = {
         'add_time': int(time()),
         'type': product_type,
@@ -64,6 +65,11 @@ async def add_product(owner_id: int, product_type: str, items, price, in_stock: 
         data['end'] = add_arg['end'] + int(time())
         data['min_add'] = add_arg['min_add']
         data['users'] = []
+
+    if product_type in ['coins_items', 'items_items']:
+        for i in price: items_id.append(i['item_id'])
+    for i in items: items_id.append(i['item_id'])
+    data['items_id'] = items_id
 
     res = products.insert_one(data)
     await send_view_product(res.inserted_id, owner_id)
@@ -81,12 +87,7 @@ def create_seller(owner_id: int, name: str, description: str):
             'conducted': 0, # проведено сделок
             'name': name,
             'description': description,
-            'custom_image': '',
-            'auto_push': {
-                'status': False,
-                'lang': 'en',
-                'channel': None
-            }
+            'custom_image': ''
         }
 
         sellers.insert_one(data)
@@ -140,8 +141,20 @@ def seller_ui(owner_id: int, lang: str, my_market: bool, name: str = ''):
 
     return text, markup, img
 
+def generate_items_pages(ignored_id: list = []):
+    """ Получение страниц со всеми предметами
+    """
+    items = []
+    exclude = ignored_id
+    for key, item in ITEMS.items():
+        data = get_item_dict(key)
+        if 'cant_sell' in item and item['cant_sell']:
+            exclude.append(key)
+        else: items.append({'item': data, 'count': 1})
+    return items, exclude
+
 def generate_sell_pages(user_id: int, ignored_id: list = []):
-    """ Получение инвентаря с исключением предметов, которые нельзя продать 
+    """ Получение инвентаря игрока с исключением предметов, которые нельзя продать 
     """
     items, count = get_inventory(user_id, ignored_id)
     exclude = ignored_id
@@ -156,6 +169,7 @@ def generate_sell_pages(user_id: int, ignored_id: list = []):
             exclude.append(i['item_id'])
             items.remove(item)
     return items, exclude
+
 
 def product_ui(lang: str, product_id: ObjectId, i_owner: bool = False):
     """ Генерация сообщения для продукта
@@ -195,12 +209,20 @@ def product_ui(lang: str, product_id: ObjectId, i_owner: bool = False):
             else:
                 end_time = seconds_to_str(product['end'] - int(time()), lang, max_lvl='hour')
                 min_add = product['min_add']
-                users, a = '', 1
 
                 if product['users']:
-                    for i in product['users']:
-                        users += f'{a} {i["name"]} {i["coins"]}'
-                        a += 1
+                    users = ''
+                    members = list(sorted(product['users'], key=lambda x: x['coins'], reverse=True))
+
+                    max_ind = 3
+                    if len(members) < max_ind: max_ind = len(members)
+                    for i in range(max_ind):
+                        name = members[i]['name']
+                        coins = members[i]['coins']
+                        users += f'{i+1}. {name} - {coins} 🪙'
+
+                        if i != max_ind-1: users += '\n'
+
                 else: users = t('product_ui.no_action_users', lang)
 
                 text += t(f'product_ui.text.{product_type}', lang,
@@ -222,7 +244,7 @@ def product_ui(lang: str, product_id: ObjectId, i_owner: bool = False):
                         b_data['delete']: f'product_info delete {alt_id}'
                     }
                 ]
-                if is_promotion(product['_id']):
+                if not is_promotion(product['_id']):
                     data_buttons[1][b_data['promotion']] = f'product_info promotion {alt_id}'
                 else:
                     data_buttons[1][b_data['alredy_promotion']] = f' '
@@ -262,7 +284,7 @@ async def send_view_product(product_id: ObjectId, owner_id: int):
 
         buttons = [
             {
-                t('product_ui.buttons.view', lang): f"product_info view {product['alt_id']}"
+                t('product_ui.buttons.view', lang): f"product_info info {product['alt_id']}"
             }
         ]
 
@@ -278,18 +300,6 @@ def create_push(owner_id: int, channel_id: int, lang: str):
     }
 
     puhs.insert_one(data)
-
-def generate_items_pages(ignored_id: list = []):
-    """ Получение страниц со всеми предметами
-    """
-    items = []
-    exclude = ignored_id
-    for key, item in ITEMS.items():
-        data = get_item_dict(key)
-        if 'cant_sell' in item and item['cant_sell']:
-            exclude.append(key)
-        else: items.append({'item': data, 'count': 1})
-    return items, exclude
 
 async def delete_product(baseid = None, alt_id = None):
     if baseid:
@@ -362,6 +372,7 @@ async def delete_product(baseid = None, alt_id = None):
 def new_participant(baseid: ObjectId, userid: int, coins: int, name: str, lang: str):
     """ Добавляет нового участника аукциона к продукту
     """
+    ind = None
     product = products.find_one({'_id': baseid})
     if product:
         if product['type'] == 'auction':
@@ -372,7 +383,23 @@ def new_participant(baseid: ObjectId, userid: int, coins: int, name: str, lang: 
                 'coins': coins,
                 'status': 'member'
             }
-            products.update_one({'_id': baseid}, {'$push': {'users': data}})
+            for i in product['users']:
+                if i['userid'] == userid: 
+                    take_coins(userid, i['coins'])
+                    ind = product['users'].index(i)
+                    break
+
+            if ind is None:
+                products.update_one({'_id': baseid}, {
+                    '$push': {'users': data}, 
+                    '$set': {'price': coins}
+                })
+            else:
+                products.update_one({'_id': baseid}, {
+                    '$set': {'price': coins,
+                             f'users.{ind}': data
+                            }
+                })
             return True
     return False
 
@@ -408,8 +435,9 @@ async def buy_product(pro_id: ObjectId, col: int, userid: int, name: str, lang: 
     if product:
         p_tp = product['type']
         owner = product['owner_id']
+        earned = 0
 
-        if col > product['in_stock'] - product['bought']:
+        if col > product['in_stock'] - product['bought'] and product['type'] != 'auction':
             return False, 'erro_max_col'
         else:
             if p_tp == 'items_coins':
@@ -491,8 +519,11 @@ async def buy_product(pro_id: ObjectId, col: int, userid: int, name: str, lang: 
                 else: return False, 'error_no_coins'
 
             if p_tp != 'auction':
+                if p_tp not in ['coins_items', 'items_items']: 
+                    earned = col * product['price']
+
                 sellers.update_one({'owner_id': userid}, {"$inc": {
-                    'earned': col * product['price'],
+                    'earned': earned,
                     'conducted': col
                 }})
 
@@ -501,13 +532,14 @@ async def buy_product(pro_id: ObjectId, col: int, userid: int, name: str, lang: 
                 else:
                     products.update_one({'_id': pro_id}, {'$inc': {'bought': col}})
 
-            # Уведомление о покупке
-            owner_lang = get_lang(owner)
-            preview = preview_product(
-                product['items'], product['price'], product['type'], owner_lang)
-            await user_notification(owner, 'product_buy', owner_lang,
-                                    preview=preview, col=col, price=col * product['price'], name=name, alt_id=product['alt_id'])
-            return True, 'ok'
+                # Уведомление о покупке
+                owner_lang = get_lang(owner)
+                preview = preview_product(
+                    product['items'], product['price'], product['type'], owner_lang)
+                await user_notification(owner, 'product_buy', owner_lang,
+                                        preview=preview, col=col, price=earned, name=name, alt_id=product['alt_id'])
+            if p_tp != 'auction': return True, 'ok'
+            else: return True, 'participant'
 
     return False, 'erro_no_product'
 
