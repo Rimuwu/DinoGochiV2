@@ -7,14 +7,15 @@ from bot.modules.data_format import (list_to_inline, list_to_keyboard,
 from bot.modules.item import (AddItemToUser, CheckCountItemFromUser,
                               RemoveItemFromUser, counts_items, get_name)
 from bot.modules.localization import get_data, get_lang, t
-from bot.modules.market import (add_product, create_seller,
+from bot.modules.market import (add_product, preview_product,
                                 generate_items_pages, generate_sell_pages,
                                 product_ui, seller_ui, delete_product, buy_product, create_preferential, check_preferential)
 from bot.modules.markup import answer_markup, cancel_markup, count_markup, confirm_markup
 from bot.modules.markup import markups_menu as m
 from bot.modules.states_tools import (ChooseIntState, ChooseStringState,
-                                      ChooseStepState, prepare_steps, ChooseConfirmState)
+                                      ChooseStepState, prepare_steps, ChooseConfirmState, ChoosePagesState)
 from bot.modules.user import take_coins
+from random import choice
 
 MAX_PRICE = 10_000_000
 
@@ -383,14 +384,10 @@ def circle_data(userid, chatid, lang, items, option, prepare: bool = True):
 
     if option == 'coins_items': 
         update_function = order_update_col
-        changing_filters = True
-    
+
     not_p_steps = [
         {
-            "type": 'inv', "name": 'items', "data": {'inventory': items,
-                                                    'changing_filters': changing_filters,
-                                                    'delete_search': True
-                                                    }, 
+            "type": 'inv', "name": 'items', "data": {'inventory': items}, 
             "translate_message": True,
             'message': {'text': f'add_product.chose_item.{option}'}
         },
@@ -421,8 +418,7 @@ def trade_circle(userid, chatid, lang, items, prepare: bool = True):
     not_p_steps = [
         {
             "type": 'inv', "name": 'trade_items', "data": {'inventory': items,
-                                                    'changing_filters': True,
-                                                    'delete_search': True
+                                                    # 'changing_filters': False
                                                     }, 
             "translate_message": True,
             'message': {'text': f'add_product.trade_items'}
@@ -720,19 +716,25 @@ async def end_buy(unit: int, transmitted_data: dict):
     lang = transmitted_data['lang']
     pid = transmitted_data['id']
     name = transmitted_data['name']
+    messageid = transmitted_data['messageid']
 
     status, code = await buy_product(pid, unit, userid, name, lang)
     await bot.send_message(chatid, t(f'buy.{code}', lang), 
                            reply_markup=m(userid, 'last_menu', lang))
+    
+    text, markup = product_ui(lang, pid, False)
+    await bot.edit_message_text(text, chatid, messageid, reply_markup=markup, parse_mode='Markdown')
 
-async def buy_item(userid: int, chatid: int, lang: str, product: dict, name: str):
+async def buy_item(userid: int, chatid: int, lang: str, product: dict, name: str, 
+                   messageid: int):
     """ Покупка предмета
     """
     user = users.find_one({'userid': userid})
     if user:
         transmitted_data = {
             'id': product['_id'],
-            'name': name
+            'name': name,
+            'messageid': messageid
         }
 
         # Указать ставку
@@ -748,9 +750,14 @@ async def buy_item(userid: int, chatid: int, lang: str, product: dict, name: str
             text = t('buy.common_buy', lang)
 
         if max_int > min_int or max_int == min_int:
-            await bot.send_message(chatid, text, 
-                                reply_markup=count_markup(max_int, lang))
-            await ChooseIntState(end_buy, userid, chatid, lang, min_int=min_int, max_int=max_int, transmitted_data=transmitted_data)
+            status, _ = await ChooseIntState(end_buy, userid, chatid, lang, min_int=min_int, max_int=max_int, transmitted_data=transmitted_data)
+            if status:
+                if product['type'] != 'auction':
+                    await bot.send_message(chatid, text, 
+                                    reply_markup=count_markup(max_int, lang))
+                else:
+                    await bot.send_message(chatid, text, 
+                                    reply_markup=cancel_markup(lang))
         else:
             await bot.send_message(chatid, t('buy.max_min', lang), 
                                 reply_markup=cancel_markup(lang))
@@ -772,9 +779,9 @@ async def promotion(_: bool, transmitted_data: dict):
         text = t('promotion.ok', lang)
         create_preferential(pid, 43_200, userid)
 
-    # m_text, markup = product_ui(lang, pid, True)
-    # await bot.edit_message_reply_markup(chatid, message_id, 
-    #                                     reply_markup=markup)
+    m_text, markup = product_ui(lang, pid, True)
+    await bot.edit_message_reply_markup(chatid, message_id, 
+                                        reply_markup=markup)
 
     await bot.send_message(chatid, text, 
                     reply_markup=m(userid, 'last_menu', lang))
@@ -792,3 +799,84 @@ async def promotion_prepare(userid: int, chatid: int, lang: str, product_id, mes
         await bot.send_message(chatid, t('promotion.buy', lang), 
                                 reply_markup=confirm_markup(lang))
         await ChooseConfirmState(promotion, userid, chatid, lang, True, transmitted_data)
+
+async def send_info_pr(option, transmitted_data: dict):
+    chatid = transmitted_data['chatid']
+    lang = transmitted_data['lang']
+    userid = transmitted_data['userid']
+
+    product = products.find_one({'_id': option}, {'owner_id': 1})
+    if product:
+        my = product['owner_id'] == userid
+        m_text, markup = product_ui(lang, option, my)
+        await bot.send_message(chatid, m_text, reply_markup=markup, parse_mode='Markdown')
+    else:
+        await bot.send_message(chatid,  t('product_info.error', lang))
+
+async def find_prepare(userid: int, chatid: int, lang: str):
+
+    options = {
+        "🍕 ➡ 🪙": 'items_coins',
+        "🪙 ➡ 🍕": 'coins_items',
+        "🍕 ➡ 🍕": 'items_items',
+        "🍕 ➡ ⏳": 'auction',
+        "❌": None
+    }
+
+    markup = list_to_keyboard([list(options.keys()), t('buttons_name.cancel', lang)], 2)
+    items, exc = generate_items_pages()
+    steps = [
+        {
+            "type": 'inv', "name": 'item', "data": {'inventory': items}, 
+            "translate_message": True,
+            'message': {'text': f'find_product.choose'}
+        },
+        {
+            "type": 'option', "name": 'option', 
+            "data": {"options": options}, 
+            "translate_message": True,
+            'message': {'text': 'find_product.info', 'reply_markup': markup}
+        }
+    ]
+    
+    await ChooseStepState(find_end, userid, chatid, lang, steps)
+
+async def find_end(return_data, transmitted_data):
+    chatid = transmitted_data['chatid']
+    lang = transmitted_data['lang']
+    userid = transmitted_data['userid']
+
+    item = return_data['item']
+    filt = return_data['option']
+
+
+    if filt:
+        products_all = list(products.find(
+            {"type": filt, "items_id": {'$in': [item['item_id']]}
+                        })).copy()
+    else:
+        products_all = list(products.find(
+            {"items_id": {'$in': [item['item_id']]}
+                        })).copy()
+
+    if products_all:
+        prd = {}
+        for _ in range(18):
+            if products_all:
+                rand_pro = choice(products_all)
+                products_all.remove(rand_pro)
+
+                product = products.find_one({'_id': rand_pro['_id']})
+                if product:
+                    prd[
+                        preview_product(product['items'], product['price'], 
+                                        product['type'], lang)
+                    ] = product['_id']
+            else: break
+
+        await bot.send_message(chatid, t('products.search', lang))
+        await ChoosePagesState(send_info_pr, userid, chatid, lang, prd, 1, 3, 
+                               None, False, False)
+    else:
+        await bot.send_message(chatid, t('find_product.not_found', lang), 
+                               reply_markup=m(userid, 'last_menu', lang))
