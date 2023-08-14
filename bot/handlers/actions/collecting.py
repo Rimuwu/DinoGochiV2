@@ -75,31 +75,30 @@ async def collecting_button(message: Message):
             if user.premium:
                 max_count = GAME_SETTINGS['premium_max_collecting']
             else: max_count = GAME_SETTINGS['max_collecting']
-            
+
             data_options = get_data('collecting.buttons', lang)
             options = dict(zip(data_options.values(), data_options.keys()))
             markup = list_to_keyboard([list(data_options.values()), 
                                     [t('buttons_name.cancel', lang)]], 2)
-            
+
             steps = [
                 {"type": 'option', "name": 'option', 
                  "data": {"options": options}, 
                  "translate_message": True,
                     'message': {'text': 'collecting.way', 
                     'reply_markup': markup}
-                    },
+                },
                 {"type": 'int', "name": 'count', 
                  "data": {"max_int": max_count}, 
                  "translate_message": True,
                     'message': {'text': 'collecting.wait_count', 
                     'reply_markup': count_markup(max_count, lang)}
-                    }
-                        ]
+                }
+            ]
             await ChooseStepState(collecting_adapter, userid, chatid, 
                                         lang, steps, 
                                     transmitted_data={'dino': last_dino, 'delete_steps': True})
-    
-            
+
 @bot.message_handler(text='commands_name.actions.progress')
 async def collecting_progress(message: Message):
     userid = message.from_user.id
