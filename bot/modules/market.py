@@ -522,7 +522,7 @@ async def buy_product(pro_id: ObjectId, col: int, userid: int, name: str, lang: 
                 if p_tp not in ['coins_items', 'items_items']: 
                     earned = col * product['price']
 
-                sellers.update_one({'owner_id': userid}, {"$inc": {
+                sellers.update_one({'owner_id': owner}, {"$inc": {
                     'earned': earned,
                     'conducted': col
                 }})

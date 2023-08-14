@@ -780,7 +780,7 @@ async def promotion(_: bool, transmitted_data: dict):
     else: 
         text = t('promotion.ok', lang)
         create_preferential(pid, 43_200, userid)
-    
+
     await bot.send_message(chatid, text, 
                     reply_markup=m(userid, 'last_menu', lang))
     if stat:
