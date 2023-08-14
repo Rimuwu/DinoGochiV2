@@ -1,11 +1,10 @@
 from telebot.types import Message
 from bot.exec import bot
 from bot.modules.data_format import seconds_to_str
-from bot.modules.localization import get_lang
+from bot.modules.localization import get_lang, t
 
 @bot.message_handler(commands=['timer'])
 async def timer(message: Message):
-    user_id = message.from_user.id
     chatid = message.chat.id
     lang = get_lang(message.from_user.id)
 
@@ -19,5 +18,12 @@ async def timer(message: Message):
         try:
             text = seconds_to_str(int(num), lang, mini, max_lvl)
         except: text = 'error'
-
         await bot.send_message(chatid, text)
+
+@bot.message_handler(commands=['push_info'])
+async def push_info(message: Message):
+    chatid = message.chat.id
+    lang = get_lang(message.from_user.id)
+
+    text = t('push.push_info', lang)
+    await bot.send_message(chatid, text, parse_mode='Markdown')
