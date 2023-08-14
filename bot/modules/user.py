@@ -511,7 +511,7 @@ async def user_in_chat(userid: int, chatid: int):
         result = await bot.get_chat_member(chat_id=chatid, user_id=userid)
     except Exception as e: return False
 
-    if result.status in statuss: return True
+    if result.status in statuss: return result.status
     return False
 
 def check_name(user: teleUser):
@@ -540,4 +540,3 @@ def daily_award_con(userid: int):
         }
         daily_award_data.insert_one(data)
         return int(tomorrow.timestamp())
-    
