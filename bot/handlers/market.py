@@ -41,6 +41,7 @@ async def create_adapter(return_data, transmitted_data):
     name = return_data['name']
     name = escape_markdown(name)
     description = return_data['description']
+    description = escape_markdown(description)
     create_seller(userid, name, description)
 
     await bot.send_message(chatid, t('market_create.create', lang), 
