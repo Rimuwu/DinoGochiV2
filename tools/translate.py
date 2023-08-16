@@ -1,5 +1,8 @@
 import json
 import time
+import random
+
+import emoji
 
 import translators
 from langdetect import DetectorFactory, detect
@@ -9,64 +12,141 @@ DetectorFactory.seed = 0
 from_l = 'ru'
 ro_l = 'en'
 
-with open(f'../bot/localization/{from_l}.json', encoding='utf-8') as f: 
+with open(f'./{from_l}.json', encoding='utf-8') as f: 
     main_lang = json.load(f) # type: dict
 
-with open(f'../bot/localization/{ro_l}.json', encoding='utf-8') as f: 
+with open(f'./{ro_l}.json', encoding='utf-8') as f: 
     add_lang = json.load(f) # type: dict
 
 def trs(text: str, trs='bing'):
-    # spl = text.split('{')
-    # args_lst = []
-    # for i in text:
-    #     if i.startswith('{') and i.endswith('}'):
-            
-    
+    from_language = from_l
+    if trs == 'myMemory' and from_language == 'ru': from_language = 'ru-RU'
+
     if text:
         try:
             lang = detect(text)
         except: lang = 'emoji'
-        if lang != 'en':
-            # try:
+        # print(lang, '-==================================')
+        if lang not in ['en', 'it']:
             ret = translators.translate_text(text, 
-                from_language=from_l, 
-                to_language=ro_l, translator=trs)
+                from_language=from_language,
+                to_language=ro_l, translator=trs) 
             print(text, 'translate', trs, ret)
             return ret
-            # except Exception as e: print('Ошибка перевода', '-', e)
     return text
 
-def trs_circul(s, c=0):
-    if c >= 10: return s
+def trs_circul(s):
+    # myMemory bing papago modernMt reverso
+    res = s
+    for i in range(700):
+        translators = ['bing', 'modernMt', 'myMemory', 'reverso', 'papago'] # 'myMemory',  reverso papago
+        trans = 'bing'
 
-    try: return trs(s, 'yandex')
-    except: 
-        try:  return trs(s, 'google')
-        except:
-            try: return trs(s, 'deepl')
-            except: 
-                try: return trs(s, 'alibaba')
-                except:
-                    try: return trs(s, 'bing')
-                    except:
-                        c += 1
-                        print('ПОВТОРНАЯ ТРАНСЛЯЦИЯ')
-                        return trs_circul(s, c)
-    
+        try:
+            try:
+                trans = random.choice(translators)
+                res = trs(s, trans)
+                break
+            except:
+                translators.remove(trans)
+                trans = random.choice(translators)
+                res = trs(s, trans)
+                break
+        except Exception as E: print(E)
 
-def dict_string(s):
-    
-    if type(s) == str: return trs_circul(s)
+        r_t = random.uniform(0, 1)
+        time.sleep(r_t)
+    return res
+
+k_list = ['*', '`', '_']
+
+def dict_string(s, s_key):
+
+    if type(s) == str:
+        if len(s) == 1: return s
+
+        if s_key not in ['data', 'callback', 'inline_menu']:
+            repl_words = {
+                '(n!)': {'text': '\n', 'translate': False},
+                '(nn!)': {'text': '\n\n', 'translate': False}
+            }
+            s = s.replace('\n', '(n!)')
+
+            word, st = '', False
+            i, new_text = '', ''
+
+            for i in emoji.emoji_list(s):
+                k_name = f'({len(repl_words)}{len(repl_words)}!)'
+                repl_words[k_name] = {
+                    'text': i['emoji'],
+                    'translate': False
+                }
+                s = s.replace(i['emoji'], k_name)
+                word = ''
+
+            word, st = '', False
+
+            for i in s:
+                if i == '{':
+                    st = True
+                    word += i
+
+                if i == '}':
+                    st = False
+                    word += i
+                    
+                    word = word[1:]
+
+                    k_name = f'({len(repl_words)}{len(repl_words)}!)'
+                    repl_words[k_name] = {
+                        'text': word,
+                        'translate': False
+                    }
+                    s = s.replace(word, k_name)
+
+                    word = ''
+
+                if st: word += i
+
+            for i in s:
+                if i in k_list and st: 
+                    st = False
+                    word += i
+
+                    k_name = f'({len(repl_words)}{len(repl_words)}!)'
+                    repl_words[k_name] = {
+                        'text': word,
+                        'translate': True
+                    }
+                    s = s.replace(word, k_name)
+                    word = ''
+
+                elif i in k_list and not st: st = True
+                if st: word += i
+
+            if i != s: new_text = trs_circul(s)
+
+            for key, data in repl_words.items():
+                
+                if data['translate']:
+                    new_text = new_text.replace(key, trs_circul(data['text'])) #type: ignore
+                else:
+                    new_text = new_text.replace(key, data['text']) #type: ignore
+
+            return new_text
+
     elif  type(s) == int: return s
+
     elif type(s) == list:
         lst = []
-        for i in s: lst.append(dict_string(i))
+        for i in s: lst.append(dict_string(i, s_key))
         return lst
+
     elif type(s) == dict:
         dct = {}
         for key, value in s.items(): 
             if key not in ['data', 'callback', 'inline_menu']:
-                dct[key] = dict_string(value)
+                dct[key] = dict_string(value, s_key)
             else: dct[key] = value
         return dct
     return s
@@ -77,7 +157,11 @@ def save(data):
 
 if not add_lang: add_lang[ro_l] = {}
 
+start = time.time()
+
 for key, value in main_lang['ru'].items():
     if key not in add_lang[ro_l]:
-        add_lang[ro_l][key] = dict_string(value)
+        add_lang[ro_l][key] = dict_string(value, key)
         save(add_lang)
+
+print('END translate', time.time() - start)
