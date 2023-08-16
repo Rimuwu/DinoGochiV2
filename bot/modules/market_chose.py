@@ -651,14 +651,15 @@ async def pr_edit_name(userid: int, chatid: int, lang: str, message_id: int):
                            reply_markup=cancel_markup(lang))
     await ChooseStringState(edit_name, userid, chatid, lang, min_len=3, max_len=50, transmitted_data=transmitted_data)
 
-async def edit_description(name: str, transmitted_data: dict):
+async def edit_description(description: str, transmitted_data: dict):
     chatid = transmitted_data['chatid']
     userid = transmitted_data['userid']
     lang = transmitted_data['lang']
     message_id = transmitted_data['message_id']
 
+    description = escape_markdown(description)
     sellers.update_one({'owner_id': userid}, 
-                        {'$set': {'description': name}})
+                        {'$set': {'description': description}})
     await bot.send_message(chatid, t('seller.new_description', lang), 
                            reply_markup=m(userid, 'last_menu', lang))
 
@@ -721,9 +722,10 @@ async def end_buy(unit: int, transmitted_data: dict):
     status, code = await buy_product(pid, unit, userid, name, lang)
     await bot.send_message(chatid, t(f'buy.{code}', lang), 
                            reply_markup=m(userid, 'last_menu', lang))
-    
-    text, markup = product_ui(lang, pid, False)
-    await bot.edit_message_text(text, chatid, messageid, reply_markup=markup, parse_mode='Markdown')
+
+    if status:
+        text, markup = product_ui(lang, pid, False)
+        await bot.edit_message_text(text, chatid, messageid, reply_markup=markup, parse_mode='Markdown')
 
 async def buy_item(userid: int, chatid: int, lang: str, product: dict, name: str, 
                    messageid: int):
@@ -750,7 +752,7 @@ async def buy_item(userid: int, chatid: int, lang: str, product: dict, name: str
             text = t('buy.common_buy', lang)
 
         if max_int > min_int or max_int == min_int:
-            status, _ = await ChooseIntState(end_buy, userid, chatid, lang, min_int=min_int, max_int=max_int, transmitted_data=transmitted_data)
+            status, _ = await ChooseIntState(end_buy, userid, chatid, lang, min_int=min_int, max_int=max_int, transmitted_data=transmitted_data, autoanswer=False)
             if status:
                 if product['type'] != 'auction':
                     await bot.send_message(chatid, text, 
@@ -882,3 +884,7 @@ async def find_end(return_data, transmitted_data):
     else:
         await bot.send_message(chatid, t('find_product.not_found', lang), 
                                reply_markup=m(userid, 'last_menu', lang))
+
+async def complain_market(userid: int, chatid: int, lang: str):
+
+    ...
