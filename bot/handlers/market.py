@@ -243,6 +243,9 @@ async def seller(call: CallbackQuery):
         await bot.send_message(chatid, t('products.search', lang))
         await ChoosePagesState(send_info_pr, userid, chatid, lang, rand_p, 1, 3, 
                                None, False, False)
+    
+    elif call_type == 'сomplain':
+        ...
 
 @bot.message_handler(text='commands_name.market.random', is_authorized=True)
 async def random_products(message: Message):
