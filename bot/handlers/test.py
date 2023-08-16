@@ -24,7 +24,7 @@ from bot.modules.localization import get_data, t
 from bot.modules.markup import count_markup, down_menu, list_to_keyboard, confirm_markup
 from bot.modules.notifications import user_notification, notification_manager
 from bot.modules.states_tools import ChoosePagesState, ChooseStepState, prepare_steps
-from bot.modules.user import User, max_dino_col
+from bot.modules.user import User, max_dino_col, award_premium
 from bot.modules.statistic import get_now_statistic
 from bot.modules.quests import create_quest, quest_ui, save_quest
 from bot.modules.journey import create_event, random_event, activate_event
@@ -36,6 +36,7 @@ dinosaurs = mongo_client.bot.dinosaurs
 products = mongo_client.market.products
 sellers = mongo_client.market.sellers
 puhs = mongo_client.market.puhs
+items = mongo_client.bot.items
 
 async def func(*args):
     print(args)
@@ -220,7 +221,7 @@ async def add_all(message):
     for i in ITEMS:
         AddItemToUser(userid, i, 10)
     
-    print('sedf')
+    print('add_all items')
     
 
 @bot.message_handler(commands=['journey'], is_admin=True)
@@ -347,9 +348,41 @@ async def product(message):
 
 @bot.message_handler(commands=['ttt'], is_admin=True)
 async def ttt(message):
-    
+
     userid = message.from_user.id
     chatid = message.chat.id
-    
+
     text = seconds_to_str(1000, 'ru', False, 'hour')
     print(text)
+
+@bot.message_handler(commands=['give_me_premium'], is_admin=True)
+async def give_me_premium(message):
+    
+    userid = message.from_user.id
+    award_premium(userid, 'inf')
+
+@bot.message_handler(commands=['dbtest'], is_admin=True)
+async def dbtest(message):
+    
+    st = time()
+    col = items.count_documents({})
+    print(time() - st)
+    print(col)
+
+    st = time()
+    itm = items.find({})[1000]
+    print(time() - st)
+    print(itm)
+
+@bot.message_handler(commands=['create_test'], is_admin=True)
+async def create_test(message):
+    id_l = list(ITEMS.keys())
+
+    all_t = time()
+    for i in range(600_000):
+        st = time()
+        status = AddItemToUser(i, choice(id_l), 1)
+        print(time() - st)
+
+        print(i)
+    print('alll ', time() - all_t)
