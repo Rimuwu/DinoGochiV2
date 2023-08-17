@@ -59,9 +59,10 @@ async def start_game_ent(userid: int, chatid: int,
 
     # Второе сообщение
     buttons = {}
+    cc = randint(1, 100)
 
     for key, value in get_data('entertainments.time', lang).items():
-        buttons[value['text']] = f'chooseinline {key}'
+        buttons[value['text']] = f'chooseinline {cc} {key}'
     markup = list_to_inline([buttons])
 
     steps = [
@@ -69,15 +70,14 @@ async def start_game_ent(userid: int, chatid: int,
           "data": {"options": options}, 
           'translate_message': True,
           'translate_args': {'last_game': last_game},
-          'message': {'text': 'entertainments.answer_game'
-              }
+          'message': {'text': 'entertainments.answer_game'}
         },
         {
             "type": 'update_data', 'name': 'zero',
             'function': delete_markup,
             'async': True
         },
-        {"type": 'inline', "name": 'time', "data": {}, 
+        {"type": 'inline', "name": 'time', "data": {'custom_code': cc}, 
           'translate_message': True,
           'delete_message': True,
           'message': {'text': 'entertainments.answer_text',

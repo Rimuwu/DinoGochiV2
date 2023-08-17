@@ -17,6 +17,7 @@ from bot.modules.markup import markups_menu as m
 from bot.modules.quests import quest_process
 from bot.modules.states_tools import ChooseStepState
 from bot.modules.user import User
+from random import randint
 
 users = mongo_client.bot.users
 dinosaurs = mongo_client.bot.dinosaurs
@@ -57,11 +58,13 @@ async def start_journey(userid: int, chatid: int, lang: str,
 
     text, a = content_data['ask_loc'], 1
     buttons = {}
+    cc = randint(1, 1000)
+    cc2 = randint(1, 1000)
 
     for key, dct in content_data['locations'].items():
         text += f"*{a}*. {dct['text']}\n\n"
         if user.premium or key not in premium_loc:
-            buttons[dct['name']] = f'chooseinline {key}'
+            buttons[dct['name']] = f'chooseinline {cc} {key}'
         a += 1
 
     text_complexity, buttons_complexity = '', []
@@ -80,16 +83,16 @@ async def start_journey(userid: int, chatid: int, lang: str,
     b = 2
     for key, dct in content_data['time_text'].items():
         if len(buttons_time[2 - b].keys()) >= b + 1: b -= 1
-        buttons_time[2 - b][dct['text']] = f'chooseinline {key}'
+        buttons_time[2 - b][dct['text']] = f'chooseinline {cc2} {key}'
 
     m3_reply = list_to_inline(buttons_time)
 
     steps = [
-        {"type": 'inline', "name": 'location', "data": {}, 
+        {"type": 'inline', "name": 'location', "data": {'custom_code': cc}, 
          "image": 'images/actions/journey/preview.png',
          "message": {"caption": text, "reply_markup": m2_reply}
         },
-        {"type": 'inline', "name": 'time_key', "data": {}, 
+        {"type": 'inline', "name": 'time_key', "data": {'custom_code': cc2}, 
          "message": {"caption": text_time, "reply_markup": m3_reply}
         }
     ]

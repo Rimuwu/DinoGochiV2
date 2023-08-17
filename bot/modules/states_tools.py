@@ -186,9 +186,11 @@ async def ChooseOptionState(function, userid: int,
 
 async def ChooseInlineState(function, userid: int, 
                          chatid: int, lang: str,
+                         custom_code: str,
                          transmitted_data=None):
     """ Устанавливает состояние ожидания нажатия кнопки
         Все ключи callback должны начинаться с 'chooseinline'
+        custom_code - код сессии запроса кнопок (индекс 1)
 
         В function передаёт 
         >>> answer: list transmitted_data: dict
@@ -200,6 +202,7 @@ async def ChooseInlineState(function, userid: int,
     async with bot.retrieve_data(userid, chatid) as data:
         data['function'] = function
         data['transmitted_data'] = transmitted_data
+        data['custom_code'] = custom_code
     return True, 'inline'
 
 async def ChooseCustomState(function, custom_handler, 
@@ -260,29 +263,29 @@ async def ChoosePagesState(function, userid: int,
                {'status': 'edit', 'elements': {'add' | 'delete': data}}
                  - 'add' - в data требуется передать словарь с ключами, данные объединяются
                  - 'delete' - в data требуется передать список с ключами, ключи будут удалены
-        
+
         В update_page_function передаёт 
         >>> pages: list, page: int, chat_id: int, lang: str
-        
+
         Return:
          Возвращает True если был создано состояние, False если завершилось автоматически (1 вариант выбора)
     """
     if not transmitted_data: transmitted_data = {}
     transmitted_data = add_if_not(transmitted_data, userid, chatid, lang)
-    
+
     # Чанкует страницы и добавляем пустые элементы для сохранения структуры
     pages = chunk_pages(options, horizontal, vertical)
-    
+
     if len(options) > 1 or not autoanswer:
         await bot.set_state(userid, GeneralStates.ChoosePagesState, chatid)
         async with bot.retrieve_data(userid, chatid) as data:
             data['function'] = function
             data['update_page'] = update_page_function
-            
+
             data['transmitted_data'] = transmitted_data
             data['options'] = options
             data['pages'] = pages
-            
+
             data['page'] = 0
             data['one_element'] = one_element
             
@@ -416,6 +419,21 @@ async def ChooseStepState(function, userid: int,
     await next_step(0, transmitted_data, True)
 
 
+async def exit_chose(transmitted_data):
+    userid = transmitted_data['userid']
+    chatid = transmitted_data['chatid']
+
+    await bot.delete_state(userid, chatid)
+    await bot.reset_data(userid, chatid)
+
+    return_function = transmitted_data['return_function']
+    return_data = transmitted_data['return_data']
+    del transmitted_data['return_function']
+    del transmitted_data['return_data']
+    del transmitted_data['process']
+
+    await return_function(return_data, transmitted_data)
+
 # Должен быть ниже всех других обработчиков, 
 # для возможности их использования
 async def next_step(answer, transmitted_data: dict, start: bool=False):
@@ -431,19 +449,6 @@ async def next_step(answer, transmitted_data: dict, start: bool=False):
         Для edit_message требуется добавление message_data в transmitted_data.temp
         (Использовать только для inline состояний, не подойдёт для MessageSteps)
     """
-    
-    async def exit_chose(transmitted_data):
-        await bot.delete_state(userid, chatid)
-        await bot.reset_data(userid, chatid)
-
-        return_function = transmitted_data['return_function']
-        return_data = transmitted_data['return_data']
-        del transmitted_data['return_function']
-        del transmitted_data['return_data']
-        del transmitted_data['process']
-        del transmitted_data['steps']
-
-        await return_function(return_data, transmitted_data)
 
     userid = transmitted_data['userid']
     chatid = transmitted_data['chatid']

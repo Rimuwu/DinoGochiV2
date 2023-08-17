@@ -317,18 +317,20 @@ async def ChooseInline(callback: CallbackQuery):
     code = callback.data.split()
     chatid = callback.message.chat.id
     userid = callback.from_user.id
-    
-    
+
     async with bot.retrieve_data(userid, chatid) as data:
         func = data['function']
         transmitted_data = data['transmitted_data']
+        custom_code = data['custom_code']
 
     code.pop(0)
-    if len(code) == 1: code = code[0]
+    if code[0] == str(custom_code):
+        code.pop(0)
+        if len(code) == 1: code = code[0]
 
-    transmitted_data['temp'] = {}
-    transmitted_data['temp']['message_data'] = callback.message
+        transmitted_data['temp'] = {}
+        transmitted_data['temp']['message_data'] = callback.message
 
-    transmitted_data['steps'][transmitted_data['process']]['bmessageid'] = callback.message.id
+        transmitted_data['steps'][transmitted_data['process']]['bmessageid'] = callback.message.id
 
-    await func(code, transmitted_data=transmitted_data)
+        await func(code, transmitted_data=transmitted_data)
