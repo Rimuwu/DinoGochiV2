@@ -26,12 +26,12 @@ def trs(text: str, trs='bing'):
         try:
             lang = detect(text)
         except: lang = 'emoji'
-        # print(lang, '-==================================')
+
         if lang not in ['en', 'it']:
             ret = translators.translate_text(text, 
                 from_language=from_language,
                 to_language=ro_l, translator=trs) 
-            print(text, 'translate', trs, ret)
+            print("\n#TEXT#", text, '\n#translatore#', trs, '\nRETURN TEXT#', ret, '\nlang', lang)
             return ret
     return text
 
@@ -39,7 +39,7 @@ def trs_circul(s):
     # myMemory bing papago modernMt reverso
     res = s
     for i in range(700):
-        translators = ['bing', 'modernMt', 'myMemory', 'reverso', 'papago'] # 'myMemory',  reverso papago
+        translators = ['bing', 'modernMt', 'myMemory'] # 'myMemory',  reverso !papago!
         trans = 'bing'
 
         try:
@@ -58,7 +58,7 @@ def trs_circul(s):
         time.sleep(r_t)
     return res
 
-k_list = ['*', '`', '_']
+k_list = ['*', '`']
 
 def dict_string(s, s_key):
 
@@ -68,8 +68,9 @@ def dict_string(s, s_key):
         if s_key not in ['data', 'callback', 'inline_menu']:
             repl_words = {
                 '(n!)': {'text': '\n', 'translate': False},
-                '(nn!)': {'text': '\n\n', 'translate': False}
+                '(nn!)': {'text': '\n\n', 'translate': False},
             }
+            s = s.replace('\n\n', '(nn!)')
             s = s.replace('\n', '(n!)')
 
             word, st = '', False
@@ -94,7 +95,7 @@ def dict_string(s, s_key):
                 if i == '}':
                     st = False
                     word += i
-                    
+
                     word = word[1:]
 
                     k_name = f'({len(repl_words)}{len(repl_words)}!)'
@@ -111,12 +112,17 @@ def dict_string(s, s_key):
             for i in s:
                 if i in k_list and st: 
                     st = False
+                    translate_st = True
                     word += i
+                    end_word = word[1:-1]
+
+                    if len(end_word) == 1: translate_st = False
 
                     k_name = f'({len(repl_words)}{len(repl_words)}!)'
                     repl_words[k_name] = {
-                        'text': word,
-                        'translate': True
+                        'text': end_word,
+                        'translate': translate_st,
+                        'sml': i
                     }
                     s = s.replace(word, k_name)
                     word = ''
@@ -126,12 +132,19 @@ def dict_string(s, s_key):
 
             if i != s: new_text = trs_circul(s)
 
-            for key, data in repl_words.items():
-                
-                if data['translate']:
-                    new_text = new_text.replace(key, trs_circul(data['text'])) #type: ignore
-                else:
-                    new_text = new_text.replace(key, data['text']) #type: ignore
+            for i in range(4):
+                for key, data in repl_words.items():
+
+                    if data['translate']:
+                        if len(data['text']) > 3 and data['text'][1] == '(' and data['text'][-2] == ')': txt = data['text']
+                        else:
+                            txt = trs_circul(data['text'])
+                    else: txt = data['text']
+                    
+                    if 'sml' in data:
+                        txt = data['sml'] + txt + data['sml']
+
+                    new_text = new_text.replace(key, txt) #type: ignore
 
             return new_text
 
@@ -145,7 +158,7 @@ def dict_string(s, s_key):
     elif type(s) == dict:
         dct = {}
         for key, value in s.items(): 
-            if key not in ['data', 'callback', 'inline_menu']:
+            if key not in ['data', 'callback']:
                 dct[key] = dict_string(value, s_key)
             else: dct[key] = value
         return dct
