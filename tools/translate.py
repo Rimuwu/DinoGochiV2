@@ -10,7 +10,7 @@ from langdetect import DetectorFactory, detect
 DetectorFactory.seed = 0
 
 from_l = 'ru'
-ro_l = 'en'
+ro_l = 'uk'
 
 with open(f'./{from_l}.json', encoding='utf-8') as f: 
     main_lang = json.load(f) # type: dict
@@ -20,7 +20,11 @@ with open(f'./{ro_l}.json', encoding='utf-8') as f:
 
 def trs(text: str, trs='bing'):
     from_language = from_l
+    to_lang = ro_l
     if trs == 'myMemory' and from_language == 'ru': from_language = 'ru-RU'
+
+    elif trs == 'myMemory' and to_lang == 'uk': to_lang = 'uk-UA'
+    elif trs == 'baidu' and to_lang == 'uk': to_lang = 'ukr'
 
     if text:
         try:
@@ -30,7 +34,7 @@ def trs(text: str, trs='bing'):
         if lang not in ['en', 'it']:
             ret = translators.translate_text(text, 
                 from_language=from_language,
-                to_language=ro_l, translator=trs) 
+                to_language=to_lang, translator=trs) 
             print("\n#TEXT#", text, '\n#translatore#', trs, '\nRETURN TEXT#', ret, '\nlang', lang)
             return ret
     return text
@@ -39,20 +43,21 @@ def trs_circul(s):
     # myMemory bing papago modernMt reverso
     res = s
     for i in range(700):
-        translators = ['bing', 'modernMt', 'myMemory'] # 'myMemory',  reverso !papago!
+        translators = ['myMemory', 'bing', 'modernMt']#['bing', 'modernMt', 'myMemory'] # 'myMemory',  reverso !papago!
         trans = 'bing'
+        res = ''
 
-        try:
+        for trans in translators:
             try:
-                trans = random.choice(translators)
-                res = trs(s, trans)
-                break
-            except:
-                translators.remove(trans)
-                trans = random.choice(translators)
-                res = trs(s, trans)
-                break
-        except Exception as E: print(E)
+                try:
+                    res = trs(s, trans)
+                except:
+                    translators.remove(trans)
+                    trans = translators[0]
+                    res = trs(s, trans)
+            except Exception as E: print(E)
+        
+        if res: break
 
         r_t = random.uniform(0, 1)
         time.sleep(r_t)
@@ -67,11 +72,16 @@ def dict_string(s, s_key):
 
         if s_key not in ['data', 'callback', 'inline_menu']:
             repl_words = {
-                '(n!)': {'text': '\n', 'translate': False},
-                '(nn!)': {'text': '\n\n', 'translate': False},
+                '(1!)': {'text': '\n', 'translate': False},
+                '(2!)': {'text': '\n\n', 'translate': False},
+                '(3!)': {'text': '\n\n\n', 'translate': False},
+                '(4!)': {'text': '\n\n\n\n', 'translate': False},
+                '(100!)': {'text': 'ᴜsᴇʀ ᴘʀᴏғɪʟᴇ', 'translate': False},
+                '(200!)': {'text': 'ʟᴇᴠᴇʟ', 'translate': False},
+                '(300!)': {'text': 'ᴅɪɴᴏsᴀᴜʀs', 'translate': False},
+                '(400!)': {'text': ' ɪɴᴠᴇɴᴛᴏʀʏ', 'translate': False},
             }
-            s = s.replace('\n\n', '(nn!)')
-            s = s.replace('\n', '(n!)')
+            for key, item in repl_words.items(): s = s.replace(item['text'], key)
 
             word, st = '', False
             i, new_text = '', ''

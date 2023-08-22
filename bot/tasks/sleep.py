@@ -25,7 +25,7 @@ async def one_time(data, one_time_unit):
     for sleeper in data:
         add_energy, sec_time = 0, 0
         dino = dinosaurs.find_one({'_id': sleeper['dino_id']})
-        
+
         if check_inspiration(sleeper['dino_id'], 'sleep'): 
             one_time_unit *= 2
 

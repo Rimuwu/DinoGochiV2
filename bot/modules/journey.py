@@ -718,7 +718,15 @@ def generate_event_message(event: dict, lang: str, journey_id: ObjectId, encode:
     worldview = event['worldview']
 
     signs = get_data('journey.signs', lang)
-    text_list = get_data(f'journey.{worldview}.{event_type}', lang)
+
+    journey_text =  get_data(f'journey', lang)
+    if location in journey_text:
+        if worldview in journey_text[location]:
+            text_list = get_data(f'journey.{location}.{worldview}.{event_type}', lang)
+        else:
+            text_list = get_data(f'journey.{location}.{event_type}', lang)
+    else:
+        text_list = get_data(f'journey.{worldview}.{event_type}', lang)
 
     if 'replic' not in event:
         # Сохраняем id репликии
@@ -739,6 +747,7 @@ def generate_event_message(event: dict, lang: str, journey_id: ObjectId, encode:
 
     if 'dino_edit' in event:
         for i in ['heal', 'game', 'energy', 'eat']:
+            add = ''
             if i in event['dino_edit']:
                 if event["dino_edit"][i] != 0:
                     if worldview == 'positive': add = '+'
@@ -755,7 +764,7 @@ def generate_event_message(event: dict, lang: str, journey_id: ObjectId, encode:
     
     if 'remove_items' in event:
         if event['remove_items']:
-            add_list.append('-' + counts_items(event['items'], lang))
+            add_list.append('-' + counts_items(event['remove_items'], lang))
 
     if 'old_location' in event:
         loc = event['old_location']
@@ -792,9 +801,11 @@ def all_log(logs: list, lang: str, journey_id: ObjectId):
         n += 1
         try:
             text = f'{n}. {generate_event_message(event, lang, journey_id)}\n\n'
-        except:
-            text = f'error generation - {event}'
+        except Exception as E:
+            text = f'error generation - {event}\n{E}'
             log(text, 2, 'log generation')
+        
+        print(text, '\n\n', event)
 
         if len(messages[n_message]) >= 1700:
             messages.append('')

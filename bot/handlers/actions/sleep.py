@@ -154,11 +154,11 @@ async def awaken(message: Message):
                     if sleep_time >= healthy_sleep \
                         or last_dino.stats['energy'] == 100:
 
-                        await end_sleep(last_dino._id, sleeper['_id'], sleep_time)
+                        await end_sleep(last_dino._id, sleep_time)
                     else:
                         # Если динозавр в долгом сне проспал меньше 6-ми часов, то штраф
                         add_mood(last_dino._id, 'bad_sleep', -1, 10800)
-                        await end_sleep(last_dino._id, sleeper['_id'], send_notif=False)
+                        await end_sleep(last_dino._id, sleep_time, False)
 
                         await bot.send_message(chatid, 
                                                t('awaken.down_mood', lang, 

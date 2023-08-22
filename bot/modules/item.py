@@ -353,7 +353,7 @@ def UseAutoRemove(userid: int, item: dict, count: int):
         if item['abilities']['uses'] != -666: # Бесконечный предмет
             res = DowngradeItem(userid, item, 'uses', count)
             if not res['status']: 
-                log(f'Item downgrade error - {res} {userid} {item}', 3)
+                log(f'Item downgrade error - {res} {userid} {item}', 0)
                 return False
     else:
         # В остальных случаях просто снимаем нужное количество

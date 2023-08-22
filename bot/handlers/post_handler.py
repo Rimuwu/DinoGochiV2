@@ -18,7 +18,7 @@ async def pass_h(call: types.CallbackQuery): pass
 @bot.callback_query_handler(func=lambda call: True)
 async def not_found(call: types.CallbackQuery):
     userid = call.from_user.id
-    log(f'Ключ {call.data} не был обработан! Пользователь: {userid}', 2, "CallbackQuery")
+    log(f'Ключ {call.data} не был обработан! Пользователь: {userid}', 0, "CallbackQuery")
 
 @bot.message_handler(is_authorized=False)
 async def not_authorized(message: types.Message):

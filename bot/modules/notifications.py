@@ -209,7 +209,7 @@ async def user_notification(user_id: int, not_type: str,
     except Exception as error: 
         log(prefix='Notification Error', 
             message=f'User: {user_id}, Data: {not_type} Error: {error}', 
-            lvl=3)
+            lvl=0)
 
 async def notification_manager(dino_id: ObjectId, stat: str, unit: int):
     """ Автоматически отсылает / удаляет уведомления

@@ -23,10 +23,10 @@ dino_owners = mongo_client.connections.dino_owners
 async def add_friend(message: Message):
     chatid = message.chat.id
     lang = get_lang(message.from_user.id)
-    
+
     text = t('add_friend.var', lang)
     buttons = get_data('add_friend.var_buttons', lang)
-    
+
     inl_buttons = dict(zip(buttons.values(), buttons.keys()))
     markup = list_to_inline([inl_buttons])
     

@@ -15,7 +15,7 @@ async def dino_notifications():
             if dino['stats']['heal'] <= 0:
                 Dino(dino['_id']).dead()
                 continue
-            
+
             unit = dino['stats'][stat]
             await notification_manager(dino_id, stat, unit)
 

@@ -299,10 +299,15 @@ async def ev(message):
     #         for eve in negative[key]:
     #             event = create_event('forest', 'negative', 0, eve)
     #             await activate_event(dino._id, event)
+
+    for eve in ['battle']:
+            event = create_event('lost-islands', 'positive', 0, eve)
+            await activate_event(dino._id, event)
     
-    for eve in ['meeting_friend']:
-        event = create_event('forest', 'positive', 0, eve)
-        await activate_event(dino._id, event)
+    for i in range(10):
+        for eve in ['battle']:
+            event = create_event('lost-islands', 'negative', 0, eve)
+            await activate_event(dino._id, event)
 
 # @bot.message_handler(commands=['names'])
 # async def names(message):
