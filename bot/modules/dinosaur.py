@@ -239,7 +239,7 @@ def incubation_egg(egg_id: int, owner_id: int, inc_time: int=0, quality: str='ra
     """Создание инкубируемого динозавра
     """
     egg = Egg(ObjectId())
-    
+
     egg.incubation_time = inc_time + int(time())
     egg.egg_id = egg_id
     egg.owner_id = owner_id
@@ -248,7 +248,7 @@ def incubation_egg(egg_id: int, owner_id: int, inc_time: int=0, quality: str='ra
 
     if inc_time == 0: #Стандартное время инкцбации 
         egg.incubation_time = int(time()) + GS['first_dino_time_incub']
-    
+
     log(prefix='InsertEgg', message=f'owner_id: {owner_id} data: {egg.__dict__}', lvl=0)
     return incubations.insert_one(egg.__dict__)
 
