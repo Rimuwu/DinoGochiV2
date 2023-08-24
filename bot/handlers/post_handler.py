@@ -12,7 +12,7 @@ async def delete_message(call: types.CallbackQuery):
     await bot.delete_message(chatid, call.message.id)
     await bot.answer_callback_query(call.id, "🗑")
 
-@bot.callback_query_handler(func=lambda call: call.data.startswith(' '))
+@bot.callback_query_handler(func=lambda call: call.data == ' ')
 async def pass_h(call: types.CallbackQuery): pass
 
 @bot.callback_query_handler(func=lambda call: True)
