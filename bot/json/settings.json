@@ -92,12 +92,16 @@
     },
 
     "change_rarity": { 
-        "com": {"money": 2000,  "materials": ["regular_egg"] },
-        "unc": {"money": 4000,  "materials": ["unusual_egg"] },
-        "rar": {"money": 8000,  "materials": ["rare_egg"] },
-        "mys": {"money": 16000, "materials": ["mystic_egg"] },
-        "leg": {"money": 32000, "materials": ["legendary_egg"] },
-        "ran": {"money": 5000,  "materials": ["mysterious_egg" ] } 
+        "com": {"coins": 2000,  "materials": ["regular_egg"] },
+        "unc": {"coins": 4000,  "materials": ["unusual_egg"] },
+        "rar": {"coins": 8000,  "materials": ["rare_egg"] },
+        "mys": {"coins": 16000, "materials": ["mystic_egg"] },
+        "leg": {"coins": 32000, "materials": ["legendary_egg"] },
+        "random": {"coins": 5000,  "materials": ["mysterious_egg" ] }
+    },
+
+    "change_appearance": {
+        "coins": 1000, "items": ["mysterious_egg"]
     },
 
     "egg_ask_backs": ["back", "back2", "back3", "back4", "back5"],
