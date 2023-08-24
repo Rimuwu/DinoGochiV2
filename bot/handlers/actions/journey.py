@@ -13,7 +13,7 @@ from bot.modules.images import dino_journey
 from bot.modules.item import counts_items
 from bot.modules.journey import all_log, generate_event_message
 from bot.modules.localization import get_data, t, get_lang
-from bot.modules.markup import markups_menu as m
+from bot.modules.markup import cancel_markup, markups_menu as m
 from bot.modules.quests import quest_process
 from bot.modules.states_tools import ChooseStepState
 from bot.modules.user import User
@@ -78,7 +78,6 @@ async def start_journey(userid: int, chatid: int, lang: str,
     await bot.send_message(chatid, text_complexity, 
                            reply_markup=m1_reply)
 
-    text_time = content_data['time_info']
     buttons_time = [{}, {}, {}]
     b = 2
     for key, dct in content_data['time_text'].items():
@@ -93,12 +92,14 @@ async def start_journey(userid: int, chatid: int, lang: str,
          "message": {"caption": text, "reply_markup": m2_reply}
         },
         {"type": 'inline', "name": 'time_key', "data": {'custom_code': cc2}, 
-         "message": {"caption": text_time, "reply_markup": m3_reply}
+         "message": {"caption": content_data['time_info'], "reply_markup": m3_reply}
         }
     ]
 
     await ChooseStepState(journey_start_adp, userid, chatid, lang, steps, 
                           {'last_dino': last_dino, "edit_message": True, 'friend': friend, 'delete_steps': True})
+    await bot.send_message(chatid, t('journey_start.cancel_text', lang), 
+                           reply_markup=cancel_markup(lang))
 
 @bot.message_handler(text='commands_name.actions.journey', 
                      nothing_state=True)
