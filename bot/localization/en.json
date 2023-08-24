@@ -72,7 +72,7 @@
             },
             "dino_tavern": {
                 "dungeon": "🗻 Dungeons",
-                "edit": "♻ Rarity",
+                "edit": "♻ Transformation",
                 "quests": "⛓ Quests",
                 "daily_award": "🎁 Bonus",
                 "events": "🎈 Events"
@@ -2006,6 +2006,7 @@
         },
         "journey_start": {
             "ask_loc": "🌳 | Choose where the dinosaur will go this time\n\n",
+            "cancel_text": "🎈 Select a location by clicking on the button. When canceled, the buttons will become unavailable.",
             "complexity": {
                 "text": "🎏 | You can read about the complexity and what it means here",
                 "button": "🎈 About the complexity"
@@ -2426,7 +2427,7 @@
             },
             "reward": {
                 "had": "🍀 *|* *Reward*",
-                "coins": "💰 Coins: {coins}",
+                "coins": "🪙 Coins: {coins}",
                 "items": "🎱 Items: {items}"
             },
             "buttons": {
@@ -2482,481 +2483,344 @@
             "use": "👑 Daily reward received, don't forget to get it again in {time}!\n\n🌸 Today you received: {items}, {coins} 🪙"
         },
         "journey": {
-            "positive": {
-                "influences_mood": [
-                    "The dinosaur saw a beautiful sunset and added to the mood",
-                    "The dinosaur had a picnic on the edge of the forest and enjoyed nature",
-                    "The dinosaur found a spring and drank fresh water, it relieved his thirst",
-                    "The dinosaur studied the world around him and received a lot of interesting knowledge",
-                    "The dinosaur found a beautiful flower and gave it to a friend, it added to his mood",
-                    "The dinosaur watched the leaves play in the wind and enjoyed",
-                    "The dinosaur took a walk on the lake and enjoyed the beautiful view",
-                    "Dinosaur befriended local animals and now feels less lonely",
-                    "The dinosaur watched the flight of birds and enjoyed it",
-                    "The dinosaur found an old coin and felt lucky",
-                    "The dinosaur found the item it had been looking for and felt happy",
-                    "The dinosaur found shelter from the rain and comfortably settled there",
-                    "The dinosaur discovered the beautiful waterfall and enjoyed the view",
-                    "The dinosaur learned a new trick and felt smarter",
-                    "Dinosaur found an edible berry and enjoyed its taste",
-                    "The dinosaur took a beautiful photo and felt talented",
-                    "The dinosaur had a good leisure time and enjoyed the time spent with benefit",
-                    "The dinosaur found the fish and shared it with his friends, which boosted his mood",
-                    "Dinosaur found a piece of meat and enjoyed its taste in a secluded place"
-                ],
+            "forest": {
                 "without_influence": [
-                    "The dinosaur found a cozy place to rest under a large tree.",
-                    "A huge butterfly hung on the nose of a dinosaur, which was amazed at its beauty.",
-                    "In the bushes behind the dinosaur, something rustled, but it turned out to be only a hare.",
-                    "The dinosaur caught up with the little mouse, but let it go when it gave it a frightened look.",
-                    "A drunken hog ran past a dinosaur and fell.",
-                    "The dinosaur spread its wings and slowed down to enjoy the beauty of the sunset.",
-                    "The dinosaur passed the anthill, but suddenly realized that he had stepped on one of the ants.",
-                    "The wind brought the smell of plentiful food, but the dinosaur decided not to go for the bait.",
-                    "The dinosaur sat on the hot sand and felt its body cool a little.",
-                    "A huge spider ran in front of the dinosaur, causing him a brief fright.",
-                    "The dinosaur stopped to pick up the leaf and see what was hiding beneath it.",
-                    "The branches of the trees whistled and rustled, causing the dinosaur to have a peaceful mood.",
-                    "The dinosaur ran past a group of multi-colored butterflies that looked like flower petals.",
-                    "The sun dazzled the dinosaur's eyes slightly, and he paused for a moment to open his mouth and enjoy the cool air.",
-                    "The dinosaur found a strange stone with big eyes and showed it to his friends the next day.",
-                    "A huge bumblebee swept past the dinosaur, causing it to close its eyes slightly.",
-                    "The dinosaur accidentally stepped on a yellow-green snake, but it managed to bounce back.",
-                    "The dinosaur heard strange rustles in the bushes, but saw no one.",
-                    "The wind caught the dinosaur's breath for a few seconds, but the dinosaur quickly adapted and continued on its way.",
-                    "The dinosaur unexpectedly caught up with a couple of hares and caught them coming completely out of the dark grass.",
-                    "A huge ball of mucus landed on the nose of the dinosaur, causing it to freeze in place.",
-                    "The dinosaur walked past the water source, but decided not to stop.",
-                    "The abyss that the dinosaur had to cross turned out to be not so deep, and he jumped over it without wasting his time.",
-                    "The dinosaur found a large glowing mushroom and carried it home.",
-                    "One day passed and a whole colony of wild rabbits appeared in the way of the dinosaur, looking for leaves.",
-                    "The dinosaur ran past an old chest that must have been hiding a lot of valuables.",
-                    "A whole herd of lazy pandas rode through the deaf crowd of the dinosaur, eating the grass peacefully.",
-                    "The dinosaur raised its leg but didn't want to step on the little lizard.",
-                    "One local animal frightened the dinosaur, but it soon calmed down and continued to move.",
-                    "The little bird sat on the tail of the dinosaur and tasted it, but quickly flew away.",
-                    "The dinosaur paused to see his beloved soul.",
-                    "The dinosaur walked past the neighborhood store and decided to take a look at how the food was sold.",
-                    "A huge cockroach sat on the leg of a dinosaur, but quickly ran away.",
-                    "The dinosaur knocked a few leaves off the road and went without stopping.",
-                    "Several cats raced in front of the dinosaur, causing a smile on its snout.",
-                    "The dinosaur stopped to help a small hedgehog family cross the road.",
-                    "On the way to meet the dinosaur, a herd of deer came out, fleeing from hunger.",
-                    "In the wild blooming field along which the road passed, masses of paper birds were scattered.",
-                    "A huge crocodile struck the dinosaur, but it boldly accepted the fight.",
-                    "The dinosaur stumbled upon the ants, slammed a few times, and decided not to touch them any further.",
-                    "The part of the road that the dinosaur was walking on was flooded after the rain, and he gently crossed it.",
-                    "The fox jumped past the dinosaur but couldn't find anything to eat.",
-                    "The dinosaur walked past a large garden where fruits of all kinds grew.",
-                    "A galloping deer ran through the dinosaur, feeling its warmth.",
-                    "The dinosaur found a sheet on which it was written: \"Looking for the owner!\" and took him home.",
-                    "The giraffe walked past the dinosaur, not finding a place near the area for a long time.",
-                    "The dinosaur ran past a long stack of books, where he had already found a lot of interesting things.",
-                    "The large beetle climbed on the dinosaur, but quickly ran away.",
-                    "A dwarf elephant passed by, showing the dinosaur the flowers that bloomed after the rain."
-                ],
-                "influences_eat": [
-                    "The dinosaur found a delicious fruit and enjoyed its sweet taste",
-                    "The dinosaur found fresh grass and ate it, enjoying its taste",
-                    "The dinosaur hunted prey and ate fresh meat, which gave it strength",
-                    "The dinosaur found the berry that was his favorite and ate it with great pleasure",
-                    "The dinosaur found a small fish in a stream and ate it, enjoying its taste",
-                    "A dinosaur found mushrooms and made a hearty dinner out of them",
-                    "The dinosaur found the beehive and ate the honey, which was delicious",
-                    "Dinosaur found a nut and enjoyed its taste",
-                    "The dinosaur found a bush with delicious berries and ate a large portion",
-                    "The dinosaur found the fruit and ate it while enjoying its sweetness",
-                    "The dinosaur found a small animal and ate it, enjoying its meat",
-                    "The dinosaur tasted fresh honey and got an unforgettable taste",
-                    "The dinosaur found the olives and ate them while enjoying their taste",
-                    "Dinosaur found pistachios and enjoyed their taste",
-                    "The dinosaur found the fruits of the cactus and enjoyed their sweetness",
-                    "Dinosaur found delicious tree bark and ate it while enjoying its texture",
-                    "Dinosaur found fresh meat of wild animal and enjoyed its taste",
-                    "The dinosaur found the red fish and ate it while enjoying its taste",
-                    "Dinosaur found saxaul fruit and enjoyed its taste",
-                    "Dinosaur found wild fruit and enjoyed its unique taste"
-                ],
-                "influences_game": [
-                    "The dinosaur played with the branch, running after it and carving the air",
-                    "The dinosaur played with small pebbles, throwing them and catching them on the fly",
-                    "The dinosaur played a game with a fluffy animal, running over it and playing hide-and-seek with it",
-                    "The dinosaur played hide-and-seek with other dinosaurs, enjoying the active game",
-                    "The dinosaur played hide-and-seek with small animals, instantly finding them",
-                    "The dinosaur played ball with other dinosaurs, scoring their head hits",
-                    "Dinosaur tossed rocks and caught them on the fly, playing a simple but fun game",
-                    "Dinosaur played dice with other dinosaurs, enjoying the excitement and speed of the game",
-                    "The dinosaur played catch-up with the little animals, catching them all",
-                    "The dinosaur played ball with the little animals as they tried to score the goal",
-                    "The dinosaur played hide-and-seek with small dinosaurs, enjoying its agility",
-                    "The dinosaur played hide-and-seek with other dinosaurs under the leaves, enjoying the game through the green thick",
-                    "The dinosaur played ball with his friends, running and scoring more goals",
-                    "The dinosaur played hide-and-seek with small animals, smiling at the same time",
-                    "Dinosaur playing ball with his friends, catching a few headshots",
-                    "The dinosaur played hunting with other dinosaurs, enjoying its agility and speed",
-                    "The dinosaur played hide-and-seek with other dinosaurs, running behind trees and bushes"
+                    "Walking through the beautiful forest, the dinosaur noticed the butterfly, glazing over it and did not notice how it became darker."
                 ],
                 "influences_health": [
-                    "A dinosaur found a medicinal herb in the wild and used it to restore its health.",
-                    "As the dinosaur walked across the plain, he accidentally found a medicinal herb that helped him heal his wounds.",
-                    "Outside its journey, the dinosaur found a jagged leaf that it could use to heal its worn-out claws.",
-                    "The dinosaur walked past a small lake and saw grass that helped him get rid of his health problems.",
-                    "As the dinosaur strolled through the wild grass, he accidentally stumbled upon medicinal roots that helped him cope with his illness.",
-                    "The dinosaur was traveling through the green hills when he found a magnificent plant that gave him the strength to continue his journey.",
-                    "As the dinosaur searched his way home, he found medicinal herbs that helped him heal his wounds.",
-                    "A dinosaur accidentally discovered a rare medicinal herb that cured him of his disease.",
-                    "When the dinosaur got lost in the wild, he found a medicinal plant that helped him regain his health.",
-                    "The dinosaur saw the medicinal herb as he followed the pile of butterflies that led him to the source of the fertile water.",
-                    "As the dinosaur traveled through the dense forest, he found a medicinal herb that helped him regain his energy.",
-                    "A dinosaur accidentally found a medicinal herb when he sat down to rest under a large tree.",
-                    "When the dinosaur got lost in a deep forest, he found a medicinal herb that helped him heal his wounds.",
-                    "The dinosaur was walking through the valley when he found a unique herb that helped him regain his strength.",
-                    "As the dinosaur traveled across the plain, he found a medicinal herb that helped him strengthen his immunity.",
-                    "A dinosaur accidentally found a medicinal herb while seeking refuge from a flood.",
-                    "As the dinosaur searched for delicious food, he found a medicinal herb that helped him heal his ailment.",
-                    "The dinosaur faced health problems until he found a medicinal herb on the border of the wild forest.",
-                    "As the dinosaur walked through the long valley, he found a medicinal herb that helped him cope with his illness.",
-                    "A dinosaur accidentally found a medicinal herb while walking through dense vegetation.",
-                    "As the dinosaur battled a flock of insects, he found a medicinal herb that helped him heal his wounds.",
-                    "The dinosaur saw a rare bird that led him to a medicinal herb that helped heal him from a long illness.",
-                    "As the dinosaur crossed the river, he found a medicinal herb that helped him regain his energy.",
-                    "The dinosaur found a medicinal herb in passing when he was without food for several days.",
-                    "As the dinosaur walked down the arid plain, he found a medicinal herb that helped him cool his body.",
-                    "A dinosaur accidentally found a medicinal herb as he was fleeing a flock of small predators.",
-                    "As the dinosaur traveled through the wasteland, he found a medicinal herb that helped him regain his strength.",
-                    "The dinosaur got lost in the mountains when he found a medicinal herb that helped him cope with his illness.",
-                    "As the dinosaur walked through the hot desert, he found a medicinal herb that helped him get rid of dehydration.",
-                    "A dinosaur accidentally found a medicinal herb when he got lost in a month.",
-                    "As the dinosaur walked down the green hill, he found a medicinal herb that helped him regain his health.",
-                    "A dinosaur accidentally found a medicinal herb when he was looking for a secluded place to sleep.",
-                    "As the dinosaur traveled through the hot wilderness, he found a medicinal herb that helped him strengthen his immunity.",
-                    "The dinosaur found the medicinal herb as he searched for food for his pack in an arid area.",
-                    "As the dinosaur walked through the viscous swampy area, he found a medicinal herb that helped him heal his runny nose.",
-                    "A dinosaur accidentally found a medicinal herb when he was on the verge of exhaustion on hot sand.",
-                    "As the dinosaur walked through the plains, he found a medicinal herb that helped him strengthen his stomach.",
-                    "The dinosaur found a medicinal herb in a cave where it could hide from evil predators.",
-                    "As the dinosaur walked down the hot plateau, he found a medicinal herb that helped him relieve fatigue.",
-                    "A dinosaur accidentally found a medicinal herb while looking for fresh water in an arid area.",
-                    "As the dinosaur traveled through the dense forest, he found a medicinal herb that helped him regain his strength.",
-                    "The dinosaur found medicinal grass in a dense shrub where it could hide from predators.",
-                    "When the dinosaur got lost in the western, he found a medicinal herb that helped him heal his wounds.",
-                    "A dinosaur accidentally found a medicinal herb when he was looking for a new refuge for his pack.",
-                    "As the dinosaur walked through the dense jungle, he found a medicinal herb that helped him cope with his illness.",
-                    "The dinosaur found the medicinal herb when it was on the verge of starvation in an extremely arid area.",
-                    "As the dinosaur searched for a safe place, he accidentally found a medicinal herb that helped him heal his wounds.",
-                    "The dinosaur found the medicinal herb as he searched for food for his pack in a snow-covered area.",
-                    "As the dinosaur walked through the long valley, he found a medicinal herb that helped him strengthen his immunity."
-                ],
-                "influences_energy": [
-                    "The dinosaur had a short rest and was energized",
-                    "The dinosaur found a secluded place and meditated, taking a break from a tense walk",
-                    "The dinosaur lay in the sun and recharged with energy",
-                    "The dinosaur found a cool place and rested, enjoying the gentle breeze",
-                    "The dinosaur found a stone ledge and rested while enjoying the beautiful view",
-                    "The dinosaur spent time by the river, enjoying the tranquility and upbeat noise of the water",
-                    "The dinosaur took a short break and slept, recharged with new energy",
-                    "The dinosaur found a shady place and rested, feeling cool",
-                    "The dinosaur hid in a cave and rested, enjoying the coolness and silence",
-                    "Dinosaur lay under a tree and enjoyed the warmth and sun protection",
-                    "The dinosaur found a comfortable place to rest and relax while enjoying the environment",
-                    "The dinosaur spent time in the tent, enjoying the warmth and protection from the wind",
-                    "The dinosaur built itself a nest and rested there feeling safe",
-                    "The dinosaur settled on the soft grass and enjoyed the natural rug",
-                    "The dinosaur fit under the thick foliage, getting fresh air and feeling protected",
-                    "Dinosaur lay on a stone platform and enjoyed a great view of the surrounding area",
-                    "The dinosaur sat in a shady place and enjoyed the fresh air and coolness",
-                    "The dinosaur took a short break in the clearing and just stared at the clouds",
-                    "Dinosaur lay on a sand spit and enjoyed the cool breeze and fresh air",
-                    "The dinosaur took shelter on a high hill and enjoyed a beautiful view of the terrain"
-                ],
-                "coins": [
-                    "The dinosaur stumbled upon an old abandoned cave and found some gold coins in it.",
-                    "Walking past the river, the dinosaur noticed the shining coins at the bottom and decided to take them for himself.",
-                    "The dinosaur, wandering through the forest, saw several metal coins in the bushes and decided to take them away.",
-                    "Walking through the field, the dinosaur accidentally discovered a buried treasure and found many coins there.",
-                    "While on the coast, the dinosaur stumbled upon a broken coin chest and decided to collect them.",
-                    "Traveling through the desert, the dinosaur discovered an old chest hand and found a lot of gold coins there.",
-                    "Passing by an abandoned boat, the dinosaur saw some coins there and decided to pick them up.",
-                    "Wandering through the gardens, the dinosaur found a large pile of coins on the ground and decided to collect them.",
-                    "Adventuring in the mountains, the dinosaur found an abandoned mining town and found a lot of gold coins there.",
-                    "Making its way through the old castle, the dinosaur accidentally saw a stack of coins and decided to pick them up.",
-                    "Passing by an abandoned mine, the dinosaur saw a lot of coins on the ground and decided to collect them.",
-                    "Being in the depths of the forest, the dinosaur accidentally discovered a wealthy village and found many coins there.",
-                    "Exploring a huge cave, the dinosaur stumbled upon an old chest and found many gold coins there.",
-                    "Traveling around the city, the dinosaur saw pennies abandoned by passers-by on the street and decided to pick them up.",
-                    "Running through an abandoned park, the dinosaur stumbled upon a bunch of coins and decided to collect them.",
-                    "Adventuring in an abandoned castle, the dinosaur found a hidden vault with a lot of coins.",
-                    "Passing by the broken barn, the dinosaur saw some gold coins there and decided to take them away.",
-                    "Walking through the meadow, the dinosaur saw many coins on the ground and decided to collect them.",
-                    "Being on the ocean shore, the dinosaur found a sunken chest and found a lot of coins in it.",
-                    "While traveling on the plain, a dinosaur accidentally found a stack of coins and decided to pick them up."
+                    "Walking under the crowns of giant trees, the dinosaur saw grasses. He immediately remembered how at school they were told about Gulgamesh's grass. Applying it, the dinosaur felt healthier."
                 ],
                 "meeting_friend": [
-                    "The dinosaur stumbled upon a herd of tragodites, and they greeted each other happily.",
-                    "While walking through the swamp, the dinosaur suddenly saw a crocodile, but it turned out to be just his friend.",
-                    "In the forest, the dinosaur stumbled upon a flock of Pteranodons, and they could all be placed on their wings.",
-                    "The dinosaur encountered a large group of Triceratops eating in the shade of the green bushes. They were very happy to see each other.",
-                    "Walking through the desert plain, the dinosaur finally met friends — a pack of dragons flying high in the sky.",
-                    "In the depths of the jungle, the dinosaur found a long-lost friend — a pincodon.",
-                    "A group of Pachyrosaurs was grazing in a meadow, where a dinosaur accidentally got into. They greeted each other joyfully.",
-                    "On the lake, the dinosaur found a group of crocodiles that also had their friends from previous times.",
-                    "Sitting next to a herd of stegosaurs, the dinosaur listened to their pleasant clicking and rustling, and they enjoyed the evening together.",
-                    "The dinosaur saw an entire forest of lapels glowing with the bright yellow lights of autumn foliage. It was a big company after a long absence of his own.",
-                    "Not far from the waterfall, the dinosaur noticed a flock of velociroptors. They were so happy about their friend's imminent return that they decided to play on the river.",
-                    "The dinosaur noticed a crowd of tyrannosaurs from its ancestry hiding in the forest more often, who had not seen each other for many years.",
-                    "On the beach, the dinosaur found a whole company of giant crabs, which turned out to be his long-awaited friends.",
-                    "The tropical area was full of dincetroids, which the dinosaur encountered when they were dismantling the fruit.",
-                    "The dinosaur managed to find a zoo that was located in the deep forests, and there he met new friends who watched his other relatives with him.",
-                    "At the top of the mountain, the dinosaurs found an airship from which the friends of the dinosaurs came out, who flew with strenuous editing and felt painfully feminine changes from pressure drops.",
-                    "The dinosaur happily embraced a group of southern tropical birds that headed south last year in search of warmth.",
-                    "The dinosaur met a pack of balakhariteriums in search of food and instantly noticed a stone entrance to the cave in the corner, which was the home of his old friend.",
-                    "Moving at the speed of light, the dinosaur expelled more and more monsters, finally reached the threshold of Hell and greeted its friendly inspectors of the other world.",
-                    "Walking through the dense shrubs in the valleys, the dinosaur encountered health and cheerful trotters that helped him find his home."
+                    "Walking along the path to the meeting, I came out - {friend}! The dinosaurs were very happy to meet each other!"
                 ],
                 "trade_item": [
-                    "The dinosaur found a cave with precious stones during his trip through the mountains. After exchanging them for an item, he received new food.",
-                    "While hiking in the desert, the dinosaur found a jug of water that helped him quench his thirst.",
-                    "The dinosaur went in search of new pastures for his herd and found a meadow where juicy grasses grew. With the help of these herbs, he was able to improve the quality of milk.",
-                    "During his journey through the jungle, the dinosaur found a plant that helped heal a wound on his paw.",
-                    "The dinosaur stumbled upon a dump of things in its path. After exchanging a surplus of coins for these things, he received new food and an item for his nest.",
-                    "The dinosaur went in search of gold and found a place where it was possible to mine it. Having exchanged gold for an item, he received a new tool for processing the land.",
-                    "During his journey through the mountains, the dinosaur found a deep lake. He used water from the lake to improve the quality of his wool.",
-                    "A dinosaur accidentally found a treasure map in the mines. He used this map and found a new cave with rich food supplies.",
-                    "During his journey through the plains, the dinosaur found a huge mine. After exchanging the processed ore for an item, he received a new weapon to protect his herd.",
-                    "The dinosaur accidentally stumbled upon a long crack in the ground. He used the ground from the crack to better fertilize his plantings.",
-                    "During his journey through the ice, the dinosaur found an underground river. He used water to improve the quality of his eggs.",
-                    "The dinosaur went in search of threads to sew new nests for his eggs. Having exchanged coins for threads, he received a new tool for creating nests.",
-                    "During his journey through the caves, the dinosaur found an emerald. After exchanging it for an item, he received new food for his herd.",
-                    "The dinosaur went in search of new resources and found an old ruin. Having exchanged what was found on the ruins for an object, he received a new remedy for the smell of his body.",
-                    "A dinosaur accidentally found a volcano. He used hot rocks from the volcano to improve the quality of his eggs.",
-                    "During his journey through the desert, the dinosaur found a bonfire. He used the fire to cook his food.",
-                    "The dinosaur went in search of new pastures and found a quarry. Having exchanged what was mined in the quarry for an item, he received new funds for better cultivation of the land.",
-                    "During his journey through the jungle, the dinosaur found a nest. After exchanging what he found in the nest for an item, he received new food for his herd.",
-                    "The dinosaur went in search of gold and found a place where it was possible to mine it. After exchanging gold for an item, he received new pieces for his nest."
-                ],
-                "item": [
-                    "The dinosaur got lost in the Forest of Giant Trees and found its lost flock thanks to the successful discovery of the key to the guide sign.",
-                    "The dinosaur went on a hike and found an ancient pantry of things left by people a long time ago.",
-                    "The dinosaur found a stream of water in the Forest of Giant Trees that was unknown to anyone else. He was the first to know about it.",
-                    "The dinosaur went on a long journey and found a meteorite that went unnoticed by other dinosaurs.",
-                    "The dinosaur saw an ancient relic of a tribe of people in the Forest of Giant Trees and decided to check its taste.",
-                    "A dinosaur accidentally found an ancient artifact in the Forest of Giant Trees, which he used for fresh water from a stream.",
-                    "Until this day, the dinosaur did not know that the coffin resting in the Forest of Giant Trees had been forgotten.",
-                    "The dinosaur wandered into the cave of the Forest of Giant Trees and discovered a hidden passage that led to the flow of water.",
-                    "The dinosaur accidentally found an underground river near the Forest of Giant Trees cave, which was previously unknown to everyone.",
-                    "The dinosaur found an unusual clarinet in the Forest of Giant Trees, and before that, everyone knew only about the uniqueness of the hidden tool.",
-                    "The dinosaur got lost in the Forest of Giant Trees and found a stream of water that no one had seen before.",
-                    "The dinosaur found a thrown ray that stood in the Forest of Giant Trees.",
-                    "The dinosaur found a crease where there were space tools that he had never used.",
-                    "The dinosaur found an ancient shield on the bank of a river in the Forest of Giant Trees and used it to protect his family.",
-                    "The dinosaur accidentally found an ancient artifact that was left by ancient people who lived in the Forest of Giant Trees.",
-                    "The dinosaur found an abandoned temple in the Forest of Giant Trees, where other dinosaurs had never been.",
-                    "The dinosaur found a museum of people in the Forest of Giant Trees and was able to learn a lot about antiquity and myths.",
-                    "The dinosaur accidentally found the key to what was going on in the Forest of Giant Trees and found an important piece of information.",
-                    "The dinosaur found treasures and a forest of giant trees that other dinosaurs had been looking for for many years."
-                ],
-                "quest": [
-                    "Finding the lost little dinosaur, our hero helped him find his parents and received an award.",
-                    "The dinosaur reached the top of the mountain and disrupted a large crop of fruit, helping the locals. He received a reward for his help.",
-                    "Learning that one of the villagers had problems with crops, the dinosaur offered its help. He dug the ground and helped plant new seeds and received a reward for his diligence.",
-                    "Actively thinking about how to help the dinosaur community, our hero built a new house for one of the villagers and received an award for his activities.",
-                    "Helping local animals, the dinosaur found the lost treasure and returned it to its owner. He received an award for his achievement.",
-                    "The dinosaur realized that the locals needed to deliver the grain to survive the winter. He collected a large amount of grain and delivered it to the city. He received a reward for his help.",
-                    "Having discovered a new difficult route in the mountains, the dinosaur helped other dinosaurs deliver the necessary equipment to the base. He received a reward for his help.",
-                    "The dinosaur noticed that the locals were running out of water, so he collected and delivered it. He received a reward for his help.",
-                    "The dinosaur helped the locals build a new bridge, which saved a lot of time when moving. He received a reward for his help.",
-                    "Helping the small animal out of the ambush, the dinosaur received an award from a grateful local resident.",
-                    "After the village was overrun by earthworms, the dinosaur assembled a team and helped drive them away. He received a reward for his help.",
-                    "The dinosaur helped a novice farmer to plant a crop and earn money. He received a reward for his help.",
-                    "After a new mine was opened, the dinosaur helped mine the ore and make a lot of money. He received a reward for his help.",
-                    "The dinosaur helped the local pharmacist collect the necessary herbs for treatment and received an award for its help.",
-                    "Helping locals with the repair of houses and buildings, the dinosaur received an award from grateful locals.",
-                    "Discovering new routes in the mountains, the dinosaur found precious stones and received a reward for its help.",
-                    "The dinosaur helped the locals to establish the production of goods. He received a reward for his help.",
-                    "Helping local blacksmiths, the dinosaur found rare ores and received a reward for its help.",
-                    "The dinosaur delivered medicines to the local hospital, and in gratitude, from a caring nurse, received useful items as a reward.",
-                    "Defending the village from the attack of several wild beasts, the dinosaur received an award from grateful locals."
-                ],
-                "battle": [
-                    "The dinosaur survived the duel with the wild beasts that hunted it.",
-                    "A huge lizard reached the river, second only to crocodiles and other predators.",
-                    "On the arid plains, the dinosaur managed to defend its territory from a pack of hungry wolves.",
-                    "Having encountered a formidable bear on its way, the dinosaur did not run away - it attacked first and beat the beast.",
-                    "In a cave far in the mountains, a dinosaur encountered an evil bear - and won.",
-                    "Descending to the seashore, the dinosaur filled its stomach with ducks that could not escape from its huge teeth.",
-                    "Clearing the way through a long shell bay, the dinosaur managed to push a large shell turtle ashore.",
-                    "A lonely dinosaur living in the wilderness surprised the inhabitants of the local village with its strength: it easily defeated any animals who dared to enter its territory.",
-                    "A very dangerous battle took place in the arena when the dinosaur did not leave a chance to its rival - with an impressive force he perched the animal on the ground.",
-                    "An impressive sight was the fight between a dinosaur and several bears in the remote forests - in the end, a giant reptile won."
-                ]
-            },
-            "negative": {
-                "influences_mood": [
-                    "Walking along the path, the dinosaur saw a felled tree, he was very upset because of this",
-                    "The dinosaur noticed that he had lost his compass and could not determine the direction of movement, his mood dropped.",
-                    "Suddenly it started pouring rain, the dinosaur did not have time to hide and was very wet, which greatly spoiled his mood.",
-                    "The dinosaur found a fragment of his favorite amulet stone that carried the entire trip, which was a reason for him to lower his spirits.",
-                    "The dinosaur encountered a flock of vicious insects that bit it, which caused great irritation and spoiled its mood throughout the journey.",
-                    "During lunch, the dinosaur got the smallest piece of meat, which greatly disappointed him and spoiled his mood.",
-                    "The dinosaur was tired and could not find a comfortable place to rest, it greatly lowered his mood.",
-                    "A sudden loud sound frightened the dinosaur, it could no longer calm down and continued to be frightened, which spoiled the mood.",
-                    "The dinosaur was slightly injured during the journey and could no longer move as fast, which greatly affected his mood.",
-                    "The dinosaur found his favorite toy, but noticed that it broke, which caused him sadness and lowered his mood.",
-                    "The dinosaur lost his backpack with important things, he felt a lot of stress and lowered his mood."
-                ],
-                "without_influence": [
-                    "The dinosaur found a cozy place to rest under a large tree.",
-                    "A huge butterfly hung on the nose of a dinosaur, which was amazed at its beauty.",
-                    "In the bushes behind the dinosaur, something rustled, but it turned out to be only a hare.",
-                    "The dinosaur caught up with the little mouse, but let it go when it gave it a frightened look.",
-                    "A drunken hog ran past a dinosaur and fell.",
-                    "The dinosaur spread its wings and slowed down to enjoy the beauty of the sunset.",
-                    "The dinosaur passed the anthill, but suddenly realized that he had stepped on one of the ants.",
-                    "The wind brought the smell of plentiful food, but the dinosaur decided not to go for the bait.",
-                    "The dinosaur sat on the hot sand and felt its body cool a little.",
-                    "A huge spider ran in front of the dinosaur, causing him a brief fright.",
-                    "The dinosaur stopped to pick up the leaf and see what was hiding beneath it.",
-                    "The branches of the trees whistled and rustled, causing the dinosaur to have a peaceful mood.",
-                    "The dinosaur ran past a group of multi-colored butterflies that looked like flower petals.",
-                    "The sun dazzled the dinosaur's eyes slightly, and he paused for a moment to open his mouth and enjoy the cool air.",
-                    "The dinosaur found a strange stone with big eyes and showed it to his friends the next day.",
-                    "A huge bumblebee swept past the dinosaur, causing it to close its eyes slightly.",
-                    "The dinosaur accidentally stepped on a yellow-green snake, but it managed to bounce back.",
-                    "The dinosaur heard strange rustles in the bushes, but saw no one.",
-                    "The wind caught the dinosaur's breath for a few seconds, but the dinosaur quickly adapted and continued on its way.",
-                    "The dinosaur unexpectedly caught up with a couple of hares and caught them coming completely out of the dark grass.",
-                    "A huge ball of mucus landed on the nose of the dinosaur, causing it to freeze in place.",
-                    "The dinosaur walked past the water source, but decided not to stop.",
-                    "The abyss that the dinosaur had to cross turned out to be not so deep, and he jumped over it without wasting his time.",
-                    "The dinosaur found a large glowing mushroom and carried it home.",
-                    "One day passed and a whole colony of wild rabbits appeared in the way of the dinosaur, looking for leaves.",
-                    "The dinosaur ran past an old chest that must have been hiding a lot of valuables.",
-                    "A whole herd of lazy pandas rode through the deaf crowd of the dinosaur, eating the grass peacefully.",
-                    "The dinosaur raised its leg but didn't want to step on the little lizard.",
-                    "One local animal frightened the dinosaur, but it soon calmed down and continued to move.",
-                    "The little bird sat on the tail of the dinosaur and tasted it, but quickly flew away.",
-                    "The dinosaur paused to see his beloved soul.",
-                    "The dinosaur walked past the neighborhood store and decided to take a look at how the food was sold.",
-                    "A huge cockroach sat on the leg of a dinosaur, but quickly ran away.",
-                    "The dinosaur knocked a few leaves off the road and went without stopping.",
-                    "Several cats raced in front of the dinosaur, causing a smile on its snout.",
-                    "The dinosaur stopped to help a small hedgehog family cross the road.",
-                    "On the way to meet the dinosaur, a herd of deer came out, fleeing from hunger.",
-                    "In the wild blooming field along which the road passed, masses of paper birds were scattered.",
-                    "A huge crocodile struck the dinosaur, but it boldly accepted the fight.",
-                    "The dinosaur stumbled upon the ants, slammed a few times, and decided not to touch them any further.",
-                    "The part of the road that the dinosaur was walking on was flooded after the rain, and he gently crossed it.",
-                    "The fox jumped past the dinosaur but couldn't find anything to eat.",
-                    "The dinosaur walked past a large garden where fruits of all kinds grew.",
-                    "A galloping deer ran through the dinosaur, feeling its warmth.",
-                    "The dinosaur found a sheet on which it was written: \"Looking for the owner!\" and took him home.",
-                    "The giraffe walked past the dinosaur, not finding a place near the area for a long time.",
-                    "The dinosaur ran past a long stack of books, where he had already found a lot of interesting things.",
-                    "The large beetle climbed on the dinosaur, but quickly ran away.",
-                    "A dwarf elephant passed by, showing the dinosaur the flowers that bloomed after the rain."
-                ],
-                "influences_game": [
-                    "Playing with the ball, the dinosaur got bored, he was not satisfied with the game.",
-                    "Jumping over the log, the dinosaur got tired and didn't want to play anymore.",
-                    "Trying to catch butterflies, the dinosaur was disappointed in the game, he got bored.",
-                    "Running after his tail, the dinosaur realized that he did not want to play this game anymore.",
-                    "Playing hide-and-seek, the dinosaur was so boring that he decided to stop the game.",
-                    "Watching the rest of the dinosaurs playing football, our hero felt that he was not interested in it.",
-                    "After trying every game on the court, the dinosaur decided he didn't want to play anymore.",
-                    "Running through the entire forest, the dinosaur was tired and no longer had the desire to play.",
-                    "Playing hide-and-seek with other dinosaurs, our hero began to feel that he was not interested in the game.",
-                    "Playing a ball with other dinosaurs, our hero felt that he was no longer interested in being smart and winning.",
-                    "After trying all the games on the playground, our dinosaur decided that he was not interested in anything and did not want to play anymore."
-                ],
-                "influences_eat": [
-                    "Walking in the woods for a long time, the dinosaur got hungry.",
-                    "After walking a few kilometers, the dinosaur felt that it had not eaten for a long time.",
-                    "Sneaking through the dense thickets, the dinosaur began to descend into the abyss and felt hungry.",
-                    "After several hours of walking along the deserted coast, the dinosaur began to feel a lack of food.",
-                    "Tired of hiking in the mountains, the dinosaur saw the river and realized that it was necessary to refuel.",
-                    "Looking into the cave, the dinosaur saw a bunch of rocks and realized that it had not been fed for a long time.",
-                    "Jumping over the remains of the destroyed city, the dinosaur determined that there was not a single snack in it.",
-                    "Desperately looking for shelter from the weather, the dinosaur felt an acute hunger.",
-                    "Looking around, the dinosaur realized that there was no food among the larch that he hadn't tasted.",
-                    "Going down into the depths of the forest, the dinosaur realized that it would soon need to eat.",
-                    "Seeing the oasis on the horizon, the dinosaur felt the hunger again."
-                ],
-                "influences_energy": [
-                    "I am actively running through the forest, the dinosaur is a little tired.",
-                    "The dinosaur lifted a heavy rock in its path, which wasted a lot of energy and tired him out.",
-                    "Trying to jump over the river, the dinosaur could not and fell into the water, then got ashore, but was very tired.",
-                    "The dinosaur tried to escape from the predator, which very quickly tired him and reduced his speed.",
-                    "The dinosaur struggled to survive the brutal weather, which wasted a lot of its energy and left it very tired.",
-                    "The dinosaur ran after a large herd of wild animals, but could not catch up with them, it tired him and he was tired.",
-                    "The dinosaur tried to jump on a tree branch but couldn't and fell to the ground, which wasted a lot of his energy and tired him out.",
-                    "The dinosaur swam in the sea and fought a strong current, which wasted a lot of its energy and made it tired.",
-                    "The dinosaur walked a very difficult and dirty route, which greatly tired and weakened it.",
-                    "The dinosaur tried to catch fish, but could not reach it at depth, it consumed a lot of its energy and left it tired.",
-                    "The dinosaur was climbing high, which required a lot of energy and fatigue."
-                ],
-                "coins": [
-                    "Walking along the path, a dinosaur accidentally dropped a couple of coins",
-                    "The dinosaur found that he had spent all his coins to buy food and could no longer buy anything useful, which caused him frustration.",
-                    "During sleep, the last coin was knocked out of the dinosaur's palm, which caused him discontent and lowered his mood.",
-                    "The dinosaur did not notice how his coins fell out of his pocket, and lost them, which upset him and lowered his mood.",
-                    "The dinosaur exchanged his coins for souvenirs that he no longer needed, which caused him a sense of deception and disappointment.",
-                    "The dinosaur forgot the coins at home and could not buy what he needed, this disappointed him and provoked discontent.",
-                    "The dinosaur found the coins on the ground, but then accidentally lost them, which greatly lowered his mood.",
-                    "The dinosaur gave the coins to another dinosaur to help him, but he could not return them, which greatly spoiled the mood of the first one.",
-                    "The dinosaur spent all his coins on one thing that turned out to be defective, which caused him a sense of disappointment and resentment.",
-                    "The dinosaur forgot where he hid his coins, this caused him discontent and lowered his mood.",
-                    "The dinosaur found the coins on the ground, but when he picked them up, it turned out that they were worth nothing, which caused him frustration and dissatisfaction."
-                ],
-                "item": [
-                    "Walking through a dense forest, a dinosaur dropped an object from a backpack",
-                    "Making its way through the dense shrubs, the dinosaur lost the prey it had just caught from its paws.",
-                    "I was in a hurry to meet my friends, the dinosaur forgot his things on the road and now he can't find them.",
-                    "Furrowing the expanses of the desert, the dinosaur accidentally released its expensive stone from its paws.",
-                    "Walking through the abandoned city, the dinosaur lost a backpack filled with valuables, not noticing the robber.",
-                    "Climbing a steep cliff, the dinosaur accidentally threw its prey into the abyss.",
-                    "Following the bird, the dinosaur accidentally lost his favorite stone, which he always carried with him.",
-                    "While doing his daily work, the dinosaur accidentally left its value.",
-                    "Seeking shelter from the rain, the dinosaur fell to the muddy floor and accidentally released its treasure.",
-                    "Having burst into enemy territory, the daring dinosaur forgot his weapon and cannot return back.",
-                    "Crossing a dry river, the dinosaur lost the prey it had stored in its backpack."
-                ],
-                "quest": [
-                    "The dinosaur was given a task for the extraction of items, but unfortunately he failed the task, for which he paid a fine.",
-                    "The dinosaur received a task to guard the fortress, but accidentally missed the enemy and was punished with a fine.",
-                    "The dinosaur went out in search of prey, but because of its absent-mindedness, it missed a valuable find and paid a fine.",
-                    "The dinosaur called for help was late to the scene and accidentally missed the victim, which led to the imposition of a fine.",
-                    "Having got a job as a watchman, the dinosaur did not notice the theft and was punished with a fine for his inattention.",
-                    "Caught in a really difficult situation, the dinosaur did not cope with the task and was punished with a fine for its incompetence.",
-                    "The dinosaur got the long-awaited task, but as a result of his frivolity, he could not cope and paid a fine.",
-                    "The tool issued to the dinosaur did not meet his expectations, and he was punished with a fine for overdoing it.",
-                    "The dinosaur was exiled in search of rare vegetation, but due to its absent-mindedness, it did not find it and paid a fine.",
-                    "The dinosaur was tasked with chasing the enemy, but accidentally missed it, which resulted in a fine.",
-                    "To complete the task, the dinosaur needed a certain tool, but because of his forgetfulness, he forgot to take it and was punished with a fine."
+                    "Traveling through the forest, the dinosaur stumbled upon a wandering merchant, the merchant offered the dinosaur a couple of possible deals."
                 ],
                 "edit_location": [
-                    "The dinosaur got tired of traveling in this location, so he decided to go the other way.",
-                    "Changing course, the dinosaur went to another area where there was more food and less danger.",
-                    "The dinosaur continued to travel, but not in these forests - he decided to explore another area.",
-                    "The incoming strong storm forced the dinosaur to settle for a while in another territory, where it remained for a long time.",
-                    "Feeling lonely, the dinosaur went in search of a new community of its relatives in another part of the forest.",
-                    "The dinosaur could not find enough food, living in the current area, and was forced to move in search of new green spaces.",
-                    "Turning from the unbearable heat in the forest glade, the dinosaur found a cool refuge in the shade of mountain peaks.",
-                    "Other dinosaurs on their territory did not take it kindly, so the dinosaur decided to go to another corner of the forest.",
-                    "The dinosaur went in search of new adventures, exploring new and unexplored areas of the forest.",
-                    "After exploring the surrounding area, the dinosaur decided to change its habitat to ensure better living conditions."
+                    "Traveling through the forest, the dinosaur found a completely new road that he had not noticed before, he decided to go along it. Moving on, the environment began to change."
                 ],
-                "battle": [
-                    "The dinosaur was forced to flee from the battle with wild bears in the forest to save his life.",
-                    "Despite its strength, the dinosaur could not defeat the group of predators that entered its territory.",
-                    "A dinosaur heading towards the river was attacked by large large birds of prey and did not emerge victorious from the fight.",
-                    "Having met a herd of fast gazelles, the dinosaur decided to catch one of them, but in the end it turned out to be bared teeth of a pack of cheetahs.",
-                    "The brave dinosaur tried to defeat a flock of lizards in the open plains, but was stopped by a faster and more agile opponent.",
-                    "A solitary dinosaur was attacked from the trees by hunting spiders and in the end the victory turned out to be on the side of insects.",
-                    "The dinosaur exploring the coastline resisted a strong sea wave, but eventually succumbed to the force of the elements.",
-                    "During the morning hunt, a pack of hungry wolves appeared on the territory of the dinosaur, which turned out to be stronger than it.",
-                    "Having met an opponent of its size, the dinosaur grabbed a duel with him, but in the end was defeated.",
-                    "A huge dinosaur accidentally encountered an evil bear, and in the fight the animals were equal, but it took only one lucky blow to win - and the bear inflicted it."
-                ]
+                "positive": {
+                    "influences_mood": [
+                        "Walking along the path, the dinosaur saw a beautiful rainbow, the dinosaur immediately became warmer in his soul."
+                    ],
+                    "influences_eat": [
+                        "Walking along the path, the dinosaur noticed sweets that lead somewhere to the bushes. 1, 2, 3. The dinosaur is already near the bushes, but the dinosaur has already eaten enough and went on."
+                    ],
+                    "influences_game": [
+                        "The dinosaur jumped through the puddles after the fire."
+                    ],
+                    "influences_energy": [
+                        "The dinosaur took a nap in the clearing, now it's time to move on!"
+                    ],
+                    "coins": [
+                        "Walking along the path and looking under the stone, the dinosaur found something golden and took it with him."
+                    ],
+                    "item": [
+                        "Passing by the tree, it seemed strange to the dinosaur that there were so many footprints around. After examining the area, the dinosaur found something interesting!"
+                    ],
+                    "quest": [
+                        "Walking, the dinosaur met a sad dinosaur. He said he had lost his red hat. Your dinosaur immediately went in search. The dinosaur found the hat (even though it was green) and received the reward!"
+                    ]
+                },
+                "negative": {
+                    "influences_mood": [
+                        "Walking, the dinosaur saw a felled tree, he was very upset because of this..."
+                    ],
+                    "influences_eat": [
+                        "I am actively traveling, the dinosaur has gone cold."
+                    ],
+                    "influences_game": [
+                        "Walking through the monatonic forest, the dinosaur got bored, he wants to play."
+                    ],
+                    "influences_energy": [
+                        "Climbing under each stone, the dinosaur was very tired and sat down to rest."
+                    ],
+                    "coins": [
+                        "Going through the items found, the dinosaur considered the square coin to be a fake and threw it away."
+                    ],
+                    "item": [
+                        "A hole formed in the dinosaur's backpack, because of this the dinosaur could have lost something."
+                    ],
+                    "quest": [
+                        "Walking, the dinosaur saw a crying dinosaur, coming up, the dinosaur could not make out his words. After digging in your pockets, your dinosaur offered to eat the poor man, but he just left."
+                    ]
+                }
+            },
+            "lost-islands": {
+                "without_influence": [
+                    "Walking along the beach, the dinosaur renewed a beautiful shell."
+                ],
+                "influences_health": [
+                    "Resting on the beach, the dinosaur was able to relax under the sun."
+                ],
+                "meeting_friend": [
+                    "Looking at the waves, the dinosaur saw {friend} sunbathing near him."
+                ],
+                "trade_item": [
+                    "Walking along the beach, the dinosaur saw a crab with a large bag. The crab tells the dinosaur that he is a merchant and that he likes to buy and sell things."
+                ],
+                "edit_location": [
+                    "Walking close to the shore, the dinosaur did not notice the wave, it was swept by the water, and when he woke up, he was no longer on the beach."
+                ],
+                "positive": {
+                    "influences_mood": [
+                        "The dinosaur built a sand castle, the dinosaur is proud of itself."
+                    ],
+                    "influences_eat": [
+                        "Lifting his head up, the dinosaur updated an unknown fruit. The dinosaur quickly ate this sweet fruit."
+                    ],
+                    "influences_game": [
+                        "The dinosaur saw the crabs playing with the ball and joined them."
+                    ],
+                    "influences_energy": [
+                        "Sunbathing on the beach, the dinosaur is ready to travel again!"
+                    ],
+                    "coins": [
+                        "Collecting shells, the dinosaur saw something shiny, it turned out to be a coin."
+                    ],
+                    "item": [
+                        "Digging through the sand, the dinosaur suddenly stumbled upon a chest. Strongly hitting the castle, the dinosaur opened the chest and hid everything in his backpack."
+                    ],
+                    "quest": [
+                        "Walking along the beach, the dinosaur saw the dolphin washed ashore, the dinosaur helped him, and the dolphin gave him a reward."
+                    ],
+                    "battle": [
+                        "Aggressive animals appeared in the way of the dinosaur, they definitely wanted to do something bad with the dinosaur. The dinosaur waved its tail and there was no one left."
+                    ]
+                },
+                "negative": {
+                    "influences_mood": [
+                        "Walking along the beach, the dinosaur saw a dinosaur running from crabs on the other side. He felt sad, because sometimes cute creatures are dangerous."
+                    ],
+                    "influences_eat": [
+                        "The dinosaur was actively swimming in the water."
+                    ],
+                    "influences_game": [
+                        "The dinosaur was bored with the calm environment."
+                    ],
+                    "influences_energy": [
+                        "Running on the sand, the dinosaur forgot that he could get tired."
+                    ],
+                    "coins": [
+                        "Running and jumping, the dinosaur completely forgot about the backpack. The crabs wasted no time and stole a couple of coins."
+                    ],
+                    "item": [
+                        "Running and jumping, the dinosaur completely forgot about the backpack. Crabs wasted no time and dragged away important items of the dinosaur."
+                    ],
+                    "quest": [
+                        "Making his way through the vines, the dinosaur heard someone looking for friends to play ball. Running to the source of the sound, the dinosaur saw crocodiles in black, they demanded a ransom from the dinosaur."
+                    ],
+                    "battle": [
+                        "While walking, the dinosaur did not notice at all how he approached the \"Dangerous Animals\" base, he had to run away with his tail pinched."
+                    ]
+                }
+            },
+            "desert": {
+                "without_influence": [
+                    "Walking among the sands, the dinosaur saw water, but quickly realized that it was a mirage."
+                ],
+                "influences_health": [
+                    "Traveling through the desert, the dinosaur discovered an unknown plant that grows alone among the sands. The dinosaur ate it..."
+                ],
+                "meeting_friend": [
+                    "Among the sands, the dinosaur sees something bright white. It's {friend}! Dinosaurs are very happy with each other!"
+                ],
+                "trade_item": [
+                    "A mysterious animal appeared on the way, he opens his bags and shows glitter, the dinosaur is interested in something..."
+                ],
+                "edit_location": [
+                    "A storm rises, nothing can be seen, but here, the dinosaur clears the sand from his eyes, and he is no longer in the desert."
+                ],
+                "positive": {
+                    "influences_mood": [
+                        "A light breeze blew, in such hot weather it is especially pleasant."
+                    ],
+                    "influences_eat": [
+                        "In such conditions, sometimes you want something exotic, like a cactus. The dinosaur liked it."
+                    ],
+                    "influences_game": [
+                        "Jumping on the sands like waves, the dinosaur imagines itself as a shark."
+                    ],
+                    "influences_energy": [
+                        "After relaxing in the shade under the palm tree, you can continue your journey."
+                    ],
+                    "coins": [
+                        "The winds unearthed the ancient village, walking through it, the dinosaur collected some coins."
+                    ],
+                    "item": [
+                        "On the way of the dinosaur is a giant structure - a pyramid, having studied it, the dinosaur found something interesting."
+                    ],
+                    "quest": [
+                        "Walking on the sands, the dinosaur notices an old tiger, who asks for some water. The dinosaur happily shared the water and received the award."
+                    ],
+                    "battle": [
+                        "The unprecedented heat turned the animals into monsters, they are ready to do anything for food. But dinosaurs are always ready to stand up for themselves."
+                    ]
+                },
+                "negative": {
+                    "influences_mood": [
+                        "The dinosaur feels lonely among these sands, he is sad."
+                    ],
+                    "influences_eat": [
+                        "There is only sand everywhere, there is nothing tasty, the dinosaur is hungry."
+                    ],
+                    "influences_game": [
+                        "Playing with sand is no longer so interesting, I want to play something more interesting."
+                    ],
+                    "influences_energy": [
+                        "It is very hard to walk in such heat, the dinosaur is tired."
+                    ],
+                    "coins": [
+                        "Suddenly a strong wind blew, the dinosaur's bag flew a couple of meters away from him. Picking it up, he couldn't find a pair of coins."
+                    ],
+                    "item": [
+                        "Suddenly, a strong wind blew, the dinosaur's bag flew away from him a couple of meters. The dinosaur picked it up and walked on, the bag became noticeably lighter."
+                    ],
+                    "quest": [
+                        "There is a fence ahead, it seems to stretch for hundreds of meters, in order not to go around, you need to pay."
+                    ],
+                    "battle": [
+                        "Aggressive animals stood in front of the dinosaur, the dinosaur did not want to tear, had to run away."
+                    ]
+                }
+            },
+            "mountains": {
+                "without_influence": [
+                    "The dinosaur saw snowflakes falling beautifully from the sky."
+                ],
+                "influences_health": [
+                    "The dinosaur performed a ritual of hardening the body, restoring his blood."
+                ],
+                "meeting_friend": [
+                    "Among the snowdrifts, the dinosaur sees something bright, this {friend}! Dinosaurs are happy to see each other!"
+                ],
+                "trade_item": [
+                    "Walking along the path, the dinosaur meets a polar bear, who tells that he also travels and wants to exchange some goods."
+                ],
+                "edit_location": [
+                    "The dinosaur walked among the snows for so long that he fell asleep, opening his eyes, he was definitely not in the mountains."
+                ],
+                "positive": {
+                    "influences_mood": [
+                        "The dinosaur made a snow angel in the snow, he really liked it."
+                    ],
+                    "influences_eat": [
+                        "Walking along the path, the dinosaur got a piece of cake on its head, it turned out to be very tasty."
+                    ],
+                    "influences_game": [
+                        "Running after snowflakes and knocking on the crystals, the dinosaur did not notice how a couple of hours passed."
+                    ],
+                    "influences_energy": [
+                        "The dinosaur lay down to rest in the cave, putting a stone under his head."
+                    ],
+                    "coins": [
+                        "Accidentally smashing one of the crystals, the dinosaur upgraded a couple of coins."
+                    ],
+                    "item": [
+                        "Digging through the snow, the dinosaur stumbled upon something solid, he decided to take this “something” with him."
+                    ],
+                    "quest": [
+                        "Walking along the path, the dinosaur met a hare. The hare said that he could not get his hat, which he left in a dark cave. The dinosaur went to the cave and very quickly found the hat with the help of a torch."
+                    ],
+                    "battle": [
+                        "Aggressive animals saw the dinosaur warming up by the fire and decided to take it away. But the dinosaur is not a coward, he stood up for himself and the fire."
+                    ]
+                },
+                "negative": {
+                    "influences_mood": [
+                        "The dinosaur soaked his feet in the snow, he's sad about it."
+                    ],
+                    "influences_eat": [
+                        "There is nothing edible among the rocks and caves, the dinosaur is hungry."
+                    ],
+                    "influences_game": [
+                        "There is a blizzard, the dinosaur has taken refuge in a cave, but there is nothing to play with."
+                    ],
+                    "influences_energy": [
+                        "It is very difficult to walk in the snow, the dinosaur is tired."
+                    ],
+                    "coins": [
+                        "Walking along the path, the dinosaur fell into a snowdrift, climbing out of it, he turned a couple of coins."
+                    ],
+                    "item": [
+                        "Walking along the path, the dinosaur fell into the snowdrift, climbing out of it, he turned something, but did not want to climb there again."
+                    ],
+                    "quest": [
+                        "Going out into the open, the dinosaur saw a wolf that was stuck under the snow, the dinosaur immediately tried to help. It turned out to be a trap and the dinosaur lost something from the backpack while running away."
+                    ],
+                    "battle": [
+                        "Running through the forest, the dinosaur did not even notice how he ran into the den of wild animals, so he had to run away."
+                    ]
+                }
+            },
+            "magic-forest": {
+                "without_influence": [
+                    "Walking through the magical forest, the dinosaur noticed how beautifully the leaves shimmer."
+                ],
+                "influences_health": [
+                    "Walking along the path, the dinosaur met a fairy who healed his wounds."
+                ],
+                "meeting_friend": [
+                    "Traveling through the magical forest, the dinosaur met his friend {friend}!"
+                ],
+                "trade_item": [
+                    "Following the magical path, the dinosaur met a magical merchant. The dinosaur was very interested in his products."
+                ],
+                "edit_location": [
+                    "Turning in the wrong direction, the dinosaur went along a completely different path and came out of the magical forest."
+                ],
+                "positive": {
+                    "influences_mood": [
+                        "Walking along the road, the dinosaur noticed the fairies playing with each other, the dinosaur was very amused."
+                    ],
+                    "influences_eat": [
+                        "After collecting the magic spices from the bushes and eating them, the dinosaur felt as if it was full of them."
+                    ],
+                    "influences_game": [
+                        "Walking along the path and looking behind the dervo, the dinosaur found a magical tennis championship there!"
+                    ],
+                    "influences_energy": [
+                        "Sitting under a tree, the dinosaur suddenly noticed his strength returning to him!"
+                    ],
+                    "coins": [
+                        "Intending to go the other way, the dinosaur suddenly noticed something glistening in the bushes, it turned out to be a couple of coins."
+                    ],
+                    "item": [
+                        "Passing by the tree, it seemed strange to the dinosaur that there were so many footprints around. After examining the area, the dinosaur found something interesting!"
+                    ],
+                    "quest": [
+                        "Having received a task from the fairy, the dinosaur went in search of volgeb grass. When he returned, he received a reward!"
+                    ],
+                    "battle": [
+                        "Evil animals from the neighboring forest were going to spoil the forest, but the dinosaur proudly stood on guard!"
+                    ]
+                },
+                "negative": {
+                    "influences_mood": [
+                        "Walking, the dinosaur saw a felled tree, he was very upset because of this..."
+                    ],
+                    "influences_eat": [
+                        "I am actively traveling, the dinosaur has gone cold."
+                    ],
+                    "influences_game": [
+                        "Walking through the monaton forest, the dinosaur is bored, he wants to play."
+                    ],
+                    "influences_energy": [
+                        "Climbing under each stone, the dinosaur was very tired and sat down to rest."
+                    ],
+                    "coins": [
+                        "Going through the items found, the dinosaur considered the square coin to be a fake and threw it away."
+                    ],
+                    "item": [
+                        "A hole formed in the dinosaur's backpack, because of this the dinosaur could have lost something."
+                    ],
+                    "quest": [
+                        "Walking, the dinosaur saw a crying dinosaur, coming up, the dinosaur could not make out his words. After digging in your pockets, your dinosaur offered to eat the poor man, but he just left."
+                    ],
+                    "battle": [
+                        "Wild animals did not like the fact that the dinosaur was fortunate in their forest, the dinosaur had to run and change direction."
+                    ]
+                }
             },
             "signs": {
                 "coins": "🪙",
@@ -2969,7 +2833,7 @@
                 "rain": "🌧 It rained",
                 "anti_rain": "☂ Don't get wet from the rain",
                 "cold_wind": "❄ Cold wind",
-                "anti_cold_wind": "🧤 Didn't freeze thanks to clothes",
+                "anti_cold_wind": "🧤 Not frozen thanks to clothes",
                 "drought": "🏜 Drought",
                 "snowfall": "🌨 Snowfall",
                 "magic_light": "🌳 Magic Light",
@@ -3554,6 +3418,23 @@
             "new": "🍣 A new channel has been added to the push, the push language is set as in the bot settings.",
             "update": "🍜 Push data updated, channel and language updated.",
             "push_info": "🎢 *Enabling notifications*\n\n🥓 The bot is able to send a notification to a channel or group when it is created in the market. To do this, add the bot as an administrator with the rights (Publish messages) to the channel or group. Next, follow the instructions.\n\n🧵 1 person can only post to 1 place, but 1 place can post to as many people as you want."
+        },
+        "edit_dino": {
+            "info": "🧬 | *Dinosaur change*\n_A dinosaur can be transformed into another. With the latest technology, you can change the appearance and genes of a dinosaur!_\n\n🎍 | There are 3 ways to transform:\n\n*🎭 Rarity* - Only the rarity of the dinosaur will change.\n\n*🎠 Appearance* - Change in appearance. The rarity will remain the same, but the appearance will change in accordance with the rarity of the dinosaur.\n\n*🎑 Full* - Change in both appearance and rarity of the dinosaur.\n\n_As a result of mutations, your dinosaur's tastes may change._",
+            "buttons": {
+                "edit_dino rare": "🎭 Rarity",
+                "edit_dino appearance": "🎠 Appearance",
+                "edit_dino all": "🎑 Full"
+            },
+            "dino": "🍡 | Choose a dinosaur to transform",
+            "new_rare": "🍡 | Click the button to select a new rarity",
+            "appearance": "🥓 Confirm the change of appearance.\nCost: {items}, {coins} 🪙",
+            "rare": "🍡 What rarity do you want to transform a dinosaur into \n\n",
+            "all": "🍡 Specify in the dinosaur what rarity you want to transform the dino\n\n",
+            "no_coins": "❌ | You don't have that many coins!",
+            "no_items": "❌ | You don't have all the items to transform!",
+            "new": "☄ It took scientists and doctors a long time to get in and out of a room with your dinosaur. But now! A brand new dinosaur comes out of the room!",
+            "return": "🎈 Don't forget to tip!"
         }
     }
 }
