@@ -51,8 +51,8 @@ def get_data(key: str, locale: str) -> Any:
         if way_key.isdigit() and type(localed_data) == list:
             way_key = int(way_key)
 
-        if way_key in localed_data:
-            if way_key:
+        if way_key in localed_data or type(way_key) == int:
+            if way_key or way_key == 0:
                 try:
                     localed_data = localed_data[way_key] # type: ignore
                 except Exception as e:
