@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from time import time
+from random import randint
 
 from telebot.types import (CallbackQuery, InlineKeyboardButton,
                            InlineKeyboardMarkup, Message)
@@ -8,15 +9,16 @@ from bot.config import conf, mongo_client
 from bot.const import GAME_SETTINGS as GS
 from bot.exec import bot
 from bot.modules.data_format import list_to_inline, seconds_to_str
-from bot.modules.dinosaur import Dino, create_dino_connection
+from bot.modules.dinosaur import Dino, random_dino, random_quality
 from bot.modules.friends import get_frineds, insert_friend_connect
-from bot.modules.item import counts_items
+from bot.modules.item import counts_items, RemoveItemFromUser, CheckCountItemFromUser
 from bot.modules.localization import get_data, t, get_lang
 from bot.modules.markup import cancel_markup, confirm_markup, count_markup
 from bot.modules.markup import markups_menu as m
+from bot.modules.inline import inline_menu
 from bot.modules.notifications import user_notification
 from bot.modules.states_tools import (ChooseConfirmState, ChooseCustomState,
-                                      ChooseDinoState, ChooseIntState,
+                                      ChooseDinoState, ChooseInlineState,
                                       ChoosePagesState, ChooseStepState)
 from bot.modules.user import (AddItemToUser, check_name, daily_award_con,
                               take_coins, user_in_chat, user_name)
@@ -136,3 +138,155 @@ async def daily_award(callback: CallbackQuery):
     else:
         text = t('daily_award.in_base', lang)
         await bot.send_message(chatid, text, parse_mode='Markdown')
+
+@bot.message_handler(text='commands_name.dino_tavern.edit', is_authorized=True)
+async def edit(message: Message):
+    lang = get_lang(message.from_user.id)
+    user = message.from_user
+    chatid = message.chat.id
+
+    text = t('edit_dino.info', lang)
+    btn = get_data('edit_dino.buttons', lang)
+    b_mark = dict(zip(btn.values(), btn.keys()))
+    mark = list_to_inline([b_mark], 2)
+    await bot.send_message(chatid, text, parse_mode='Markdown', reply_markup=mark)
+
+async def edit_appearance(return_data, transmitted_data):
+    chatid = transmitted_data['chatid']
+    lang = transmitted_data['lang']
+    userid = transmitted_data['userid']
+    dino: Dino = return_data['dino']
+
+    coins_st = take_coins(userid, -GS['change_appearance']['coins'])
+    if coins_st:
+        status = []
+        for i in GS['change_appearance']['items']:
+            st = CheckCountItemFromUser(userid, 1, i)
+            status.append(st)
+
+        if all(status):
+            take_coins(userid, -GS['change_appearance']['coins'], True)
+            for i in GS['change_appearance']['items']: RemoveItemFromUser(userid, i)
+
+            n_id = dino.data_id
+            while n_id == dino.data_id: n_id = random_dino(dino.quality)
+            dino.update({'$set': {'data_id': n_id}})
+
+            text = t('edit_dino.new', lang)
+            await bot.send_message(chatid, text, parse_mode='Markdown', 
+                                   reply_markup=inline_menu('dino_profile', lang, dino_alt_id_markup=dino.alt_id))
+            await bot.send_message(chatid, t('edit_dino.return', lang), parse_mode='Markdown', 
+                                   reply_markup=m(userid, 'last_menu', lang))
+            return
+
+        else: text = t('edit_dino.no_items', lang)
+    else: text = t('edit_dino.no_coins', lang)
+
+    await bot.send_message(chatid, text, parse_mode='Markdown', 
+                           reply_markup=m(userid, 'last_menu', lang))
+
+async def end_edit(code, transmitted_data):
+    chatid = transmitted_data['chatid']
+    lang = transmitted_data['lang']
+    userid = transmitted_data['userid']
+    dino: Dino = transmitted_data['dino']
+    o_type = transmitted_data['type']
+
+    m_id = transmitted_data['bmessageid']
+    await bot.delete_message(chatid, m_id)
+    
+    coins = GS['change_rarity'][code]['coins']
+    items = GS['change_rarity'][code]['materials']
+
+    coins_st = take_coins(userid, -coins)
+    if coins_st:
+        status = []
+        for i in items:
+            st = CheckCountItemFromUser(userid, 1, i)
+            status.append(st)
+
+        if all(status):
+            take_coins(userid, -coins, True)
+            for i in items: RemoveItemFromUser(userid, i)
+
+            if code == 'random': quality = random_quality()
+            else: quality = code
+
+            if o_type == 'all':
+                n_id = dino.data_id
+                while n_id == dino.data_id: n_id = random_dino(quality)
+                dino.update({'$set': {'data_id': n_id, 'quality': quality}})
+
+            elif o_type == 'rare': 
+                dino.update({'$set': {'quality': quality}})
+
+            text = t('edit_dino.new', lang)
+            await bot.send_message(chatid, text, parse_mode='Markdown', 
+                                   reply_markup=inline_menu('dino_profile', lang, dino_alt_id_markup=dino.alt_id))
+
+            await bot.send_message(chatid, t('edit_dino.return', lang), parse_mode='Markdown', 
+                                   reply_markup=m(userid, 'last_menu', lang))
+            return
+
+        else: text = t('edit_dino.no_items', lang)
+    else: text = t('edit_dino.no_coins', lang)
+
+    await bot.send_message(chatid, text, parse_mode='Markdown', 
+                           reply_markup=m(userid, 'last_menu', lang))
+
+
+async def dino_now(return_data, transmitted_data):
+    chatid = transmitted_data['chatid']
+    lang = transmitted_data['lang']
+    userid = transmitted_data['userid']
+    dino: Dino = return_data['dino']
+    o_type = transmitted_data['type']
+
+    text = t(f'edit_dino.{o_type}', lang)
+    buttons = {}
+    code = randint(1000, 2000)
+
+    for key, i in GS['change_rarity'].items():
+        if dino.quality != key:
+            text += f'{t("rare."+key+".2", lang)} {counts_items(i["materials"], lang)} + {i["coins"]} 🪙 ➞ 🦕 {t("rare."+key+".0", lang)}\n\n'
+            buttons[f'{t("rare."+key+".2", lang)} {t("rare."+key+".1", lang)}'] = f'chooseinline {code} {key}'
+    
+    mark = list_to_inline([buttons], 2)
+    await bot.send_message(chatid, text, parse_mode='Markdown', reply_markup=mark)
+
+    await ChooseInlineState(end_edit, userid, chatid, lang, str(code), {'dino': dino, 'type': o_type})
+    await bot.send_message(chatid,  t('edit_dino.new_rare', lang), parse_mode='Markdown', reply_markup=cancel_markup(lang))
+
+@bot.callback_query_handler(func=lambda call: call.data.split()[0] == 'edit_dino', is_authorized=True)
+async def edit_dino(callback: CallbackQuery):
+    chatid = callback.message.chat.id
+    userid = callback.from_user.id
+    lang = get_lang(callback.from_user.id)
+    data = callback.data.split()
+
+    steps = [
+            {
+            "type": 'dino', "name": 'dino', "data": {"add_egg": False}, 
+            "translate_message": True,
+            'message': {'text': 'edit_dino.dino'}
+            }
+    ]
+    ret_f = dino_now
+
+    if data[1] == 'appearance':
+        items_text = counts_items(GS['change_appearance']['items'], lang)
+        coins = GS['change_appearance']['coins']
+        ret_f = edit_appearance
+
+        steps.append(
+            {
+            "type": 'bool', "name": 'confirm', 
+            "data": {'cancel': True}, 
+            'message': {
+                'text': t('edit_dino.appearance', lang, items=items_text, coins=coins),
+                'reply_markup': confirm_markup(lang)
+                }
+            }
+        )
+
+    await ChooseStepState(ret_f, userid, chatid, lang, steps, {'type': data[1]})
