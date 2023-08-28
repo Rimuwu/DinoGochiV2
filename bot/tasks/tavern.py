@@ -10,10 +10,10 @@ from bot.modules.notifications import user_notification
 from bot.modules.quests import create_quest, quest_resampling, save_quest
 from bot.taskmanager import add_task
 
-users = mongo_client.bot.users
-tavern = mongo_client.connections.tavern
-quests_data = mongo_client.bot.quests
-daily_data = mongo_client.connections.daily_award
+users = mongo_client.user.users
+tavern = mongo_client.tavern.tavern
+quests_data = mongo_client.tavern.quests
+daily_data = mongo_client.tavern.daily_award
 
 async def tavern_quest(user):
     free_quests = list(quests_data.find({'owner_id': 0}, {'_id': 1}))
@@ -46,7 +46,7 @@ async def tavern_quest(user):
 async def tavern_replic(in_tavern, user):
     names = in_tavern.copy()
     names.remove(user)
-    
+
     game_names = get_data('quests.authors', user['lang'])
     names += game_names
 
@@ -63,7 +63,7 @@ async def tavern_replic(in_tavern, user):
 
 async def tavern_life():
     in_tavern = list(tavern.find({}))
-    
+
     for user in in_tavern:
         if user['time_in'] + 3600 <= int(time()):
             tavern.delete_one({'_id': user['_id']})
@@ -72,10 +72,8 @@ async def tavern_life():
                         t('tavern_sleep', user['lang']))
             except: pass
 
-        elif randint(1, 10) == 5:
-            await tavern_replic(in_tavern, user)
-        elif randint(1, 5) == 5:
-            await tavern_quest(user)
+        elif randint(1, 10) == 5: await tavern_replic(in_tavern, user)
+        elif randint(1, 10) == 5: await tavern_quest(user)
 
 async def quest_managment():
     quests = quests_data.find({})
