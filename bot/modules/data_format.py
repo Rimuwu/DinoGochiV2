@@ -280,3 +280,26 @@ def count_elements(lst: list) -> str:
     for key, value in dct.items(): text_list.append(f'{key} x{value}')
     return ', '.join(text_list)
 
+def str_to_seconds(text: str):
+    """ Преобразует текст в секнудны
+    """
+    words = text.split()
+    seconds = 0
+
+    for i in words:
+        mn = 1
+        if len(i) == 1 and i.isdigit(): seconds += int(i)
+
+        if len(i) > 1:
+            if type(i[-1]) == str:
+                number = i[:-1]
+
+                if number.isdigit():
+                    if i[:-1] == 's': mn = 1
+                    elif i[-1] == 'm': mn = 60
+                    elif i[-1] == 'h': mn = 3600
+                    elif i[-1] == 'd': mn = 86400
+                    elif i[-1] == 'w': mn = 86400 * 7
+
+                    seconds += int(number) * mn
+    return seconds
