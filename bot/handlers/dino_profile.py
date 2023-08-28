@@ -8,7 +8,7 @@ from bot.const import GAME_SETTINGS
 from bot.exec import bot
 from bot.modules.accessory import check_accessory
 from bot.modules.data_format import (list_to_keyboard, near_key_number,
-                                     seconds_to_str, user_name)
+                                     seconds_to_str, user_name, list_to_inline)
 from bot.modules.dinosaur import Dino, Egg, dead_check
 from bot.modules.events import get_event
 from bot.modules.inline import dino_profile_markup, inline_menu
@@ -18,15 +18,17 @@ from bot.modules.markup import confirm_markup
 from bot.modules.markup import markups_menu as m
 from bot.modules.states_tools import (ChooseConfirmState, ChooseDinoState,
                                       ChooseOptionState)
-from bot.modules.user import User
+from bot.modules.user import User, premium
+from bot.modules.kindergarten import check_hours, m_hours, hours_now, minus_hours, dino_kind
 
-users = mongo_client.bot.users
-collecting_task = mongo_client.tasks.collecting
-game_task = mongo_client.tasks.game
-dino_mood = mongo_client.connections.dino_mood
-dinosaurs = mongo_client.bot.dinosaurs
-dino_owners = mongo_client.connections.dino_owners
-incubations = mongo_client.tasks.incubation
+users = mongo_client.user.users
+collecting_task = mongo_client.dino_activity.collecting
+game_task = mongo_client.dino_activity.game
+dino_mood = mongo_client.dinosaur.dino_mood
+dinosaurs = mongo_client.dinosaur.dinosaurs
+dino_owners = mongo_client.dinosaur.dino_owners
+incubations = mongo_client.dinosaur.incubation
+journey_task = mongo_client.dino_activity.journey
 
 async def dino_profile(userid: int, chatid:int, dino: Dino, lang: str, custom_url: str):
     text = ''
@@ -55,11 +57,11 @@ async def dino_profile(userid: int, chatid:int, dino: Dino, lang: str, custom_ur
     for i in ['heal', 'eat', 'game', 'mood', 'energy']:
         repl = near_key_number(dino.stats[i], replics[i])
         stats_text += f'{tem[i]} {repl} \[ *{dino.stats[i]}%* ]\n'
-    
+
     if dino.age.days == 0:
         age = seconds_to_str(dino.age.seconds, lang)
     else: age = seconds_to_str(dino.age.days * 86400, lang)
-    
+
     dino_name = dino.name
     if joint_dino: dino_name += t('p_profile.joint', lang)
 
@@ -72,12 +74,19 @@ async def dino_profile(userid: int, chatid:int, dino: Dino, lang: str, custom_ur
     text = t('p_profile.profile_text', lang, formating=False).format(**kwargs)
 
     if dino.status == 'journey':
-        # w_t = bd_dino['journey_time'] - time.time()
-        # jtime = Functions.time_end(w_t, text_dict['journey_time']['set'])
+        text += '\n\n'
+        journey_data = journey_task.find_one({'dino_id': dino._id})
 
-        # text += "\n\n" + tem['activ_journey']
-        # text += text_dict['journey_time']['text'].format(jtime=jtime)
-        pass
+        if journey_data:
+            st = journey_data['journey_start']
+            journey_time = seconds_to_str(int(time()) - st, lang)
+            loc = journey_data['location']
+            loc_name = get_data(f'journey_start.locations.{loc}', lang)['name']
+            col = len(journey_data['journey_log'])
+
+            text += t('p_profile.journey.text', lang, 
+                      em_journey_act = tem['em_journey_act']) + '\n'
+            text += t('p_profile.journey.info', lang, journey_time=journey_time, location=loc_name, col=col)
 
     if dino.status == 'game':
         data = game_task.find_one({'dino_id': dino._id})
@@ -117,7 +126,7 @@ async def dino_profile(userid: int, chatid:int, dino: Dino, lang: str, custom_ur
                acsess[key] = f'{name} \[ *{item["abilities"]["endurance"]}* ]'
             else: acsess[key] = f'{name}'
                 
-    menu = dino_profile_markup(add_blok, lang, dino.alt_id, joint_dino, my_joint, user.premium)
+    menu = dino_profile_markup(add_blok, lang, dino.alt_id, joint_dino, my_joint)
     if add_blok:
         text += t('p_profile.accs', lang, formating=False).format(**acsess)
 
@@ -228,7 +237,7 @@ async def dino_menu(call: types.CallbackQuery):
                 mood_list = list(dino_mood.find({'dino_id': dino['_id']}))
                 mood_dict, text, event_text = {}, '', ''
                 res, event_end = 0, 0
-                
+
                 for mood in mood_list:
                     if mood['type'] not in ['breakdown', 'inspiration']:
                     
@@ -261,7 +270,7 @@ async def dino_menu(call: types.CallbackQuery):
                     text += f'{em} {act}: `{unit}` '
                     if data_m['col'] > 1: text += f'x{data_m["col"]}'
                     text += '\n'
-        
+
                 await bot.send_message(userid, text, parse_mode='Markdown')
 
             elif action == 'joint_cancel':
@@ -269,12 +278,40 @@ async def dino_menu(call: types.CallbackQuery):
                 text = t('cancle_joint.confirm', lang)
                 await bot.send_message(userid, text, parse_mode='Markdown', reply_markup=confirm_markup(lang))
                 await ChooseConfirmState(cnacel_joint, userid, chatid, lang, transmitted_data={'dinoid': dino['_id']})
-            
+
             elif action == 'my_joint_cancel':
                 # Октазать от совместного динозавра
                 text = t('my_joint.confirm', lang)
                 await bot.send_message(userid, text, parse_mode='Markdown', reply_markup=confirm_markup(lang))
                 await ChooseConfirmState(cnacel_myjoint, userid, chatid, lang, transmitted_data={'dinoid': dino['_id'], 'user': call.from_user})
+
+            elif action == 'kindergarten':
+                if not premium(userid): 
+                    text = t('no_premium', lang)
+                    await bot.send_message(userid, text)
+                else:
+                    total, end = check_hours(userid)
+                    hours = hours_now(userid)
+                    text = t('kindergarten.info', lang,
+                             hours_now=m_hours - total,
+                             remained=total,
+                             days=seconds_to_str(end - int(time()), lang, False, 'hour'),
+                             hours=hours, remained_today=6
+                             )
+
+                    if dino['status'] == 'kindergarten':
+                        reply_buttons = list_to_inline([
+                            {
+                                t('kindergarten.cancel_name', lang): f'kindergarten stop {alt_key}'
+                            }])
+                    else:
+                        reply_buttons = list_to_inline([
+                            {
+                                t('kindergarten.button_name', lang): f'kindergarten start {alt_key}'
+                            }])
+                    await bot.send_message(userid, text, parse_mode='Markdown', 
+                                           reply_markup=reply_buttons)
+
 
 async def cnacel_joint(_:bool, transmitted_data:dict):
     userid = transmitted_data['userid']
@@ -308,4 +345,63 @@ async def remove_accessory(option: list, transmitted_data:dict):
                          {'$set': {f'activ_items.{key}': None}})
     AddItemToUser(userid, item['item_id'], 1, item['abilities'])
 
-    await bot.send_message(userid, t("remove_accessory.remove", lang),reply_markup=m(userid, 'last_menu', lang))
+    await bot.send_message(userid, t("remove_accessory.remove", lang), 
+                           reply_markup=m(userid, 'last_menu', lang))
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith('kindergarten'), private=True)
+async def kindergarten(call: types.CallbackQuery):
+    split_d = call.data.split()
+    action = split_d[1]
+    alt_key = split_d[2]
+
+    userid = call.from_user.id
+    chatid = call.message.chat.id
+    lang = get_lang(call.from_user.id)
+
+    dino = dinosaurs.find_one({'alt_id': alt_key})
+    if dino:
+        if action == 'start':
+            if dino['status'] != 'kindergarten':
+                all_h, end = check_hours(userid)
+                h = hours_now(userid)
+
+                if h != 6 and all_h:
+                    options = {}
+
+                    if 6 - h != 0:
+                        options[f"1 {t('time_format.hour.0', lang)}"] = 1
+                    if 6 - h >= 3:
+                        options[f"3 {t('time_format.hour.1', lang)}"] = 3
+                    if 6 - h == 6:
+                        options[f"6 {t('time_format.hour.2', lang)}"] = 6
+
+                    bb = list_to_keyboard([
+                        list(options.keys()), [t('buttons_name.cancel', lang)]
+                    ], 2)
+
+                    await ChooseOptionState(start_kind, userid, chatid, lang, options,
+                                            transmitted_data={'dino': dino['_id']}
+                                            )
+                    await bot.send_message(userid, t('kindergarten.no_hours', lang),
+                                           reply_markup=bb)
+                else:
+                    await bot.send_message(userid, t('kindergarten.no_hours', lang))
+
+        elif action == 'stop':
+            if dino['status'] == 'kindergarten':
+                dinosaurs.update_one({'_id': dino}, 
+                         {'$set': {'status': 'pass'}})
+                await bot.send_message(userid, t('kindergarten.stop', lang))
+
+async def start_kind(col, transmitted_data):
+    chatid = transmitted_data['chatid']
+    userid = transmitted_data['userid']
+    lang = transmitted_data['lang']
+    dino = transmitted_data['dino']
+
+    minus_hours(userid, col)
+    dinosaurs.update_one({'_id': dino}, 
+                         {'$set': {'status': 'kindergarten'}})
+    dino_kind(dino, col)
+    await bot.send_message(chatid, t('kindergarten.ok', lang), 
+                           reply_markup=m(userid, 'last_menu', lang))
