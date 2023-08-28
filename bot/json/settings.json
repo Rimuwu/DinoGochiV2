@@ -1,21 +1,21 @@
-{   
+{
     "collections": {
-        "bot": ["users", "dinosaurs", "items", "management", "dead_dinos", "quests"],
-        "tasks": ["game", "incubation", "journey", "sleep", "collecting", "subscriptions", "statistic", "events"],
-        "connections": ["referals", "friends", "dino_owners", "dino_mood", "tavern", "daily_award", "dungeon_statistic", "lang"],
-        "market": ["products", "sellers", "preferential", "puhs"]
+        "user": ["users", "lang", "referrals", "friends", "subscriptions"],
+        "dinosaur": ["dinosaurs", "dead_dinos", "incubation", "dino_owners", "dino_mood"],
+        "dino_activity": ["game", "journey", "sleep", "collecting", "kindergarten"],
+        "market": ["products", "sellers", "preferential", "puhs"],
+        "item": ["items"],
+        "tavern": ["quests", "tavern", "daily_award"],
+        "dungeon": ["lobby", "dungeon_statistic"],
+        "other": ["management", "statistic", "events", "promo"]
     },
 
     "please_create_this": {
-        "bot": {
+        "other": {
             "management": [
                 {
                     "_id": "tracking_links",
                     "links": {}
-                },
-                {
-                    "_id": "advertisement",
-                    "data": {}
                 },
                 {
                     "_id": "rayting_coins",
@@ -139,6 +139,7 @@
                 "age": "🎂", 
 
                 "em_coll_act": "🏹", "em_game_act": "🧩",
+                "em_journey_act": "🎑",
 
                 "heal": "❤️", "eat": "🍕", "game": "🎮",
                 "mood": "🎈", "energy": "🌙",
@@ -156,6 +157,7 @@
                 "age": "🧵",
 
                 "em_coll_act": "🏹", "em_game_act": "🧩",
+                "em_journey_act": "🎑",
 
                 "heal": "☁️", "eat": "🥂", "game": "🎄",
                 "mood": "❄️", "energy": "🕯",
@@ -173,6 +175,7 @@
                 "age": "🥭",
 
                 "em_coll_act": "🏹", "em_game_act": "🧩",
+                "em_journey_act": "🎑",
 
                 "heal": "🏵", "eat": "🥞", "game": "💐",
                 "mood": "🍯", "energy": "✨",
@@ -190,6 +193,7 @@
                 "age": "🥕",
 
                 "em_coll_act": "🏹", "em_game_act": "🧩",
+                "em_journey_act": "🎑",
 
                 "heal": "🌴", "eat": "🥜", "game": "🍨",
                 "mood": "⛺️", "energy": "🍯",
@@ -207,6 +211,7 @@
                 "age": "🍒",
 
                 "em_coll_act": "🏹", "em_game_act": "🧩",
+                "em_journey_act": "🎑",
 
                 "heal": "🍂", "eat": "🍷", "game": "🍁",
                 "mood": "🍃", "energy": "🥀",
@@ -320,7 +325,7 @@
     "dead_dialog_item": "mysterious_egg",
 
     "inspiration_bonus": 2,
-    "event_points": 20,
+    "event_points": 25,
 
     "daily_award": {
         "lvl1": {
