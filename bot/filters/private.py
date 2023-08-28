@@ -8,8 +8,6 @@ class IsPrivateChat(AdvancedCustomFilter):
     key = 'private'
 
     async def check(self, var, status: bool):
-        is_private = var.message.chat.type == 'private'
-
         if type(var) == CallbackQuery:
             is_private = var.message.chat.type == 'private'
         else: # Message
