@@ -14,6 +14,7 @@ def inline_menu(markup_data, lang: str = 'en', **kwargs):
     text, callback = '-', '-'
     standart_keys = get_loc_data('inline_menu', lang)
     # 'dino_profile', 'dino_rename' # dino_alt_id_markup
+    # 'send_request' # userid
 
     if type(markup_data) == str: markup_data = [markup_data]
 
@@ -69,11 +70,11 @@ def item_info_markup(item: dict, lang):
     return markup_inline
 
 def dino_profile_markup(add_acs_button: bool, lang: str, 
-                        alt_id: str, joint_dino: bool, my_joint: bool, premium: bool):
+                        alt_id: str, joint_dino: bool, my_joint: bool):
     # Инлайн меню с быстрыми действиями. Например как снять аксессуар
     # joint_dino - Отказаться от динозавра
     # my_joint - Отменить второго владельца
-    
+
     buttons = {}
     rai = get_loc_data('p_profile.inline_menu', lang)
 
@@ -86,8 +87,8 @@ def dino_profile_markup(add_acs_button: bool, lang: str,
         buttons[rai['joint_dino']['text']] = rai['joint_dino']['data']
     if my_joint: 
         buttons[rai['my_joint']['text']] = rai['my_joint']['data']
-    if premium:
-        buttons[rai['kindergarten']['text']] = rai['kindergarten']['data']
+
+    buttons[rai['kindergarten']['text']] = rai['kindergarten']['data']
 
     for but in buttons: buttons[but] = buttons[but].format(dino=alt_id)
     return list_to_inline([buttons], 2)

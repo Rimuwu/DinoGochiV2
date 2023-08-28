@@ -14,16 +14,17 @@ from bot.modules.markup import answer_markup, cancel_markup, count_markup, confi
 from bot.modules.markup import markups_menu as m
 from bot.modules.states_tools import (ChooseIntState, ChooseStringState,
                                       ChooseStepState, prepare_steps, ChooseConfirmState, ChoosePagesState)
+from bot.modules.markup import markups_menu as m
 from bot.modules.user import take_coins
 from random import choice
 
 MAX_PRICE = 10_000_000
 
-users = mongo_client.bot.users
-management = mongo_client.bot.management
-tavern = mongo_client.connections.tavern
+users = mongo_client.user.users
+management = mongo_client.other.management
+tavern = mongo_client.tavern.tavern
 sellers = mongo_client.market.sellers
-items = mongo_client.bot.items
+items = mongo_client.items.items
 products = mongo_client.market.products
 
 """ Последняя функция, создаёт продукт и проверяте монеты / предметы
@@ -93,7 +94,8 @@ async def end(return_data, transmitted_data):
         m_text, markup = product_ui(lang, pr_id, True)
 
         try:
-            await bot.send_message(chatid, m_text, reply_markup=markup,parse_mode='Markdown')
+            await bot.send_message(chatid, m_text, reply_markup=markup,
+                                   parse_mode='Markdown')
         except Exception as e:
             print(e)
             await bot.send_message(chatid, m_text, reply_markup=markup)
@@ -162,7 +164,7 @@ async def auction(return_data, transmitted_data):
                         'reply_markup': cancel_markup(lang)}
         },
         {
-            "type": 'int', "name": 'time_end', "data": {"max_int": 2_592_000},
+            "type": 'time', "name": 'time_end', "data": {"max_int": 2_592_000},
             "translate_message": True,
             'message': {'text': 'add_product.time_end', 
                         'reply_markup': cancel_markup(lang)}
@@ -380,7 +382,6 @@ def trade_update_col(transmitted_data):
 """
 def circle_data(userid, chatid, lang, items, option, prepare: bool = True):
     update_function = update_col
-    changing_filters = False
 
     if option == 'coins_items': 
         update_function = order_update_col
@@ -630,17 +631,22 @@ async def edit_name(name: str, transmitted_data: dict):
     userid = transmitted_data['userid']
     lang = transmitted_data['lang']
     message_id = transmitted_data['message_id']
-
     name = escape_markdown(name)
-    sellers.update_one({'owner_id': userid}, 
-                        {'$set': {'name': name}})
-    await bot.send_message(chatid, t('seller.new_name', lang), 
-                           reply_markup=m(userid, 'last_menu', lang))
 
-    text, markup, image = seller_ui(userid, lang, True)
-    try:
-        await bot.edit_message_caption(text, chatid, message_id, parse_mode='Markdown', reply_markup=markup)
-    except: pass
+    if not sellers.find_one({'name': name}):
+        sellers.update_one({'owner_id': userid}, 
+                            {'$set': {'name': name}})
+        await bot.send_message(chatid, t('seller.new_name', lang), 
+                            reply_markup=m(userid, 'last_menu', lang))
+
+        text, markup, image = seller_ui(userid, lang, True)
+        try:
+            await bot.edit_message_caption(text, chatid, message_id, parse_mode='Markdown', reply_markup=markup)
+        except: pass
+    else:
+        text =  t('market_create.name_error', lang)
+        await bot.send_message(chatid, t('seller.confirm_delete_all', lang), 
+                               reply_markup=m(userid, 'last_menu', lang))
 
 async def pr_edit_name(userid: int, chatid: int, lang: str, message_id: int):
     transmitted_data = {

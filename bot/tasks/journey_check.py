@@ -15,9 +15,9 @@ from bot.modules.quests import quest_process
 from bot.modules.user import experience_enhancement
 from bot.taskmanager import add_task
 
-journey = mongo_client.tasks.journey
-dinosaurs = mongo_client.bot.dinosaurs
-dino_owners = mongo_client.connections.dino_owners
+journey = mongo_client.dino_activity.journey
+dinosaurs = mongo_client.dinosaur.dinosaurs
+dino_owners = mongo_client.dinosaur.dino_owners
 
 REPEAT_MINUTS = 3
 EVENT_CHANCE = 0.17 * REPEAT_MINUTS
@@ -30,7 +30,7 @@ async def end_journey_time():
             end_journey(i['dino_id'])
             quest_process(i['sended'], 'journey', (int(time()) - i['journey_start']) // 60)
 
-            lang = await get_dino_language(i['dino_id'])
+            lang = get_dino_language(i['dino_id'])
             await send_logs(i['sended'], lang, i, dino['name'])
 
 async def events():

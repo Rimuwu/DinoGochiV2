@@ -17,17 +17,18 @@ from bot.modules.localization import log, get_lang
 from bot.modules.notifications import (dino_notification, notification_manager,
                                        user_notification)
 
-users = mongo_client.bot.users
-dinosaurs = mongo_client.bot.dinosaurs
-incubations = mongo_client.tasks.incubation
-dino_owners = mongo_client.connections.dino_owners
-dead_dinos = mongo_client.bot.dead_dinos
-dino_mood = mongo_client.connections.dino_mood
+users = mongo_client.user.users
+dinosaurs = mongo_client.dinosaur.dinosaurs
+incubations = mongo_client.dinosaur.incubation
+dino_owners = mongo_client.dinosaur.dino_owners
+dead_dinos = mongo_client.dinosaur.dead_dinos
+dino_mood = mongo_client.dinosaur.dino_mood
 
-game_task = mongo_client.tasks.game
-sleep_task = mongo_client.tasks.sleep
-journey_task = mongo_client.tasks.journey
-collecting_task = mongo_client.tasks.collecting
+game_task = mongo_client.dino_activity.game
+sleep_task = mongo_client.dino_activity.sleep
+journey_task = mongo_client.dino_activity.journey
+collecting_task = mongo_client.dino_activity.collecting
+kindergarten = mongo_client.dino_activity.kindergarten
 
 class Dino:
 
@@ -483,7 +484,7 @@ async def mutate_dino_stat(dino: dict, key: str, value: int):
 def get_owner(dino_id: ObjectId):
     return dino_owners.find_one({'dino_id': dino_id, 'type': 'owner'})
 
-async def get_dino_language(dino_id: ObjectId) -> str:
+def get_dino_language(dino_id: ObjectId) -> str:
     lang = 'en'
 
     owner = dino_owners.find_one({'dino_id': dino_id})
@@ -520,6 +521,10 @@ def set_status(dino_id: ObjectId, new_status: str, now_status: str = ''):
 
             asyncio.run_coroutine_threadsafe(end_collecting(dino_id, data['items'], 
                                         data['sended'], '', False), asyncio.get_event_loop())
+    
+    elif now_status == 'kindergarten':
+        data = kindergarten.find_one({'dinoid': dino_id})
+        if data: kindergarten.delete_one({'_id': data['_id']})
 
     if now_status in ['sleep', 'game', 'journey', 'collecting'] and new_status != 'pass' or new_status != now_status:
         dinosaurs.update_one({'_id': dino_id}, {'$set': {'status': new_status}})

@@ -13,9 +13,9 @@ from bot.modules.quests import quest_process
 from bot.modules.user import experience_enhancement
 from bot.taskmanager import add_task
 
-collecting_task = mongo_client.tasks.collecting
-dinosaurs = mongo_client.bot.dinosaurs
-dino_owners = mongo_client.connections.dino_owners
+collecting_task = mongo_client.dino_activity.collecting
+dinosaurs = mongo_client.dinosaur.dinosaurs
+dino_owners = mongo_client.dinosaur.dino_owners
 
 REPEAT_MINUTS = 10
 ENERGY_DOWN = 0.03 * REPEAT_MINUTS

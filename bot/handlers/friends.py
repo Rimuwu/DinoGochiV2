@@ -14,10 +14,10 @@ from bot.modules.states_tools import (ChooseConfirmState, ChooseCustomState,
 from bot.modules.user import user_name, take_coins
 from bot.modules.dinosaur import Dino, create_dino_connection
 
-users = mongo_client.bot.users
-friends = mongo_client.connections.friends
-dinosaurs = mongo_client.bot.dinosaurs
-dino_owners = mongo_client.connections.dino_owners
+users = mongo_client.user.users
+friends = mongo_client.user.friends
+dinosaurs = mongo_client.dinosaur.dinosaurs
+dino_owners = mongo_client.dinosaur.dino_owners
 
 @bot.message_handler(text='commands_name.friends.add_friend')
 async def add_friend(message: Message):
@@ -69,20 +69,25 @@ async def add_friend_end(friendid: int, transmitted_data: dict):
     chatid = transmitted_data['chatid']
     userid = transmitted_data['userid']
     user_name = transmitted_data['user_name']
-    
+
     frineds = get_frineds(userid)
     for act_type in ['friends', 'requests']:
         if friendid in frineds[act_type]:
             text = t(f'add_friend.check.{act_type}', lang)
             await bot.send_message(chatid, text)
-            return 
+            return
     else:
-        insert_friend_connect(userid, friendid, 'request')
-        text = t('add_friend.correct', lang)
-        await bot.send_message(chatid, text, 
-                               reply_markup=m(userid, 'last_menu', lang))
-        
-        await user_notification(friendid, 'send_request', lang, user_name=user_name)
+        res = insert_friend_connect(userid, friendid, 'request')
+        if res:
+            text = t('add_friend.correct', lang)
+            await bot.send_message(chatid, text, 
+                                reply_markup=m(userid, 'last_menu', lang))
+            
+            await user_notification(friendid, 'send_request', lang, user_name=user_name)
+        else:
+            text = t('add_friend.already', lang)
+            await bot.send_message(chatid, text, 
+                                reply_markup=m(userid, 'last_menu', lang))
 
 @bot.callback_query_handler(func=lambda call: 
     call.data.startswith('add_friend'), nothing_state=True, private=True)
@@ -346,8 +351,7 @@ async def take_money(call: CallbackQuery):
 
     friendid = int(data[1])
     user = users.find_one({'userid': userid})
-    # take_coins(userid)
-    
+
     if user:
         max_int = user['coins']
         if max_int > 0:
@@ -384,3 +388,30 @@ async def transfer_coins(col: int, transmitted_data: dict):
         text = t('take_money.no_coins', lang)
         await bot.send_message(chatid, text, 
                             reply_markup=m(userid, 'last_menu', lang))
+
+@bot.callback_query_handler(func=lambda call: 
+    call.data.startswith('send_request'), private=False)
+async def send_request(call: CallbackQuery):
+    lang = get_lang(call.from_user.id)
+    userid = call.from_user.id
+    data = call.data.split()
+
+    friendid = int(data[1])
+    frineds = get_frineds(userid)
+    if friendid != userid:
+        for act_type in ['friends', 'requests']:
+            if friendid in frineds[act_type]:
+                text = t(f'add_friend.check.{act_type}', lang)
+                await bot.answer_callback_query(call.id, text)
+                return
+        else:
+            res = insert_friend_connect(userid, friendid, 'request')
+            if res:
+                text = t('add_friend.correct', lang)
+                await bot.answer_callback_query(call.id, text)
+                await user_notification(friendid, 'send_request', lang, user_name=user_name(call.from_user))
+            else:
+                text = t('add_friend.already', lang)
+                await bot.answer_callback_query(call.id, text)
+    else:
+        await bot.answer_callback_query(call.id, '❌')

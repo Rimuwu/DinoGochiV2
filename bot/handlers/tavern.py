@@ -23,7 +23,7 @@ from bot.modules.states_tools import (ChooseConfirmState, ChooseCustomState,
 from bot.modules.user import (AddItemToUser, check_name, daily_award_con,
                               take_coins, user_in_chat, user_name)
 
-events = mongo_client.tasks.events
+events = mongo_client.other.events
 
 @bot.message_handler(text='commands_name.dino_tavern.events', is_authorized=True)
 async def events_c(message: Message):
@@ -142,14 +142,15 @@ async def daily_award(callback: CallbackQuery):
 @bot.message_handler(text='commands_name.dino_tavern.edit', is_authorized=True)
 async def edit(message: Message):
     lang = get_lang(message.from_user.id)
-    user = message.from_user
     chatid = message.chat.id
 
     text = t('edit_dino.info', lang)
     btn = get_data('edit_dino.buttons', lang)
     b_mark = dict(zip(btn.values(), btn.keys()))
     mark = list_to_inline([b_mark], 2)
-    await bot.send_message(chatid, text, parse_mode='Markdown', reply_markup=mark)
+
+    image = open('images/remain/taverna/transformation.png', 'rb')
+    await bot.send_photo(chatid, image, text, parse_mode='Markdown', reply_markup=mark)
 
 async def edit_appearance(return_data, transmitted_data):
     chatid = transmitted_data['chatid']
@@ -257,7 +258,7 @@ async def dino_now(return_data, transmitted_data):
     await ChooseInlineState(end_edit, userid, chatid, lang, str(code), {'dino': dino, 'type': o_type})
     await bot.send_message(chatid,  t('edit_dino.new_rare', lang), parse_mode='Markdown', reply_markup=cancel_markup(lang))
 
-@bot.callback_query_handler(func=lambda call: call.data.split()[0] == 'edit_dino', is_authorized=True)
+@bot.callback_query_handler(func=lambda call: call.data.startswith('edit_dino') , is_authorized=True)
 async def edit_dino(callback: CallbackQuery):
     chatid = callback.message.chat.id
     userid = callback.from_user.id

@@ -16,9 +16,9 @@ from bot.modules.referals import connect_referal
 from bot.handlers.referal_menu import check_code
 
 stickers = bot.get_sticker_set('Stickers_by_DinoGochi_bot')
-referals = mongo_client.connections.referals
+referals = mongo_client.user.referrals
 
-@bot.message_handler(commands=['start'], is_authorized=True)
+@bot.message_handler(commands=['start'], is_authorized=True, private=True)
 async def start_command_auth(message: types.Message):
     stickers = await bot.get_sticker_set('Stickers_by_DinoGochi_bot')
     sticker = choice(list(stickers.stickers)).file_id
@@ -66,11 +66,11 @@ async def start_game(message: types.Message, referal: str = ''):
 async def start_game_message(message: types.Message):
     langue_code = message.from_user.language_code
     username = user_name(message.from_user)
-    
+
     content = str(message.text).split()
     add_referal = False
     markup = None
-    
+
     if len(content) > 1: 
         referal = str(content[1])
         if referals.find_one({'code': referal}): add_referal = True
@@ -83,7 +83,7 @@ async def start_game_message(message: types.Message):
     text = t('start_command.first_message', langue_code, username=username)
     
     await bot.send_photo(message.chat.id, image, text, reply_markup=markup, parse_mode='HTML')
-    
+
     if add_referal:
         text = t('start_command.referal', langue_code, username=username)
         await bot.send_message(message.chat.id, text)

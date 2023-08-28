@@ -21,10 +21,10 @@ from bot.modules.quests import quest_process
 from bot.modules.states_tools import ChooseStepState
 from bot.modules.user import User, experience_enhancement, get_dead_dinos
 
-users = mongo_client.bot.users
-dinosaurs = mongo_client.bot.dinosaurs
-items = mongo_client.bot.items
-dead_dinos = mongo_client.bot.dead_dinos
+users = mongo_client.user.users
+dinosaurs = mongo_client.dinosaur.dinosaurs
+items = mongo_client.items.items
+dead_dinos = mongo_client.dinosaur.dead_dinos
 
 
 async def exchange(return_data: dict, transmitted_data: dict):

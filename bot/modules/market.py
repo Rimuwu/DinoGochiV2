@@ -81,18 +81,18 @@ def create_seller(owner_id: int, name: str, description: str):
     """
 
     if not sellers.find_one({'owner_id': owner_id}):
-        data = {
-            'owner_id': owner_id,
-            'earned': 0, # заработано монет
-            'conducted': 0, # проведено сделок
-            'name': name,
-            'description': description,
-            'custom_image': ''
-        }
-
-        sellers.insert_one(data)
-        return True
-    else: return False
+        if not sellers.find_one({'name': name}):
+            data = {
+                'owner_id': owner_id,
+                'earned': 0, # заработано монет
+                'conducted': 0, # проведено сделок
+                'name': name,
+                'description': description,
+                'custom_image': ''
+            }
+            sellers.insert_one(data)
+            return True
+    return False
 
 def seller_ui(owner_id: int, lang: str, my_market: bool, name: str = ''):
     text, markup, img = '', None, None
@@ -141,14 +141,14 @@ def seller_ui(owner_id: int, lang: str, my_market: bool, name: str = ''):
 
     return text, markup, img
 
-def generate_items_pages(ignored_id: list = []):
+def generate_items_pages(ignored_id: list = [], ignore_cant: bool = False):
     """ Получение страниц со всеми предметами
     """
     items = []
     exclude = ignored_id
     for key, item in ITEMS.items():
         data = get_item_dict(key)
-        if 'cant_sell' in item and item['cant_sell']:
+        if 'cant_sell' in item and item['cant_sell'] and not ignore_cant:
             exclude.append(key)
         else: items.append({'item': data, 'count': 1})
     return items, exclude

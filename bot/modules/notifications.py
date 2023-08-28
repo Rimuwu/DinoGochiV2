@@ -12,10 +12,10 @@ from bot.modules.localization import get_data, t, get_lang
 from bot.modules.logs import log
 from bot.modules.item import get_name
 
-dinosaurs = mongo_client.bot.dinosaurs
-dino_owners = mongo_client.connections.dino_owners
-users = mongo_client.bot.users
-dino_mood = mongo_client.connections.dino_mood
+dinosaurs = mongo_client.dinosaur.dinosaurs
+dino_owners = mongo_client.dinosaur.dino_owners
+users = mongo_client.user.users
+dino_mood = mongo_client.dinosaur.dino_mood
 
 tracked_notifications = [
     'need_heal', 'need_eat',
@@ -176,7 +176,8 @@ async def user_notification(user_id: int, not_type: str,
         'incubation_ready', # необходим dino_alt_id_markup, user_name
         'send_request', #необходим user_name
         'not_independent_dead', 'independent_dead', 'daily_award',
-        'product_buy' # необходим col, price, name, alt_id
+        'product_buy', # необходим col, price, name, alt_id
+        'kindergarten' # dino_name dino_alt_id_markup
     ]
     add_way = '.'+kwargs.get('add_way', '')
 
