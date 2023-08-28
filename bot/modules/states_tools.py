@@ -11,7 +11,7 @@ from bot.modules.markup import down_menu, get_answer_keyboard
 from bot.modules.markup import markups_menu as m
 from bot.modules.user import User, get_frineds, user_info, user_name
 
-items = mongo_client.bot.items
+items = mongo_client.items.items
 
 class GeneralStates(StatesGroup):
     ChooseDino = State() # Состояние для выбора динозавра
@@ -22,6 +22,7 @@ class GeneralStates(StatesGroup):
     ChooseInline = State() # Состояние для выбора кнопки
     ChoosePagesState = State() # Состояние для выбора среди вариантов, а так же поддерживает страницы
     ChooseCustom = State() # Состояние для кастомного обработчика
+    ChooseTime = State() # Состояние для ввода времени
 
 def add_if_not(data: dict, userid: int, chatid: int, lang: str):
     """Добавляет минимальные данные для работы"""
@@ -130,6 +131,29 @@ async def ChooseStringState(function, userid: int,
         data['max_len'] = max_len
     return True, 'string'
 
+async def ChooseTimeState(function, userid: int, 
+                         chatid: int, lang: str,
+                         min_int: int = 1, max_int: int = 10,
+                         transmitted_data=None):
+    """ Устанавливает состояние ожидания сообщения в формате времени
+
+        В function передаёт 
+        >>> string: str, transmitted_data: dict
+        
+        Return:
+         Возвращает True если был создано состояние, не может завершится автоматически
+    """
+    if not transmitted_data: transmitted_data = {}
+    
+    transmitted_data = add_if_not(transmitted_data, userid, chatid, lang)
+    await bot.set_state(userid, GeneralStates.ChooseTime, chatid)
+    async with bot.retrieve_data(userid, chatid) as data:
+        data['function'] = function
+        data['transmitted_data'] = transmitted_data
+        data['min_int'] = min_int
+        data['max_int'] = max_int
+    return True, 'time'
+
 async def ChooseConfirmState(function, userid: int, 
                          chatid: int, lang: str, cancel: bool=False,
                          transmitted_data=None):
@@ -137,9 +161,9 @@ async def ChooseConfirmState(function, userid: int,
 
         В function передаёт 
         >>> answer: bool, transmitted_data: dict
-        
+
         cancel - если True, то при отказе вызывает возврат в меню
-        
+
         Return:
          Возвращает True если был создано состояние, не может завершится автоматически
     """
@@ -346,6 +370,7 @@ async def start_friend_menu(function,
 chooses = {
     'dino': ChooseDinoState,
     'int': ChooseIntState,
+    'time': ChooseTimeState,
     'str': ChooseStringState,
     'bool': ChooseConfirmState,
     'option': ChooseOptionState,

@@ -3,7 +3,7 @@ from telebot.types import Message, CallbackQuery
 
 from bot.const import GAME_SETTINGS as gs
 from bot.exec import bot
-from bot.modules.data_format import list_to_keyboard, chunk_pages
+from bot.modules.data_format import seconds_to_str, chunk_pages, str_to_seconds
 from bot.modules.localization import get_data, t, get_lang
 from bot.modules.logs import log
 from bot.modules.markup import markups_menu as m
@@ -87,7 +87,7 @@ async def ChooseInt(message: Message):
             iter_word[1:].isdigit():
             number = int(iter_word[1:])
 
-    if not number:
+    if not number and number != 0:
         await bot.send_message(message.chat.id, 
                 t('states.ChooseInt.error_not_int', lang))
     elif max_int != 0 and number > max_int:
@@ -122,7 +122,7 @@ async def ChooseString(message: Message):
     content = str(message.text)
     content_len = len(content)
 
-    if content_len > max_len:
+    if content_len > max_len and max_len != 0:
         await bot.send_message(message.chat.id, 
                 t('states.ChooseString.error_max_len', lang,
                 number = content_len, max = max_len))
@@ -337,3 +337,40 @@ async def ChooseInline(callback: CallbackQuery):
             transmitted_data['bmessageid'] = callback.message.id
 
         await func(code, transmitted_data=transmitted_data)
+
+@bot.message_handler(state=GeneralStates.ChooseTime, is_authorized=True)
+async def ChooseTime(message: Message):
+    """Общая функция для ввода времени
+    """
+    userid = message.from_user.id
+    lang = get_lang(message.from_user.id)
+    number = 0
+
+    async with bot.retrieve_data(userid, message.chat.id) as data:
+        min_int: int = data['min_int']
+        max_int: int = data['max_int']
+        func = data['function']
+        transmitted_data = data['transmitted_data']
+
+    number = str_to_seconds(str(message.text))
+
+    if not number and min_int != 0:
+        await bot.send_message(message.chat.id, 
+                t('states.ChooseTime.zero_seconds', lang))
+    elif max_int != 0 and number > max_int:
+        await bot.send_message(message.chat.id, 
+                t('states.ChooseTime.error_max_int', lang,
+                number = seconds_to_str(number, lang), 
+                max = seconds_to_str(max_int, lang)))
+    elif number < min_int:
+        await bot.send_message(message.chat.id, 
+                t('states.ChooseTime.error_min_int', lang,
+                number = seconds_to_str(number, lang), 
+                min = seconds_to_str(min_int, lang)))
+    else:
+        await bot.delete_state(userid, message.chat.id)
+        await bot.reset_data(message.from_user.id,  message.chat.id)
+        if 'steps' in transmitted_data:
+            transmitted_data['steps'][transmitted_data['process']]['umessageid'] = message.id
+
+        await func(number, transmitted_data=transmitted_data)
