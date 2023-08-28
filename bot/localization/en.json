@@ -785,6 +785,10 @@
             "product_buy": {
                 "text": "🍜 The product ({preview}) was purchased {col} times in the amount of {price} 🪙, by the user {name}",
                 "inline_menu": "product_info"
+            },
+            "kindergarten": {
+                "text": "🎈 | {dino_name} I returned from kindergarten.",
+                "inline_menu": "dino_profile"
             }
         },
         "breakdown": {
@@ -853,7 +857,7 @@
             },
             "send_request": {
                 "text": "💎 | Send request",
-                "callback": "send_request"
+                "callback": "send_request {userid}"
             },
             "requests": {
                 "text": "👥 | Requests",
@@ -902,11 +906,16 @@
             },
             "ChooseOption": {
                 "error_not_option": "❓ | Are you trying to go beyond the world? Not worth it. Choose from the available options. Or enter /cancel to cancel."
+            },
+            "ChooseTime": {
+                "zero_seconds": "❓ | You need to enter a message in time format, use the memo - /string_to_sec click \n Or type /cancel to cancel.",
+                "error_max_int": "❓ | The time you specified is greater than the maximum ({number} > {max}), try again. Or type /cancel to cancel.",
+                "error_min_int": "❓ | The time you specified is less than the minimum ({number} < {min}), try again. Or type /cancel to cancel."
             }
         },
         "no_use_interface": "❌ While in the dungeon, use the dungeon interface!\n\nIf there was an error and you left the dungeon, write /check_dinos",
         "no_account": "You do not have a registered account in the bot, please go to the bot and register to access this team.",
-        "add_me": "❤ | Everyone can send a request to friends <a href='tg://user?id={userid}'>🌀 {username}</a> by clicking on the button below!",
+        "add_me": "❤ | Everyone can send a request to friends <a href='tg://user?id={userid}'>{username}</a> by clicking on the button below!",
         "in_development": "This feature is under development, follow the news to find out when the team will work!",
         "start_command": {
             "referal": "🔗 I noticed a click on the current referral link!",
@@ -1024,7 +1033,8 @@
                 "id": "🎣 Okay, send me the user ID, and I'll do routine things like checking in the database and the existence of the user.",
                 "message": "💬 Well, send me a message from your friend, and I will do routine things like checking in the database and the existence of the user."
             },
-            "correct": "✅ Friend request sent to user!"
+            "correct": "✅ Friend request sent to user!",
+            "already": "🧨 The person has already received a friend request from you!"
         },
         "friend_list": {
             "wait": "👥 | Loading your friends",
@@ -1138,7 +1148,8 @@
             },
             "profile_text": "{em_name}*┌* Name: {dino_name}\n{em_status}*├* Status: {status}\n{em_rare}*├* Rarity: {qual}\n{em_age}*└* Age: {age}",
             "journey": {
-                "text": "*┌* Journey\n >"
+                "text": "{em_journey_act} *┌* Journey\n >",
+                "info": "🏮 *├* Location: {location}\n⌛ *├* Travels {journey_time}\n🍭 *└* Events: {col}"
             },
             "game": {
                 "text": "\n\n{em_game_act} *┌* Game",
@@ -1175,8 +1186,8 @@
                     "data": "dino_menu my_joint_cancel {dino}"
                 },
                 "kindergarten": {
-                    "text": "🏡 Kindergarten",
-                    "data": "kindergarten {dino}"
+                    "text": "🏡 Kindergarten (⭐)",
+                    "data": "dino_menu kindergarten {dino}"
                 }
             },
             "joint": "(Joint)"
@@ -3276,7 +3287,8 @@
             "name": "🎞 Enter the name of the store, no longer than 50 characters",
             "description": "🧵 Enter a store description that is no more than 500 characters long",
             "create": "🎁 Store created!",
-            "lvl": "🎭 To create a store, you need to have at least the 2nd level!"
+            "lvl": "🎭 To create a store, you need to have at least the 2nd level!",
+            "name_error": "👿 A store with this name already exists"
         },
         "market_ui": {
             "had": "🎏 |",
@@ -3321,7 +3333,7 @@
                 "coins_items": "🎨 How many times it will be possible to execute an order\n\n_For example, if you specify 2, and in the oreder you want to exchange 2 carrots for 100 coins, then in total you will spend 400 coins for 4 carrots._",
                 "items_items": "🎨 Specify how many times resources can be exchanged."
             },
-            "time_end": "🎩 Specify the end time of the auction, you are required to specify the number of seconds. Maximum value 2592000 (30 days).\n\n⏰ Type/timer (seconds) to translate into an understandable value.",
+            "time_end": "🎩 Specify the end time of the auction, you are required to specify the number of seconds. The maximum value is 2592000 (30 days).\n\n⏰ Write /timer (seconds) to translate it into an understandable value.",
             "min_add": "☄ Specify the minimum bid, this is the number by which a person must raise the minimum price to participate in the auction.",
             "few_coins": "❌ You don't have enough {coins} coins to place a purchase order!",
             "all_good": "🎩 Your product is on the market!",
@@ -3383,7 +3395,7 @@
             "new_image": "🍚 Custom image installed!",
             "delete_image": "❌ Custom image deleted!"
         },
-        "no_premium": "✨ | You do not have a subscription to access this feature!",
+        "no_premium": "✨ | You do not have a subscription to access this feature!\nWrite /premium to get information on paid features.",
         "no_products": "❗ You don't have any products!",
         "buy": {
             "common_buy": "☄ How many times do you want to purchase this product?",
@@ -3435,6 +3447,39 @@
             "no_items": "❌ | You don't have all the items to transform!",
             "new": "☄ It took scientists and doctors a long time to get in and out of a room with your dinosaur. But now! A brand new dinosaur comes out of the room!",
             "return": "🎈 Don't forget to tip!"
+        },
+        "kindergarten": {
+            "info": "*🎶 | Kindergarten menu* \n _A dinosaur should not be sent to kindergarten for a long time, otherwise he will miss you_\n \n 🧸 Hours spent: {hours_now} \n 🧮 Hours left: {remained} \n 🎨 Before zeroing: {days} \n \n 🎏 Hours today: {hours} / {remained_today}",
+            "button_name": "⚽ Send to kindergarten",
+            "cancel_name": "💢 Bring home",
+            "choose_house": "🎃 Select from the list how many hours to send the dinosaur to kindergarten.",
+            "no_hours": "🎨 You don't have any hours left this month/for today!",
+            "ok": "🧵 The dinosaur went to kindergarten!",
+            "in_kindergarten": "🎏 When the dinosaur returns, the clock is not returned.",
+            "stop": "🎈 The dinosaur returned from kindergarten."
+        },
+        "create_tracking": {
+            "name": "⛏ Enter the tracking code",
+            "already": "👿 The code is already being tracked",
+            "ok": "🍡 The code has been added, you can view information on the codes by writing /tracking\n \n Link - `{url}`"
+        },
+        "track": {
+            "text": "☄ | Tracking\n \n 🧮 Used: {use} \n \n 🍜 Reference: `{url}` \n 🔎 Code: `{code}` \n 🥞 Created: {t}",
+            "delete": "❌ Delete",
+            "clear": "⛏ Zero"
+        },
+        "track_open": "🎀 The tracking menu is open",
+        "track_clear": "🥠 The number of clicks is reset to zero",
+        "track_delete": "🎩 Removed",
+        "string_to_str": {
+            "info": "⚽ In some commands, it is convenient to specify the time not in chisol, but in text, here is a memo. \n \n If you are sent here, then you can use the methods of entering the time by text. You can try it right here, write down `/string_to_sec` `1d` `1h` `12m` \n You will receive 90720 in response - these are the numbers of seconds that are calculated from your message. \n \n What symbols can be used? \n `w` - Week, `d` - day, `h` - hour, `m` - minute, `s` - second (you can omit the letter) \n \n _By the way, you can specify 1 and the same character as many times as you like and in any order._"
+        },
+        "promo": {
+            "coins": "🍡 Enter the number of coins or 0",
+            "count": "☄ Enter the number of uses, 0 - infinitely",
+            "time_end": "🎠 Enter the end time, 0 is infinite. `/seconds_to_str` - Don't forget about the memo.",
+            "code": "🎃 Enter the tracking code.",
+            "chose_item": "🧮 Choose an item to add"
         }
     }
 }
