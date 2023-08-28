@@ -14,7 +14,7 @@ from bot.const import GAME_SETTINGS, ITEMS
 from bot.exec import bot
 from bot.handlers.dino_profile import transition
 from bot.modules.currency import convert
-from bot.modules.data_format import seconds_to_str
+from bot.modules.data_format import seconds_to_str, str_to_seconds
 from bot.modules.donation import check_donations, get_donations
 from bot.modules.images import create_egg_image, dino_collecting, dino_game
 from bot.modules.inventory_tools import inventory_pages
@@ -32,11 +32,11 @@ from bot.modules.journey import create_event, random_event, activate_event
 from bot.modules.market import (add_product, create_seller,
                                 generate_sell_pages, product_ui, seller_ui)
 
-dinosaurs = mongo_client.bot.dinosaurs
+dinosaurs = mongo_client.dinosaur.dinosaurs
 products = mongo_client.market.products
 sellers = mongo_client.market.sellers
 puhs = mongo_client.market.puhs
-items = mongo_client.bot.items
+items = mongo_client.item.items
 
 async def func(*args):
     print(args)
@@ -268,46 +268,46 @@ async def ev(message):
     user = User( message.from_user.id)
     dino = user.get_last_dino()
     
-    # positive = {
-    #         'com': ['influences_mood', 'without_influence', 
-    #               'influences_eat', 'influences_game'],
-    #         'unc': ['influences_health', 'influences_energy',
-    #                'joint_activity'],
-    #         'rar': ['coins', 'joint_event', 'meeting_friend'],
-    #         'mys': ['trade_item', 'item'],
-    #         'leg': ['quest', 'coins']
-    #     }
-    # negative = {
-    #     'com': ['influences_mood', 'without_influence', 
-    #             'influences_eat'],
-    #     'unc': ['influences_energy', 'coins'],
-    #     'rar': ['influences_game', 'coins'],
-    #     'mys': ['item', 'coins'],
-    #     'leg': ['quest', 'edit_location']
-    # }
+    positive = {
+            'com': ['influences_mood', 'without_influence', 
+                  'influences_eat', 'influences_game'],
+            'unc': ['influences_health', 'influences_energy',
+                   'joint_activity'],
+            'rar': ['coins', 'joint_event', 'meeting_friend'],
+            'mys': ['trade_item', 'item'],
+            'leg': ['quest', 'coins']
+        }
+    negative = {
+        'com': ['influences_mood', 'without_influence', 
+                'influences_eat'],
+        'unc': ['influences_energy', 'coins'],
+        'rar': ['influences_game', 'coins'],
+        'mys': ['item', 'coins'],
+        'leg': ['quest', 'edit_location']
+    }
     
-    # if dino:
-    #     for key in positive:
-    #         for eve in positive[key]:
-    #             event = create_event('forest', 'positive', 0, eve)
-    #             await activate_event(dino._id, event)
-    #         # status = await random_event(dino._id, 'forest')
-    #         # print(status)
+    if dino:
+        for key in positive:
+            for eve in positive[key]:
+                event = create_event('forest', 'positive', 0, eve)
+                await activate_event(dino._id, event)
+            # status = await random_event(dino._id, 'forest')
+            # print(status)
     
-    # if dino:
-    #     for key in negative:
-    #         for eve in negative[key]:
-    #             event = create_event('forest', 'negative', 0, eve)
-    #             await activate_event(dino._id, event)
+    if dino:
+        for key in negative:
+            for eve in negative[key]:
+                event = create_event('forest', 'negative', 0, eve)
+                await activate_event(dino._id, event)
 
-    for eve in ['battle']:
-            event = create_event('lost-islands', 'positive', 0, eve)
-            await activate_event(dino._id, event)
+    # for eve in ['battle']:
+    #     event = create_event('lost-islands', 'positive', 0, eve)
+    #     await activate_event(dino._id, event)
     
-    for i in range(10):
-        for eve in ['battle']:
-            event = create_event('lost-islands', 'negative', 0, eve)
-            await activate_event(dino._id, event)
+    # for i in range(10):
+    #     for eve in ['battle']:
+    #         event = create_event('lost-islands', 'negative', 0, eve)
+    #         await activate_event(dino._id, event)
 
 # @bot.message_handler(commands=['names'])
 # async def names(message):
@@ -365,6 +365,7 @@ async def give_me_premium(message):
     
     userid = message.from_user.id
     award_premium(userid, 'inf')
+    print('add premium')
 
 @bot.message_handler(commands=['dbtest'], is_admin=True)
 async def dbtest(message):
@@ -391,3 +392,10 @@ async def create_test(message):
 
         print(i)
     print('alll ', time() - all_t)
+
+
+@bot.message_handler(commands=['time'], is_admin=True)
+async def time_t(message):
+
+    txt = message.text.replace('/time ', '')
+    print(str_to_seconds(txt))
