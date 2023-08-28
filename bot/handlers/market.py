@@ -25,11 +25,11 @@ from bot.modules.states_tools import (ChooseOptionState, ChoosePagesState,
                                       ChooseStepState, prepare_steps)
 from bot.modules.user import premium
 
-users = mongo_client.bot.users
-management = mongo_client.bot.management
-tavern = mongo_client.connections.tavern
+users = mongo_client.user.users
+management = mongo_client.other.management
+tavern = mongo_client.tavern.tavern
 sellers = mongo_client.market.sellers
-items = mongo_client.bot.items
+items = mongo_client.item.items
 products = mongo_client.market.products
 puhs = mongo_client.market.puhs
 
@@ -39,13 +39,38 @@ async def create_adapter(return_data, transmitted_data):
     lang = transmitted_data['lang']
 
     name = return_data['name']
-    name = escape_markdown(name)
     description = return_data['description']
     description = escape_markdown(description)
     create_seller(userid, name, description)
 
     await bot.send_message(chatid, t('market_create.create', lang), 
                            reply_markup=m(userid, 'seller_menu', lang), parse_mode='Markdown')
+
+async def custom_name(message: Message, transmitted_data):
+    userid = message.from_user.id
+    lang = get_lang(message.from_user.id)
+
+    max_len = 50
+    min_len = 3
+
+    content = str(message.text)
+    content_len = len(content)
+    name = escape_markdown(content)
+
+    if content_len > max_len:
+        await bot.send_message(message.chat.id, 
+                t('states.ChooseString.error_max_len', lang,
+                number = content_len, max = max_len))
+    elif content_len < min_len:
+        await bot.send_message(message.chat.id, 
+                t('states.ChooseString.error_min_len', lang,
+                number = content_len, min = min_len))
+    elif sellers.find_one({'name': name}):
+        await bot.send_message(message.chat.id, 
+                t('market_create.name_error', lang))
+    else: 
+        return True, name
+    return False, None
 
 @bot.message_handler(text='commands_name.seller_profile.create_market', is_authorized=True)
 async def create_market(message: Message):
@@ -65,7 +90,8 @@ async def create_market(message: Message):
         transmitted_data = {}
         steps = [
             {
-             "type": 'str', "name": 'name', "data": {'max_len': 50, 'min_len': 3}, 
+             "type": 'custom', "name": 'name',
+                "data": {'custom_handler': custom_name},
              "translate_message": True,
              'message': {
                 'text': "market_create.name",
