@@ -10,7 +10,7 @@ from langdetect import DetectorFactory, detect
 DetectorFactory.seed = 0
 
 from_l = 'ru'
-ro_l = 'uk'
+ro_l = 'en'
 
 with open(f'./{from_l}.json', encoding='utf-8') as f: 
     main_lang = json.load(f) # type: dict
@@ -51,10 +51,12 @@ def trs_circul(s):
             try:
                 try:
                     res = trs(s, trans)
+                    break
                 except:
                     translators.remove(trans)
                     trans = translators[0]
                     res = trs(s, trans)
+                    break
             except Exception as E: print(E)
         
         if res: break
@@ -179,11 +181,21 @@ def save(data):
         json.dump(data, f, ensure_ascii=False, indent=4)
 
 if not add_lang: add_lang[ro_l] = {}
-
 start = time.time()
 
 for key, value in main_lang['ru'].items():
-    if key not in add_lang[ro_l]:
+    if type(value) == dict:
+        if key not in add_lang[ro_l]: add_lang[ro_l][key] = {}
+        print(key, 'checking')
+
+        for key1, value1 in value.items():
+            if key1 not in add_lang[ro_l][key]:
+                add_lang[ro_l][key][key1] = dict_string(value1, key1)
+                save(add_lang)
+            else: print(key1, 'check-family-key')
+
+    elif key not in add_lang[ro_l]:
+        print(key, 'translate new key')
         add_lang[ro_l][key] = dict_string(value, key)
         save(add_lang)
 
