@@ -9,7 +9,7 @@ from bot.modules.market import delete_product
 
 products = mongo_client.market.products
 sellers = mongo_client.market.sellers
-users = mongo_client.bot.users
+users = mongo_client.user.users
 preferential = mongo_client.market.preferential
 
 async def market_delete():

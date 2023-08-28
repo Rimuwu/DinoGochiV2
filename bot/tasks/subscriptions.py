@@ -8,7 +8,7 @@ from bot.taskmanager import add_task
 from bot.modules.donation import check_donations
 from bot.modules.localization import get_lang
 
-subscriptions = mongo_client.tasks.subscriptions
+subscriptions = mongo_client.user.subscriptions
 users = mongo_client.bot.users
 
 async def subscription_notification():

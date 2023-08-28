@@ -14,7 +14,7 @@ from bot.modules.logs import log
 from bot.modules.markup import list_to_keyboard, down_menu
 from bot.modules.user import get_inventory
 
-users = mongo_client.bot.users
+users = mongo_client.user.users
 back_button, forward_button = gs['back_button'], gs['forward_button']
 
 class InventoryStates(StatesGroup):

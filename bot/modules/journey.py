@@ -14,8 +14,8 @@ from bot.modules.user import get_frineds, experience_enhancement
 from bot.modules.accessory import check_accessory, weapon_damage, armor_protection, downgrade_accessory
 from bot.modules.logs import log
 
-journey = mongo_client.tasks.journey
-dinosaurs = mongo_client.bot.dinosaurs
+journey = mongo_client.dino_activity.journey
+dinosaurs = mongo_client.dinosaur.dinosaurs
 
 with open('bot/json/journey.json', encoding='utf-8') as f: 
     JOURNEY = json.load(f) # type: dict

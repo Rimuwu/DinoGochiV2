@@ -4,7 +4,7 @@ from telebot.types import Message
 from bot.config import mongo_client
 from bot.exec import bot
 
-users = mongo_client.bot.users
+users = mongo_client.user.users
 
 class IsAuthorizedUser(AdvancedCustomFilter):
     key = 'is_authorized'

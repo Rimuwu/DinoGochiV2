@@ -9,11 +9,11 @@ from bot.modules.logs import log
 from bot.modules.referals import get_user_code, get_user_sub
 from bot.modules.user import User, last_dino, premium
 
-users = mongo_client.bot.users
-dinosaurs = mongo_client.bot.dinosaurs
-management = mongo_client.bot.management
-referals = mongo_client.connections.referals
-tavern = mongo_client.connections.tavern
+users = mongo_client.user.users
+dinosaurs = mongo_client.dinosaur.dinosaurs
+management = mongo_client.other.management
+referals = mongo_client.user.referals
+tavern = mongo_client.tavern.tavern
 sellers = mongo_client.market.sellers
 
 def back_menu(userid) -> str:

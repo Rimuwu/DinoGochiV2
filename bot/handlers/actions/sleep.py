@@ -14,12 +14,12 @@ from bot.modules.mood import add_mood
 from bot.modules.states_tools import ChooseIntState, ChooseOptionState
 from bot.modules.user import User
 
-users = mongo_client.bot.users
-items = mongo_client.bot.items
-dinosaurs = mongo_client.bot.dinosaurs
-sleep_task = mongo_client.tasks.sleep
-game_task = mongo_client.tasks.game
-collecting_task = mongo_client.tasks.collecting
+users = mongo_client.user.users
+items = mongo_client.items.items
+dinosaurs = mongo_client.dinosaur.dinosaurs
+sleep_task = mongo_client.dino_activity.sleep
+game_task = mongo_client.dino_activity.game
+collecting_task = mongo_client.dino_activity.collecting
 
 async def short_sleep(number: int, transmitted_data: dict):
     """ Отправляем в которкий сон

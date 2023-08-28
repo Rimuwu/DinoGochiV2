@@ -7,7 +7,7 @@ from bot.modules.inline import inline_menu
 from bot.modules.localization import t
 from bot.modules.user import User
 
-users = mongo_client.bot.users
+users = mongo_client.user.users
 
 class DinoPassStatus(AdvancedCustomFilter):
     key = 'dino_pass'

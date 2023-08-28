@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from bot.config import conf, mongo_client
 
-statistic = mongo_client.tasks.statistic
+statistic = mongo_client.other.statistic
 
 
 def get_now_statistic():

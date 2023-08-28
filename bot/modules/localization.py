@@ -8,7 +8,7 @@ from bot.config import conf, mongo_client
 
 languages = {}
 available_locales = []
-langs = mongo_client.connections.lang
+langs = mongo_client.user.lang
 
 def load() -> None:
     """Загрузка локализации"""

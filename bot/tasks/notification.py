@@ -3,7 +3,7 @@ from bot.modules.notifications import notification_manager
 from bot.taskmanager import add_task
 from bot.modules.dinosaur import Dino
 
-dinosaurs = mongo_client.bot.dinosaurs
+dinosaurs = mongo_client.dinosaur.dinosaurs
 REPEAT_MINUTS = 1
 
 async def dino_notifications():

@@ -9,8 +9,8 @@ from bot.modules.accessory import downgrade_accessory
 from bot.modules.notifications import dino_notification
 from bot.const import GAME_SETTINGS
 
-dino_mood = mongo_client.connections.dino_mood
-dinosaurs = mongo_client.bot.dinosaurs
+dino_mood = mongo_client.dinosaur.dino_mood
+dinosaurs = mongo_client.dinosaur.dinosaurs
 
 max_stack = 5
 

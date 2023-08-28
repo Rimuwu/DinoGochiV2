@@ -17,9 +17,9 @@ from bot.modules.statistic import get_now_statistic
 from bot.modules.user import User, take_coins, user_name
 from bot.modules.market import preview_product
 
-users = mongo_client.bot.users
-management = mongo_client.bot.management
-tavern = mongo_client.connections.tavern
+users = mongo_client.user.users
+management = mongo_client.other.management
+tavern = mongo_client.tavern.tavern
 preferential = mongo_client.market.preferential
 products = mongo_client.market.products
 

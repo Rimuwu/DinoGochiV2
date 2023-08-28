@@ -13,7 +13,7 @@ from bot.modules.item import AddItemToUser
 from bot.modules.user import award_premium
 from bot.modules.localization import get_lang
 
-users = mongo_client.bot.users
+users = mongo_client.user.users
 
 directory = 'bot/data/donations.json'
 processed_donations = {}

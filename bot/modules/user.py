@@ -18,19 +18,19 @@ from bot.modules.notifications import user_notification
 from bot.modules.referals import get_code_owner, get_user_sub
 from datetime import datetime, timedelta
 
-users = mongo_client.bot.users
-items = mongo_client.bot.items
-dinosaurs = mongo_client.bot.dinosaurs
-products = mongo_client.bot.products
-dead_dinos = mongo_client.bot.dead_dinos
+users = mongo_client.user.users
+items = mongo_client.items.items
+dinosaurs = mongo_client.dinosaur.dinosaurs
+products = mongo_client.market.products
+dead_dinos = mongo_client.dinosaur.dead_dinos
 
-incubations = mongo_client.tasks.incubation
-dino_owners = mongo_client.connections.dino_owners
-friends = mongo_client.connections.friends
-subscriptions = mongo_client.tasks.subscriptions
-referals = mongo_client.connections.referals
-daily_award_data = mongo_client.connections.daily_award
-langs = mongo_client.connections.lang
+incubations = mongo_client.dinosaur.incubation
+dino_owners = mongo_client.dinosaur.dino_owners
+friends = mongo_client.user.friends
+subscriptions = mongo_client.user.subscriptions
+referals = mongo_client.user.referrals
+daily_award_data = mongo_client.tavern.daily_award
+langs = mongo_client.user.lang
 
 class User:
 

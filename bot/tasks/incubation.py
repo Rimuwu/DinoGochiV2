@@ -8,7 +8,7 @@ from bot.modules.notifications import user_notification
 from bot.taskmanager import add_task
 from bot.modules.localization import get_lang
 
-incubations = mongo_client.tasks.incubation
+incubations = mongo_client.dinosaur.incubation
 
 async def incubation():
     """Проверка инкубируемых яиц

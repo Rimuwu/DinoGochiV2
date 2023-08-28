@@ -13,8 +13,8 @@ from bot.modules.states_tools import (ChooseConfirmState, ChooseDinoState,
 from bot.modules.user import premium, User
 from random import randint
 
-users = mongo_client.bot.users
-langs = mongo_client.connections.lang
+users = mongo_client.user.users
+langs = mongo_client.user.lang
 
 async def notification(result: bool, transmitted_data: dict):
     userid = transmitted_data['userid']

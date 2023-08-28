@@ -4,8 +4,8 @@ from bot.config import conf, mongo_client
 from bot.modules.dinosaur import mutate_dino_stat
 from bot.taskmanager import add_task
 
-dino_mood = mongo_client.connections.dino_mood
-dinosaurs = mongo_client.bot.dinosaurs
+dino_mood = mongo_client.dinosaur.dino_mood
+dinosaurs = mongo_client.dinosaur.dinosaurs
 
 REPEAT_MINUTES = 5
 

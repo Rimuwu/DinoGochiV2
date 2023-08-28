@@ -9,7 +9,7 @@ from bot.modules.item import counts_items
 from bot.modules.data_format import seconds_to_str, list_to_inline
 from bot.modules.user import user_in_chat
 
-users = mongo_client.bot.users
+users = mongo_client.user.users
 puhs = mongo_client.market.puhs
 
 @bot.my_chat_member_handler()

@@ -5,8 +5,8 @@ from bot.exec import bot
 from bot.modules.data_format import list_to_inline, user_name
 from bot.modules.localization import t, get_lang
 
-friends = mongo_client.connections.friends
-game_task = mongo_client.tasks.game
+friends = mongo_client.user.friends
+game_task = mongo_client.dino_activity.game
 
 def get_frineds(userid: int) -> dict:
     """ Получает друзей (id) и запросы к пользователю

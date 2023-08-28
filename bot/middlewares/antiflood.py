@@ -7,7 +7,7 @@ from bot.config import mongo_client
 from time import time as time_now
 
 DEFAULT_RATE_LIMIT = 0.5
-users = mongo_client.bot.users
+users = mongo_client.user.users
 
 class AntifloodMiddleware(BaseMiddleware):
     throttle_dict = {}

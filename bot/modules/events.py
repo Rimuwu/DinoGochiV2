@@ -4,7 +4,7 @@ from bot.const import GAME_SETTINGS as GS
 from random import choice, randint
 from bot.config import mongo_client
 
-events = mongo_client.tasks.events
+events = mongo_client.other.events
 
 def get_event(event_type: str='', alternative: str='standart'):
     res = events.find_one({'type': event_type})

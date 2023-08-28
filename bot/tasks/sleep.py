@@ -6,8 +6,8 @@ from bot.modules.dinosaur import end_sleep
 from bot.taskmanager import add_task
 from bot.modules.mood import add_mood, check_inspiration
 
-sleepers = mongo_client.tasks.sleep
-dinosaurs = mongo_client.bot.dinosaurs
+sleepers = mongo_client.dino_activity.sleep
+dinosaurs = mongo_client.dinosaur.dinosaurs
 
 LONG_SLEEP_COLDOWN_MIN = 6
 LONG_SLEEP_TIME_MIN = 600

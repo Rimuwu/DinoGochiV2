@@ -10,8 +10,8 @@ seconds_to_str)
 from bot.modules.item import counts_items, get_name, RemoveItemFromUser
 from bot.modules.localization import get_data, t
 
-quests_data = mongo_client.bot.quests
-items = mongo_client.bot.items
+quests_data = mongo_client.tavern.quests
+items = mongo_client.items.items
 
 complex_time = {
     1: {"min": 36000, "max": 57600, "type": "random"},

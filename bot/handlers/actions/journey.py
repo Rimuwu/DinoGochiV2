@@ -19,9 +19,9 @@ from bot.modules.states_tools import ChooseStepState
 from bot.modules.user import User
 from random import randint
 
-users = mongo_client.bot.users
-dinosaurs = mongo_client.bot.dinosaurs
-journey_task = mongo_client.tasks.journey
+users = mongo_client.user.users
+dinosaurs = mongo_client.dinosaur.dinosaurs
+journey_task = mongo_client.dino_activity.journey
 
 premium_loc = ['magic-forest']
 

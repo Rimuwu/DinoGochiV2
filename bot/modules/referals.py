@@ -5,8 +5,8 @@ from bot.modules.data_format import random_code
 from bot.modules.friends import insert_friend_connect
 from bot.modules.item import AddItemToUser
 
-referals = mongo_client.connections.referals
-users = mongo_client.bot.users
+referals = mongo_client.user.referals
+users = mongo_client.user.users
 
 def get_referal_award(userid: int):
     """ Выдаёт награду за переход по рефералу

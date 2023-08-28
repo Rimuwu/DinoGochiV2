@@ -16,9 +16,9 @@ from bot.modules.states_tools import ChooseStepState
 from bot.modules.user import User, count_inventory_items, premium
 from bot.modules.quests import quest_process
 
-users = mongo_client.bot.users
-dinosaurs = mongo_client.bot.dinosaurs
-collecting_task = mongo_client.tasks.collecting
+users = mongo_client.user.users
+dinosaurs = mongo_client.dinosaur.dinosaurs
+collecting_task = mongo_client.dino_activity.collecting
 
 async def collecting_adapter(return_data, transmitted_data):
     dino = transmitted_data['dino'] # type: Dino

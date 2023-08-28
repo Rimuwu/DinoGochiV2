@@ -14,7 +14,7 @@ from bot.modules.states_tools import ChooseStepState
 from bot.modules.user import User
 from bot.modules.localization import get_lang
 
-items = mongo_client.bot.items
+items = mongo_client.item.items
 
 async def adapter_function(return_dict, transmitted_data):
     count = return_dict['count']

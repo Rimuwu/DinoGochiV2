@@ -8,7 +8,7 @@ from bot.modules.currency import get_all_currency, get_products
 from bot.modules.item import counts_items
 from bot.modules.data_format import seconds_to_str
 
-users = mongo_client.bot.users
+users = mongo_client.user.users
 
 @bot.message_handler(text='commands_name.about.team', 
                      is_authorized=True)
@@ -57,6 +57,16 @@ def main_support_menu(lang: str):
 @bot.message_handler(text='commands_name.about.support', 
                      is_authorized=True)
 async def support(message: Message):
+    lang = get_lang(message.from_user.id)
+    chatid = message.chat.id
+
+    image, text, markup_inline = main_support_menu(lang)
+    
+    await bot.send_photo(chatid, image, text, reply_markup=markup_inline, parse_mode='Markdown')
+
+@bot.message_handler(commands=['premium'], 
+                     is_authorized=True)
+async def support_com(message: Message):
     lang = get_lang(message.from_user.id)
     chatid = message.chat.id
 

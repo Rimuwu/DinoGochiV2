@@ -5,7 +5,7 @@ from time import time
 from random import randint
 from bot.modules.logs import log
 
-events = mongo_client.tasks.events
+events = mongo_client.other.events
 
 async def old_events():
     """ Удаляет истёкшие события

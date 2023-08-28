@@ -19,8 +19,8 @@ from bot.modules.user import User, premium
 from bot.modules.quests import quest_process
 from time import time
 
-dinosaurs = mongo_client.bot.dinosaurs
-game_task = mongo_client.tasks.game
+dinosaurs = mongo_client.dinosaur.dinosaurs
+game_task = mongo_client.dino_activity.game
 
 async def start_game_ent(userid: int, chatid: int, 
                          lang: str, dino: Dino, 

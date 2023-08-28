@@ -11,8 +11,8 @@ from bot.modules.localization import get_data, t
 from bot.modules.user import get_eggs, max_dino_col
 from bot.modules.dinosaur import dead_check
 
-users = mongo_client.bot.users
-items = mongo_client.bot.items
+users = mongo_client.user.users
+items = mongo_client.items.items
 
 def dialog_system(name: str, lang: str, 
                   key: str = 'start', end_keys: list = [], 

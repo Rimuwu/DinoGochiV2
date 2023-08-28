@@ -21,7 +21,7 @@ from bot.modules.item_tools import (AddItemToUser, CheckItemFromUser,
 from bot.modules.localization import get_data, get_lang, t
 from bot.modules.markup import markups_menu as m
 
-users = mongo_client.bot.users
+users = mongo_client.user.users
 
 async def cancel(message):
     lang = get_lang(message.from_user.id)

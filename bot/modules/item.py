@@ -22,7 +22,7 @@ from bot.modules.localization import get_data as get_loc_data
 from bot.modules.logs import log
 
 items_names = {}
-items = mongo_client.bot.items
+items = mongo_client.items.items
 
 def get_data(itemid: str) -> dict:
     """Получение данных из json"""

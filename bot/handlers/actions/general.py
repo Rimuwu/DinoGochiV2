@@ -13,12 +13,12 @@ from bot.modules.markup import markups_menu as m
 from bot.modules.states_tools import ChooseDinoState
 from bot.modules.user import User
 
-users = mongo_client.bot.users
-items = mongo_client.bot.items
-dinosaurs = mongo_client.bot.dinosaurs
-sleep_task = mongo_client.tasks.sleep
-game_task = mongo_client.tasks.game
-collecting_task = mongo_client.tasks.collecting
+users = mongo_client.user.users
+items = mongo_client.items.items
+dinosaurs = mongo_client.dinosaur.dinosaurs
+sleep_task = mongo_client.dino_activity.sleep
+game_task = mongo_client.dino_activity.game
+collecting_task = mongo_client.dino_activity.collecting
 
 
 @bot.message_handler(textstart='commands_name.actions.dino_button')
