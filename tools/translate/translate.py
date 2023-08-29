@@ -4,7 +4,7 @@ import random
 
 import emoji
 
-import translators
+# import translators
 from langdetect import DetectorFactory, detect
 
 DetectorFactory.seed = 0
@@ -38,11 +38,13 @@ def trs(text: str, trs='bing'):
         except: lang = 'emoji'
 
         if lang not in ['en', 'it']:
-            ret = translators.translate_text(text, 
-                from_language=from_language,
-                to_language=to_lang, translator=trs) 
-            print("\n#TEXT#", text, '\n#translatore#', trs, '\nRETURN TEXT#', ret, '\nlang', lang)
-            return ret
+            # ret = translators.translate_text(text, 
+            #     from_language=from_language,
+            #     to_language=to_lang, translator=trs) 
+            # print("\n#TEXT#", text, '\n#translatore#', trs, '\nRETURN TEXT#', ret, '\nlang', lang)
+            # return ret
+            
+            return text
     return text
 
 def trs_circul(s):
@@ -189,28 +191,37 @@ def save(data, dr='languages'):
 if not add_lang: add_lang[ro_l] = {}
 start = time.time()
 
-def circul(key, value, now, trs: dict):
-    if type(value) == dict:
-        if key not in trs: data = {}
-        else: data = trs
+def circul(t_key, t, add_lang):
+    
+    if type(t) == dict:
+        dct = {}
+        for key, value in t.items():
+            if type(t) == dict:
+                if key not in add_lang: add_lang[key] = {}
+                dct[key] = circul(key, value, add_lang[key])
+            else:
+                if key not in add_lang:
+                    dct[key] = dict_string(value, key)
+        return dct
 
-        for key1, value1 in value.items():
-            if key1 not in data:
-                
-                data[key1] = circul(key1, value1, now, trs[key1])
-        return data
-    else:
-        if key not in now:
-            return dict_string(value, key)
-        return now[key]
+    else: 
+        # print(t_key, add_lang.keys())
+        if t_key not in add_lang:
+            print('ok')
+            return dict_string(t, t_key)
+
+
 
 for key, value in main_lang[from_l].items():
-    if key not in add_lang[ro_l]: add_lang[ro_l][key] = {}
+    # if key not in add_lang[ro_l]: add_lang[ro_l][key] = {}
 
-    add_lang[ro_l][key] = circul(key, value, 
-            add_lang[ro_l][key], main_lang[from_l][key])
-    save(add_lang)
     
+    # print(add_lang[ro_l][key])
+    if key not in add_lang[ro_l]: add_lang[ro_l][key] = {}
+    add_lang[ro_l][key] = circul(key, value, add_lang[ro_l][key])
+    save(add_lang)
+    # print(add_lang[ro_l][key])
+
     # if type(value) == dict:
     #     if key not in add_lang[ro_l]: add_lang[ro_l][key] = {}
     #     print(key, 'checking')
