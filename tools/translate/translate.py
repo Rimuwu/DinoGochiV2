@@ -12,11 +12,17 @@ DetectorFactory.seed = 0
 from_l = 'ru'
 ro_l = 'en'
 
-with open(f'./{from_l}.json', encoding='utf-8') as f: 
+with open(f'languages/{from_l}.json', encoding='utf-8') as f: 
     main_lang = json.load(f) # type: dict
 
-with open(f'./{ro_l}.json', encoding='utf-8') as f: 
+with open(f'languages/{ro_l}.json', encoding='utf-8') as f: 
     add_lang = json.load(f) # type: dict
+
+with open(f'saves/{from_l}.json', encoding='utf-8') as f: 
+    save_main_lang = json.load(f) # type: dict
+
+with open(f'saves/{ro_l}.json', encoding='utf-8') as f: 
+    save_add_lang = json.load(f) # type: dict
 
 def trs(text: str, trs='bing'):
     from_language = from_l
@@ -176,27 +182,51 @@ def dict_string(s, s_key):
         return dct
     return s
 
-def save(data):
-    with open(f'{ro_l}.json', 'w', encoding='utf-8') as f:
+def save(data, dr='languages'):
+    with open(f'{dr}/{ro_l}.json', 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
 if not add_lang: add_lang[ro_l] = {}
 start = time.time()
 
-for key, value in main_lang['ru'].items():
+def circul(key, value, now, trs: dict):
     if type(value) == dict:
-        if key not in add_lang[ro_l]: add_lang[ro_l][key] = {}
-        print(key, 'checking')
+        if key not in trs: data = {}
+        else: data = trs
 
         for key1, value1 in value.items():
-            if key1 not in add_lang[ro_l][key]:
-                add_lang[ro_l][key][key1] = dict_string(value1, key1)
-                save(add_lang)
-            else: print(key1, 'check-family-key')
+            if key1 not in data:
+                
+                data[key1] = circul(key1, value1, now, trs[key1])
+        return data
+    else:
+        if key not in now:
+            return dict_string(value, key)
+        return now[key]
 
-    elif key not in add_lang[ro_l]:
-        print(key, 'translate new key')
-        add_lang[ro_l][key] = dict_string(value, key)
-        save(add_lang)
+for key, value in main_lang[from_l].items():
+    if key not in add_lang[ro_l]: add_lang[ro_l][key] = {}
+
+    add_lang[ro_l][key] = circul(key, value, 
+            add_lang[ro_l][key], main_lang[from_l][key])
+    save(add_lang)
+    
+    # if type(value) == dict:
+    #     if key not in add_lang[ro_l]: add_lang[ro_l][key] = {}
+    #     print(key, 'checking')
+
+    #     for key1, value1 in value.items():
+    #         if key1 not in add_lang[ro_l][key]:
+    #             if type(value1) == dict:
+                    
+    #             add_lang[ro_l][key][key1] = dict_string(value1, key1)
+    #             save(add_lang)
+    #         else: print(key1, 'check-family-key')
+
+    # elif key not in add_lang[ro_l]:
+    #     print(key, 'translate new key')
+    #     add_lang[ro_l][key] = dict_string(value, key)
+    #     save(add_lang)
 
 print('END translate', time.time() - start)
+
