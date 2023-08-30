@@ -1,6 +1,6 @@
 from telebot.types import CallbackQuery, Message
 
-from bot.config import mongo_client
+from bot.config import mongo_client, conf
 from bot.exec import bot
 from bot.modules.data_format import list_to_inline
 from bot.modules.states_tools import start_friend_menu
@@ -16,9 +16,11 @@ from bot.modules.dinosaur import Dino, create_dino_connection
 from bot.modules.states_tools import (ChooseOptionState, ChoosePagesState,
                                       ChooseStepState, prepare_steps, ChooseStringState)
 from bot.modules.tracking import creat_track, get_track_pages, track_info
-from bot.modules.promo import create_promo_start
+from bot.modules.promo import create_promo_start, get_promo_pages, promo_ui, use_promo
+from time import time
 
 management = mongo_client.other.management
+promo = mongo_client.other.promo
 
 users = mongo_client.user.users
 friends = mongo_client.user.friends
@@ -107,3 +109,56 @@ async def create_promo(message: Message):
     lang = get_lang(message.from_user.id)
 
     await create_promo_start(userid, chatid, lang)
+
+@bot.message_handler(commands=['promos'], is_admin=True)
+async def promos(message: Message):
+    chatid = message.chat.id
+    userid = message.from_user.id
+    lang = get_lang(message.from_user.id)
+
+    options = get_promo_pages()
+    res = await ChoosePagesState(promo_info_adp, userid, chatid, lang, options, one_element=False, autoanswer=False)
+    await bot.send_message(chatid, t("promo_commands.promo_open", lang), parse_mode='Markdown')
+
+async def promo_info_adp(code, transmitted_data: dict):
+    chatid = transmitted_data['chatid']
+    lang = transmitted_data['lang']
+
+    text, markup = promo_ui(code, lang)
+    await bot.send_message(chatid, text, parse_mode='Markdown', reply_markup=markup)
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith('promo'))
+async def promo_call(call: CallbackQuery):
+    split_d = call.data.split()
+    action = split_d[2]
+    code = split_d[1]
+
+    userid = call.from_user.id
+    chatid = call.message.chat.id
+    lang = get_lang(call.from_user.id)
+
+    res = promo.find_one({"code": code})
+    if res:
+        if action in ['activ', 'delete'] and userid in conf.bot_devs:
+            
+            if action == 'activ':
+                if not res['active']:
+                    res['active'] = True
+
+                    if res['time'] != 'inf':
+                        res['time_end'] = int(time()) + res['time']
+
+                else:
+                    res['active'] = False
+                    if res['time'] != 'inf':
+                        res['time'] = res['time_end'] - int(time())
+                        res['time_end'] = 0
+
+                management.update_one({"code": code}, {"$set": res})
+
+                text, markup = promo_ui(code, lang)
+                await bot.edit_message_text(text, chatid, call.message.message_id, reply_markup=markup, parse_mode='markdown')
+
+        elif action == 'use':
+            status, text = use_promo(code, userid, lang)
+            await bot.send_message(chatid, text, parse_mode='Markdown')
