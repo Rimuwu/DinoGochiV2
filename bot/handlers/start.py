@@ -38,7 +38,7 @@ async def start_command_auth(message: types.Message):
                           'lang': get_lang(message.from_user.id)})
 
 @bot.message_handler(text='commands_name.start_game', is_authorized=False)
-async def start_game(message: types.Message, referal: str = ''):
+async def start_game(message: types.Message, code: str = '', code_type: str = ''):
 
     #Сообщение-реклама
     text = t('start_command.request_subscribe.text', message.from_user.language_code)
@@ -56,7 +56,7 @@ async def start_game(message: types.Message, referal: str = ''):
     markup_inline = types.InlineKeyboardMarkup()
     markup_inline.add(*[types.InlineKeyboardButton(
             text=f'🥚 {id_l.index(i) + 1}', 
-            callback_data=f'start_egg {i} {referal}') for i in id_l]
+            callback_data=f'start_egg {i} {code_type} {code}') for i in id_l]
     )
 
     start_game = t('start_command.start_game', message.from_user.language_code)
@@ -111,5 +111,6 @@ async def egg_answer_callback(callback: types.CallbackQuery):
     incubation_egg(egg_id, callback.from_user.id, quality=GAME_SETTINGS['first_egg_rarity'])
 
     if len(callback.data.split()) > 2:
-        referal = callback.data.split()[2]
-        connect_referal(referal, callback.from_user.id)
+        if callback.data.split()[2] == 'referal':
+            referal = callback.data.split()[3]
+            connect_referal(referal, callback.from_user.id)
