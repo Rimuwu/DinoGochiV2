@@ -271,23 +271,23 @@ def create_dino_connection(dino_baseid: ObjectId, owner_id: int, con_type: str='
         lvl=0)
     return dino_owners.insert_one(con)
 
+def generation_code(owner_id: int):
+    code = f'{owner_id}_{random_code(8)}'
+    if dinosaurs.find_one({'alt_id': code}):
+        code = generation_code(owner_id)
+    return code
+
 def insert_dino(owner_id: int=0, dino_id: int=0, quality: str='random'):
     """Создания динозавра в базе
        + связь с владельцем если передан owner_id 
     """
-    
-    def generation_code(owner_id):
-        code = f'{owner_id}_{random_code(8)}'
-        if dinosaurs.find_one({'alt_id': code}):
-            code = generation_code(owner_id)
-        return code
 
     if quality in ['random', 'rar']: quality = random_quality()
     if not dino_id: dino_id = random_dino(quality)
 
     dino_data = get_dino_data(dino_id)
     dino = Dino(ObjectId())
-    
+
     dino.data_id = dino_id
     dino.alt_id = generation_code(owner_id)
     dino.name = dino_data['name']
