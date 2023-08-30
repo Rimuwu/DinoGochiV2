@@ -17,8 +17,7 @@ class Config:
         """
         self.bot_token = 'NOTOKEN'
         self.bot_devs = []
-        self.temp_dir = 'bot/temp'
-        self.logs_dir = 'bot/logs'
+        self.logs_dir = 'logs'
         self.active_tasks = True
         self.bot_group_id = 0
         self.ssh = False
@@ -85,7 +84,7 @@ def load():
     else:
         sys.exit(f"{CONFIG_PATH} missed! Please, run {__name__}")
 
-    for way in conf.temp_dir, conf.logs_dir: # Проверка путей
+    for way in conf.logs_dir: # Проверка путей
         if not os.path.exists(way):
             os.mkdir(way) #Создаёт папку в директории  
             print(f"I didn't find the {way} directory, so I created it.")
