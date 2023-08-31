@@ -10,32 +10,30 @@ from langdetect import DetectorFactory, detect
 DetectorFactory.seed = 0
 
 from_l = 'ru'
-to_langs = ['en', 'uk']
+to_langs = ['en']
 
 with open(f'languages/{from_l}.json', encoding='utf-8') as f: 
     main_lang = json.load(f) # type: dict
 
-def trs(text: str, trs='bing'):
+def trs(text: str, trans='bing'):
     from_language = from_l
     to_lang = ro_l
-    if trs == 'myMemory' and from_language == 'ru': from_language = 'ru-RU'
+    if trans == 'myMemory' and from_language == 'ru': from_language = 'ru-RU'
 
-    elif trs == 'myMemory' and to_lang == 'uk': to_lang = 'uk-UA'
-    elif trs == 'baidu' and to_lang == 'uk': to_lang = 'ukr'
+    elif trans == 'myMemory' and to_lang == 'uk': to_lang = 'uk-UA'
+    elif trans == 'baidu' and to_lang == 'uk': to_lang = 'ukr'
 
     if text:
-        try:
-            lang = detect(text)
+        try: lang = detect(text)
         except: lang = 'emoji'
 
-        if lang not in ['en', 'it']:
-            # ret = translators.translate_text(text, 
-            #     from_language=from_language,
-            #     to_language=to_lang, translator=trs) 
-            # print("\n#TEXT#", text, '\n#translatore#', trs, '\nRETURN TEXT#', ret, '\nlang', lang)
-            # return ret
-            
-            return text
+        if lang not in ['en', 'it', 'emoji']:
+            ret = translators.translate_text(text, 
+                from_language=from_language,
+                to_language=to_lang, translator=trans) 
+            print("\n#TEXT#", text, '\n#translatore#', trans, '\nRETURN TEXT#', ret, '\nlang', lang)
+            return ret
+
     return text
 
 def trs_circul(s):
@@ -47,21 +45,20 @@ def trs_circul(s):
         res = ''
 
         for trans in translators:
+            r_t = random.uniform(0, 1)
+            time.sleep(r_t)
+        
             try:
                 try:
                     res = trs(s, trans)
-                    break
-                except:
-                    translators.remove(trans)
-                    trans = translators[0]
+                    return res
+                except Exception as E:
+                    trans = random.choice(translators)
                     res = trs(s, trans)
-                    break
-            except Exception as E: print(E)
-        
-        if res: break
 
-        r_t = random.uniform(0, 1)
-        time.sleep(r_t)
+                    return res
+            except Exception as E: print(E)
+
     return res
 
 k_list = ['*', '`']
@@ -80,7 +77,8 @@ def dict_string(s, s_key):
                 '(100!)': {'text': 'ᴜsᴇʀ ᴘʀᴏғɪʟᴇ', 'translate': False},
                 '(200!)': {'text': 'ʟᴇᴠᴇʟ', 'translate': False},
                 '(300!)': {'text': 'ᴅɪɴᴏsᴀᴜʀs', 'translate': False},
-                '(400!)': {'text': ' ɪɴᴠᴇɴᴛᴏʀʏ', 'translate': False},
+                '(400!)': {'text': 'ɪɴᴠᴇɴᴛᴏʀʏ', 'translate': False},
+                '(500!)': {'text': '->', 'translate': False},
             }
             for key, item in repl_words.items(): s = s.replace(item['text'], key)
 
@@ -150,6 +148,7 @@ def dict_string(s, s_key):
                         if len(data['text']) > 3 and data['text'][1] == '(' and data['text'][-2] == ')': txt = data['text']
                         else:
                             txt = trs_circul(data['text'])
+                            print(txt, 'txt')
                     else: txt = data['text']
                     
                     if 'sml' in data:
