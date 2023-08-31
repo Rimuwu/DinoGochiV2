@@ -14,6 +14,7 @@ from bot.modules.markup import markups_menu as m
 from bot.modules.user import insert_user
 from bot.modules.referals import connect_referal
 from bot.handlers.referal_menu import check_code
+from bot.modules.promo import use_promo
 
 stickers = bot.get_sticker_set('Stickers_by_DinoGochi_bot')
 referals = mongo_client.user.referrals
@@ -96,6 +97,7 @@ async def start_game_message(message: types.Message):
 async def egg_answer_callback(callback: types.CallbackQuery):
     egg_id = int(callback.data.split()[1])
     lang = callback.from_user.language_code
+    userid = callback.from_user.id
 
     # Сообщение
     edited_text = t('start_command.end_answer.edited_text', lang)
@@ -114,3 +116,7 @@ async def egg_answer_callback(callback: types.CallbackQuery):
         if callback.data.split()[2] == 'referal':
             referal = callback.data.split()[3]
             connect_referal(referal, callback.from_user.id)
+
+        if callback.data.split()[2] == 'promo':
+            code  = callback.data.split()[3]
+            use_promo(code, userid, lang)
