@@ -11,7 +11,7 @@ from bot.taskmanager import add_task, run as run_taskmanager
 
 class TracebackHandler(ExceptionHandler):
     def handle(self, exception):
-        log(traceback.format_exc(), 3)
+        log(f'{traceback.format_exc()} {exception}', 3)
 
 bot = AsyncTeleBot(conf.bot_token, exception_handler=TracebackHandler())
 bot.enable_saving_states()
