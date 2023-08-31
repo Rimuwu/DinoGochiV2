@@ -8,21 +8,21 @@ async def _task_executor(function, repeat_time: float, delay: float, **kwargs):
     """Исполнитель всех задач с обработчиком ошибок и созданием потока
     """
     await asyncio.sleep(delay)
-    
+
     if repeat_time:
         while True:
             try:
                 await function(**kwargs)
             except Exception as error:
-                log(prefix=F"{function.__name__} error", message=str(error), lvl=3)
-            
+                log(prefix=f"{function.__name__} task_error", message=str(error), lvl=3)
+
             await asyncio.sleep(repeat_time)
     else:
         try:
             await function(**kwargs)
         except Exception as error:
-            log(prefix=F"{function.__name__} error", message=str(error), lvl=3)
-            
+            log(prefix=f"{function.__name__} task_error", message=str(error), lvl=4)
+
 
 def add_task(function, repeat_time: float=0, delay: float=0, **kwargs):
     """Добавить задачу в асинхрон
