@@ -4,7 +4,7 @@
         "dinosaur": ["dinosaurs", "dead_dinos", "incubation", "dino_owners", "dino_mood"],
         "dino_activity": ["game", "journey", "sleep", "collecting", "kindergarten"],
         "market": ["products", "sellers", "preferential", "puhs"],
-        "item": ["items"],
+        "items": ["items"],
         "tavern": ["quests", "tavern", "daily_award"],
         "dungeon": ["lobby", "dungeon_statistic"],
         "other": ["management", "statistic", "events", "promo"]
