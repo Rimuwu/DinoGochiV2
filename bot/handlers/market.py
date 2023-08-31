@@ -29,7 +29,7 @@ users = mongo_client.user.users
 management = mongo_client.other.management
 tavern = mongo_client.tavern.tavern
 sellers = mongo_client.market.sellers
-items = mongo_client.item.items
+items = mongo_client.items.items
 products = mongo_client.market.products
 puhs = mongo_client.market.puhs
 
