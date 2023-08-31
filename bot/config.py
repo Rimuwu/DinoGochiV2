@@ -84,7 +84,7 @@ def load():
     else:
         sys.exit(f"{CONFIG_PATH} missed! Please, run {__name__}")
 
-    for way in conf.logs_dir: # Проверка путей
+    for way in [conf.logs_dir]: # Проверка путей
         if not os.path.exists(way):
             os.mkdir(way) #Создаёт папку в директории  
             print(f"I didn't find the {way} directory, so I created it.")
