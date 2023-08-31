@@ -188,6 +188,7 @@ async def end(return_data, transmitted_data):
             a += 1
 
     if time_end == 0: time_end = 'inf'
+    if count == 0: count = 'inf'
 
     create_promo(code, count, time_end, coins, add_items)
 
@@ -198,7 +199,7 @@ async def end(return_data, transmitted_data):
         await bot.send_message(chatid, text, reply_markup=markup)
     await bot.send_message(chatid, '✅', reply_markup=m(userid, 'last_menu', lang))
 
-def create_promo(code: str, col: int, seconds, coins: int, items: list):
+def create_promo(code: str, col, seconds, coins: int, items: list):
     data = {
         "code": code,
         "users": [],
@@ -226,7 +227,7 @@ def promo_ui(code: str, lang: str):
 
         if data['time_end'] == 'inf':
             txt_time = '♾'
-        else: txt_time = seconds_to_str(data['time_end'], lang)
+        else: txt_time = seconds_to_str(data['time_end'] - int(time()), lang)
 
         text = t('promo_commands.ui.text', lang,
                  code=code, status=status,
@@ -261,20 +262,20 @@ def use_promo(code: str, userid: int, lang: str):
             col = data['col']
             if col == 'inf': col = 1
 
-            end = promo['time_end']
-            if end == 'inf': end = int(time()) + 100
+            seconds = data['time_end']
+            if seconds == 'inf': seconds = int(time()) + 100
 
             if data['active']:
                 if col:
-                    if end - int(time()) > 0:
+                    if seconds - int(time()) > 0:
                         if userid not in data['users']:
 
-                            promo.update_one({"code": 'code'},
+                            promo.update_one({'_id': data['_id']},
                                              {"$push": {f'users': userid}
                                               })
 
-                            if promo['col'] != 'inf':
-                                promo.update_one({"code": 'code'},
+                            if data['col'] != 'inf':
+                                promo.update_one({'_id': data['_id']},
                                                  {"$inc": {f'col': -1}})
 
                             text = t('promo_commands.activate', lang)
@@ -288,6 +289,7 @@ def use_promo(code: str, userid: int, lang: str):
                                 text += t('promo_commands.items', lang,
                                           items=counts_items(id_list, lang)
                                           )
+                            return 'ok', text
                         else:
                             text = t('promo_commands.already_use', lang)
                             return 'already_use', text
