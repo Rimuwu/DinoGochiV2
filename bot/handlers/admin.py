@@ -18,6 +18,7 @@ from bot.modules.states_tools import (ChooseOptionState, ChoosePagesState,
 from bot.modules.tracking import creat_track, get_track_pages, track_info
 from bot.modules.promo import create_promo_start, get_promo_pages, promo_ui, use_promo
 from time import time
+from bot.modules.user import User, max_dino_col, award_premium
 
 management = mongo_client.other.management
 promo = mongo_client.other.promo
@@ -140,25 +141,95 @@ async def promo_call(call: CallbackQuery):
     res = promo.find_one({"code": code})
     if res:
         if action in ['activ', 'delete'] and userid in conf.bot_devs:
-            
-            if action == 'activ':
+
+            if action == 'delete': 
+                promo.delete_one({'_id': res['_id']})
+                await bot.delete_message(userid, call.message.id)
+
+            elif action == 'activ':
                 if not res['active']:
                     res['active'] = True
 
                     if res['time'] != 'inf':
                         res['time_end'] = int(time()) + res['time']
+                        
+                        promo.update_one({'_id': res['_id']}, {"$set": {
+                            "time_end": res['time_end'],
+                            'active': True
+                        }})
+                    else:
+                        promo.update_one({'_id': res['_id']}, {"$set": {
+                            'active': True
+                        }})
 
                 else:
                     res['active'] = False
                     if res['time'] != 'inf':
                         res['time'] = res['time_end'] - int(time())
-                        res['time_end'] = 0
 
-                management.update_one({"code": code}, {"$set": res})
+                        promo.update_one({'_id': res['_id']}, {"$set": {
+                            "time": res['time'],
+                            'active': False
+                        }})
+                    else:
+                        promo.update_one({'_id': res['_id']}, {"$set": {
+                            'active': False
+                        }})
 
                 text, markup = promo_ui(code, lang)
-                await bot.edit_message_text(text, chatid, call.message.message_id, reply_markup=markup, parse_mode='markdown')
+                await bot.edit_message_text(text, userid, call.message.message_id, reply_markup=markup, parse_mode='markdown')
 
         elif action == 'use':
             status, text = use_promo(code, userid, lang)
-            await bot.send_message(chatid, text, parse_mode='Markdown')
+            await bot.send_message(userid, text, parse_mode='Markdown')
+    else:
+        await bot.send_message(userid, t('promo_commands.not_found', lang), parse_mode='Markdown')
+
+@bot.message_handler(commands=['link_promo'])
+async def link_promo(message):
+    user = message.from_user
+    msg_args = message.text.split()
+    lang = get_lang(user.id)
+
+    if user.id in conf.bot_devs:
+        text_dict = get_data('promo_commands.link', lang)
+
+        if len(msg_args) > 1:
+
+            promo_code = msg_args[1]
+            if len(msg_args) > 2:
+                but_name = msg_args[2]
+            else: but_name = '🎁'
+
+            res = promo.find_one({"code": promo_code})
+
+            if res:
+
+                fw = message.reply_to_message
+
+                if fw != None:
+                    fw_ms_id = fw.forward_from_message_id
+                    fw_chat_id = fw.forward_from_chat.id
+                    
+                    but = {
+                        but_name: f'promo_activ {promo_code} use'
+                    }
+
+                    markup_inline = list_to_inline([but])
+                    await bot.edit_message_reply_markup(fw_chat_id, fw_ms_id, reply_markup=markup_inline)
+                    await bot.send_message(user.id, text_dict['create'])
+
+            else:
+                await bot.send_message(user.id, text_dict['not_found'])
+
+@bot.message_handler(commands=['inf_premium'], is_admin=True)
+async def give_me_premium(message):
+    msg_args = message.text.split()
+    
+    if len(msg_args) > 1:
+        userid = int(msg_args[1])
+    else:
+        userid = message.from_user.id
+
+    award_premium(userid, 'inf')
+    await bot.send_message(message.from_user.id, 'ok')
