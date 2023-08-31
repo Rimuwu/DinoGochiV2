@@ -74,3 +74,11 @@ async def promo(message: Message):
             await bot.send_message(chatid, text, parse_mode='Markdown')
         else:
             await start_game(message, code, 'promo')
+
+@bot.message_handler(commands=['help'])
+async def help(message: Message):
+    userid = message.from_user.id
+    lang = get_lang(message.from_user.id)
+    chatid = message.chat.id
+    
+    await bot.send_message(chatid, t('help_command.all', lang), parse_mode='html')
